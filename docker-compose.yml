@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ehr_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ehr_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ehr_password}
+      POSTGRES_DB: ${POSTGRES_DB:-ehr_compliance}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ehr_user} -d ${POSTGRES_DB:-ehr_compliance}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ehr_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: ehr_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - ehr_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ehr_app
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-ehr_user}:${POSTGRES_PASSWORD:-ehr_password}@postgres:5432/${POSTGRES_DB:-ehr_compliance}
+      REDIS_URL: redis://redis:6379/0
+      ENVIRONMENT: development
+      DEBUG: "true"
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-key-change-in-production}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ehr_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.9.0
+    container_name: ehr_mlflow
+    ports:
+      - "5000:5000"
+    environment:
+      BACKEND_STORE_URI: postgresql://${POSTGRES_USER:-ehr_user}:${POSTGRES_PASSWORD:-ehr_password}@postgres:5432/${POSTGRES_DB:-ehr_compliance}
+      ARTIFACT_ROOT: s3://${MLFLOW_S3_BUCKET:-ehr-mlflow-artifacts}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
+    volumes:
+      - ./mlflow:/mlflow
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ehr_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  ehr_network:
+    driver: bridge
