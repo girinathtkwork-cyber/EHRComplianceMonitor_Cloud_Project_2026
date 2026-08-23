@@ -1,10 +1,17 @@
 import json
 import os
-import boto3
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, asdict
-from botocore.exceptions import ClientError
+
+try:
+    import boto3
+    from botocore.exceptions import ClientError
+    BOTO3_AVAILABLE = True
+except ImportError:
+    boto3 = None
+    ClientError = Exception
+    BOTO3_AVAILABLE = False
 
 from severity_scorer import StageAOutput, SeverityResult, Entity, FlaggedEntity, load_stage_a
 
@@ -24,6 +31,8 @@ class StageBOutput:
 
 
 def get_dynamodb_client():
+    if not BOTO3_AVAILABLE:
+        raise RuntimeError("boto3 not installed. Run: pip install boto3")
     return boto3.resource(
         "dynamodb",
         region_name=os.getenv("AWS_REGION", "us-east-1")
