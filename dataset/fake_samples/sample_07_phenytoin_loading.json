@@ -1,0 +1,56 @@
+{
+  "transcript_id": "a7b8c9d0-e1f2-3456-0123-789012345678",
+  "timestamp": "2026-01-21T10:12:55Z",
+  "transcript_text": "New onset seizure disorder. Loading dose Phenytoin 1g IV then 300mg daily. Check Phenytoin level in 24 hours.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "seizure disorder",
+      "normalized": "Epilepsy, unspecified",
+      "code": "G40.909",
+      "confidence": 0.93,
+      "start_char": 15,
+      "end_char": 31
+    },
+    {
+      "entity_id": "e2",
+      "type": "MEDICATION",
+      "text": "Phenytoin",
+      "normalized": "Phenytoin Sodium",
+      "code": "8167",
+      "confidence": 0.99,
+      "start_char": 43,
+      "end_char": 52
+    },
+    {
+      "entity_id": "e3",
+      "type": "DOSAGE",
+      "text": "1g IV then 300mg daily",
+      "normalized": "1000 mg IV load then 300 mg daily",
+      "code": "",
+      "confidence": 0.92,
+      "start_char": 53,
+      "end_char": 73
+    },
+    {
+      "entity_id": "e4",
+      "type": "LAB_VALUE",
+      "text": "Phenytoin level",
+      "normalized": "Phenytoin serum level",
+      "code": "3473-7",
+      "confidence": 0.97,
+      "start_char": 84,
+      "end_char": 97
+    }
+  ],
+  "flagged_entities": [
+    {
+      "entity_id": "e3",
+      "flag_type": "DOSAGE_ANOMALY",
+      "flag_reason": "Phenytoin 1g IV load is very high; typical loading is 15-20 mg/kg. For 70kg patient, max ~1400mg but usually divided doses. 300mg daily maintenance may be high for some patients.",
+      "severity_hint": "CRITICAL",
+      "context_window": "Loading dose Phenytoin 1g IV then 300mg daily."
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "transcript_id": "f2a3b4c5-d6e7-8901-5678-234567890123",
+  "timestamp": "2026-01-26T11:05:33Z",
+  "transcript_text": "Patient started on new herbal supplement St. John's Wort 300mg TID for mood. Also on Escitalopram 10mg daily.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "MEDICATION",
+      "text": "St. John's Wort",
+      "normalized": "Hypericum perforatum",
+      "code": "",
+      "confidence": 0.92,
+      "start_char": 36,
+      "end_char": 49
+    },
+    {
+      "entity_id": "e2",
+      "type": "DOSAGE",
+      "text": "300mg TID",
+      "normalized": "300 mg three times daily",
+      "code": "",
+      "confidence": 0.90,
+      "start_char": 50,
+      "end_char": 59
+    },
+    {
+      "entity_id": "e3",
+      "type": "MEDICATION",
+      "text": "Escitalopram",
+      "normalized": "Escitalopram Oxalate",
+      "code": "112189",
+      "confidence": 0.99,
+      "start_char": 70,
+      "end_char": 82
+    },
+    {
+      "entity_id": "e4",
+      "type": "DOSAGE",
+      "text": "10mg daily",
+      "normalized": "10 mg daily",
+      "code": "",
+      "confidence": 0.97,
+      "start_char": 83,
+      "end_char": 93
+    }
+  ],
+  "flagged_entities": [
+    {
+      "entity_id": "e1",
+      "flag_type": "MISSING_CODE",
+      "flag_reason": "Herbal supplement St. John's Wort has no standard RxNorm code assigned. Significant interaction risk with Escitalopram (serotonin syndrome).",
+      "severity_hint": "CRITICAL",
+      "context_window": "started on new herbal supplement St. John's Wort 300mg TID for mood. Also on Escitalopram 10mg daily."
+    }
+  ]
+}

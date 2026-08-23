@@ -1,0 +1,56 @@
+{
+  "transcript_id": "d4e5f6a7-b8c9-0123-def0-456789012345",
+  "timestamp": "2026-01-18T16:47:12Z",
+  "transcript_text": "Patient diagnosed with community-acquired pneumonia. Prescribed Azithromycin 500mg day 1 then 250mg days 2-5. Chest X-ray ordered.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "community-acquired pneumonia",
+      "normalized": "Community-acquired pneumonia",
+      "code": "J18.9",
+      "confidence": 0.95,
+      "start_char": 21,
+      "end_char": 49
+    },
+    {
+      "entity_id": "e2",
+      "type": "MEDICATION",
+      "text": "Azithromycin",
+      "normalized": "Azithromycin",
+      "code": "19821",
+      "confidence": 0.99,
+      "start_char": 57,
+      "end_char": 69
+    },
+    {
+      "entity_id": "e3",
+      "type": "DOSAGE",
+      "text": "500mg day 1 then 250mg days 2-5",
+      "normalized": "500 mg day 1, then 250 mg daily days 2-5",
+      "code": "",
+      "confidence": 0.93,
+      "start_char": 70,
+      "end_char": 102
+    },
+    {
+      "entity_id": "e4",
+      "type": "PROCEDURE",
+      "text": "Chest X-ray",
+      "normalized": "Chest X-ray",
+      "code": "71045",
+      "confidence": 0.97,
+      "start_char": 108,
+      "end_char": 119
+    }
+  ],
+  "flagged_entities": [
+    {
+      "entity_id": "e3",
+      "flag_type": "DOSAGE_ANOMALY",
+      "flag_reason": "Azithromycin dosing regimen unclear - 'day 1 then 250mg days 2-5' ambiguous whether 250mg is daily or total",
+      "severity_hint": "MEDIUM",
+      "context_window": "Prescribed Azithromycin 500mg day 1 then 250mg days 2-5."
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "transcript_id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+  "timestamp": "2026-01-16T09:15:22Z",
+  "transcript_text": "Patient with atrial fibrillation on Warfarin 15mg daily. INR checked last week was 4.2. Advised to hold dose.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "atrial fibrillation",
+      "normalized": "Atrial fibrillation",
+      "code": "I48.91",
+      "confidence": 0.96,
+      "start_char": 21,
+      "end_char": 39
+    },
+    {
+      "entity_id": "e2",
+      "type": "MEDICATION",
+      "text": "Warfarin",
+      "normalized": "Warfarin Sodium",
+      "code": "11289",
+      "confidence": 0.99,
+      "start_char": 43,
+      "end_char": 51
+    },
+    {
+      "entity_id": "e3",
+      "type": "DOSAGE",
+      "text": "15mg daily",
+      "normalized": "15 mg daily",
+      "code": "",
+      "confidence": 0.94,
+      "start_char": 52,
+      "end_char": 62
+    },
+    {
+      "entity_id": "e4",
+      "type": "LAB_VALUE",
+      "text": "INR",
+      "normalized": "International Normalized Ratio",
+      "code": "6301-6",
+      "confidence": 0.98,
+      "start_char": 70,
+      "end_char": 73
+    },
+    {
+      "entity_id": "e5",
+      "type": "LAB_VALUE",
+      "text": "4.2",
+      "normalized": "4.2",
+      "code": "6301-6",
+      "confidence": 0.95,
+      "start_char": 82,
+      "end_char": 85
+    }
+  ],
+  "flagged_entities": [
+    {
+      "entity_id": "e3",
+      "flag_type": "DOSAGE_ANOMALY",
+      "flag_reason": "Warfarin 15mg daily is extremely high; typical maintenance is 2-10mg daily. INR 4.2 confirms supratherapeutic anticoagulation.",
+      "severity_hint": "CRITICAL",
+      "context_window": "Patient with atrial fibrillation on Warfarin 15mg daily. INR checked last week was 4.2."
+    }
+  ]
+}

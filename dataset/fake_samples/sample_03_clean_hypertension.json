@@ -1,0 +1,68 @@
+{
+  "transcript_id": "c3d4e5f6-a7b8-9012-cdef-345678901234",
+  "timestamp": "2026-01-17T11:03:45Z",
+  "transcript_text": "Follow-up for hypertension. Blood pressure 145/92. Continuing Lisinopril 20mg daily. Added Amlodipine 5mg daily.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "hypertension",
+      "normalized": "Essential hypertension",
+      "code": "I10",
+      "confidence": 0.97,
+      "start_char": 19,
+      "end_char": 31
+    },
+    {
+      "entity_id": "e2",
+      "type": "LAB_VALUE",
+      "text": "Blood pressure 145/92",
+      "normalized": "Blood pressure 145/92 mmHg",
+      "code": "8480-6",
+      "confidence": 0.99,
+      "start_char": 33,
+      "end_char": 52
+    },
+    {
+      "entity_id": "e3",
+      "type": "MEDICATION",
+      "text": "Lisinopril",
+      "normalized": "Lisinopril",
+      "code": "29046",
+      "confidence": 0.99,
+      "start_char": 61,
+      "end_char": 71
+    },
+    {
+      "entity_id": "e4",
+      "type": "DOSAGE",
+      "text": "20mg daily",
+      "normalized": "20 mg daily",
+      "code": "",
+      "confidence": 0.96,
+      "start_char": 72,
+      "end_char": 82
+    },
+    {
+      "entity_id": "e5",
+      "type": "MEDICATION",
+      "text": "Amlodipine",
+      "normalized": "Amlodipine Besylate",
+      "code": "17767",
+      "confidence": 0.98,
+      "start_char": 90,
+      "end_char": 100
+    },
+    {
+      "entity_id": "e6",
+      "type": "DOSAGE",
+      "text": "5mg daily",
+      "normalized": "5 mg daily",
+      "code": "",
+      "confidence": 0.95,
+      "start_char": 101,
+      "end_char": 110
+    }
+  ],
+  "flagged_entities": []
+}

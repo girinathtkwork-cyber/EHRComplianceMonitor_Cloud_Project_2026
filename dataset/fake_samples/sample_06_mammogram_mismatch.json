@@ -1,0 +1,56 @@
+{
+  "transcript_id": "f6a7b8c9-d0e1-2345-f012-678901234567",
+  "timestamp": "2026-01-20T13:55:01Z",
+  "transcript_text": "Patient with breast cancer history. Ordered Mammogram screening. Also prescribed Tamoxifen 20mg daily for hormone therapy.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "breast cancer history",
+      "normalized": "Personal history of malignant neoplasm of breast",
+      "code": "Z85.3",
+      "confidence": 0.94,
+      "start_char": 21,
+      "end_char": 40
+    },
+    {
+      "entity_id": "e2",
+      "type": "PROCEDURE",
+      "text": "Mammogram screening",
+      "normalized": "Screening mammography",
+      "code": "77067",
+      "confidence": 0.97,
+      "start_char": 49,
+      "end_char": 66
+    },
+    {
+      "entity_id": "e3",
+      "type": "MEDICATION",
+      "text": "Tamoxifen",
+      "normalized": "Tamoxifen Citrate",
+      "code": "10368",
+      "confidence": 0.99,
+      "start_char": 78,
+      "end_char": 87
+    },
+    {
+      "entity_id": "e4",
+      "type": "DOSAGE",
+      "text": "20mg daily",
+      "normalized": "20 mg daily",
+      "code": "",
+      "confidence": 0.96,
+      "start_char": 88,
+      "end_char": 98
+    }
+  ],
+  "flagged_entities": [
+    {
+      "entity_id": "e2",
+      "flag_type": "POTENTIAL_HALLUCINATION",
+      "flag_reason": "Screening mammogram (77067) may not be appropriate for patient with personal history of breast cancer; diagnostic mammogram (77065/77066) typically indicated",
+      "severity_hint": "MEDIUM",
+      "context_window": "Patient with breast cancer history. Ordered Mammogram screening."
+    }
+  ]
+}

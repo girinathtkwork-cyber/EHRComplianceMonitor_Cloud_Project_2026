@@ -1,0 +1,56 @@
+{
+  "transcript_id": "d0e1f2a3-b4c5-6789-3456-012345678901",
+  "timestamp": "2026-01-24T12:18:44Z",
+  "transcript_text": "Patient prescribed Xyzal 5mg daily for allergic rhinitis. Also using Flonase nasal spray PRN.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "allergic rhinitis",
+      "normalized": "Allergic rhinitis, unspecified",
+      "code": "J30.9",
+      "confidence": 0.96,
+      "start_char": 46,
+      "end_char": 61
+    },
+    {
+      "entity_id": "e2",
+      "type": "MEDICATION",
+      "text": "Xyzal",
+      "normalized": "Levocetirizine Dihydrochloride",
+      "code": "INVALID_CODE_123",
+      "confidence": 0.85,
+      "start_char": 25,
+      "end_char": 30
+    },
+    {
+      "entity_id": "e3",
+      "type": "DOSAGE",
+      "text": "5mg daily",
+      "normalized": "5 mg daily",
+      "code": "",
+      "confidence": 0.94,
+      "start_char": 31,
+      "end_char": 40
+    },
+    {
+      "entity_id": "e4",
+      "type": "MEDICATION",
+      "text": "Flonase nasal spray",
+      "normalized": "Fluticasone Propionate nasal spray",
+      "code": "54879",
+      "confidence": 0.97,
+      "start_char": 66,
+      "end_char": 83
+    }
+  ],
+  "flagged_entities": [
+    {
+      "entity_id": "e2",
+      "flag_type": "UNRECOGNIZED_CODE",
+      "flag_reason": "Code INVALID_CODE_123 not found in RxNorm vocabulary. Correct RxNorm CUI for Levocetirizine is 855486.",
+      "severity_hint": "LOW",
+      "context_window": "Patient prescribed Xyzal 5mg daily for allergic rhinitis."
+    }
+  ]
+}

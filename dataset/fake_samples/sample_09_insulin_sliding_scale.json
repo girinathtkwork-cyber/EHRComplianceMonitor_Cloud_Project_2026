@@ -1,0 +1,76 @@
+{
+  "transcript_id": "c9d0e1f2-a3b4-5678-2345-901234567890",
+  "timestamp": "2026-01-23T07:45:00Z",
+  "transcript_text": "Type 2 Diabetes uncontrolled. HbA1c 9.2%. Starting Insulin Glargine 20 units nightly plus Lispro sliding scale with meals.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "Type 2 Diabetes",
+      "normalized": "Type 2 diabetes mellitus without complications",
+      "code": "E11.9",
+      "confidence": 0.98,
+      "start_char": 0,
+      "end_char": 14
+    },
+    {
+      "entity_id": "e2",
+      "type": "LAB_VALUE",
+      "text": "HbA1c 9.2%",
+      "normalized": "Hemoglobin A1c 9.2%",
+      "code": "4548-4",
+      "confidence": 0.99,
+      "start_char": 26,
+      "end_char": 36
+    },
+    {
+      "entity_id": "e3",
+      "type": "MEDICATION",
+      "text": "Insulin Glargine",
+      "normalized": "Insulin Glargine",
+      "code": "1543306",
+      "confidence": 0.99,
+      "start_char": 52,
+      "end_char": 66
+    },
+    {
+      "entity_id": "e4",
+      "type": "DOSAGE",
+      "text": "20 units nightly",
+      "normalized": "20 units nightly",
+      "code": "",
+      "confidence": 0.94,
+      "start_char": 67,
+      "end_char": 82
+    },
+    {
+      "entity_id": "e5",
+      "type": "MEDICATION",
+      "text": "Lispro",
+      "normalized": "Insulin Lispro",
+      "code": "200538",
+      "confidence": 0.98,
+      "start_char": 92,
+      "end_char": 98
+    },
+    {
+      "entity_id": "e6",
+      "type": "DOSAGE",
+      "text": "sliding scale with meals",
+      "normalized": "Sliding scale insulin with meals",
+      "code": "",
+      "confidence": 0.90,
+      "start_char": 99,
+      "end_char": 121
+    }
+  ],
+  "flagged_entities": [
+    {
+      "entity_id": "e6",
+      "flag_type": "AMBIGUOUS_TERM",
+      "flag_reason": "Sliding scale dosing not specified - no units, correction factor, or target glucose range provided",
+      "severity_hint": "MEDIUM",
+      "context_window": "plus Lispro sliding scale with meals."
+    }
+  ]
+}

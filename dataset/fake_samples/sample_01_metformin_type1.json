@@ -1,0 +1,56 @@
+{
+  "transcript_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "timestamp": "2026-01-15T14:32:11Z",
+  "transcript_text": "Patient presents with Type 1 Diabetes. Prescribed Metformin 1000mg twice daily. Also ordered HbA1c test.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "Type 1 Diabetes",
+      "normalized": "Type 1 diabetes mellitus",
+      "code": "E10.9",
+      "confidence": 0.98,
+      "start_char": 21,
+      "end_char": 36
+    },
+    {
+      "entity_id": "e2",
+      "type": "MEDICATION",
+      "text": "Metformin",
+      "normalized": "Metformin",
+      "code": "860975",
+      "confidence": 0.99,
+      "start_char": 50,
+      "end_char": 59
+    },
+    {
+      "entity_id": "e3",
+      "type": "DOSAGE",
+      "text": "1000mg twice daily",
+      "normalized": "1000 mg BID",
+      "code": "",
+      "confidence": 0.95,
+      "start_char": 60,
+      "end_char": 78
+    },
+    {
+      "entity_id": "e4",
+      "type": "PROCEDURE",
+      "text": "HbA1c test",
+      "normalized": "Hemoglobin A1c",
+      "code": "83036",
+      "confidence": 0.97,
+      "start_char": 90,
+      "end_char": 100
+    }
+  ],
+  "flagged_entities": [
+    {
+      "entity_id": "e2",
+      "flag_type": "POTENTIAL_HALLUCINATION",
+      "flag_reason": "Metformin is first-line for Type 2 Diabetes, not typically prescribed for Type 1",
+      "severity_hint": "CRITICAL",
+      "context_window": "Patient presents with Type 1 Diabetes. Prescribed Metformin 1000mg twice daily."
+    }
+  ]
+}

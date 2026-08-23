@@ -1,0 +1,38 @@
+{
+  "transcript_id": "b8c9d0e1-f2a3-4567-1234-890123456789",
+  "timestamp": "2026-01-22T14:30:18Z",
+  "transcript_text": "Patient with major depressive disorder. Currently on Sertraline 100mg daily. Reports improved mood. Continue current regimen.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "major depressive disorder",
+      "normalized": "Major depressive disorder, single episode, moderate",
+      "code": "F32.1",
+      "confidence": 0.95,
+      "start_char": 21,
+      "end_char": 44
+    },
+    {
+      "entity_id": "e2",
+      "type": "MEDICATION",
+      "text": "Sertraline",
+      "normalized": "Sertraline Hydrochloride",
+      "code": "36418",
+      "confidence": 0.99,
+      "start_char": 53,
+      "end_char": 63
+    },
+    {
+      "entity_id": "e3",
+      "type": "DOSAGE",
+      "text": "100mg daily",
+      "normalized": "100 mg daily",
+      "code": "",
+      "confidence": 0.97,
+      "start_char": 64,
+      "end_char": 75
+    }
+  ],
+  "flagged_entities": []
+}

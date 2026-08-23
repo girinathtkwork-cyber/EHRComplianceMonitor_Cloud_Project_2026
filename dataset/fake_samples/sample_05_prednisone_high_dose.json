@@ -1,0 +1,56 @@
+{
+  "transcript_id": "e5f6a7b8-c9d0-1234-ef01-567890123456",
+  "timestamp": "2026-01-19T08:22:33Z",
+  "transcript_text": "65-year-old male with severe COPD exacerbation. Started on Prednisone 60mg daily for 7 days then taper. Also on Tiotropium inhaler.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "COPD exacerbation",
+      "normalized": "COPD exacerbation",
+      "code": "J44.1",
+      "confidence": 0.96,
+      "start_char": 31,
+      "end_char": 48
+    },
+    {
+      "entity_id": "e2",
+      "type": "MEDICATION",
+      "text": "Prednisone",
+      "normalized": "Prednisone",
+      "code": "860794",
+      "confidence": 0.99,
+      "start_char": 58,
+      "end_char": 68
+    },
+    {
+      "entity_id": "e3",
+      "type": "DOSAGE",
+      "text": "60mg daily for 7 days then taper",
+      "normalized": "60 mg daily x 7 days then taper",
+      "code": "",
+      "confidence": 0.94,
+      "start_char": 69,
+      "end_char": 98
+    },
+    {
+      "entity_id": "e4",
+      "type": "MEDICATION",
+      "text": "Tiotropium",
+      "normalized": "Tiotropium Bromide",
+      "code": "199433",
+      "confidence": 0.98,
+      "start_char": 107,
+      "end_char": 117
+    }
+  ],
+  "flagged_entities": [
+    {
+      "entity_id": "e3",
+      "flag_type": "DOSAGE_ANOMALY",
+      "flag_reason": "Prednisone 60mg daily is high dose for COPD exacerbation; typical is 40mg daily. Taper schedule not specified.",
+      "severity_hint": "MEDIUM",
+      "context_window": "Started on Prednisone 60mg daily for 7 days then taper."
+    }
+  ]
+}

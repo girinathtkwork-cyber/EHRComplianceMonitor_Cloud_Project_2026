@@ -1,0 +1,56 @@
+{
+  "transcript_id": "e1f2a3b4-c5d6-7890-4567-123456789012",
+  "timestamp": "2026-01-25T15:22:10Z",
+  "transcript_text": "Patient with chronic kidney disease stage 3. Prescribed Metformin 500mg BID. eGFR 42 mL/min.",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "type": "DIAGNOSIS",
+      "text": "chronic kidney disease stage 3",
+      "normalized": "Chronic kidney disease, stage 3",
+      "code": "N18.3",
+      "confidence": 0.95,
+      "start_char": 21,
+      "end_char": 49
+    },
+    {
+      "entity_id": "e2",
+      "type": "MEDICATION",
+      "text": "Metformin",
+      "normalized": "Metformin",
+      "code": "860975",
+      "confidence": 0.99,
+      "start_char": 58,
+      "end_char": 67
+    },
+    {
+      "entity_id": "e3",
+      "type": "DOSAGE",
+      "text": "500mg BID",
+      "normalized": "500 mg twice daily",
+      "code": "",
+      "confidence": 0.96,
+      "start_char": 68,
+      "end_char": 77
+    },
+    {
+      "entity_id": "e4",
+      "type": "LAB_VALUE",
+      "text": "eGFR 42 mL/min",
+      "normalized": "eGFR 42 mL/min/1.73m2",
+      "code": "48642-3",
+      "confidence": 0.98,
+      "start_char": 82,
+      "end_char": 96
+    }
+  ],
+  "flagged_entities": [
+    {
+      "entity_id": "e2",
+      "flag_type": "POTENTIAL_HALLUCINATION",
+      "flag_reason": "Metformin contraindicated in eGFR <45 mL/min. Patient eGFR is 42 - high risk of lactic acidosis.",
+      "severity_hint": "CRITICAL",
+      "context_window": "Prescribed Metformin 500mg BID. eGFR 42 mL/min."
+    }
+  ]
+}
