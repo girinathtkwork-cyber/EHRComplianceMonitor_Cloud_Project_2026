@@ -23,18 +23,21 @@ OUTPUT_JSON = "dataset/processed/mtsamples_with_entities.json"
 # Dosage pattern: a number followed by a unit (mg, mcg, g, ml)
 DOSAGE_PATTERN = re.compile(r"\b(\d+)\s?(mg|mcg|g|ml)\b", re.IGNORECASE)
 
-# Reference drug list for candidate matching. This is intentionally the same
-# list used in error injection (Day 2) PLUS common drugs likely to appear
-# elsewhere in MTSamples - in Day 5 this gets replaced by real-time RxNorm
-# lookups instead of a fixed local list.
+# Reference drug list for candidate matching, kept in sync with the
+# ISMP-sourced CONFUSABLE_DRUGS pairs used in inject_errors.py (Day 2),
+# plus their confusable counterparts, so extraction recognizes both the
+# real drug name and any injected wrong-medication swap.
 KNOWN_DRUGS = [
-    "clonidine", "Klonopin", "hydralazine", "hydroxyzine", "Celebrex", "Celexa",
+    "hydralazine", "hydroxyzine", "clonidine", "Klonopin", "Celebrex", "Celexa",
     "Zantac", "Xanax", "Metformin", "Metronidazole", "Lamictal", "Lamisil",
     "Lasix", "Losec", "Prilosec", "Prinivil", "Coumadin", "Cardura", "Toradol",
-    "Tegretol", "Zocor", "Zoloft", "Vicodin", "hydrocodone", "morphine",
-    "hydromorphone", "Ativan", "Benadryl", "Percocet", "Percodan", "albuterol",
-    "atenolol", "Prednisone", "prednisolone", "heparin", "Hespan", "insulin",
-    "Humalog", "Tylenol", "acetaminophen", "ibuprofen", "aspirin", "Motrin",
+    "Tegretol", "Zocor", "Zoloft", "morphine", "hydromorphone", "Ativan",
+    "Benadryl", "Percocet", "Percodan", "Prednisone", "prednisolone",
+    "fentanyl", "Sufenta", "digoxin", "Desoxyn", "Norvasc", "Navane",
+    "Plavix", "Paxil", "Levaquin", "Levbid", "dexamethasone", "dexmedetomidine",
+    "Nexium", "Neurontin", "Protonix", "Lotronex", "Zofran", "Zosyn",
+    "Bactrim", "Bactroban", "Synthroid", "Symbicort", "metoprolol", "misoprostol",
+    "Lantus", "Lanoxin", "Tylenol", "acetaminophen", "ibuprofen", "aspirin",
     "Amoxicillin", "Penicillin", "Lisinopril", "Atorvastatin", "Omeprazole",
 ]
 
