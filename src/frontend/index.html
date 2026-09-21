@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EHR Transcription Safety Gate</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div><span class="eyebrow">Clinical safety prototype</span><h1>EHR Transcription Safety Gate</h1></div>
+    <span class="environment">Review before finalisation</span>
+  </header>
+  <main>
+    <section class="intro">
+      <div><h2>Flag unsupported facts before they reach the EHR.</h2><p>Compare an AI-generated transcription with its trusted source. Findings are review signals—not diagnoses—and require clinician confirmation.</p></div>
+      <button id="load-demo" class="secondary">Load MTSamples demo case</button>
+    </section>
+    <section class="workspace">
+      <article class="input-panel"><label for="candidate">Candidate AI transcription <span>Required</span></label><textarea id="candidate" placeholder="Paste the AI-generated medical transcription here..."></textarea></article>
+      <article class="input-panel"><label for="source">Trusted source transcript <span>Recommended</span></label><textarea id="source" placeholder="Paste the original transcribed or clinician-confirmed source here..."></textarea></article>
+    </section>
+    <div class="action-row"><button id="analyse" class="primary">Run safety review</button><p id="status" aria-live="polite">Source-comparison mode provides the strongest evidence.</p></div>
+    <section id="results" hidden>
+      <div class="section-heading"><div><span class="eyebrow">Review results</span><h2 id="result-title">Safety findings</h2></div><p id="mode"></p></div>
+      <div id="summary" class="summary"></div>
+      <div id="findings" class="findings"></div>
+      <details><summary>Detected entities and reference provenance</summary><pre id="entities"></pre></details>
+    </section>
+  </main>
+  <footer>Prototype scope: terminology-assisted and provenance-based transcription review. It does not provide clinical advice or automatically update an EHR.</footer>
+  <script src="app.js"></script>
+</body>
+</html>

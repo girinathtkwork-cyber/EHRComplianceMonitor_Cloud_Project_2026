@@ -4,43 +4,31 @@
 // Its strongest signal is provenance: compare an AI transcript to a trusted
 // source transcript. Reference lists only help identify entities to review.
 
-const MEDICATIONS = {
-  acetaminophen: "RxNorm 161",
-  amoxicillin: "RxNorm 723",
-  aspirin: "RxNorm 1191",
-  atorvastatin: "RxNorm 83367",
-  clonidine: "RxNorm 2599",
-  digoxin: "RxNorm 3407",
-  fentanyl: "RxNorm 4337",
-  hydralazine: "RxNorm 5470",
-  hydroxyzine: "RxNorm 5553",
-  ibuprofen: "RxNorm 5640",
-  lisinopril: "RxNorm 29046",
-  metformin: "RxNorm 6809",
-  metoprolol: "RxNorm 6918",
-  morphine: "RxNorm 7052",
-  omeprazole: "RxNorm 7646",
-  prednisone: "RxNorm 8640",
-  warfarin: "RxNorm 8558",
-  zofran: "RxNorm 26225"
-};
-
-const CONFUSABLE_PAIRS = [
-  ["hydralazine", "hydroxyzine"],
-  ["metformin", "metronidazole"],
-  ["morphine", "hydromorphone"],
-  ["fentanyl", "sufenta"],
-  ["zofran", "zosyn"]
-];
-
-const DIAGNOSES = [
-  "type 2 diabetes mellitus", "chronic kidney disease", "atrial fibrillation",
-  "major depressive disorder", "hyperlipidemia", "hypertension", "pneumonia",
-  "asthma", "heart failure", "otitis media"
-];
-
-const PROCEDURES = ["diagnostic laparoscopy", "cardiac catheterization", "upper endoscopy", "mri-guided biopsy"];
+const fs = require("node:fs");
+const path = require("node:path");
 const dosagePattern = /\b(\d+(?:\.\d+)?)\s*(mg|mcg|g|ml)\b/gi;
+
+function loadReferenceTerms() {
+  const source = path.resolve(__dirname, "../../dataset/processed/mtsamples_with_rxnorm.json");
+  try {
+    const records = JSON.parse(fs.readFileSync(source, "utf8"));
+    const terms = new Map();
+    records.forEach((record) => {
+      const medicines = record.extracted_entities?.medications || [];
+      const verified = record.rxnorm_verification || [];
+      medicines.forEach((medicine, index) => {
+        const result = verified[index];
+        if (result?.exists) terms.set(medicine.toLowerCase(), { name: medicine, rxcui: result.rxcui, matchType: result.match_type });
+      });
+    });
+    return terms;
+  } catch (error) {
+    console.warn(`Reference dataset unavailable: ${error.message}`);
+    return new Map();
+  }
+}
+
+const REFERENCE_TERMS = loadReferenceTerms();
 
 function textOf(value) {
   return typeof value === "string" ? value.replace(/\s+/g, " ").trim() : "";
@@ -69,14 +57,14 @@ function analyse({ transcript, sourceTranscript = "" }) {
   const candidate = textOf(transcript);
   const source = textOf(sourceTranscript);
   const findings = [];
-  const candidateMeds = findTerms(candidate, Object.keys(MEDICATIONS));
-  const sourceMeds = findTerms(source, Object.keys(MEDICATIONS));
+  const candidateMeds = findTerms(candidate, [...REFERENCE_TERMS.keys()]);
+  const sourceMeds = findTerms(source, [...REFERENCE_TERMS.keys()]);
   const candidateDosages = dosages(candidate);
   const sourceDosages = dosages(source);
-  const candidateDiagnoses = findTerms(candidate, DIAGNOSES);
-  const sourceDiagnoses = findTerms(source, DIAGNOSES);
-  const candidateProcedures = findTerms(candidate, PROCEDURES);
-  const sourceProcedures = findTerms(source, PROCEDURES);
+  const candidateDiagnoses = labelledStatements(candidate, "diagnos(?:is|es)");
+  const sourceDiagnoses = labelledStatements(source, "diagnos(?:is|es)");
+  const candidateProcedures = labelledStatements(candidate, "procedure(?: performed)?|operation");
+  const sourceProcedures = labelledStatements(source, "procedure(?: performed)?|operation");
 
   if (!candidate) return { error: "Enter a transcript to analyse.", findings: [], summary: {} };
 
@@ -94,7 +82,7 @@ function analyse({ transcript, sourceTranscript = "" }) {
     candidateMeds.filter((med) => !sourceMeds.includes(med)).forEach((med) => {
       findings.push(flag({ severity: "High", category: "Unsupported medication", phrase: med,
         reason: "Medication appears in the candidate transcript but not in the supplied source transcript.",
-        evidence: `Reference: ${MEDICATIONS[med]}. Provenance comparison: no matching source mention.`, confidence: "Strong provenance mismatch" }));
+        evidence: `RxNorm reference match: ${REFERENCE_TERMS.get(med)?.rxcui || "available"}. Provenance comparison: no matching source mention.`, confidence: "Strong provenance mismatch" }));
     });
     candidateDosages.forEach((dose, i) => {
       const sourceDose = sourceDosages[i];
@@ -114,22 +102,18 @@ function analyse({ transcript, sourceTranscript = "" }) {
     })));
   }
 
-  for (const [one, two] of CONFUSABLE_PAIRS) {
-    if (candidateMeds.includes(one) || candidateMeds.includes(two)) {
-      const shown = candidateMeds.includes(one) ? one : two;
-      const counterpart = shown === one ? two : one;
-      findings.push(flag({ severity: "Medium", category: "Look-alike / sound-alike medication", phrase: shown,
-        reason: `${shown} can be confused with ${counterpart}; confirm against the dictation source.`,
-        evidence: `Medication terminology match: ${MEDICATIONS[shown] || "reference lookup pending"}.`, confidence: "Safety review signal" }));
-    }
-  }
-
   const unique = [...new Map(findings.map((item) => [item.id, item])).values()];
   const rank = { Critical: 0, High: 1, Medium: 2, Low: 3 };
   unique.sort((a, b) => rank[a.severity] - rank[b.severity]);
   const summary = { Critical: 0, High: 0, Medium: 0, Low: 0 };
   unique.forEach((item) => { summary[item.severity] += 1; });
-  return { findings: unique, summary, entities: { medications: candidateMeds, dosages: candidateDosages.map((item) => item.phrase), diagnoses: candidateDiagnoses, procedures: candidateProcedures }, mode: source ? "source comparison" : "reference-assisted screening" };
+  return { findings: unique, summary, entities: { medications: candidateMeds.map((term) => ({ name: REFERENCE_TERMS.get(term)?.name || term, rxcui: REFERENCE_TERMS.get(term)?.rxcui || null })), dosages: candidateDosages.map((item) => item.phrase), diagnoses: candidateDiagnoses, procedures: candidateProcedures }, mode: source ? "source comparison" : "reference-assisted screening", reference: { medicationTermsLoaded: REFERENCE_TERMS.size, source: "processed MTSamples RxNorm verification output" } };
 }
 
-module.exports = { analyse, dosages, findTerms };
+function labelledStatements(text, labelPattern) {
+  if (!text) return [];
+  const regex = new RegExp(`(?:${labelPattern})\\s*[:,-]\\s*([^.!?]+)`, "gi");
+  return [...text.matchAll(regex)].map((match) => match[1].trim().toLowerCase()).filter(Boolean);
+}
+
+module.exports = { analyse, dosages, findTerms, labelledStatements };
