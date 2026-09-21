@@ -102,6 +102,14 @@ function analyse({ transcript, sourceTranscript = "" }) {
       severity: "High", category: "Unsupported procedure", phrase: item,
       reason: "Procedure appears only in the candidate transcript.", evidence: "No matching procedure was found in the supplied source transcript.", confidence: "Strong provenance mismatch"
     })));
+    unsupportedSentences(candidate, source, RULES.unsupportedClaimPatterns.diagnosis).forEach((item) => findings.push(flag({
+      severity: "High", category: "Unsupported diagnosis", phrase: item,
+      reason: "Candidate clinical statement has no matching sentence in the supplied source transcript.", evidence: "Source-comparison evidence: no equivalent source sentence.", confidence: "Strong provenance mismatch"
+    })));
+    unsupportedSentences(candidate, source, RULES.unsupportedClaimPatterns.procedure).forEach((item) => findings.push(flag({
+      severity: "High", category: "Unsupported procedure", phrase: item,
+      reason: "Candidate procedure statement has no matching sentence in the supplied source transcript.", evidence: "Source-comparison evidence: no equivalent source sentence.", confidence: "Strong provenance mismatch"
+    })));
   }
 
   const unique = [...new Map(findings.map((item) => [item.id, item])).values()];
@@ -118,4 +126,10 @@ function labelledStatements(text, labelPattern) {
   return [...text.matchAll(regex)].map((match) => match[1].trim().toLowerCase()).filter(Boolean);
 }
 
-module.exports = { analyse, dosages, findTerms, labelledStatements };
+function unsupportedSentences(candidate, source, pattern) {
+  const sourceSentences = new Set(source.split(/[.!?]+/).map((item) => item.trim().toLowerCase()).filter(Boolean));
+  const cue = new RegExp(`\\b(?:${pattern})\\b`, "i");
+  return candidate.split(/[.!?]+/).map((item) => item.trim()).filter((item) => item && cue.test(item) && !sourceSentences.has(item.toLowerCase()));
+}
+
+module.exports = { analyse, dosages, findTerms, labelledStatements, unsupportedSentences };

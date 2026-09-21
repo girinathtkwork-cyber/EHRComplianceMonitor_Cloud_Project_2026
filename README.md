@@ -21,6 +21,7 @@ No packages need to be installed for this local prototype. The server uses Node'
 - High-severity detection of medication, diagnosis, and procedure claims present only in the candidate.
 - Runtime medication terminology loading from the existing MTSamples/RxNorm verification output rather than an embedded drug list.
 - Configurable review rules in `src/backend/config/review-rules.json`.
+- Live evaluation endpoint and dashboard table that calculate recall from all labelled MTSamples error-injection records at request time.
 - MTSamples error-injection pipeline and labelled evaluation dataset already present in `dataset/`.
 - AWS Lambda starter for the S3 ingestion stage in `src/aws/lambda/`.
 

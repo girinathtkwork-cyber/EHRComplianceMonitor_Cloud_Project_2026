@@ -46,10 +46,30 @@ function demoRecord() {
   return { transcript: record.transcription, sourceTranscript: restoreSource(record), metadata: { transcriptId: record.transcript_id, specialty: record.medical_specialty, injectedErrorType: record.ground_truth_label.error_type } };
 }
 
+function evaluateDataset() {
+  const records = JSON.parse(fs.readFileSync(recordsPath, "utf8"));
+  const categories = { wrong_dosage: "Dosage mismatch", wrong_medication: "Unsupported medication", fabricated_diagnosis: "Unsupported diagnosis", fabricated_procedure: "Unsupported procedure" };
+  const metrics = Object.fromEntries(Object.keys(categories).map((type) => [type, { total: 0, detected: 0 }]));
+  let cleanTotal = 0;
+  let cleanWithFindings = 0;
+  records.forEach((record) => {
+    const label = record.ground_truth_label || {};
+    const result = analyse({ transcript: record.transcription, sourceTranscript: restoreSource(record) });
+    if (!label.is_error) { cleanTotal += 1; if (result.findings.length) cleanWithFindings += 1; return; }
+    if (!metrics[label.error_type]) return;
+    metrics[label.error_type].total += 1;
+    if (result.findings.some((item) => item.category === categories[label.error_type])) metrics[label.error_type].detected += 1;
+  });
+  const total = Object.values(metrics).reduce((sum, item) => sum + item.total, 0);
+  const detected = Object.values(metrics).reduce((sum, item) => sum + item.detected, 0);
+  return { datasetRecords: records.length, reference: "MTSamples error-injection output", metrics, overallRecall: total ? Number((detected / total).toFixed(3)) : null, cleanRecords: { total: cleanTotal, withReviewSignals: cleanWithFindings } };
+}
+
 const server = http.createServer(async (request, response) => {
   try {
     if (request.method === "POST" && request.url === "/api/analyse") return send(response, 200, analyse(await readBody(request)));
     if (request.method === "GET" && request.url === "/api/demo") return send(response, 200, demoRecord());
+    if (request.method === "GET" && request.url === "/api/evaluation") return send(response, 200, evaluateDataset());
     const requested = request.url === "/" ? "index.html" : request.url.replace(/^\//, "");
     const file = path.resolve(root, requested);
     if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) return send(response, 404, { error: "Not found" });

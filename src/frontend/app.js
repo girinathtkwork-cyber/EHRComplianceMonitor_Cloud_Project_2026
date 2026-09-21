@@ -38,3 +38,20 @@ document.querySelector("#load-demo").addEventListener("click", async () => {
   status.textContent = `Loaded ${demo.metadata.specialty} case ${demo.metadata.transcriptId}; injected evaluation error: ${demo.metadata.injectedErrorType}.`;
   review();
 });
+
+document.querySelector("#evaluate").addEventListener("click", async () => {
+  const button = document.querySelector("#evaluate");
+  button.disabled = true;
+  button.textContent = "Calculating…";
+  try {
+    const response = await fetch("/api/evaluation");
+    const result = await response.json();
+    if (!response.ok || result.error) throw new Error(result.error || "Evaluation failed.");
+    const rows = Object.entries(result.metrics).map(([type, item]) => `<tr><td>${escapeHtml(type.replaceAll("_", " "))}</td><td>${item.detected}</td><td>${item.total}</td><td>${item.total ? Math.round(item.detected / item.total * 100) : 0}%</td></tr>`).join("");
+    const output = document.querySelector("#evaluation-results");
+    output.hidden = false;
+    output.innerHTML = `<p><strong>${result.datasetRecords}</strong> records analysed from ${escapeHtml(result.reference)}. Overall recall: <strong>${Math.round(result.overallRecall * 100)}%</strong>.</p><table><thead><tr><th>Error type</th><th>Detected</th><th>Labelled</th><th>Recall</th></tr></thead><tbody>${rows}</tbody></table><p class="muted">Clean records with review signals: ${result.cleanRecords.withReviewSignals}/${result.cleanRecords.total}. This is a baseline rule-engine result, not a clinical validation claim.</p>`;
+  } catch (error) { status.textContent = error.message; }
+  button.disabled = false;
+  button.textContent = "Calculate dataset results";
+});

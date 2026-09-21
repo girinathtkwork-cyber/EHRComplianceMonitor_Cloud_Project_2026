@@ -21,6 +21,8 @@
       <article class="input-panel"><label for="source">Trusted source transcript <span>Recommended</span></label><textarea id="source" placeholder="Paste the original transcribed or clinician-confirmed source here..."></textarea></article>
     </section>
     <div class="action-row"><button id="analyse" class="primary">Run safety review</button><p id="status" aria-live="polite">Source-comparison mode provides the strongest evidence.</p></div>
+    <section class="evaluation"><div><span class="eyebrow">Dataset evaluation</span><h2>Measure results from labelled records</h2><p>Calculates recall from the existing error-injection ground truth. No metric is stored or manually entered.</p></div><button id="evaluate" class="secondary">Calculate dataset results</button></section>
+    <div id="evaluation-results" class="evaluation-results" hidden></div>
     <section id="results" hidden>
       <div class="section-heading"><div><span class="eyebrow">Review results</span><h2 id="result-title">Safety findings</h2></div><p id="mode"></p></div>
       <div id="summary" class="summary"></div>

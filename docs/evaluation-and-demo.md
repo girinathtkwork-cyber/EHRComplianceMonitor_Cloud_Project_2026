@@ -13,7 +13,8 @@ This enables repeatable evaluation without pretending that an unlabelled transcr
 3. Click **Load MTSamples demo case**.
 4. Point out that the candidate and trusted source are different versions of the same labelled MTSamples item.
 5. Click **Run safety review** and show the critical/high flag, source excerpt, severity count, and RxNorm reference provenance.
-6. State the safety boundary: the output is a clinician-review signal, never an automatic correction or diagnosis.
+6. Click **Calculate dataset results** to generate a recall breakdown directly from every labelled record; do not describe it as a general clinical accuracy result.
+7. State the safety boundary: the output is a clinician-review signal, never an automatic correction or diagnosis.
 
 ## Measures to produce next
 

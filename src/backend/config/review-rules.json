@@ -8,5 +8,9 @@
   "statementLabels": {
     "diagnosis": "diagnos(?:is|es)",
     "procedure": "procedure(?: performed)?|operation"
+  },
+  "unsupportedClaimPatterns": {
+    "diagnosis": "diagnos(?:is|es)|assessment|impression",
+    "procedure": "procedure|operation|underwent|performed"
   }
 }
