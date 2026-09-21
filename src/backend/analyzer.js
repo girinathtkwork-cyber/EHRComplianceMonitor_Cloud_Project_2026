@@ -6,7 +6,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const dosagePattern = /\b(\d+(?:\.\d+)?)\s*(mg|mcg|g|ml)\b/gi;
+const RULES = JSON.parse(fs.readFileSync(path.join(__dirname, "config/review-rules.json"), "utf8"));
+const dosagePattern = new RegExp(`\\b(\\d+(?:\\.\\d+)?)\\s*(${RULES.dosageUnits.join("|")})\\b`, "gi");
 
 function loadReferenceTerms() {
   const source = path.resolve(__dirname, "../../dataset/processed/mtsamples_with_rxnorm.json");
@@ -61,18 +62,19 @@ function analyse({ transcript, sourceTranscript = "" }) {
   const sourceMeds = findTerms(source, [...REFERENCE_TERMS.keys()]);
   const candidateDosages = dosages(candidate);
   const sourceDosages = dosages(source);
-  const candidateDiagnoses = labelledStatements(candidate, "diagnos(?:is|es)");
-  const sourceDiagnoses = labelledStatements(source, "diagnos(?:is|es)");
-  const candidateProcedures = labelledStatements(candidate, "procedure(?: performed)?|operation");
-  const sourceProcedures = labelledStatements(source, "procedure(?: performed)?|operation");
+  const candidateDiagnoses = labelledStatements(candidate, RULES.statementLabels.diagnosis);
+  const sourceDiagnoses = labelledStatements(source, RULES.statementLabels.diagnosis);
+  const candidateProcedures = labelledStatements(candidate, RULES.statementLabels.procedure);
+  const sourceProcedures = labelledStatements(source, RULES.statementLabels.procedure);
 
   if (!candidate) return { error: "Enter a transcript to analyse.", findings: [], summary: {} };
 
   for (const dose of candidateDosages) {
-    if (dose.value === 0 || dose.value > 1000 || (dose.unit === "g" && dose.value > 2)) {
+    const rule = dose.value === 0 ? RULES.outlierRules.zeroDose : dose.unit === "g" && dose.value > RULES.outlierRules.gramMaximum.value ? RULES.outlierRules.gramMaximum : dose.value > RULES.outlierRules.defaultMaximum.value ? RULES.outlierRules.defaultMaximum : null;
+    if (rule) {
       findings.push(flag({
-        severity: "Critical", category: "Dosage anomaly", phrase: dose.phrase,
-        reason: "Dose falls outside this prototype's conservative formatting threshold.",
+        severity: rule.severity, category: "Dosage anomaly", phrase: dose.phrase,
+        reason: rule.message,
         evidence: excerpt(candidate, dose.index, dose.phrase.length), confidence: "Immediate clinician review"
       }));
     }

@@ -42,7 +42,7 @@ function escapeRegex(value) { return String(value || "").replace(/[.*+?^${}()|[\
 
 function demoRecord() {
   const records = JSON.parse(fs.readFileSync(recordsPath, "utf8"));
-  const record = records.find((item) => item.ground_truth_label?.error_type === "wrong_dosage") || records.find((item) => item.ground_truth_label?.is_error);
+  const record = records.find((item) => item.ground_truth_label?.correct_value) || records.find((item) => item.ground_truth_label?.is_error);
   return { transcript: record.transcription, sourceTranscript: restoreSource(record), metadata: { transcriptId: record.transcript_id, specialty: record.medical_specialty, injectedErrorType: record.ground_truth_label.error_type } };
 }
 

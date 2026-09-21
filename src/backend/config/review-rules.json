@@ -1,0 +1,12 @@
+{
+  "dosageUnits": ["mg", "mcg", "g", "ml"],
+  "outlierRules": {
+    "zeroDose": { "severity": "Critical", "message": "A zero-value medication dose needs immediate source confirmation." },
+    "defaultMaximum": { "value": 1000, "severity": "Critical", "message": "Dose exceeds the configured prototype review threshold." },
+    "gramMaximum": { "value": 2, "severity": "Critical", "message": "Gram dose exceeds the configured prototype review threshold." }
+  },
+  "statementLabels": {
+    "diagnosis": "diagnos(?:is|es)",
+    "procedure": "procedure(?: performed)?|operation"
+  }
+}
