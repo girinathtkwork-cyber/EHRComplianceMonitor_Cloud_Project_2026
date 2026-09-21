@@ -11,7 +11,7 @@ const port = Number(process.env.PORT || 3000);
 
 function send(response, status, body, type = "application/json") {
   response.writeHead(status, { "Content-Type": `${type}; charset=utf-8`, "Cache-Control": "no-store" });
-  response.end(typeof body === "string" ? body : JSON.stringify(body));
+  response.end(Buffer.isBuffer(body) || typeof body === "string" ? body : JSON.stringify(body));
 }
 
 function readBody(request) {
