@@ -1,0 +1,10 @@
+{
+  "name": "ehr-transcription-safety-gate",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clinical transcription review prototype for detecting unsupported medical facts before EHR finalisation.",
+  "scripts": {
+    "start": "node src/backend/server.js",
+    "test": "node --test src/backend/test/analyzer.test.js"
+  }
+}
