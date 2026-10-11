@@ -1,0 +1,77 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+HISTORY OF PRESENT ILLNESS:,  A 49-year-old female with history of atopic dermatitis comes to the clinic with complaint of left otalgia and headache.  Symptoms started approximately three weeks ago and she was having difficulty hearing, although that has greatly improved.  She is having some left-sided sinus pressure and actually went to the dentist because her teeth were hurting; however, the teeth were okay.  She continues to have some left-sided jaw pain.  Denies any headache, fever, cough, or sore throat.  She had used Cutivate cream in the past for the atopic dermatitis with good results and is needing a refill of that.  She has also had problems with sinusitis in the past and chronic left-sided headache.,FAMILY HISTORY:,  Reviewed and unchanged.,ALLERGIES: , To cephalexin.,CURRENT MEDICATIONS:,  Ibuprofen.,SOCIAL HISTORY:,  She is a nonsmoker.,REVIEW OF SYSTEMS:,  As above.  No nausea, vomiting, or diarrhea.,PHYSICAL EXAMINATION:,General:  A well-developed and well-nourished female, conscious, alert, and in no acute distress.,Vital Signs:  Weight:  121 pounds.  Temperature:  97.9 degrees.,Skin:  Reveals scattered erythematous plaques with some mild lichenification on the nuchal region and behind the knees.,Eyes:  PERRLA.  Conjunctivae are clear.,Ears:  Left TM with some effusion.  Right TM is clear.  Canals are clear.  External auricles are nontender to manipulation.,Nose:  Nasal mucosa is pink and moist without discharge.,Throat:  Nonerythematous.  No tonsillar hypertrophy or exudate.,Neck:  Supple without adenopathy or thyromegaly.,Lungs:  Clear.  Respirations are regular and unlabored.,Heart:  Regular rate and rhythm at rate of 100 beats per minute.,ASSESSMENT:,1.  Serous otitis.,2.  Atopic dermatitis.,PLAN:,1.  Nasacort AQ two sprays each nostril daily.,2.  Duraphen II one b.i.d.,3.  Refills Cutivate cream 0.05% to apply to affected areas b.i.d.  Recheck p.r.n.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Cutivate"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "cephalexin"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Ibuprofen"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Serous otitis"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Atopic dermatitis.,PLAN:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Nasacort AQ two sprays each nostril daily"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Nasacort"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Duraphen II one b.i.d"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Refills Cutivate cream 0.05% to apply to affected areas b.i.d.  Recheck p.r.n"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Cutivate"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "0.05%"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

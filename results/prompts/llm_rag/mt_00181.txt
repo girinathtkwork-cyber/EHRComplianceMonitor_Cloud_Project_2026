@@ -1,0 +1,21 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+GENERAL: , Vital signs and temperature as documented in nursing notes.  The patient appears stated age and is adequately developed.,EYES:,  Pupils are equal, round, reactive to light and accommodation.  Lids and conjunctivae reveal no gross abnormality.,ENT:  ,Hearing appears adequate.  No obvious asymmetry or deformity of the ears and nose.,NECK: , Trachea midline.  Symmetric with no obvious deformity or mass; no thyromegaly evident.,RESPIRATORY:,  The patient has normal and symmetric respiratory effort.  Lungs are clear to auscultation.,CARDIOVASCULAR: , S1, S2 without significant murmur.,ABDOMEN: , Abdomen is flat, soft, nontender.  Bowel sounds are active.  No masses or pulsations present.,EXTREMITIES: , Extremities reveal no remarkable dependent edema or varicosities.,MUSCULOSKELETAL:  ,The patient is ambulatory with normal and symmetric gait.  There is adequate range of motion without significant pain or deformity.,SKIN: , Essentially clear with no significant rash or lesions.  Adequate skin turgor.,NEUROLOGICAL: , No acute focal neurologic changes.,PSYCHIATRIC:,  Mental status, judgment and affect are grossly intact and normal for age.
+
+Entities:
+[]
+
+Retrieved facts:
+[]

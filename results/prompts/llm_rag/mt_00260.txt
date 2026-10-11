@@ -1,0 +1,133 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PROCEDURE: , Endoscopy.,CLINICAL INDICATIONS: , Intermittent rectal bleeding with abdominal pain.,ANESTHESIA: , Fentanyl 100 mcg and 5 mg of IV Versed.,PROCEDURE:,  The patient was taken to the GI lab and placed in the left lateral supine position.  Continuous pulse oximetry and blood pressure monitoring were in place.  After informed consent was obtained, the video endoscope was inserted over the dorsum of the tongue without difficulty.  With swallowing, the scope was advanced down the esophagus into the body of the stomach.  The scope was further advanced down to the antrum and through the pylorus into the duodenum, which was visualized into its second portion.  It appeared free of stricture, neoplasm, or ulceration.  Samples were obtained from the antrum and prepyloric area to check for Helicobacter, rapid urease, and additional samples were sent to pathology.  Retroflexion view of the fundus of the stomach was normal without evidence of a hiatal hernia.  The scope was then slowly removed.  The distal esophagus appeared benign with a normal-appearing gastroesophageal sphincter and no esophagitis.  The remaining portion of the esophagus was normal.,IMPRESSION:,  Abdominal pain.  Symptoms most consistent with gastroesophageal reflux disease without endoscopic evidence of hiatal hernia.,RECOMMENDATIONS:,  Await results of CLO testing and biopsies.  Return to clinic with Dr. Spencer in 2 weeks for further discussion.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "Endoscopy.,CLINICAL INDICATIONS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "Intermittent rectal bleeding with abdominal pain.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Fentanyl 100 mcg and 5 mg of IV Versed.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Fentanyl"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "100 mcg"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "5 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "The patient was taken to the GI lab and placed in the left lateral supine position.  Continuous pulse oximetry and blood pressure monitoring were in place.  After informed consent was obtained, the video endoscope was inserted over the dorsum of the tongue without difficulty.  With swallowing, the scope was advanced down the esophagus into the body of the stomach.  The scope was further advanced down to the antrum and through the pylorus into the duodenum, which was visualized into its second portion.  It appeared free of stricture, neoplasm, or ulceration.  Samples were obtained from the antrum and prepyloric area to check for Helicobacter, rapid urease, and additional samples were sent to pathology.  Retroflexion view of the fundus of the stomach was normal without evidence of a hiatal hernia.  The scope was then slowly removed.  The distal esophagus appeared benign with a normal-appearing gastroesophageal sphincter and no esophagitis.  The remaining portion of the esophagus was normal.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Abdominal pain.  Symptoms most consistent with gastroesophageal reflux disease without endoscopic evidence of hiatal hernia.,RECOMMENDATIONS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Abdominal pain.  Symptoms most consistent with gastroesophageal reflux disease without endoscopic evidence of hiatal hernia.,RECOMMENDATIONS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Await results of CLO testing and biopsies.  Return to clinic with Dr. Spencer in 2 weeks for further discussion"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Await results of CLO testing and biopsies.  Return to clinic with Dr. Spencer in 2 weeks for further discussion"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'Endoscopy.,CLINICAL INDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'Intermittent rectal bleeding with abdominal pain.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'Fentanyl 100 mcg and 5 mg of IV Versed.,PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Fentanyl' \u2192 RXCUI 4337, canonical: fentanyl, match: exact\n[RxNorm] Ingredient: fentanyl (RXCUI 4337)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fentanyl 0.1 MG Sublingual Tablet; fentanyl 0.2 MG Sublingual Tablet; fentanyl 0.3 MG Sublingual Tablet; fentanyl 0.4 MG Sublingual Tablet; fentanyl 0.6 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "Dose 100.0mcg associated with Fentanyl \u2014 dose 100.0mcg not among known product strengths"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 5.0mg associated with Fentanyl \u2014 dose 5.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'The patient was taken to the GI lab and placed in the left lateral supine position.  Continuous pulse oximetry and blood pressure monitoring were in place.  After informed consent was obtained, the video endoscope was inserted over the dorsum of the tongue without difficulty.  With swallowing, the scope was advanced down the esophagus into the body of the stomach.  The scope was further advanced down to the antrum and through the pylorus into the duodenum, which was visualized into its second portion.  It appeared free of stricture, neoplasm, or ulceration.  Samples were obtained from the antrum and prepyloric area to check for Helicobacter, rapid urease, and additional samples were sent to pathology.  Retroflexion view of the fundus of the stomach was normal without evidence of a hiatal hernia.  The scope was then slowly removed.  The distal esophagus appeared benign with a normal-appearing gastroesophageal sphincter and no esophagitis.  The remaining portion of the esophagus was normal.,IMPRESSION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] R109: Unspecified abdominal pain (score: 0.3640)\n[ICD-10-CM 2027] R1030: Lower abdominal pain, unspecified (score: 0.3395)\n[ICD-10-CM 2027] R1010: Upper abdominal pain, unspecified (score: 0.3318)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Abdominal pain.  Symptoms most consistent with gastroesophageal reflux disease without endoscopic evidence of hiatal hernia.,RECOMMENDATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] Z0182: Encounter for allergy testing (score: 0.4187)\n[ICD-10-CM 2027] Z3141: Encounter for fertility testing (score: 0.3691)\n[ICD-10-CM 2027] Z0281: Encounter for paternity testing (score: 0.3413)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Await results of CLO testing and biopsies.  Return to clinic with Dr. Spencer in 2 weeks for further discussion' \u2014 extracted from header, not verified against any coding system"
+  }
+]

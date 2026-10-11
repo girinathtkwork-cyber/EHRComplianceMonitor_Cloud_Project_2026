@@ -1,0 +1,73 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+REASON FOR EXAM: , Lower quadrant pain with nausea, vomiting, and diarrhea.,TECHNIQUE: , Noncontrast axial CT images of the abdomen and pelvis are obtained.,FINDINGS: , Please note evaluation of the abdominal organs is secondary to the lack of intravenous contrast material.,Gallstones are seen within the gallbladder lumen.  No abnormal pericholecystic fluid is seen.,The liver is normal in size and attenuation.,The spleen is normal in size and attenuation.,A 2.2 x 1.8 cm low attenuation cystic lesion appears to be originating off of the tail of the pancreas.  No pancreatic ductal dilatation is seen.  There is no abnormal adjacent stranding.  No suspected pancreatitis is seen.,The kidneys show no stone formation or hydronephrosis.,The large and small bowels are normal in course and caliber.  There is no evidence for obstruction.  The appendix appears within normal limits.,In the pelvis, the urinary bladder is unremarkable.  There is a 4.2 cm cystic lesion of the right adnexal region.  No free fluid, free air, or lymphadenopathy is detected.,There is left basilar atelectasis.,IMPRESSION:,1.  A 2.2 cm low attenuation lesion is seen at the pancreatic tail.  This is felt to be originating from the pancreas, a cystic pancreatic neoplasm must be considered and close interval followup versus biopsy is advised.  Additionally, when the patient's creatinine improves, a contrast-enhanced study utilizing pancreatic protocol is needed.  Alternatively, an MRI may be obtained.,2.  Cholelithiasis.,3.  Left basilar atelectasis.,4.  A 4.2 cm cystic lesion of the right adnexa, correlation with pelvic ultrasound is advised.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "A 2.2 cm low attenuation lesion is seen at the pancreatic tail.  This is felt to be originating from the pancreas, a cystic pancreatic neoplasm must be considered and close interval followup versus biopsy is advised.  Additionally, when the patient's creatinine improves, a contrast-enhanced study utilizing pancreatic protocol is needed.  Alternatively, an MRI may be obtained"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Cholelithiasis"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Left basilar atelectasis"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "A 4.2 cm cystic lesion of the right adnexa, correlation with pelvic ultrasound is advised"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] Q452: Congenital pancreatic cyst (score: 0.4524)\n[ICD-10-CM 2027] C253: Malignant neoplasm of pancreatic duct (score: 0.4441)\n[ICD-10-CM 2027] Q453: Other congenital malformations of pancreas and pancreatic duct (score: 0.4161)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] K8080: Other cholelithiasis without obstruction (score: 0.8557)\n[ICD-10-CM 2027] K8081: Other cholelithiasis with obstruction (score: 0.8557)\n[ICD-10-CM 2027] K9186: Retained cholelithiasis following cholecystectomy (score: 0.5898)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] J9811: Atelectasis (score: 0.7082)\n[ICD-10-CM 2027] P2810: Unspecified atelectasis of newborn (score: 0.6109)\n[ICD-10-CM 2027] P2819: Other atelectasis of newborn (score: 0.6109)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] M9985: Other biomechanical lesions of pelvic region (score: 0.4160)\n[ICD-10-CM 2027] H5789: Other specified disorders of eye and adnexa (score: 0.4029)\n[ICD-10-CM 2027] H579: Unspecified disorder of eye and adnexa (score: 0.4029)"
+  }
+]

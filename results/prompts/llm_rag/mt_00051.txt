@@ -1,0 +1,103 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+SUBJECTIVE:,  The patient returns to the Pulmonary Medicine Clinic for followup evaluation of COPD and emphysema. Additional diagnosis noted: Atrial Fibrillation.  She was last seen in the clinic in March 2004.  Since that time, she has been hospitalized for psychiatric problems and now is in a nursing facility.  She is very frustrated with her living situation and would like to return to her own apartment, however, some believes she is to ill to care for herself.,At the present time, respiratory status is relatively stable.  She is still short of breath with activity, but all-in-all her pulmonary disease has not changed significantly since her last visit.  She does have occasional cough and a small amount of sputum production.  No fever or chills.  No chest pains.,CURRENT MEDICATIONS:,  The patient’s current medications are as outlined.,ALLERGIES TO MEDICATIONS:,  Erythromycin.,REVIEW OF SYSTEMS:,  Significant for problems with agitated depression.  Her respiratory status is unchanged as noted above.,EXAMINATION:,General:  The patient is in no acute distress.,Vital signs:  Blood pressure is 152/80, pulse 80 and respiratory rate 16.,HEENT:  Nasal mucosa was mild-to-moderately erythematous and edematous.  Oropharynx was clear.,Neck:  Supple without palpable lymphadenopathy.,Chest:  Chest demonstrates decreased breath sounds throughout all lung fields, coarse but relatively clear.,Cardiovascular:  Distant heart tones.  Regular rate and rhythm.,Abdomen:  Soft and nontender.,Extremities:  Without edema.,Oxygen saturation was checked today on room air, at rest it was 90%.,ASSESSMENT:,1.  Chronic obstructive pulmonary disease/emphysema, severe but stable.,2.  Mild hypoxemia, however, oxygen saturation at rest is stable without supplemental oxygen.,3.  History of depression and schizophrenia.,PLAN:,  At this point, I have recommended that she continue current respiratory medicine.  I did suggest that she would not use her oxygen when she is simply sitting, watching television or reading.  I have recommended that she use it with activity and at night.  I spoke with her about her living situation.  Encouraged her to speak with her family, as well as primary care physician about making efforts for her to return to her apartment.  Follow up evaluation is planned in Pulmonary Medicine Clinic in approximately three months or sooner if need be.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Atrial Fibrillation.  She was last seen in the clinic in March"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Since that time, she has been hospitalized for psychiatric problems and now is in a nursing facility.  She is very frustrated with her living situation and would like to return to her own apartment, however, some believes she is to ill to care for herself.,At the present time, respiratory status is relatively stable.  She is still short of breath with activity, but all-in-all her pulmonary disease has not changed significantly since her last visit.  She does have occasional cough and a small amount of sputum production.  No fever or chills.  No chest pains.,CURRENT MEDICATIONS:,  The patient\u2019s current medications are as outlined.,ALLERGIES TO MEDICATIONS:,  Erythromycin.,REVIEW OF SYSTEMS:,  Significant for problems with agitated depression.  Her respiratory status is unchanged as noted above.,EXAMINATION:,General:  The patient is in no acute distress.,Vital signs:  Blood pressure is 152/80, pulse 80 and respiratory rate 16.,HEENT:  Nasal mucosa was mild-to-moderately erythematous and edematous.  Oropharynx was clear.,Neck:  Supple without palpable lymphadenopathy.,Chest:  Chest demonstrates decreased breath sounds throughout all lung fields, coarse but relatively clear.,Cardiovascular:  Distant heart tones.  Regular rate and rhythm.,Abdomen:  Soft and nontender.,Extremities:  Without edema.,Oxygen saturation was checked today on room air, at rest it was 90%.,ASSESSMENT:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Erythromycin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "90%"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Chronic obstructive pulmonary disease/emphysema, severe but stable"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Mild hypoxemia, however, oxygen saturation at rest is stable without supplemental oxygen"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "History of depression and schizophrenia.,PLAN:,  At this point, I have recommended that she continue current respiratory medicine.  I did suggest that she would not use her oxygen when she is simply sitting, watching television or reading.  I have recommended that she use it with activity and at night.  I spoke with her about her living situation.  Encouraged her to speak with her family, as well as primary care physician about making efforts for her to return to her apartment.  Follow up evaluation is planned in Pulmonary Medicine Clinic in approximately three months or sooner if need be"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.5511)\n[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.5230)\n[ICD-10-CM 2027] I4819: Other persistent atrial fibrillation (score: 0.4775)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] R0789: Other chest pain (score: 0.2003)\n[ICD-10-CM 2027] R079: Chest pain, unspecified (score: 0.2003)\n[ICD-10-CM 2027] Z91128: Patient's intentional underdosing of medication regimen for other reason (score: 0.1799)\n[ICD-10-CM 2027] Match unresolved (top score 0.2003 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Erythromycin' \u2192 RXCUI 4053, canonical: erythromycin, match: exact\n[RxNorm] Ingredient: erythromycin (RXCUI 4053)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): erythromycin 20 MG/ML Topical Lotion; erythromycin 40 MG/ML / zinc acetate 12 MG/ML Topical Solution; erythromycin 0.02 MG/MG / isotretinoin 0.0005 MG/MG Topical Gel; erythromycin lactobionate 500 MG Injection; erythromycin 500 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "Dose 90.0% associated with today \u2014 dose 90.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] J4489: Other specified chronic obstructive pulmonary disease (score: 0.6312)\n[ICD-10-CM 2027] J449: Chronic obstructive pulmonary disease, unspecified (score: 0.6312)\n[ICD-10-CM 2027] J440: Chronic obstructive pulmonary disease with (acute) lower respiratory infection (score: 0.4984)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] Z9981: Dependence on supplemental oxygen (score: 0.6971)\n[ICD-10-CM 2027] T7120XD: Asphyxiation due to systemic oxygen deficiency due to low oxygen content in ambient air due to unspecified cause, subsequent encounter (score: 0.4690)\n[ICD-10-CM 2027] T7120XA: Asphyxiation due to systemic oxygen deficiency due to low oxygen content in ambient air due to unspecified cause, initial encounter (score: 0.4686)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] F32A: Depression, unspecified (score: 0.1916)\n[ICD-10-CM 2027] F2089: Other schizophrenia (score: 0.1849)\n[ICD-10-CM 2027] F209: Schizophrenia, unspecified (score: 0.1849)\n[ICD-10-CM 2027] Match unresolved (top score 0.1916 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  }
+]

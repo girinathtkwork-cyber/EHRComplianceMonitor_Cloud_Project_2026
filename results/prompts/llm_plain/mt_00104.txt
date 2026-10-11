@@ -1,0 +1,27 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+EXAM: , MRI of lumbar spine without contrast.,HISTORY:,  A 24-year-old female with chronic back pain.,TECHNIQUE: , Noncontrast axial and sagittal images were acquired through the lumbar spine in varying degrees of fat and water weighting.,FINDINGS: , The visualized cord is normal in signal intensity and morphology with conus terminating in proper position.  Visualized osseous structures are normal in marrow signal intensity and morphology without evidence for fracture/contusion, compression deformity, or marrow replacement process.  There are no paraspinal masses.,Disc heights, signal, and vertebral body heights are maintained throughout the lumbar spine.,L5-S1:  Central canal, neural foramina are patent.,L4-L5:  Central canal, neural foramina are patent.,L3-L4:  Central canal, neural foramen is patent.,L2-L3:  Central canal, neural foramina are patent.,L1-L2:  Central canal, neural foramina are patent.,The visualized abdominal aorta is normal in caliber.  Incidental note has been made of multiple left-sided ovarian, probable physiologic follicular cysts.,IMPRESSION: , No acute disease in the lumbar spine.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "No acute disease in the lumbar spine"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

@@ -1,0 +1,63 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+FINDINGS:,There is moderate to severe generalized neuronal loss of the cerebral hemispheres with moderate to severe ventricular enlargement and prominent CSF within the subarachnoid spaces. There is confluent white matter hyperintensity in a bi-hemispherical centrum semiovale distribution extending to the lateral ventricles consistent with severe vasculopathic small vessel disease and extensive white matter ischemic changes. There is normal enhancement of the dural sinuses and cortical veins and there are no enhancing intra-axial or extraaxial mass lesions. There is a cavum velum interpositum (normal variant).,There is a linear area of T1 hypointensity becoming hyperintense on T2 images in a left para-atrial trigonal region representing either a remote lacunar infarction or prominent perivascular space.,Normal basal ganglia and thalami. Normal internal and external capsules. Normal midbrain.,There is amorphus hyperintensity of the basis pontis consistent with vasculopathic small vessel disease. There are areas of T2 hyperintensity involving the bilateral brachium pontis (left greater than right) with no enhancement following gadolinium augmentation most compatible with areas of chronic white matter ischemic changes. The area of white matter signal alteration in the left brachium pontis is of some concern in that is has a round morphology. Interval reassessment of this lesion is recommended.,There is a remote lacunar infarction of the right cerebellar hemisphere. Normal left cerebellar hemisphere and vermis.,There is increased CSF within the sella turcica and mild flattening of the pituitary gland but no sellar enlargement. There is elongation of the basilar artery elevating the mammary bodies but no dolichoectasia of the basilar artery.,Normal flow within the carotid arteries and circle of Willis.,Normal calvarium, central skull base and temporal bones.  There is no demonstrated calvarium metastases.,IMPRESSION:,Severe generalized cerebral atrophy.,Extensive chronic white matter ischemic changes in a bi-hemispheric centrum semiovale distribution with involvement of the basis pontis and probable bilateral brachium pontis. The area of white matter hyperintensity in the left brachium pontis is of some concern is that it has a round morphology but no enhancement following gadolinium augmentation. Interval reassessment of this lesion is recommended.,Remote lacunar infarction in the right cerebellar hemisphere.,Linear signal alteration of the left periatrial trigonal region representing either a prominent vascular space or,lacunar infarction.,No demonstrated calvarial metastases.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "gadolinium"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "of this lesion is recommended.,There is a remote lacunar infarction of the right cerebellar hemisphere. Normal left cerebellar hemisphere and vermis.,There is increased CSF within the sella turcica and mild flattening of the pituitary gland but no sellar enlargement. There is elongation of the basilar artery elevating the mammary bodies but no dolichoectasia of the basilar artery.,Normal flow within the carotid arteries and circle of Willis.,Normal calvarium, central skull base and temporal bones.  There is no demonstrated calvarium metastases.,IMPRESSION:,Severe generalized cerebral atrophy.,Extensive chronic white matter ischemic changes in a bi-hemispheric centrum semiovale distribution with involvement of the basis pontis and probable bilateral brachium pontis. The area of white matter hyperintensity in the left brachium pontis is of some concern is that it has a round morphology but no enhancement following gadolinium augmentation. Interval reassessment of this lesion is recommended.,Remote lacunar infarction in the right cerebellar hemisphere.,Linear signal alteration of the left periatrial trigonal region representing either a prominent vascular space or,lacunar infarction.,No demonstrated calvarial metastases"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Severe generalized cerebral atrophy.,Extensive chronic white matter ischemic changes in a bi-hemispheric centrum semiovale distribution with involvement of the basis pontis and probable bilateral brachium pontis. The area of white matter hyperintensity in the left brachium pontis is of some concern is that it has a round morphology but no enhancement following gadolinium augmentation. Interval reassessment of this lesion is recommended.,Remote lacunar infarction in the right cerebellar hemisphere.,Linear signal alteration of the left periatrial trigonal region representing either a prominent vascular space or,lacunar infarction.,No demonstrated calvarial metastases"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "gadolinium"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'gadolinium' \u2192 RXCUI 1310171, canonical: gadolinium, match: exact\n[RxNorm] Ingredient: gadolinium (RXCUI 1310171)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] I63442: Cerebral infarction due to embolism of left cerebellar artery (score: 0.2827)\n[ICD-10-CM 2027] I63342: Cerebral infarction due to thrombosis of left cerebellar artery (score: 0.2813)\n[ICD-10-CM 2027] I63441: Cerebral infarction due to embolism of right cerebellar artery (score: 0.2807)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] R9082: White matter disease, unspecified (score: 0.4400)\n[ICD-10-CM 2027] G116: Leukodystrophy with vanishing white matter disease (score: 0.3315)\n[ICD-10-CM 2027] G467: Other lacunar syndromes (score: 0.2821)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'gadolinium' \u2192 RXCUI 1310171, canonical: gadolinium, match: exact\n[RxNorm] Ingredient: gadolinium (RXCUI 1310171)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  }
+]

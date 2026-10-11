@@ -1,0 +1,113 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CC:, Headache.,HX: ,The patient is an 8y/o RHM with a 2 year history of early morning headaches (3:00-6:00AM) intermittently relieved by vomiting only. He had been evaluated 2 years ago and an EEG was "normal" then, but no brain imaging was performed. His headaches progressively worsened, especially in the past two months prior to this presentation. For 2 weeks prior to his 1/25/93 evaluation at UIHC, he would awake screaming. His parent spoke with a local physician who thought this might be due to irritability secondary to pinworms and,Vermox was prescribed and arrangements were made for a neurologic evaluation. On the evening of 1/24/93 the patient awoke screaming and began to vomit. This was followed by a 10 min period of tonic-clonic type movements and postictal lethargy. He was taken to a local ER and a brain CT revealed an intracranial mass. He was given Decadron and Phenytoin and transferred to UIHC for further evaluation.,MEDS:, noted above.,PMH: ,1)Born at 37.5 weeks gestation by uncomplicated vaginal delivery to a G1P0 mother. Pregnancy complicated by vaginal bleeding at 7 months. Met developmental milestones without difficulty. 2) Frequent otitis media, now resolved. 3) Immunizations were "up to date.",FHX:, non-contributory.,SHX:, lives with biologic father and mother. No siblings. In 3rd grade (mainstream) and maintaining good marks in schools.,EXAM:, BP121/57mmHg HR103 RR16 36.9C,MS: Sleepy, but cooperative.,CN: EOM full and smooth. Advanced papilledema, OU. VFFTC. Pupils 4/4 decreasing to 2/2. Right lower facial weakness. Tongue midline upon protrusion. Corneal reflexes intact bilaterally.,Motor: 5/5 strength. Slightly increased muscle on right side.,Sensory. No deficit to PP/VIB noted.,Coord: normal FNF, HKS and RAM, bilaterally.,Station: Mild truncal ataxia. Tends to fall backward.,Reflexes: BUE 2+/2+, Patellar 3/3, Ankles 3+/3+ with 6 beats of nonsustained clonus bilaterally.,Gen exam: unremarkable.,COURSE:, The patient was continued on Dilantin 200mg qd and Decadron 5mg IV q6hrs. Brain MRI, 1/26/93, revealed a large mass lesion in the region of the left caudate nucleus and thalamus which was hyperintense on T2 weighted images. There were areas of cystic formation at its periphery. The mass appeared to enhance on post gadolinium images. there was associated white matter edema and compression of the left lateral ventricle, and midline shift to the right. There was no sign of uncal herniation. He underwent bilateral VP shunting on 1/26/93; and then, subtotal resection (left frontal craniotomy with excision of the left caudate and thalamus with creation of an opening in the septum pellucidum) on 1/28/93. He then received 5040cGy of radiation therapy in 28 fractions completed on 3/25/93. A 3/20/95 neuropsychological evaluation revealed low average intellect on the WISC-III. There were also signs of memory, attention, reading and spelling deficits; and mild right-sided motor incoordination and mood variability. He remained in mainstream classes at school, but his physical and cognitive performance began to deteriorate in 4/95. Neurosurgical evaluation in 4/95 noted increased right hemiplegia and right homonymous hemianopia. MRI revealed tumor progression and he was subsequently placed on Carboplatin/VP-16 (CG 9933 protocol chemotherapy, regimen A). He was last seen on 4/96 and was having difficulty in the 6th grade; he was also undergoing physical therapy for his right hemiplegia.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Vermox"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Decadron"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Phenytoin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Dilantin"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "200mg"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Decadron"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "5mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "gadolinium"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Carboplatin"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Vermox' \u2192 RXCUI 202972, canonical: Vermox, match: exact\n[RxNorm] Ingredient: mebendazole (RXCUI 6672)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): mebendazole 100 MG Chewable Tablet; mebendazole 500 MG Chewable Tablet; mebendazole 20 MG/ML Oral Suspension; mebendazole 100 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Decadron' \u2192 RXCUI 227682, canonical: Decadron, match: exact\n[RxNorm] Ingredient: dexamethasone (RXCUI 3264)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): dexamethasone 1 MG/ML / neomycin 3.2 MG/ML / thiabendazole 40 MG/ML Topical Solution; dexamethasone sodium phosphate 4 MG/ML Injectable Solution; dexamethasone phosphate 4 MG/ML Injectable Solution; dexamethasone sodium phosphate 0.4 MG/ML Injectable Solution; dexamethasone acetate 8 MG/ML Injectable Suspension"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Phenytoin' \u2192 RXCUI 8183, canonical: phenytoin, match: exact\n[RxNorm] Ingredient: phenytoin (RXCUI 8183)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pentobarbital sodium 390 MG/ML / phenytoin sodium 50 MG/ML Injectable Solution; phenytoin 25 MG/ML Oral Suspension; phenytoin 50 MG Chewable Tablet; phenytoin 6 MG/ML Oral Suspension; phenytoin 18 MG/ML Oral Suspension"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Dilantin' \u2192 RXCUI 202740, canonical: Dilantin, match: exact\n[RxNorm] Ingredient: phenytoin (RXCUI 8183)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pentobarbital sodium 390 MG/ML / phenytoin sodium 50 MG/ML Injectable Solution; phenytoin 25 MG/ML Oral Suspension; phenytoin 50 MG Chewable Tablet; phenytoin 6 MG/ML Oral Suspension; phenytoin 18 MG/ML Oral Suspension"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "Dose 200.0mg associated with Dilantin"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Decadron' \u2192 RXCUI 227682, canonical: Decadron, match: exact\n[RxNorm] Ingredient: dexamethasone (RXCUI 3264)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): dexamethasone 1 MG/ML / neomycin 3.2 MG/ML / thiabendazole 40 MG/ML Topical Solution; dexamethasone sodium phosphate 4 MG/ML Injectable Solution; dexamethasone phosphate 4 MG/ML Injectable Solution; dexamethasone sodium phosphate 0.4 MG/ML Injectable Solution; dexamethasone acetate 8 MG/ML Injectable Suspension"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 5.0mg associated with Decadron \u2014 dose 5.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'gadolinium' \u2192 RXCUI 1310171, canonical: gadolinium, match: exact\n[RxNorm] Ingredient: gadolinium (RXCUI 1310171)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Carboplatin' \u2192 RXCUI 40048, canonical: carboplatin, match: exact\n[RxNorm] Ingredient: carboplatin (RXCUI 40048)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): carboplatin 10 MG/ML Injectable Solution"
+  }
+]

@@ -1,0 +1,103 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PROCEDURE: , Urgent cardiac catheterization with coronary angiogram.,PROCEDURE IN DETAIL: , The patient was brought urgently to the cardiac cath lab from the emergency room with the patient being intubated with an abnormal EKG and a cardiac arrest.  The right groin was prepped and draped in usual manner.  Under 2% lidocaine anesthesia, the right femoral artery was entered.  A 6-French sheath was placed.  The patient was already on anticoagulation.  Selective coronary angiograms were then performed using a left and a 3DRC catheter.  The catheters were reviewed.  The catheters were then removed and an Angio-Seal was placed.  There was some hematoma at the cath site.,RESULTS,1.  The left main was free of disease.,2.  The left anterior descending and its branches were free of disease.,3.  The circumflex was free of disease.,4.  The right coronary artery was free of disease.  There was no gradient across the aortic valve.,IMPRESSION: , Normal coronary angiogram.,
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "Urgent cardiac catheterization with coronary angiogram.,PROCEDURE IN DETAIL: , The patient was brought urgently to the cardiac cath lab from the emergency room with the patient being intubated with an abnormal EKG and a cardiac arrest.  The right groin was prepped and draped in usual manner.  Under 2% lidocaine anesthesia, the right femoral artery was entered.  A 6-French sheath was placed.  The patient was already on anticoagulation.  Selective coronary angiograms were then performed using a left and a 3DRC catheter.  The catheters were reviewed.  The catheters were then removed and an Angio-Seal was placed.  There was some hematoma at the cath site.,RESULTS"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "dosage",
+    "text": "2%"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "The left main was free of disease"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "The left anterior descending and its branches were free of disease"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "The circumflex was free of disease"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "The right coronary artery was free of disease.  There was no gradient across the aortic valve.,IMPRESSION: , Normal coronary angiogram"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Normal coronary angiogram"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'Urgent cardiac catheterization with coronary angiogram.,PROCEDURE IN DETAIL: , The patient was brought urgently to the cardiac cath lab from the emergency room with the patient being intubated with an abnormal EKG and a cardiac arrest.  The right groin was prepped and draped in usual manner.  Under 2% lidocaine anesthesia, the right femoral artery was entered.  A 6-French sheath was placed.  The patient was already on anticoagulation.  Selective coronary angiograms were then performed using a left and a 3DRC catheter.  The catheters were reviewed.  The catheters were then removed and an Angio-Seal was placed.  There was some hematoma at the cath site.,RESULTS' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "Dose 2.0% associated with lidocaine \u2014 dose 2.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'The left main was free of disease' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'The left anterior descending and its branches were free of disease' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'The circumflex was free of disease' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'The right coronary artery was free of disease.  There was no gradient across the aortic valve.,IMPRESSION: , Normal coronary angiogram' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Z3480: Encounter for supervision of other normal pregnancy, unspecified trimester (score: 0.4892)\n[ICD-10-CM 2027] Z3490: Encounter for supervision of normal pregnancy, unspecified, unspecified trimester (score: 0.4892)\n[ICD-10-CM 2027] Z3483: Encounter for supervision of other normal pregnancy, third trimester (score: 0.4645)"
+  }
+]

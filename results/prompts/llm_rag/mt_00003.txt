@@ -1,0 +1,133 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:,  Dorsal ganglion, right wrist.,POSTOPERATIVE DIAGNOSIS:,  Dorsal ganglion, right wrist.,OPERATIONS PERFORMED:,  Excision dorsal ganglion, right wrist.,ANESTHESIA:,  Monitored anesthesia care with regional anesthesia applied by surgeon.,TOURNIQUET TIME:,  minutes.,DESCRIPTION OF PROCEDURE: , With the patient under adequate anesthesia, the upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated and the tourniquet was elevated to 290 mm/Hg.  A transverse incision was made over the dorsal ganglion.  Using blunt dissection the dorsal ulnar sensory nerve branches and radial sensory nerve branches were dissected and retracted out of the operative field.  The extensor retinaculum was then incised and the extensor tendon was dissected and retracted out of the operative field.  The ganglion was then further dissected to its origin from the dorsal distal scapholunate interosseus ligament and excised in toto.  Care was taken to protect ligament integrity.  Reactive synovium was then removed using soft tissue rongeur technique.  The wound was then infiltrated with 0.25% Marcaine.  The tendons were allowed to resume their normal anatomical position.  The skin was closed with 3-0 Prolene subcuticular stitch.  Sterile dressings were applied.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Dorsal ganglion, right wrist.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Dorsal ganglion, right wrist.,OPERATIONS PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Excision dorsal ganglion, right wrist.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Excision dorsal ganglion, right wrist.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Monitored anesthesia care with regional anesthesia applied by surgeon.,TOURNIQUET TIME:,  minutes.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Monitored anesthesia care with regional anesthesia applied by surgeon.,TOURNIQUET TIME:,  minutes.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "With the patient under adequate anesthesia, the upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated and the tourniquet was elevated to 290 mm/Hg.  A transverse incision was made over the dorsal ganglion.  Using blunt dissection the dorsal ulnar sensory nerve branches and radial sensory nerve branches were dissected and retracted out of the operative field.  The extensor retinaculum was then incised and the extensor tendon was dissected and retracted out of the operative field.  The ganglion was then further dissected to its origin from the dorsal distal scapholunate interosseus ligament and excised in toto.  Care was taken to protect ligament integrity.  Reactive synovium was then removed using soft tissue rongeur technique.  The wound was then infiltrated with 0.25% Marcaine.  The tendons were allowed to resume their normal anatomical position.  The skin was closed with 3-0 Prolene subcuticular stitch.  Sterile dressings were applied.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "With the patient under adequate anesthesia, the upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated and the tourniquet was elevated to 290 mm/Hg.  A transverse incision was made over the dorsal ganglion.  Using blunt dissection the dorsal ulnar sensory nerve branches and radial sensory nerve branches were dissected and retracted out of the operative field.  The extensor retinaculum was then incised and the extensor tendon was dissected and retracted out of the operative field.  The ganglion was then further dissected to its origin from the dorsal distal scapholunate interosseus ligament and excised in toto.  Care was taken to protect ligament integrity.  Reactive synovium was then removed using soft tissue rongeur technique.  The wound was then infiltrated with 0.25% Marcaine.  The tendons were allowed to resume their normal anatomical position.  The skin was closed with 3-0 Prolene subcuticular stitch.  Sterile dressings were applied.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "0.25%"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Marcaine"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M67431: Ganglion, right wrist (score: 0.5747)\n[ICD-10-CM 2027] M67439: Ganglion, unspecified wrist (score: 0.5640)\n[ICD-10-CM 2027] M67432: Ganglion, left wrist (score: 0.5537)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] M67431: Ganglion, right wrist (score: 0.7186)\n[ICD-10-CM 2027] M67439: Ganglion, unspecified wrist (score: 0.7052)\n[ICD-10-CM 2027] M67432: Ganglion, left wrist (score: 0.6923)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] M67431: Ganglion, right wrist (score: 0.6750)\n[ICD-10-CM 2027] M67439: Ganglion, unspecified wrist (score: 0.6625)\n[ICD-10-CM 2027] M67432: Ganglion, left wrist (score: 0.6504)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Excision dorsal ganglion, right wrist.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] T8859XD: Other complications of anesthesia, subsequent encounter (score: 0.4965)\n[ICD-10-CM 2027] T8859XA: Other complications of anesthesia, initial encounter (score: 0.4921)\n[ICD-10-CM 2027] T8859XS: Other complications of anesthesia, sequela (score: 0.4919)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Monitored anesthesia care with regional anesthesia applied by surgeon.,TOURNIQUET TIME:,  minutes.,DESCRIPTION OF PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] S95009D: Unspecified injury of dorsal artery of unspecified foot, subsequent encounter (score: 0.2177)\n[ICD-10-CM 2027] S95099D: Other specified injury of dorsal artery of unspecified foot, subsequent encounter (score: 0.2177)\n[ICD-10-CM 2027] S95009A: Unspecified injury of dorsal artery of unspecified foot, initial encounter (score: 0.2164)\n[ICD-10-CM 2027] Match unresolved (top score 0.2177 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'With the patient under adequate anesthesia, the upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated and the tourniquet was elevated to 290 mm/Hg.  A transverse incision was made over the dorsal ganglion.  Using blunt dissection the dorsal ulnar sensory nerve branches and radial sensory nerve branches were dissected and retracted out of the operative field.  The extensor retinaculum was then incised and the extensor tendon was dissected and retracted out of the operative field.  The ganglion was then further dissected to its origin from the dorsal distal scapholunate interosseus ligament and excised in toto.  Care was taken to protect ligament integrity.  Reactive synovium was then removed using soft tissue rongeur technique.  The wound was then infiltrated with 0.25% Marcaine.  The tendons were allowed to resume their normal anatomical position.  The skin was closed with 3-0 Prolene subcuticular stitch.  Sterile dressings were applied.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "Dose 0.25% associated with Marcaine \u2014 dose 0.25% not among known product strengths"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Marcaine' \u2192 RXCUI 1012397, canonical: Marcaine, match: exact\n[RxNorm] Ingredient: bupivacaine (RXCUI 1815)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bupivacaine hydrochloride 3.75 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; bupivacaine hydrochloride 2.5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; bupivacaine hydrochloride 5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; 30 ML bupivacaine hydrochloride 7.5 MG/ML / epinephrine 0.005 MG/ML Injection; bupivacaine hydrochloride 2.5 MG/ML Injectable Solution"
+  }
+]

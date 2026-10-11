@@ -1,0 +1,223 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Septic left total knee arthroplasty.,POSTOPERATIVE DIAGNOSIS: , Septic left total knee arthroplasty.,OPERATION PERFORMED: , Arthroscopic irrigation and debridement of same with partial synovectomy.,ANESTHESIA:,  LMA.,ESTIMATED BLOOD LOSS:,  Minimal.,COMPLICATIONS: , None.,DRAINS:,  None.,INDICATIONS:,  The patient is an 81-year-old female, who is approximately 10 years status post total knee replacement performed in another state, who presented a couple of days ago to the office with worsening pain without injury and whose symptoms have been present for approximately a month following a possible urinary tract infection.  The patient' knee was aspirated in the office and cultures were positive for Escherichia coli.  She presents for operative therapy.,DESCRIPTION OF OPERATION: , After obtaining informed consent and the administration of antibiotics since her cultures had already been obtained, the patient was taken to the operating room and following satisfactory induction and the patient was placed on the table in supine position.  The left upper extremity was prepped and draped without a tourniquet.  The knee was injected with 30 mL of normal saline and standard arthroscopy portals were created.  The arthroscopy was inserted and a complete diagnostic was performed.  Arthroscopic pictures were taken throughout the procedure.  The knee was copiously irrigated with 9 L of irrigant.  A partial synovectomy was performed in all compartments.  Minimal amount of polyethylene wear was noted.  The total knee components were identified arthroscopically for future revision surgery.  The knee was then drained and the arthroscopic instruments were removed.  The portals were closed with 4-0 nylon and local anesthetic was injected.  A sterile dressing was applied and the patient was placed in a knee immobilizer, awakened from anesthesia and transported to the recovery room in stable condition and tolerated the procedure well.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Septic left total knee arthroplasty.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Septic left total knee arthroplasty.,OPERATION PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Arthroscopic irrigation and debridement of same with partial synovectomy.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Arthroscopic irrigation and debridement of same with partial synovectomy.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "LMA.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "LMA.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Minimal.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Minimal.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "None.,DRAINS:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "None.,DRAINS:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "None.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "None.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "The patient is an 81-year-old female, who is approximately 10 years status post total knee replacement performed in another state, who presented a couple of days ago to the office with worsening pain without injury and whose symptoms have been present for approximately a month following a possible urinary tract infection.  The patient' knee was aspirated in the office and cultures were positive for Escherichia coli.  She presents for operative therapy.,DESCRIPTION OF OPERATION:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "The patient is an 81-year-old female, who is approximately 10 years status post total knee replacement performed in another state, who presented a couple of days ago to the office with worsening pain without injury and whose symptoms have been present for approximately a month following a possible urinary tract infection.  The patient' knee was aspirated in the office and cultures were positive for Escherichia coli.  She presents for operative therapy.,DESCRIPTION OF OPERATION:"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Escherichia coli"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "After obtaining informed consent and the administration of antibiotics since her cultures had already been obtained, the patient was taken to the operating room and following satisfactory induction and the patient was placed on the table in supine position.  The left upper extremity was prepped and draped without a tourniquet.  The knee was injected with 30 mL of normal saline and standard arthroscopy portals were created.  The arthroscopy was inserted and a complete diagnostic was performed.  Arthroscopic pictures were taken throughout the procedure.  The knee was copiously irrigated with 9 L of irrigant.  A partial synovectomy was performed in all compartments.  Minimal amount of polyethylene wear was noted.  The total knee components were identified arthroscopically for future revision surgery.  The knee was then drained and the arthroscopic instruments were removed.  The portals were closed with 4-0 nylon and local anesthetic was injected.  A sterile dressing was applied and the patient was placed in a knee immobilizer, awakened from anesthesia and transported to the recovery room in stable condition and tolerated the procedure well"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "After obtaining informed consent and the administration of antibiotics since her cultures had already been obtained, the patient was taken to the operating room and following satisfactory induction and the patient was placed on the table in supine position.  The left upper extremity was prepped and draped without a tourniquet.  The knee was injected with 30 mL of normal saline and standard arthroscopy portals were created.  The arthroscopy was inserted and a complete diagnostic was performed.  Arthroscopic pictures were taken throughout the procedure.  The knee was copiously irrigated with 9 L of irrigant.  A partial synovectomy was performed in all compartments.  Minimal amount of polyethylene wear was noted.  The total knee components were identified arthroscopically for future revision surgery.  The knee was then drained and the arthroscopic instruments were removed.  The portals were closed with 4-0 nylon and local anesthetic was injected.  A sterile dressing was applied and the patient was placed in a knee immobilizer, awakened from anesthesia and transported to the recovery room in stable condition and tolerated the procedure well"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "measurement",
+    "text": "30 mL"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "well"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] H26132: Total traumatic cataract, left eye (score: 0.3483)\n[ICD-10-CM 2027] I76: Septic arterial embolism (score: 0.3462)\n[ICD-10-CM 2027] R030: Elevated blood-pressure reading, without diagnosis of hypertension (score: 0.3456)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] H26132: Total traumatic cataract, left eye (score: 0.4244)\n[ICD-10-CM 2027] I76: Septic arterial embolism (score: 0.4219)\n[ICD-10-CM 2027] T8112XD: Postprocedural septic shock, subsequent encounter (score: 0.4163)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] Z5333: Arthroscopic surgical procedure converted to open procedure (score: 0.4017)\n[ICD-10-CM 2027] W1830XD: Fall on same level, unspecified, subsequent encounter (score: 0.3649)\n[ICD-10-CM 2027] W1839XD: Other fall on same level, subsequent encounter (score: 0.3649)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Arthroscopic irrigation and debridement of same with partial synovectomy.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] P613: Congenital anemia from fetal blood loss (score: 0.5532)\n[ICD-10-CM 2027] Z52098: Other blood donor, other blood (score: 0.5387)\n[ICD-10-CM 2027] P508: Newborn affected by other intrauterine (fetal) blood loss (score: 0.4723)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'LMA.,ESTIMATED BLOOD LOSS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] K0821: Minimal atrophy of the mandible (score: 0.6580)\n[ICD-10-CM 2027] K0824: Minimal atrophy of maxilla (score: 0.5894)\n[ICD-10-CM 2027] K06011: Localized gingival recession, minimal (score: 0.5055)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Minimal.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] Z4803: Encounter for change or removal of drains (score: 0.4836)\n[ICD-10-CM 2027] W171XXD: Fall into storm drain or manhole, subsequent encounter (score: 0.4146)\n[ICD-10-CM 2027] W171XXA: Fall into storm drain or manhole, initial encounter (score: 0.4138)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'None.,DRAINS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] O82: Encounter for cesarean delivery without indication (score: 0.5770)\n[ICD-10-CM 2027] R402310: Coma scale, best motor response, none, unspecified time (score: 0.3022)\n[ICD-10-CM 2027] R402210: Coma scale, best verbal response, none, unspecified time (score: 0.2838)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'None.,INDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] Y92242: Post office as the place of occurrence of the external cause (score: 0.3398)\n[ICD-10-CM 2027] Q7110: Congenital absence of unspecified upper arm and forearm with hand present (score: 0.2473)\n[ICD-10-CM 2027] Q7112: Congenital absence of left upper arm and forearm with hand present (score: 0.2455)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'The patient is an 81-year-old female, who is approximately 10 years status post total knee replacement performed in another state, who presented a couple of days ago to the office with worsening pain without injury and whose symptoms have been present for approximately a month following a possible urinary tract infection.  The patient' knee was aspirated in the office and cultures were positive for Escherichia coli.  She presents for operative therapy.,DESCRIPTION OF OPERATION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Escherichia coli' \u2192 RXCUI 350202, canonical: Escherichia coli, match: exact\n[RxNorm] Ingredient: Escherichia coli (RXCUI 350202)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] Z5333: Arthroscopic surgical procedure converted to open procedure (score: 0.2462)\n[ICD-10-CM 2027] M7052: Other bursitis of knee, left knee (score: 0.2161)\n[ICD-10-CM 2027] M7050: Other bursitis of knee, unspecified knee (score: 0.2153)\n[ICD-10-CM 2027] Match unresolved (top score 0.2462 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Procedure] 'After obtaining informed consent and the administration of antibiotics since her cultures had already been obtained, the patient was taken to the operating room and following satisfactory induction and the patient was placed on the table in supine position.  The left upper extremity was prepped and draped without a tourniquet.  The knee was injected with 30 mL of normal saline and standard arthroscopy portals were created.  The arthroscopy was inserted and a complete diagnostic was performed.  Arthroscopic pictures were taken throughout the procedure.  The knee was copiously irrigated with 9 L of irrigant.  A partial synovectomy was performed in all compartments.  Minimal amount of polyethylene wear was noted.  The total knee components were identified arthroscopically for future revision surgery.  The knee was then drained and the arthroscopic instruments were removed.  The portals were closed with 4-0 nylon and local anesthetic was injected.  A sterile dressing was applied and the patient was placed in a knee immobilizer, awakened from anesthesia and transported to the recovery room in stable condition and tolerated the procedure well' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Measurement] 30.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Procedure] 'well' \u2014 extracted from header, not verified against any coding system"
+  }
+]

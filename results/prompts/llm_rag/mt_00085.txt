@@ -1,0 +1,113 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+HISTORY: , Coronary artery disease.,TECHNIQUE AND FINDINGS:  ,Calcium scoring and coronary artery CTA with cardiac function was performed on Siemens dual-source CT scanner with postprocessing on Vitrea workstation.  Patient received oral Metoprolol 100 milligrams.  100 ml Ultravist 370 was utilized as the contrast agent.  0.4 milligrams of nitroglycerin was given.,Patient's calcium score 164, volume 205; this places the patient between the 75th and 90th percentile for age.  There is at least moderate atherosclerotic plaque with mild coronary artery disease and significant narrowings possible.,Cardiac wall motion was within normal limits.  Left ventricular ejection fraction calculated to be 82%.  End-diastolic volume 98 mL, end-systolic volume calculated to be 18 mL.,There is normal coronary artery origins.  There is codominance between the right coronary artery and the circumflex artery.  There is mild to moderate stenosis of the proximal LAD with mixed plaque.  Mild stenosis mid LAD with mixed plaque.  No stenosis.  Distal LAD with the distal vessel becoming diminutive in size.  Right coronary artery shows mild stenosis proximally and in the midportion due to calcified focal plaque.  Once again the distal vessel becomes diminutive in size.  Circumflex shows mild stenosis due to focal calcified plaque proximally.  No stenosis is seen involving the mid or distal circumflex.  The distal circumflex also becomes diminutive in size.  The left main shows small amount of focal calcified plaque without stenosis.  Myocardium, pericardium and wall motion was unremarkable as seen.,IMPRESSION:,1.  Atherosclerotic coronary artery disease with values as above.  There are areas of stenosis most pronounced in the LAD with mild to moderate change and mild stenosis involving the circumflex and right coronary artery.,2.  Consider cardiology consult and further evaluation if clinically indicated.,3.  Full report was sent to the PACS.  Report will be mailed to Dr. ABC.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Metoprolol"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "measurement",
+    "text": "100 ml"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "nitroglycerin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "measurement",
+    "text": "82%"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "measurement",
+    "text": "98 mL"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "measurement",
+    "text": "18 mL"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Atherosclerotic coronary artery disease with values as above.  There are areas of stenosis most pronounced in the LAD with mild to moderate change and mild stenosis involving the circumflex and right coronary artery"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Consider cardiology consult and further evaluation if clinically indicated"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Full report was sent to the PACS.  Report will be mailed to Dr. ABC"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Metoprolol' \u2192 RXCUI 6918, canonical: metoprolol, match: exact\n[RxNorm] Ingredient: metoprolol (RXCUI 6918)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR hydrochlorothiazide 25 MG / metoprolol tartrate 200 MG Extended Release Oral Tablet; metoprolol tartrate 37.5 MG Oral Tablet; metoprolol tartrate 75 MG Oral Tablet; 5 ML metoprolol tartrate 1 MG/ML Cartridge; 24 HR metoprolol succinate 100 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Measurement] 100.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'nitroglycerin' \u2192 RXCUI 4917, canonical: nitroglycerin, match: exact\n[RxNorm] Ingredient: nitroglycerin (RXCUI 4917)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): nitroglycerin 0.004 MG/MG Rectal Ointment; nitroglycerin 0.4 MG Sublingual Powder; 250 ML nitroglycerin 0.4 MG/ML Injection; 250 ML nitroglycerin 0.1 MG/ML Injection; nitroglycerin 0.3 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Measurement] 82.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Measurement] 98.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Measurement] 18.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] T82855D: Stenosis of coronary artery stent, subsequent encounter (score: 0.4409)\n[ICD-10-CM 2027] T82855A: Stenosis of coronary artery stent, initial encounter (score: 0.4392)\n[ICD-10-CM 2027] T82855S: Stenosis of coronary artery stent, sequela (score: 0.4391)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Z710: Person encountering health services to consult on behalf of another person (score: 0.3554)\n[ICD-10-CM 2027] Z0589: Observation and evaluation of newborn for other specified suspected condition ruled out (score: 0.2815)\n[ICD-10-CM 2027] Z059: Observation and evaluation of newborn for unspecified suspected condition ruled out (score: 0.2815)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] T63443D: Toxic effect of venom of bees, assault, subsequent encounter (score: 0.4998)\n[ICD-10-CM 2027] T63444D: Toxic effect of venom of bees, undetermined, subsequent encounter (score: 0.4992)\n[ICD-10-CM 2027] T63443A: Toxic effect of venom of bees, assault, initial encounter (score: 0.4979)"
+  }
+]

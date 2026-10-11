@@ -1,0 +1,187 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PROCEDURE: , Colonoscopy. Additional diagnosis noted: Type 2 Diabetes Mellitus.,INDICATIONS: , Hematochezia, Personal history of colonic polyps.,MEDICATIONS:,  Midazolam 2 mg IV, Fentanyl 100 mcg IV,PROCEDURE:,  A History and Physical has been performed, and patient medication allergies have been reviewed.  The patient's tolerance of previous anesthesia has been reviewed.  The risks and benefits of the procedure and the sedation options and risks were discussed with the patient.  All questions were answered and informed consent was obtained.  Mental Status Examination:  alert and oriented.  Airway Examination:  normal oropharyngeal airway and neck mobility.  Respiratory Examination:  clear to auscultation.  CV Examination:  RRR, no murmurs, no S3 or S4.  ASA Grade Assessment:  P1 A normal healthy patient.  After reviewing the risks and benefits, the patient was deemed in satisfactory condition to undergo the procedure.  The anesthesia plan was to use conscious sedation.  Immediately prior to administration of medications, the patient was re-assessed for adequacy to receive sedatives.  The heart rate, respiratory rate, oxygen saturations, blood pressure, adequacy of pulmonary ventilation, and response to care were monitored throughout the procedure.  The physical status of the patient was re-assessed after the procedure.  After I obtained informed consent, the scope was passed under direct vision.  Throughout the procedure, the patient's blood pressure, pulse, and oxygen saturations were monitored continuously.  The colonoscope was introduced through the anus and advanced to the cecum, identified by appendiceal orifice & IC valve.  The quality of the prep was good.  The patient tolerated the procedure well.,FINDINGS:,1.  A sessile, non-bleeding polyp was found in the rectum.  The polyp was 5 mm in size.  Polypectomy was performed with a saline injection-lift technique using the snare.  Resection and retrieval were complete.  Estimated blood loss was minimal.,2.  One pedunculated, non-bleeding polyp was found in the sigmoid colon.  The polyp was 7 mm in size.  Polypectomy was performed with a hot forceps.  Resection and retrieval were complete.  Estimated blood loss was minimal.,3.  Multiple large-mouthed diverticula were found in the descending colon.,4.  Internal, non-bleeding, prolapsed with spontaneous reduction (grade II) hemorrhoids were found on retroflexion.,IMPRESSION:,1.  One 5 mm benign appearing polyp in the rectum.  Resected and retrieved.,2.  One 7 mm polyp in the sigmoid colon.  Resected and retrieved.,3.  Diverticulosis.,4.  Internal hemorrhoids were found.,RECOMMENDATION:,1.  High fiber diet.,2.  Await pathology results.,3.  Repeat colonoscopy for surveillance in 3 years.,4.  The findings and recommendations were discussed with the patient.,CPT CODE(S):,45385, Colonoscopy, flexible, proximal to splenic flexure; with removal of tumor(s), polyp(s), or other lesion(s) by snare,technique.,45384, 59, Colonoscopy, flexible, proximal to splenic flexure; with removal of tumor(s), polyp(s), or other lesion(s) by hot,biopsy forceps or bipolar cautery.,45381, 59, Colonoscopy, flexible, proximal to splenic flexure; with directed submucosal injection(s), any substance.,ICD9 CODE(S):,211.4, Benign neoplasm of rectum and anal canal.,211.3, Benign neoplasm of colon.,562.10, Diverticulosis of colon (without mention of hemorrhage).,455.2, Internal hemorrhoids with other complication,578.1, Blood in stool.,v12.72, Personal history of colonic polyps.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "Colonoscopy. Additional diagnosis noted: Type 2 Diabetes Mellitus.,INDICATIONS: , Hematochezia, Personal history of colonic polyps.,MEDICATIONS:,  Midazolam 2 mg IV, Fentanyl 100 mcg IV,PROCEDURE:,  A History and Physical has been performed, and patient medication allergies have been reviewed.  The patient's tolerance of previous anesthesia has been reviewed.  The risks and benefits of the procedure and the sedation options and risks were discussed with the patient.  All questions were answered and informed consent was obtained.  Mental Status Examination:  alert and oriented.  Airway Examination:  normal oropharyngeal airway and neck mobility.  Respiratory Examination:  clear to auscultation.  CV Examination:  RRR, no murmurs, no S3 or S"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.,INDICATIONS: , Hematochezia, Personal history of colonic polyps.,MEDICATIONS:,  Midazolam 2 mg IV, Fentanyl 100 mcg IV,PROCEDURE:,  A History and Physical has been performed, and patient medication allergies have been reviewed.  The patient's tolerance of previous anesthesia has been reviewed.  The risks and benefits of the procedure and the sedation options and risks were discussed with the patient.  All questions were answered and informed consent was obtained.  Mental Status Examination:  alert and oriented.  Airway Examination:  normal oropharyngeal airway and neck mobility.  Respiratory Examination:  clear to auscultation.  CV Examination:  RRR, no murmurs, no S3 or S"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Midazolam"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "2 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Fentanyl"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "100 mcg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "ASA Grade Assessment:  P1 A normal healthy patient.  After reviewing the risks and benefits, the patient was deemed in satisfactory condition to undergo the procedure.  The anesthesia plan was to use conscious sedation.  Immediately prior to administration of medications, the patient was re-assessed for adequacy to receive sedatives.  The heart rate, respiratory rate, oxygen saturations, blood pressure, adequacy of pulmonary ventilation, and response to care were monitored throughout the procedure.  The physical status of the patient was re-assessed after the procedure.  After I obtained informed consent, the scope was passed under direct vision.  Throughout the procedure, the patient's blood pressure, pulse, and oxygen saturations were monitored continuously.  The colonoscope was introduced through the anus and advanced to the cecum, identified by appendiceal orifice & IC valve.  The quality of the prep was good.  The patient tolerated the procedure well.,FINDINGS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "ASA Grade Assessment:  P1 A normal healthy patient.  After reviewing the risks and benefits, the patient was deemed in satisfactory condition to undergo the procedure.  The anesthesia plan was to use conscious sedation.  Immediately prior to administration of medications, the patient was re-assessed for adequacy to receive sedatives.  The heart rate, respiratory rate, oxygen saturations, blood pressure, adequacy of pulmonary ventilation, and response to care were monitored throughout the procedure.  The physical status of the patient was re-assessed after the procedure.  After I obtained informed consent, the scope was passed under direct vision.  Throughout the procedure, the patient's blood pressure, pulse, and oxygen saturations were monitored continuously.  The colonoscope was introduced through the anus and advanced to the cecum, identified by appendiceal orifice & IC valve.  The quality of the prep was good.  The patient tolerated the procedure well.,FINDINGS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "P1 A normal healthy patient.  After reviewing the risks and benefits, the patient was deemed in satisfactory condition to undergo the procedure.  The anesthesia plan was to use conscious sedation.  Immediately prior to administration of medications, the patient was re-assessed for adequacy to receive sedatives.  The heart rate, respiratory rate, oxygen saturations, blood pressure, adequacy of pulmonary ventilation, and response to care were monitored throughout the procedure.  The physical status of the patient was re-assessed after the procedure.  After I obtained informed consent, the scope was passed under direct vision.  Throughout the procedure, the patient's blood pressure, pulse, and oxygen saturations were monitored continuously.  The colonoscope was introduced through the anus and advanced to the cecum, identified by appendiceal orifice & IC valve.  The quality of the prep was good.  The patient tolerated the procedure well.,FINDINGS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "A sessile, non-bleeding polyp was found in the rectum.  The polyp was 5 mm in size.  Polypectomy was performed with a saline injection-lift technique using the snare.  Resection and retrieval were complete.  Estimated blood loss was minimal"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "A sessile, non-bleeding polyp was found in the rectum.  The polyp was 5 mm in size.  Polypectomy was performed with a saline injection-lift technique using the snare.  Resection and retrieval were complete.  Estimated blood loss was minimal"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "One pedunculated, non-bleeding polyp was found in the sigmoid colon.  The polyp was 7 mm in size.  Polypectomy was performed with a hot forceps.  Resection and retrieval were complete.  Estimated blood loss was minimal"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "One pedunculated, non-bleeding polyp was found in the sigmoid colon.  The polyp was 7 mm in size.  Polypectomy was performed with a hot forceps.  Resection and retrieval were complete.  Estimated blood loss was minimal"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Multiple large-mouthed diverticula were found in the descending colon"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "Multiple large-mouthed diverticula were found in the descending colon"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Internal, non-bleeding, prolapsed with spontaneous reduction (grade II) hemorrhoids were found on retroflexion.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Internal, non-bleeding, prolapsed with spontaneous reduction (grade II) hemorrhoids were found on retroflexion.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "One 5 mm benign appearing polyp in the rectum.  Resected and retrieved"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "One 5 mm benign appearing polyp in the rectum.  Resected and retrieved"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "One 7 mm polyp in the sigmoid colon.  Resected and retrieved"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "procedure",
+    "text": "One 7 mm polyp in the sigmoid colon.  Resected and retrieved"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "Diverticulosis"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "procedure",
+    "text": "Diverticulosis"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "Internal hemorrhoids were found.,RECOMMENDATION:"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "procedure",
+    "text": "Internal hemorrhoids were found.,RECOMMENDATION:"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "diagnosis",
+    "text": "High fiber diet"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "procedure",
+    "text": "High fiber diet"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "diagnosis",
+    "text": "Await pathology results"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "procedure",
+    "text": "Await pathology results"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "diagnosis",
+    "text": "Repeat colonoscopy for surveillance in 3 years"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "procedure",
+    "text": "Repeat colonoscopy for surveillance in 3 years"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "diagnosis",
+    "text": "The findings and recommendations were discussed with the patient.,CPT CODE(S):,45385, Colonoscopy, flexible, proximal to splenic flexure; with removal of tumor(s), polyp(s), or other lesion(s) by snare,technique.,45384, 59, Colonoscopy, flexible, proximal to splenic flexure; with removal of tumor(s), polyp(s), or other lesion(s) by hot,biopsy forceps or bipolar cautery.,45381, 59, Colonoscopy, flexible, proximal to splenic flexure; with directed submucosal injection(s), any substance.,ICD9 CODE(S):,211.4, Benign neoplasm of rectum and anal canal.,211.3, Benign neoplasm of colon.,562.10, Diverticulosis of colon (without mention of hemorrhage).,455.2, Internal hemorrhoids with other complication,578.1, Blood in stool.,v12.72, Personal history of colonic polyps"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "procedure",
+    "text": "The findings and recommendations were discussed with the patient.,CPT CODE(S):,45385, Colonoscopy, flexible, proximal to splenic flexure; with removal of tumor(s), polyp(s), or other lesion(s) by snare,technique.,45384, 59, Colonoscopy, flexible, proximal to splenic flexure; with removal of tumor(s), polyp(s), or other lesion(s) by hot,biopsy forceps or bipolar cautery.,45381, 59, Colonoscopy, flexible, proximal to splenic flexure; with directed submucosal injection(s), any substance.,ICD9 CODE(S):,211.4, Benign neoplasm of rectum and anal canal.,211.3, Benign neoplasm of colon.,562.10, Diverticulosis of colon (without mention of hemorrhage).,455.2, Internal hemorrhoids with other complication,578.1, Blood in stool.,v12.72, Personal history of colonic polyps"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

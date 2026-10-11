@@ -1,0 +1,113 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CC:, Sudden onset blindness.,HX:, This 58 y/o RHF was in her usual healthy state, until 4:00PM, 1/8/93, when she suddenly became blind. Tongue numbness and slurred speech occurred simultaneously with the loss of vision. The vision transiently improved to "severe blurring" enroute to a local ER, but worsened again once there. While being evaluated she became unresponsive, even to deep noxious stimuli. She was transferred to UIHC for further evaluation. Upon arrival at UIHC her signs and symptoms were present but markedly improved.,PMH:, 1) Hysterectomy many years previous. 2) Herniorrhaphy in past. 3) DJD, relieved with NSAIDs.,FHX/SHX:, Married x 27yrs. Husband denied Tobacco/ETOH/illicit drug use for her.,Unremarkable FHx.,MEDS:, none.,EXAM:, Vitals: 36.9C.  HR 93.  BP 151/93.  RR 22.  98% O2Sat.,MS: somnolent, but arousable to verbal stimulation. minimal speech. followed simple commands on occasion.,CN: Blinked to threat from all directions. EOM appeared full, Pupils 2/2 decreasing to 1/1. +/+Corneas. Winced to PP in all areas of Face. +/+Gag. Tongue midline. Oculocephalic reflex intact.,Motor: UE 4/5 proximally. Full strength in all other areas. Normal tone and muscle bulk.,Sensory: Withdrew to PP in all extremities.,Gait: ND.,Reflexes: 2+/2+ throughout UE, 3/3 patella, 2/2 ankles, Plantar responses were flexor bilaterally.,Gen exam: unremarkable.,COURSE: ,MRI Brain revealed bilateral thalamic strokes. Transthoracic echocardiogram (TTE) showed an intraatrial septal aneurysm with right to left shunt. Transesophageal echocardiogram (TEE) revealed the same. No intracardiac thrombus was found. Lower extremity dopplers were unremarkable. Carotid duplex revealed 0-15% bilateral ICA stenosis. Neuroophthalmologic evaluation revealed evidence of a supranuclear vertical gaze palsy OU (diminished up and down gaze). Neuropsychologic assessment 1/12-15/93 revealed severe impairment of anterograde verbal and visual memory, including acquisition and delayed recall and recognition. Speech was effortful and hypophonic with very defective verbal associative fluency. Reading comprehension was somewhat preserved, though she complained that despite the ability to see type clearly, she could not make sense of words. There was impairment of 2-D constructional praxis. A follow-up Neuropsychology evaluation in 7/93 revealed little improvement. Laboratory studies, TSH, FT4, CRP, ESR, GS, PT/PTT were unremarkable. Total serum cholesterol 195, Triglycerides 57, HDL 43, LDL 141. She was placed on ASA and discharged1/19/93.,She was last seen on 5/2/95 and was speaking fluently and lucidly. She continued to have mild decreased vertical eye movements. Coordination and strength testing were fairly unremarkable. She continues to take ASA 32mg qd.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "measurement",
+    "text": "98%"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "measurement",
+    "text": "15%"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "1/12-15/93 revealed severe impairment of anterograde verbal and visual memory, including acquisition and delayed recall and recognition. Speech was effortful and hypophonic with very defective verbal associative fluency. Reading comprehension was somewhat preserved, though she complained that despite the ability to see type clearly, she could not make sense of words. There was impairment of 2-D constructional praxis. A follow-up Neuropsychology evaluation in 7/93 revealed little improvement. Laboratory studies"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "PT/PTT were unremarkable. Total serum cholesterol 195"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "cholesterol"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Triglycerides 57"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "HDL 43"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "LDL 141. She was placed on ASA and discharged1/19/93.,She was last seen on 5/2/95 and was speaking fluently and lucidly. She continued to have mild decreased vertical eye movements. Coordination and strength testing were fairly unremarkable. She continues to take ASA 32mg qd"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "measurement",
+    "text": "32mg"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Measurement] 98.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Measurement] 15.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] R402230: Coma scale, best verbal response, inappropriate words, unspecified time (score: 0.2203)\n[ICD-10-CM 2027] R402220: Coma scale, best verbal response, incomprehensible words, unspecified time (score: 0.2169)\n[ICD-10-CM 2027] R402233: Coma scale, best verbal response, inappropriate words, at hospital admission (score: 0.2083)\n[ICD-10-CM 2027] Match unresolved (top score 0.2203 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] T8069XD: Other serum reaction due to other serum, subsequent encounter (score: 0.5052)\n[ICD-10-CM 2027] T8069XA: Other serum reaction due to other serum, initial encounter (score: 0.5042)\n[ICD-10-CM 2027] T8069XS: Other serum reaction due to other serum, sequela (score: 0.5042)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'cholesterol' \u2192 RXCUI 2438, canonical: cholesterol, match: exact\n[RxNorm] Ingredient: cholesterol (RXCUI 2438)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] No matches found for 'Triglycerides 57' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] No matches found for 'HDL 43' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] O368191: Decreased fetal movements, unspecified trimester, fetus 1 (score: 0.2980)\n[ICD-10-CM 2027] O368192: Decreased fetal movements, unspecified trimester, fetus 2 (score: 0.2980)\n[ICD-10-CM 2027] O368193: Decreased fetal movements, unspecified trimester, fetus 3 (score: 0.2980)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Measurement] 32.0mg \u2014 not associated with any medication"
+  }
+]

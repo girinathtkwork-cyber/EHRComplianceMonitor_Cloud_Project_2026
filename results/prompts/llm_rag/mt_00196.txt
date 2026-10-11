@@ -1,0 +1,123 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT:,  Toothache.,HISTORY OF PRESENT ILLNESS:  ,This is a 29-year-old male who has had multiple problems with his teeth due to extensive dental disease and has had many of his teeth pulled.  Complains of new tooth pain.  The patient states his current toothache is to both upper and lower teeth on the left side for approximately three days.  The patient states that he would have gone to see his regular dentist but he has missed so many appointments that they now do not allow him to schedule regular appointments, he has to be on standby appointments only.  The patient denies any other problems or complaints.  The patient denies any recent illness or injuries.  The patient does have OxyContin and Vicodin at home which he uses for his knee pain but he wants more pain medicines because he does not want to use up that medicine for his toothache when he wants to say this with me.,REVIEW OF SYSTEMS: , CONSTITUTIONAL:  No fever or chills.  No fatigue or weakness.  No recent weight change.  HEENT:  No headache, no neck pain, the toothache pain for the past three days as previously mentioned.  There is no throat swelling, no sore throat, no difficulty swallowing solids or liquids.  The patient denies any rhinorrhea.  No sinus congestion, pressure or pain, no ear pain, no hearing change, no eye pain or vision change.  CARDIOVASCULAR:  No chest pain.  RESPIRATIONS:  No shortness of breath or cough.  GASTROINTESTINAL:  No abdominal pain.  No nausea or vomiting.  GENITOURINARY:  No dysuria.  MUSCULOSKELETAL:  No back pain.  No muscle or joint aches.  SKIN:  No rashes or lesions.  NEUROLOGIC:  No vision or hearing change.  No focal weakness or numbness.  Normal speech.  HEMATOLOGIC/LYMPHATIC:  No lymph node swelling has been noted.,PAST MEDICAL HISTORY: , Chronic knee pain.,CURRENT MEDICATIONS: , OxyContin and Vicodin.,ALLERGIES:,  PENICILLIN AND CODEINE.,SOCIAL HISTORY: , The patient is still a smoker.,PHYSICAL EXAMINATION:,  VITAL SIGNS:  Temperature 97.9 oral, blood pressure is 146/83, pulse is 74, respirations 16, oxygen saturation 98% on room air and interpreted as normal.  CONSTITUTIONAL:  The patient is well nourished and well developed.  The patient is a little overweight but otherwise appears to be healthy.  The patient is calm, comfortable, in no acute distress, and looks well.  The patient is pleasant and cooperative.  HEENT:  Eyes are normal with clear conjunctiva and cornea bilaterally.  There is no icterus, injection, or discharge.  Pupils are 3 mm and equally round and reactive to light bilaterally.  There is no absence of light sensitivity or photophobia.  Extraocular motions are intact bilaterally.  Ears are normal bilaterally without any sign of infection.  There is no erythema, swelling of canals.  Tympanic membranes are intact without any erythema, bulging or fluid levels or bubbles behind it.  Nose is normal without rhinorrhea or audible congestion.  There is no tenderness over the sinuses.  NECK:  Supple, nontender, and full range of motion.  There is no meningismus.  No cervical lymphadenopathy.  No JVD.  Mouth and oropharynx shows multiple denture and multiple dental caries.  The patient has tenderness to tooth #12 as well as tooth #21.  The patient has normal gums.  There is no erythema or swelling.  There is no purulent or other discharge noted.  There is no fluctuance or suggestion of abscess.  There are no new dental fractures.  The oropharynx is normal without any sign of infection.  There is no erythema, exudate, lesion or swelling.  The buccal membranes are normal.  Mucous membranes are moist.  The floor of the mouth is normal without any abscess, suggestion of Ludwig's syndrome.  CARDIOVASCULAR:  Heart is regular rate and rhythm without murmur, rub, or gallop.  RESPIRATIONS:  Clear to auscultation bilaterally without shortness of breath.  GASTROINTESTINAL:  Abdomen is normal and nontender.  MUSCULOSKELETAL:  No abnormalities are noted to back, arms and legs.  The patient has normal use of his extremities.  SKIN:  No rashes or lesions.  NEUROLOGIC:  Cranial nerves II through XII are intact.  Motor and sensory are intact to the extremities.  The patient has normal speech and normal ambulation.  PSYCHIATRIC:  The patient is alert and oriented x4.  Normal mood and affect.  HEMATOLOGIC/LYMPHATIC:  No cervical lymphadenopathy is palpated.,EMERGENCY DEPARTMENT COURSE: , The patient did request a pain shot and the patient was given Dilaudid of 4 mg IM without any adverse reaction.,DIAGNOSES:,1.  ODONTALGIA.,2.  MULTIPLE DENTAL CARIES.,CONDITION UPON DISPOSITION:  ,Stable.,DISPOSITION: , To home.,PLAN: , The patient was given a list of local dental clinics that he can follow up with or he can choose to stay with his own dentist that he wishes.  The patient was requested to have reevaluation within two days.  The patient was given a prescription for Percocet and clindamycin.  The patient was given drug precautions for the use of these medicines.  The patient was offered discharge instructions on toothache but states that he already has it.  He declined the instructions.  The patient was asked to return to the emergency room, should he have any worsening of his condition or develop any other problems or symptoms of concern.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "OxyContin"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "OxyContin"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "CODEINE"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "measurement",
+    "text": "98%"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Dilaudid"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "4 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "ODONTALGIA"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "MULTIPLE DENTAL CARIES.,CONDITION UPON DISPOSITION:  ,Stable.,DISPOSITION: , To home.,PLAN: , The patient was given a list of local dental clinics that he can follow up with or he can choose to stay with his own dentist that he wishes.  The patient was requested to have reevaluation within two days.  The patient was given a prescription for Percocet and clindamycin.  The patient was given drug precautions for the use of these medicines.  The patient was offered discharge instructions on toothache but states that he already has it.  He declined the instructions.  The patient was asked to return to the emergency room, should he have any worsening of his condition or develop any other problems or symptoms of concern"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Percocet"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "clindamycin"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'OxyContin' \u2192 RXCUI 218986, canonical: Oxycontin, match: exact\n[RxNorm] Ingredient: oxycodone (RXCUI 7804)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 325 MG / oxycodone hydrochloride 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'OxyContin' \u2192 RXCUI 218986, canonical: Oxycontin, match: exact\n[RxNorm] Ingredient: oxycodone (RXCUI 7804)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 325 MG / oxycodone hydrochloride 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'CODEINE' \u2192 RXCUI 2670, canonical: codeine, match: exact\n[RxNorm] Ingredient: codeine (RXCUI 2670)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): chlorpheniramine maleate 0.4 MG/ML / codeine phosphate 2 MG/ML / phenylephrine hydrochloride 1 MG/ML Oral Solution; codeine phosphate 1 MG/ML / guaifenesin 20 MG/ML / pseudoephedrine hydrochloride 3 MG/ML Oral Suspension; codeine phosphate 1 MG/ML / guaifenesin 20 MG/ML / pseudoephedrine hydrochloride 3.33 MG/ML Oral Suspension; codeine phosphate 1 MG/ML / guaifenesin 20 MG/ML / pseudoephedrine hydrochloride 3.75 MG/ML Oral Suspension; codeine phosphate 1 MG/ML / guaifenesin 20 MG/ML / pseudoephedrine hydrochloride 4 MG/ML Oral Suspension"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Measurement] 98.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Dilaudid' \u2192 RXCUI 224913, canonical: Dilaudid, match: exact\n[RxNorm] Ingredient: hydromorphone (RXCUI 3423)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR hydromorphone hydrochloride 32 MG Extended Release Oral Tablet; 0.5 ML hydromorphone hydrochloride 1 MG/ML Prefilled Syringe; 1 ML hydromorphone hydrochloride 2 MG/ML Injection; 1 ML hydromorphone hydrochloride 10 MG/ML Injection; 5 ML hydromorphone hydrochloride 10 MG/ML Injection"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 4.0mg associated with Dilaudid"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] No matches found for 'ODONTALGIA' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Y92230: Patient room in hospital as the place of occurrence of the external cause (score: 0.2593)\n[ICD-10-CM 2027] P5842: Neonatal jaundice due to drugs or toxins given to newborn (score: 0.2417)\n[ICD-10-CM 2027] Z322: Encounter for childbirth instruction (score: 0.2272)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Percocet' \u2192 RXCUI 42844, canonical: Percocet, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'clindamycin' \u2192 RXCUI 2582, canonical: clindamycin, match: exact\n[RxNorm] Ingredient: clindamycin (RXCUI 2582)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): clindamycin 20 MG/ML Topical Cream; benzoyl peroxide 0.05 MG/MG / clindamycin phosphate 0.012 MG/MG Topical Gel; benzoyl peroxide 0.0375 MG/MG / clindamycin phosphate 0.012 MG/MG Topical Gel; 2 ML clindamycin 150 MG/ML Injection; 4 ML clindamycin 150 MG/ML Injection"
+  }
+]

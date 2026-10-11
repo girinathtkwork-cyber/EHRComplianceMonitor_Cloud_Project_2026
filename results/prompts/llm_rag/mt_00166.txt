@@ -1,0 +1,213 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CLINICAL HISTORY: , This is a 64-year-old male patient, who had a previous stress test, which was abnormal and hence has been referred for a stress test with imaging for further classification of coronary artery disease and ischemia.,PERTINENT MEDICATIONS:,  Include Tylenol, Robitussin, Colace, Fosamax, multivitamins, hydrochlorothiazide, Protonix and flaxseed oil.,With the patient at rest 10.5 mCi of Cardiolite technetium-99 m sestamibi was injected and myocardial perfusion imaging was obtained.,PROCEDURE AND INTERPRETATION: , The patient exercised for a total of 4 minutes and 41 seconds on the standard Bruce protocol.  The peak workload was 7 METs.  The resting heart rate was 61 beats per minute and the peak heart rate was 173 beats per minute, which was 85% of the age-predicted maximum heart rate response.  The blood pressure response was normal with the resting blood pressure 126/86, and the peak blood pressure of 134/90.  EKG at rest showed normal sinus rhythm with a right-bundle branch block.  The peak stress EKG was abnormal with 2 mm of ST segment depression in V3 to V6, which remained abnormal till about 6 to 8 minutes into recovery.  There were occasional PVCs, but no sustained arrhythmia.  The patient had an episode of supraventricular tachycardia at peak stress.  The ischemic threshold was at a heart rate of 118 beats per minute and at 4.6 METs.  At peak stress, the patient was injected with 30.3 mCi of Cardiolite technetium-99 m sestamibi and myocardial perfusion imaging was obtained, and was compared to resting images.,MYOCARDIAL PERFUSION IMAGING:,1.  The overall quality of the scan was fair in view of increased abdominal uptake, increased bowel uptake seen.,2.  There was a large area of moderate to reduced tracer concentration seen in the inferior wall and the inferior apex.  This appeared to be partially reversible in the resting images.,3.  The left ventricle appeared normal in size.,4.  Gated SPECT images revealed normal wall motion and normal left ventricular systolic function with normal wall thickening.  The calculated ejection fraction was 70% at rest.,CONCLUSIONS:,1.  Average exercise tolerance.,2.  Adequate cardiac stress.,3.  Abnormal EKG response to stress, consistent with ischemia.  No symptoms of chest pain at rest.,4.  Myocardial perfusion imaging was abnormal with a large-sized, moderate intensity partially reversible inferior wall and inferior apical defect, consistent with inferior wall ischemia and inferior apical ischemia.,5.  The patient had run of SVT at peak stress.,6.  Gated SPECT images revealed normal wall motion and normal left ventricular systolic function.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Tylenol"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Colace"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Fosamax"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "hydrochlorothiazide"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Protonix"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "AND INTERPRETATION: , The patient exercised for a total of 4 minutes and 41 seconds on the standard Bruce protocol.  The peak workload was 7 METs.  The resting heart rate was 61 beats per minute and the peak heart rate was 173 beats per minute, which was 85% of the age-predicted maximum heart rate response.  The blood pressure response was normal with the resting blood pressure 126/86, and the peak blood pressure of 134/"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "measurement",
+    "text": "85%"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "EKG at rest showed normal sinus rhythm with a right-bundle branch block.  The peak stress EKG was abnormal with 2 mm of ST segment depression in V3 to V6, which remained abnormal till about 6 to 8 minutes into recovery.  There were occasional PVCs, but no sustained arrhythmia.  The patient had an episode of supraventricular tachycardia at peak stress.  The ischemic threshold was at a heart rate of 118 beats per minute and at 4.6 METs.  At peak stress, the patient was injected with 30.3 mCi of Cardiolite technetium-99 m sestamibi and myocardial perfusion imaging was obtained, and was compared to resting images.,MYOCARDIAL PERFUSION IMAGING:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "The overall quality of the scan was fair in view of increased abdominal uptake, increased bowel uptake seen"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "There was a large area of moderate to reduced tracer concentration seen in the inferior wall and the inferior apex.  This appeared to be partially reversible in the resting images"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "The left ventricle appeared normal in size"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Gated SPECT images revealed normal wall motion and normal left ventricular systolic function with normal wall thickening.  The calculated ejection fraction was 70% at rest.,CONCLUSIONS:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "Gated SPECT images revealed normal wall motion and normal left ventricular systolic function"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "measurement",
+    "text": "70%"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "Average exercise tolerance"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "Adequate cardiac stress"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Abnormal EKG response to stress, consistent with ischemia.  No symptoms of chest pain at rest"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "Myocardial perfusion imaging was abnormal with a large-sized, moderate intensity partially reversible inferior wall and inferior apical defect, consistent with inferior wall ischemia and inferior apical ischemia"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "The patient had run of SVT at peak stress"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Tylenol' \u2192 RXCUI 202433, canonical: Tylenol, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Colace' \u2192 RXCUI 82000, canonical: Colace, match: exact\n[RxNorm] Ingredient: docusate (RXCUI 82003)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alpha tocopherol 30 UNT / ascorbic acid 28 MG / cholecalciferol 400 UNT / docosahexaenoic acid 300 MG / docusate sodium 55 MG / ferrous fumarate 27 MG / folic acid 1.25 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; 24 HR ascorbic acid 500 MG / biotin 0.15 MG / copper sulfate 3 MG / dl-alpha tocopheryl acetate 30 UNT / docusate sodium 50 MG / folic acid 1 MG / iron carbonyl 150 MG / vitamin B12 0.06 MG Extended Release Oral Tablet; docusate sodium 3.33 MG/ML Oral Solution; docusate sodium 100 MG Oral Tablet; docusate sodium 100 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Fosamax' \u2192 RXCUI 114265, canonical: Fosamax, match: exact\n[RxNorm] Ingredient: alendronate (RXCUI 46041)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alendronic acid 70 MG Effervescent Oral Tablet; alendronic acid 35 MG Oral Tablet; alendronic acid 40 MG Oral Tablet; alendronic acid 10 MG Oral Tablet; alendronic acid 5 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'hydrochlorothiazide' \u2192 RXCUI 5487, canonical: hydrochlorothiazide, match: exact\n[RxNorm] Ingredient: hydrochlorothiazide (RXCUI 5487)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet; aliskiren 150 MG / hydrochlorothiazide 12.5 MG Oral Tablet; aliskiren 150 MG / hydrochlorothiazide 25 MG Oral Tablet; aliskiren 300 MG / hydrochlorothiazide 12.5 MG Oral Tablet; aliskiren 300 MG / hydrochlorothiazide 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Protonix' \u2192 RXCUI 261624, canonical: Protonix, match: exact\n[RxNorm] Ingredient: pantoprazole (RXCUI 40790)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pantoprazole 20 MG Delayed Release Oral Tablet; 100 ML pantoprazole 0.4 MG/ML Injection; 50 ML pantoprazole 0.8 MG/ML Injection; 100 ML pantoprazole 0.8 MG/ML Injection; pantoprazole 40 MG Injection"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'AND INTERPRETATION: , The patient exercised for a total of 4 minutes and 41 seconds on the standard Bruce protocol.  The peak workload was 7 METs.  The resting heart rate was 61 beats per minute and the peak heart rate was 173 beats per minute, which was 85% of the age-predicted maximum heart rate response.  The blood pressure response was normal with the resting blood pressure 126/86, and the peak blood pressure of 134/' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Measurement] 85.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'EKG at rest showed normal sinus rhythm with a right-bundle branch block.  The peak stress EKG was abnormal with 2 mm of ST segment depression in V3 to V6, which remained abnormal till about 6 to 8 minutes into recovery.  There were occasional PVCs, but no sustained arrhythmia.  The patient had an episode of supraventricular tachycardia at peak stress.  The ischemic threshold was at a heart rate of 118 beats per minute and at 4.6 METs.  At peak stress, the patient was injected with 30.3 mCi of Cardiolite technetium-99 m sestamibi and myocardial perfusion imaging was obtained, and was compared to resting images.,MYOCARDIAL PERFUSION IMAGING:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'The overall quality of the scan was fair in view of increased abdominal uptake, increased bowel uptake seen' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'There was a large area of moderate to reduced tracer concentration seen in the inferior wall and the inferior apex.  This appeared to be partially reversible in the resting images' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'The left ventricle appeared normal in size' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Gated SPECT images revealed normal wall motion and normal left ventricular systolic function with normal wall thickening.  The calculated ejection fraction was 70% at rest.,CONCLUSIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'Gated SPECT images revealed normal wall motion and normal left ventricular systolic function' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Measurement] 70.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'Average exercise tolerance' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'Adequate cardiac stress' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'Abnormal EKG response to stress, consistent with ischemia.  No symptoms of chest pain at rest' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Procedure] 'Myocardial perfusion imaging was abnormal with a large-sized, moderate intensity partially reversible inferior wall and inferior apical defect, consistent with inferior wall ischemia and inferior apical ischemia' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'The patient had run of SVT at peak stress' \u2014 extracted from header, not verified against any coding system"
+  }
+]

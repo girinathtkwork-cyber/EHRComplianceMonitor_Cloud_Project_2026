@@ -1,0 +1,153 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:  ,Esophageal rupture.,POSTOPERATIVE DIAGNOSIS:,  Esophageal rupture.,OPERATION PERFORMED,1.  Left thoracotomy with drainage of pleural fluid collection.,2.  Esophageal exploration and repair of esophageal perforation.,3.  Diagnostic laparoscopy and gastrostomy.,4.  Radiographic gastrostomy tube study with gastric contrast, interpretation.,ANESTHESIA: , General anesthesia.,INDICATIONS OF THE PROCEDURE: , The patient is a 47-year-old male with a history of chronic esophageal stricture who is admitted with food sticking and retching.  He has esophageal rupture on CT scan and comes now for a thoracotomy and gastrostomy.,DETAILS OF THE PROCEDURE: , After an extensive informed consent discussion process, the patient was brought to the operating room.  He was placed in a supine position on the operating table.  After induction of general anesthesia and placement of a double lumen endotracheal tube, he was turned and placed in a right lateral decubitus position on a beanbag with appropriate padding and axillary roll.  Left chest was prepped and draped in a usual sterile fashion.  After administration of intravenous antibiotics, a left thoracotomy incision was made, dissection was carried down to the subcutaneous tissues, muscle layers down to the fifth interspace.  The left lung was deflated and the pleural cavity entered.  The Finochietto retractor was used to help provide exposure.  The sixth rib was shingled in the posterior position and a careful expiration of the left pleural cavity was performed.,Immediately encountered was left pleural fluid including some purulent fluid.  Cultures of this were sampled and sent for microbiology analysis.  The left pleural space was then copiously irrigated.  A careful expiration demonstrated that the rupture appeared to be sealed.  There was crepitus within the mediastinal cavity.  The mediastinum was opened and explored and the esophagus was explored.  The tissues of the esophagus appeared to show some friability and an area of the rupture in the distal esophagus.  It was not possible to place any stitches in this tissue and instead a small intercostal flap was developed and placed to cover the area.  The area was copiously irrigated, this provided nice coverage and repair.  After final irrigation and inspection, two chest tubes were placed including a #36 French right angled tube at the diaphragm and a posterior straight #36 French.  These were secured at the left axillary line region at the skin level with #0-silk.,The intercostal sutures were used to close the chest wall with a #2 Vicryl sutures.  Muscle layers were closed with running #1 Vicryl sutures.  The wound was irrigated and the skin was closed with skin staples.,The patient was then turned and placed in a supine position.  A laparoscopic gastrostomy was performed and then a diagnostic laparoscopy performed.  A Veress needle was carefully inserted into the abdomen, pneumoperitoneum was established in the usual fashion, a bladeless 5-mm separator trocar was introduced.  The laparoscope was introduced.  A single additional left-sided separator trocar was introduced.  It was not possible to safely pass a nasogastric or orogastric tube, pass the stricture and perforation and so the nasogastric tube was left right at the level where there was some stricture or narrowing or resistance.  The stomach however did have some air insufflation and we were able to place our T-fasteners through the anterior abdominal wall and through the anterior gastric wall safely.  The skin incision was made and the gastric lumen was then accessed with the Seldinger technique.  Guide wire was introduced into the stomach lumen and series of dilators was then passed over the guide wire.  #18 French Gastrostomy was then passed into the stomach lumen and the balloon was inflated.  We confirmed that we were in the gastric lumen and the balloon was pulled up, creating apposition of the gastric wall and the anterior abdominal wall.  The T-fasteners were all crimped and secured into position.  As was in the plan, the gastrostomy was secured to the skin and into the tube.  Sterile dressing was applied.  Aspiration demonstrated gastric content.,Gastrostomy tube study, with interpretation.  Radiographic gastrostomy tube study with gastric contrast, with
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Esophageal rupture.,POSTOPERATIVE DIAGNOSIS:,  Esophageal rupture.,OPERATION PERFORMED"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Esophageal rupture.,OPERATION PERFORMED"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Left thoracotomy with drainage of pleural fluid collection"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Left thoracotomy with drainage of pleural fluid collection"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Esophageal exploration and repair of esophageal perforation"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Esophageal exploration and repair of esophageal perforation"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Diagnostic laparoscopy and gastrostomy"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Diagnostic laparoscopy and gastrostomy"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Radiographic gastrostomy tube study with gastric contrast, interpretation.,ANESTHESIA: , General anesthesia.,INDICATIONS OF THE PROCEDURE: , The patient is a 47-year-old male with a history of chronic esophageal stricture who is admitted with food sticking and retching.  He has esophageal rupture on CT scan and comes now for a thoracotomy and gastrostomy.,DETAILS OF THE PROCEDURE: , After an extensive informed consent discussion process, the patient was brought to the operating room.  He was placed in a supine position on the operating table.  After induction of general anesthesia and placement of a double lumen endotracheal tube, he was turned and placed in a right lateral decubitus position on a beanbag with appropriate padding and axillary roll.  Left chest was prepped and draped in a usual sterile fashion.  After administration of intravenous antibiotics, a left thoracotomy incision was made, dissection was carried down to the subcutaneous tissues, muscle layers down to the fifth interspace.  The left lung was deflated and the pleural cavity entered.  The Finochietto retractor was used to help provide exposure.  The sixth rib was shingled in the posterior position and a careful expiration of the left pleural cavity was performed.,Immediately encountered was left pleural fluid including some purulent fluid.  Cultures of this were sampled and sent for microbiology analysis.  The left pleural space was then copiously irrigated.  A careful expiration demonstrated that the rupture appeared to be sealed.  There was crepitus within the mediastinal cavity.  The mediastinum was opened and explored and the esophagus was explored.  The tissues of the esophagus appeared to show some friability and an area of the rupture in the distal esophagus.  It was not possible to place any stitches in this tissue and instead a small intercostal flap was developed and placed to cover the area.  The area was copiously irrigated, this provided nice coverage and repair.  After final irrigation and inspection, two chest tubes were placed including a #36 French right angled tube at the diaphragm and a posterior straight #36 French.  These were secured at the left axillary line region at the skin level with #0-silk.,The intercostal sutures were used to close the chest wall with a #2 Vicryl sutures.  Muscle layers were closed with running #1 Vicryl sutures.  The wound was irrigated and the skin was closed with skin staples.,The patient was then turned and placed in a supine position.  A laparoscopic gastrostomy was performed and then a diagnostic laparoscopy performed.  A Veress needle was carefully inserted into the abdomen, pneumoperitoneum was established in the usual fashion, a bladeless 5-mm separator trocar was introduced.  The laparoscope was introduced.  A single additional left-sided separator trocar was introduced.  It was not possible to safely pass a nasogastric or orogastric tube, pass the stricture and perforation and so the nasogastric tube was left right at the level where there was some stricture or narrowing or resistance.  The stomach however did have some air insufflation and we were able to place our T-fasteners through the anterior abdominal wall and through the anterior gastric wall safely.  The skin incision was made and the gastric lumen was then accessed with the Seldinger technique.  Guide wire was introduced into the stomach lumen and series of dilators was then passed over the guide wire.  #18 French Gastrostomy was then passed into the stomach lumen and the balloon was inflated.  We confirmed that we were in the gastric lumen and the balloon was pulled up, creating apposition of the gastric wall and the anterior abdominal wall.  The T-fasteners were all crimped and secured into position.  As was in the plan, the gastrostomy was secured to the skin and into the tube.  Sterile dressing was applied.  Aspiration demonstrated gastric content.,Gastrostomy tube study, with interpretation.  Radiographic gastrostomy tube study with gastric contrast, with"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Radiographic gastrostomy tube study with gastric contrast, interpretation.,ANESTHESIA: , General anesthesia.,INDICATIONS OF THE PROCEDURE: , The patient is a 47-year-old male with a history of chronic esophageal stricture who is admitted with food sticking and retching.  He has esophageal rupture on CT scan and comes now for a thoracotomy and gastrostomy.,DETAILS OF THE PROCEDURE: , After an extensive informed consent discussion process, the patient was brought to the operating room.  He was placed in a supine position on the operating table.  After induction of general anesthesia and placement of a double lumen endotracheal tube, he was turned and placed in a right lateral decubitus position on a beanbag with appropriate padding and axillary roll.  Left chest was prepped and draped in a usual sterile fashion.  After administration of intravenous antibiotics, a left thoracotomy incision was made, dissection was carried down to the subcutaneous tissues, muscle layers down to the fifth interspace.  The left lung was deflated and the pleural cavity entered.  The Finochietto retractor was used to help provide exposure.  The sixth rib was shingled in the posterior position and a careful expiration of the left pleural cavity was performed.,Immediately encountered was left pleural fluid including some purulent fluid.  Cultures of this were sampled and sent for microbiology analysis.  The left pleural space was then copiously irrigated.  A careful expiration demonstrated that the rupture appeared to be sealed.  There was crepitus within the mediastinal cavity.  The mediastinum was opened and explored and the esophagus was explored.  The tissues of the esophagus appeared to show some friability and an area of the rupture in the distal esophagus.  It was not possible to place any stitches in this tissue and instead a small intercostal flap was developed and placed to cover the area.  The area was copiously irrigated, this provided nice coverage and repair.  After final irrigation and inspection, two chest tubes were placed including a #36 French right angled tube at the diaphragm and a posterior straight #36 French.  These were secured at the left axillary line region at the skin level with #0-silk.,The intercostal sutures were used to close the chest wall with a #2 Vicryl sutures.  Muscle layers were closed with running #1 Vicryl sutures.  The wound was irrigated and the skin was closed with skin staples.,The patient was then turned and placed in a supine position.  A laparoscopic gastrostomy was performed and then a diagnostic laparoscopy performed.  A Veress needle was carefully inserted into the abdomen, pneumoperitoneum was established in the usual fashion, a bladeless 5-mm separator trocar was introduced.  The laparoscope was introduced.  A single additional left-sided separator trocar was introduced.  It was not possible to safely pass a nasogastric or orogastric tube, pass the stricture and perforation and so the nasogastric tube was left right at the level where there was some stricture or narrowing or resistance.  The stomach however did have some air insufflation and we were able to place our T-fasteners through the anterior abdominal wall and through the anterior gastric wall safely.  The skin incision was made and the gastric lumen was then accessed with the Seldinger technique.  Guide wire was introduced into the stomach lumen and series of dilators was then passed over the guide wire.  #18 French Gastrostomy was then passed into the stomach lumen and the balloon was inflated.  We confirmed that we were in the gastric lumen and the balloon was pulled up, creating apposition of the gastric wall and the anterior abdominal wall.  The T-fasteners were all crimped and secured into position.  As was in the plan, the gastrostomy was secured to the skin and into the tube.  Sterile dressing was applied.  Aspiration demonstrated gastric content.,Gastrostomy tube study, with interpretation.  Radiographic gastrostomy tube study with gastric contrast, with"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "The patient is a 47-year-old male with a history of chronic esophageal stricture who is admitted with food sticking and retching.  He has esophageal rupture on CT scan and comes now for a thoracotomy and gastrostomy.,DETAILS OF THE PROCEDURE:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "After an extensive informed consent discussion process, the patient was brought to the operating room.  He was placed in a supine position on the operating table.  After induction of general anesthesia and placement of a double lumen endotracheal tube, he was turned and placed in a right lateral decubitus position on a beanbag with appropriate padding and axillary roll.  Left chest was prepped and draped in a usual sterile fashion.  After administration of intravenous antibiotics, a left thoracotomy incision was made, dissection was carried down to the subcutaneous tissues, muscle layers down to the fifth interspace.  The left lung was deflated and the pleural cavity entered.  The Finochietto retractor was used to help provide exposure.  The sixth rib was shingled in the posterior position and a careful expiration of the left pleural cavity was performed.,Immediately encountered was left pleural fluid including some purulent fluid.  Cultures of this were sampled and sent for microbiology analysis.  The left pleural space was then copiously irrigated.  A careful expiration demonstrated that the rupture appeared to be sealed.  There was crepitus within the mediastinal cavity.  The mediastinum was opened and explored and the esophagus was explored.  The tissues of the esophagus appeared to show some friability and an area of the rupture in the distal esophagus.  It was not possible to place any stitches in this tissue and instead a small intercostal flap was developed and placed to cover the area.  The area was copiously irrigated, this provided nice coverage and repair.  After final irrigation and inspection, two chest tubes were placed including a #36 French right angled tube at the diaphragm and a posterior straight #36 French.  These were secured at the left axillary line region at the skin level with #0-silk.,The intercostal sutures were used to close the chest wall with a #2 Vicryl sutures.  Muscle layers were closed with running #1 Vicryl sutures.  The wound was irrigated and the skin was closed with skin staples.,The patient was then turned and placed in a supine position.  A laparoscopic gastrostomy was performed and then a diagnostic laparoscopy performed.  A Veress needle was carefully inserted into the abdomen, pneumoperitoneum was established in the usual fashion, a bladeless 5-mm separator trocar was introduced.  The laparoscope was introduced.  A single additional left-sided separator trocar was introduced.  It was not possible to safely pass a nasogastric or orogastric tube, pass the stricture and perforation and so the nasogastric tube was left right at the level where there was some stricture or narrowing or resistance.  The stomach however did have some air insufflation and we were able to place our T-fasteners through the anterior abdominal wall and through the anterior gastric wall safely.  The skin incision was made and the gastric lumen was then accessed with the Seldinger technique.  Guide wire was introduced into the stomach lumen and series of dilators was then passed over the guide wire.  #18 French Gastrostomy was then passed into the stomach lumen and the balloon was inflated.  We confirmed that we were in the gastric lumen and the balloon was pulled up, creating apposition of the gastric wall and the anterior abdominal wall.  The T-fasteners were all crimped and secured into position.  As was in the plan, the gastrostomy was secured to the skin and into the tube.  Sterile dressing was applied.  Aspiration demonstrated gastric content.,Gastrostomy tube study, with interpretation.  Radiographic gastrostomy tube study with gastric contrast, with"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] K222: Esophageal obstruction (score: 0.5760)\n[ICD-10-CM 2027] K2281: Esophageal polyp (score: 0.5249)\n[ICD-10-CM 2027] P7883: Newborn esophageal reflux (score: 0.4596)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] K222: Esophageal obstruction (score: 0.6017)\n[ICD-10-CM 2027] K2281: Esophageal polyp (score: 0.5483)\n[ICD-10-CM 2027] P7883: Newborn esophageal reflux (score: 0.4801)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] Z982: Presence of cerebrospinal fluid drainage device (score: 0.4328)\n[ICD-10-CM 2027] J948: Other specified pleural conditions (score: 0.4313)\n[ICD-10-CM 2027] J949: Pleural condition, unspecified (score: 0.4313)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Left thoracotomy with drainage of pleural fluid collection' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] K222: Esophageal obstruction (score: 0.6518)\n[ICD-10-CM 2027] K2281: Esophageal polyp (score: 0.5940)\n[ICD-10-CM 2027] P7883: Newborn esophageal reflux (score: 0.5201)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Esophageal exploration and repair of esophageal perforation' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] K9420: Gastrostomy complication, unspecified (score: 0.7062)\n[ICD-10-CM 2027] K9429: Other complications of gastrostomy (score: 0.7062)\n[ICD-10-CM 2027] K9421: Gastrostomy hemorrhage (score: 0.7006)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Diagnostic laparoscopy and gastrostomy' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] K9420: Gastrostomy complication, unspecified (score: 0.3152)\n[ICD-10-CM 2027] K9429: Other complications of gastrostomy (score: 0.3152)\n[ICD-10-CM 2027] K9421: Gastrostomy hemorrhage (score: 0.3127)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Radiographic gastrostomy tube study with gastric contrast, interpretation.,ANESTHESIA: , General anesthesia.,INDICATIONS OF THE PROCEDURE: , The patient is a 47-year-old male with a history of chronic esophageal stricture who is admitted with food sticking and retching.  He has esophageal rupture on CT scan and comes now for a thoracotomy and gastrostomy.,DETAILS OF THE PROCEDURE: , After an extensive informed consent discussion process, the patient was brought to the operating room.  He was placed in a supine position on the operating table.  After induction of general anesthesia and placement of a double lumen endotracheal tube, he was turned and placed in a right lateral decubitus position on a beanbag with appropriate padding and axillary roll.  Left chest was prepped and draped in a usual sterile fashion.  After administration of intravenous antibiotics, a left thoracotomy incision was made, dissection was carried down to the subcutaneous tissues, muscle layers down to the fifth interspace.  The left lung was deflated and the pleural cavity entered.  The Finochietto retractor was used to help provide exposure.  The sixth rib was shingled in the posterior position and a careful expiration of the left pleural cavity was performed.,Immediately encountered was left pleural fluid including some purulent fluid.  Cultures of this were sampled and sent for microbiology analysis.  The left pleural space was then copiously irrigated.  A careful expiration demonstrated that the rupture appeared to be sealed.  There was crepitus within the mediastinal cavity.  The mediastinum was opened and explored and the esophagus was explored.  The tissues of the esophagus appeared to show some friability and an area of the rupture in the distal esophagus.  It was not possible to place any stitches in this tissue and instead a small intercostal flap was developed and placed to cover the area.  The area was copiously irrigated, this provided nice coverage and repair.  After final irrigation and inspection, two chest tubes were placed including a #36 French right angled tube at the diaphragm and a posterior straight #36 French.  These were secured at the left axillary line region at the skin level with #0-silk.,The intercostal sutures were used to close the chest wall with a #2 Vicryl sutures.  Muscle layers were closed with running #1 Vicryl sutures.  The wound was irrigated and the skin was closed with skin staples.,The patient was then turned and placed in a supine position.  A laparoscopic gastrostomy was performed and then a diagnostic laparoscopy performed.  A Veress needle was carefully inserted into the abdomen, pneumoperitoneum was established in the usual fashion, a bladeless 5-mm separator trocar was introduced.  The laparoscope was introduced.  A single additional left-sided separator trocar was introduced.  It was not possible to safely pass a nasogastric or orogastric tube, pass the stricture and perforation and so the nasogastric tube was left right at the level where there was some stricture or narrowing or resistance.  The stomach however did have some air insufflation and we were able to place our T-fasteners through the anterior abdominal wall and through the anterior gastric wall safely.  The skin incision was made and the gastric lumen was then accessed with the Seldinger technique.  Guide wire was introduced into the stomach lumen and series of dilators was then passed over the guide wire.  #18 French Gastrostomy was then passed into the stomach lumen and the balloon was inflated.  We confirmed that we were in the gastric lumen and the balloon was pulled up, creating apposition of the gastric wall and the anterior abdominal wall.  The T-fasteners were all crimped and secured into position.  As was in the plan, the gastrostomy was secured to the skin and into the tube.  Sterile dressing was applied.  Aspiration demonstrated gastric content.,Gastrostomy tube study, with interpretation.  Radiographic gastrostomy tube study with gastric contrast, with' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'The patient is a 47-year-old male with a history of chronic esophageal stricture who is admitted with food sticking and retching.  He has esophageal rupture on CT scan and comes now for a thoracotomy and gastrostomy.,DETAILS OF THE PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'After an extensive informed consent discussion process, the patient was brought to the operating room.  He was placed in a supine position on the operating table.  After induction of general anesthesia and placement of a double lumen endotracheal tube, he was turned and placed in a right lateral decubitus position on a beanbag with appropriate padding and axillary roll.  Left chest was prepped and draped in a usual sterile fashion.  After administration of intravenous antibiotics, a left thoracotomy incision was made, dissection was carried down to the subcutaneous tissues, muscle layers down to the fifth interspace.  The left lung was deflated and the pleural cavity entered.  The Finochietto retractor was used to help provide exposure.  The sixth rib was shingled in the posterior position and a careful expiration of the left pleural cavity was performed.,Immediately encountered was left pleural fluid including some purulent fluid.  Cultures of this were sampled and sent for microbiology analysis.  The left pleural space was then copiously irrigated.  A careful expiration demonstrated that the rupture appeared to be sealed.  There was crepitus within the mediastinal cavity.  The mediastinum was opened and explored and the esophagus was explored.  The tissues of the esophagus appeared to show some friability and an area of the rupture in the distal esophagus.  It was not possible to place any stitches in this tissue and instead a small intercostal flap was developed and placed to cover the area.  The area was copiously irrigated, this provided nice coverage and repair.  After final irrigation and inspection, two chest tubes were placed including a #36 French right angled tube at the diaphragm and a posterior straight #36 French.  These were secured at the left axillary line region at the skin level with #0-silk.,The intercostal sutures were used to close the chest wall with a #2 Vicryl sutures.  Muscle layers were closed with running #1 Vicryl sutures.  The wound was irrigated and the skin was closed with skin staples.,The patient was then turned and placed in a supine position.  A laparoscopic gastrostomy was performed and then a diagnostic laparoscopy performed.  A Veress needle was carefully inserted into the abdomen, pneumoperitoneum was established in the usual fashion, a bladeless 5-mm separator trocar was introduced.  The laparoscope was introduced.  A single additional left-sided separator trocar was introduced.  It was not possible to safely pass a nasogastric or orogastric tube, pass the stricture and perforation and so the nasogastric tube was left right at the level where there was some stricture or narrowing or resistance.  The stomach however did have some air insufflation and we were able to place our T-fasteners through the anterior abdominal wall and through the anterior gastric wall safely.  The skin incision was made and the gastric lumen was then accessed with the Seldinger technique.  Guide wire was introduced into the stomach lumen and series of dilators was then passed over the guide wire.  #18 French Gastrostomy was then passed into the stomach lumen and the balloon was inflated.  We confirmed that we were in the gastric lumen and the balloon was pulled up, creating apposition of the gastric wall and the anterior abdominal wall.  The T-fasteners were all crimped and secured into position.  As was in the plan, the gastrostomy was secured to the skin and into the tube.  Sterile dressing was applied.  Aspiration demonstrated gastric content.,Gastrostomy tube study, with interpretation.  Radiographic gastrostomy tube study with gastric contrast, with' \u2014 extracted from header, not verified against any coding system"
+  }
+]

@@ -1,0 +1,263 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+ADMITTING DIAGNOSES,1.  Acute gastroenteritis.,2.  Nausea.,3.  Vomiting.,4.  Diarrhea.,5.  Gastrointestinal bleed.,6.  Dehydration.,DISCHARGE DIAGNOSES,1.  Acute gastroenteritis, resolved.,2.  Gastrointestinal bleed and chronic inflammation of the mesentery of unknown etiology.,BRIEF H&P AND HOSPITAL COURSE: , This patient is a 56-year-old male, a patient of Dr. X with 25-pack-year history, also a history of diabetes type 2, dyslipidemia, hypertension, hemorrhoids, chronic obstructive pulmonary disease, and a left lower lobe calcified granuloma that apparently is stable at this time.  This patient presented with periumbilical abdominal pain with nausea, vomiting, and diarrhea for the past 3 days and four to five watery bowel movements a day with symptoms progressively getting worse.  The patient was admitted into the ER and had trop x1 done, which was negative and ECG showed to be of normal sinus rhythm.,Lab findings initially presented with a hemoglobin of 13.1, hematocrit of 38.6 with no elevation of white count.  Upon discharge, his hemoglobin and hematocrit stayed at 10.9 and 31.3 and he was still having stool guaiac positive blood, and a stool study was done which showed few white blood cells, negative for Clostridium difficile and moderate amount of occult blood and moderate amount of RBCs.  The patient's nausea, vomiting, and diarrhea did resolve during his hospital course.  Was placed on IV fluids initially and on hospital day #2 fluids were discontinued and was started on clear liquid diet and diet was advanced slowly, and the patient was able to tolerate p.o. well.  The patient also denied any abdominal pain upon day of discharge.  The patient was also started on prednisone as per GI recommendations.  He was started on 60 mg p.o.  Amylase and lipase were also done which were normal and LDH and CRP was also done which are also normal and LFTs were done which were also normal as well.,PLAN: , The plan is to discharge the patient home.  He can resume his home medications of Prandin, Actos, Lipitor, Glucophage, Benicar, and Advair.  We will also start him on a tapered dose of prednisone for 4 weeks.  We will start him on 15 mg p.o. for seven days.  Then, week #2, we will start him on 40 mg for 1 week.  Then, week #3, we will start him on 30 mg for 1 week, and then, 20 mg for 1 week, and then finally we will stop.  He was instructed to take tapered dose of prednisone for 4 weeks as per the GI recommendations.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Acute gastroenteritis"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Nausea"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Vomiting"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Diarrhea"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Gastrointestinal bleed"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Dehydration.,DISCHARGE DIAGNOSES"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Acute gastroenteritis, resolved"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Gastrointestinal bleed and chronic inflammation of the mesentery of unknown etiology.,BRIEF H&P AND HOSPITAL COURSE: , This patient is a 56-year-old male, a patient of Dr. X with 25-pack-year history, also a history of diabetes type 2, dyslipidemia, hypertension, hemorrhoids, chronic obstructive pulmonary disease, and a left lower lobe calcified granuloma that apparently is stable at this time.  This patient presented with periumbilical abdominal pain with nausea, vomiting, and diarrhea for the past 3 days and four to five watery bowel movements a day with symptoms progressively getting worse.  The patient was admitted into the ER and had trop x1 done, which was negative and ECG showed to be of normal sinus rhythm.,Lab findings initially presented with a hemoglobin of 13.1, hematocrit of 38.6 with no elevation of white count.  Upon discharge, his hemoglobin and hematocrit stayed at 10.9 and 31.3 and he was still having stool guaiac positive blood, and a stool study was done which showed few white blood cells, negative for Clostridium difficile and moderate amount of occult blood and moderate amount of RBCs.  The patient's nausea, vomiting, and diarrhea did resolve during his hospital course.  Was placed on IV fluids initially and on hospital day #2 fluids were discontinued and was started on clear liquid diet and diet was advanced slowly, and the patient was able to tolerate p.o. well.  The patient also denied any abdominal pain upon day of discharge.  The patient was also started on prednisone as per GI recommendations.  He was started on 60 mg p.o.  Amylase and lipase were also done which were normal and LDH and CRP was also done which are also normal and LFTs were done which were also normal as well.,PLAN: , The plan is to discharge the patient home.  He can resume his home medications of Prandin, Actos, Lipitor, Glucophage, Benicar, and Advair.  We will also start him on a tapered dose of prednisone for 4 weeks.  We will start him on 15 mg p.o. for seven days.  Then, week #2, we will start him on 40 mg for 1 week.  Then, week #3, we will start him on 30 mg for 1 week, and then, 20 mg for 1 week, and then finally we will stop.  He was instructed to take tapered dose of prednisone for 4 weeks as per the GI recommendations"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "guaiac"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "prednisone"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "measurement",
+    "text": "60 mg"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Amylase"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "lipase"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Actos"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "Lipitor"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Glucophage"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "Benicar"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "Advair"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "prednisone"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "measurement",
+    "text": "15 mg"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "measurement",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "measurement",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "measurement",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "medication",
+    "text": "prednisone"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] K521: Toxic gastroenteritis and colitis (score: 0.6562)\n[ICD-10-CM 2027] A09: Infectious gastroenteritis and colitis, unspecified (score: 0.5984)\n[ICD-10-CM 2027] K520: Gastroenteritis and colitis due to radiation (score: 0.5952)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] R110: Nausea (score: 1.0000)\n[ICD-10-CM 2027] R1111: Vomiting without nausea (score: 0.7653)\n[ICD-10-CM 2027] R112: Nausea with vomiting, unspecified (score: 0.7653)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] R1110: Vomiting, unspecified (score: 1.0000)\n[ICD-10-CM 2027] O219: Vomiting of pregnancy, unspecified (score: 0.8826)\n[ICD-10-CM 2027] P9209: Other vomiting of newborn (score: 0.8339)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] R197: Diarrhea, unspecified (score: 1.0000)\n[ICD-10-CM 2027] K591: Functional diarrhea (score: 0.7651)\n[ICD-10-CM 2027] P783: Noninfective neonatal diarrhea (score: 0.6814)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] K922: Gastrointestinal hemorrhage, unspecified (score: 0.8208)\n[ICD-10-CM 2027] P543: Other neonatal gastrointestinal hemorrhage (score: 0.6405)\n[ICD-10-CM 2027] Z13811: Encounter for screening for lower gastrointestinal disorder (score: 0.6372)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] E860: Dehydration (score: 0.8640)\n[ICD-10-CM 2027] P741: Dehydration of newborn (score: 0.7618)\n[ICD-10-CM 2027] R369: Urethral discharge, unspecified (score: 0.3348)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] K521: Toxic gastroenteritis and colitis (score: 0.5186)\n[ICD-10-CM 2027] A09: Infectious gastroenteritis and colitis, unspecified (score: 0.4729)\n[ICD-10-CM 2027] K520: Gastroenteritis and colitis due to radiation (score: 0.4704)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] H5311: Day blindness (score: 0.2381)\n[ICD-10-CM 2027] Z3A00: Weeks of gestation of pregnancy not specified (score: 0.2000)\n[ICD-10-CM 2027] Z3A08: 8 weeks gestation of pregnancy (score: 0.2000)\n[ICD-10-CM 2027] Match unresolved (top score 0.2381 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'guaiac' \u2192 RXCUI 1373150, canonical: guaiac, match: exact\n[RxNorm] Ingredient: guaiac (RXCUI 1373150)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'prednisone' \u2192 RXCUI 8640, canonical: prednisone, match: exact\n[RxNorm] Ingredient: prednisone (RXCUI 8640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): prednisone 1 MG Delayed Release Oral Tablet; prednisone 2 MG Delayed Release Oral Tablet; prednisone 5 MG Delayed Release Oral Tablet; prednisone 1 MG Oral Tablet; prednisone 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Measurement] 60.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Amylase' \u2192 RXCUI 743, canonical: amylase, match: exact\n[RxNorm] Ingredient: amylase (RXCUI 743)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amylase 15000 UNT / lipase 3000 UNT / protease 9500 UNT Delayed Release Oral Capsule; amylase 78300 UNT / lipase 20880 UNT / protease 78300 UNT Oral Tablet; amylase 39150 UNT / lipase 10440 UNT / protease 39150 UNT Oral Tablet; amylase 60500 UNT / lipase 16000 UNT / protease 57500 UNT Delayed Release Oral Capsule; amylase 30250 UNT / lipase 8000 UNT / protease 28750 UNT Delayed Release Oral Capsule"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'lipase' \u2192 RXCUI 6406, canonical: lipase, match: exact\n[RxNorm] Ingredient: lipase (RXCUI 6406)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amylase 15000 UNT / lipase 3000 UNT / protease 9500 UNT Delayed Release Oral Capsule; amylase 78300 UNT / lipase 20880 UNT / protease 78300 UNT Oral Tablet; amylase 39150 UNT / lipase 10440 UNT / protease 39150 UNT Oral Tablet; amylase 60500 UNT / lipase 16000 UNT / protease 57500 UNT Delayed Release Oral Capsule; amylase 30250 UNT / lipase 8000 UNT / protease 28750 UNT Delayed Release Oral Capsule"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Actos' \u2192 RXCUI 261442, canonical: Actos, match: exact\n[RxNorm] Ingredient: pioglitazone (RXCUI 33738)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alogliptin 12.5 MG / pioglitazone 15 MG Oral Tablet; alogliptin 12.5 MG / pioglitazone 30 MG Oral Tablet; alogliptin 12.5 MG / pioglitazone 45 MG Oral Tablet; alogliptin 25 MG / pioglitazone 15 MG Oral Tablet; alogliptin 25 MG / pioglitazone 30 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'Lipitor' \u2192 RXCUI 153165, canonical: Lipitor, match: exact\n[RxNorm] Ingredient: atorvastatin (RXCUI 83367)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): atorvastatin 20 MG / ezetimibe 10 MG Oral Tablet; atorvastatin 40 MG / ezetimibe 10 MG Oral Tablet; atorvastatin 80 MG / ezetimibe 10 MG Oral Tablet; atorvastatin 80 MG Oral Tablet; atorvastatin 4 MG/ML Oral Suspension"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Glucophage' \u2192 RXCUI 151827, canonical: Glucophage, match: exact\n[RxNorm] Ingredient: metformin (RXCUI 6809)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR metformin hydrochloride 1000 MG / saxagliptin 2.5 MG Extended Release Oral Tablet; 24 HR metformin hydrochloride 1000 MG / saxagliptin 5 MG Extended Release Oral Tablet; 24 HR metformin hydrochloride 500 MG / saxagliptin 5 MG Extended Release Oral Tablet; linagliptin 2.5 MG / metformin hydrochloride 1000 MG Oral Tablet; linagliptin 2.5 MG / metformin hydrochloride 500 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'Benicar' \u2192 RXCUI 327503, canonical: Benicar, match: exact\n[RxNorm] Ingredient: olmesartan (RXCUI 321064)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet; olmesartan medoxomil 5 MG Oral Tablet; olmesartan medoxomil 20 MG Oral Tablet; olmesartan medoxomil 40 MG Oral Tablet; olmesartan medoxomil 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'Advair' \u2192 RXCUI 301543, canonical: Advair, match: exact\n[RxNorm] Ingredient: salmeterol (RXCUI 36117)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 60 ACTUAT fluticasone propionate 0.113 MG/ACTUAT / salmeterol 0.014 MG/ACTUAT Dry Powder Inhaler; 60 ACTUAT fluticasone propionate 0.232 MG/ACTUAT / salmeterol 0.014 MG/ACTUAT Dry Powder Inhaler; 60 ACTUAT fluticasone propionate 0.055 MG/ACTUAT / salmeterol 0.014 MG/ACTUAT Dry Powder Inhaler; Sensor 60 ACTUAT fluticasone propionate 0.113 MG/ACTUAT / salmeterol 0.014 MG/ACTUAT Dry Powder Inhaler; Sensor 60 ACTUAT fluticasone propionate 0.055 MG/ACTUAT / salmeterol 0.014 MG/ACTUAT Dry Powder Inhaler"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'prednisone' \u2192 RXCUI 8640, canonical: prednisone, match: exact\n[RxNorm] Ingredient: prednisone (RXCUI 8640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): prednisone 1 MG Delayed Release Oral Tablet; prednisone 2 MG Delayed Release Oral Tablet; prednisone 5 MG Delayed Release Oral Tablet; prednisone 1 MG Oral Tablet; prednisone 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Measurement] 15.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[Measurement] 40.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[Measurement] 30.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[Measurement] 20.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[RxNorm] 'prednisone' \u2192 RXCUI 8640, canonical: prednisone, match: exact\n[RxNorm] Ingredient: prednisone (RXCUI 8640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): prednisone 1 MG Delayed Release Oral Tablet; prednisone 2 MG Delayed Release Oral Tablet; prednisone 5 MG Delayed Release Oral Tablet; prednisone 1 MG Oral Tablet; prednisone 10 MG Oral Tablet"
+  }
+]

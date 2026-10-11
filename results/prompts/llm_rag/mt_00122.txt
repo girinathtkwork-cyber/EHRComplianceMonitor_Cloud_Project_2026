@@ -1,0 +1,303 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:,  Cervical myelopathy secondary to very large disc herniations at C4-C5 and C5-C6.,POSTOPERATIVE DIAGNOSIS: , Cervical myelopathy secondary to very large disc herniations at C4-C5 and C5-C6.,PROCEDURE PERFORMED:,1.  Anterior cervical discectomy, C4-C5 and C5-C6.,2.  Arthrodesis, C4-C5 and C5-C6.,3.  Partial corpectomy, C5.,4.  Machine bone allograft, C4-C5 and C5-C6.,5.  Placement of anterior cervical plate with a Zephyr C4 to C6.,6.  Fluoroscopic guidance.,7.  Microscopic dissection.,ANESTHESIA:,  General.,ESTIMATED BLOOD LOSS: , 60 mL.,COMPLICATIONS: , None.,INDICATIONS:,  This is a patient who presents with progressive weakness in the left upper extremity as well as imbalance.  He has also noted to have cord signal at the C4-C5 level secondary to a very large disc herniation that came behind the body at C5 as well and as well as a large disc herniation at C5-C6.  Risks and benefits of the surgery including bleeding, infection, neurologic deficit, nonunion, progressive spondylosis, and lack of improvement were all discussed.  He understood and wished to proceed.,DESCRIPTION OF PROCEDURE: , The patient was brought to the operating room and placed in the supine position.  Preoperative antibiotics were given.  The patient was placed in the supine position with all pressure points noted and well padded.  The patient was prepped and draped in standard fashion.  An incision was made approximately above the level of the cricoid.  Blunt dissection was used to expose the anterior portion of the spine with carotid moved laterally and trachea and esophagus moved medially.  We then placed needle into the disc spaces and was found to be at C5-C6.  Distracting pins were placed in the body of C4 and in to the body of C6.  The disc was then completely removed at C4-C5.  There was very significant compression of the cord.  This was carefully removed to avoid any type of pressure on the cord.  This was very severe and multiple free fragments were noted.  This was taken down to the level of ligamentum.  Both foramen were then also opened.  Other free fragments were also found behind the body of C5, part of the body of C5 was taken down to assure that all of these were removed.  The exact same procedure was done at C5-C6; however, if there were again free fragments noted, there was less not as severe compression at the C4-C5 area.  Again part of the body at C5 was removed to make sure that there was no additional constriction.  Both nerve roots were then widely decompressed.  Machine bone allograft was placed into the C4-C5 as well as C5-C6 and then a Zephyr plate was placed in the body of C4 and to the body of C6 with a metal pin placed into the body at C5.  Excellent purchase was obtained.  Fluoroscopy showed good placement and meticulous hemostasis was obtained.  Fascia was closed with 3-0 Vicryl, subcuticular 3-0 Dermabond for skin.  The patient tolerated the procedure well and went to recovery in good condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Cervical myelopathy secondary to very large disc herniations at C4-C5 and C5-C6.,POSTOPERATIVE DIAGNOSIS: , Cervical myelopathy secondary to very large disc herniations at C4-C5 and C5-C6.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Cervical myelopathy secondary to very large disc herniations at C4-C5 and C5-C6.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical discectomy, C4-C5 and C5-C6"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Anterior cervical discectomy, C4-C5 and C5-C6"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Arthrodesis, C4-C5 and C5-C6"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Arthrodesis, C4-C5 and C5-C6"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Partial corpectomy, C5"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Partial corpectomy, C5"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Machine bone allograft, C4-C5 and C5-C6"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Machine bone allograft, C4-C5 and C5-C6"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Placement of anterior cervical plate with a Zephyr C4 to C6"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "Placement of anterior cervical plate with a Zephyr C4 to C6"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Fluoroscopic guidance"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "Fluoroscopic guidance"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Microscopic dissection.,ANESTHESIA:,  General.,ESTIMATED BLOOD LOSS: , 60 mL.,COMPLICATIONS: , None.,INDICATIONS:,  This is a patient who presents with progressive weakness in the left upper extremity as well as imbalance.  He has also noted to have cord signal at the C4-C5 level secondary to a very large disc herniation that came behind the body at C5 as well and as well as a large disc herniation at C5-C"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Microscopic dissection.,ANESTHESIA:,  General.,ESTIMATED BLOOD LOSS: , 60 mL.,COMPLICATIONS: , None.,INDICATIONS:,  This is a patient who presents with progressive weakness in the left upper extremity as well as imbalance.  He has also noted to have cord signal at the C4-C5 level secondary to a very large disc herniation that came behind the body at C5 as well and as well as a large disc herniation at C5-C"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "measurement",
+    "text": "60 mL"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Risks and benefits of the surgery including bleeding, infection, neurologic deficit, nonunion, progressive spondylosis, and lack of improvement were all discussed.  He understood and wished to proceed.,DESCRIPTION OF PROCEDURE: , The patient was brought to the operating room and placed in the supine position.  Preoperative antibiotics were given.  The patient was placed in the supine position with all pressure points noted and well padded.  The patient was prepped and draped in standard fashion.  An incision was made approximately above the level of the cricoid.  Blunt dissection was used to expose the anterior portion of the spine with carotid moved laterally and trachea and esophagus moved medially.  We then placed needle into the disc spaces and was found to be at C5-C"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "Risks and benefits of the surgery including bleeding, infection, neurologic deficit, nonunion, progressive spondylosis, and lack of improvement were all discussed.  He understood and wished to proceed.,DESCRIPTION OF PROCEDURE: , The patient was brought to the operating room and placed in the supine position.  Preoperative antibiotics were given.  The patient was placed in the supine position with all pressure points noted and well padded.  The patient was prepped and draped in standard fashion.  An incision was made approximately above the level of the cricoid.  Blunt dissection was used to expose the anterior portion of the spine with carotid moved laterally and trachea and esophagus moved medially.  We then placed needle into the disc spaces and was found to be at C5-C"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "Distracting pins were placed in the body of C4 and in to the body of C"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "procedure",
+    "text": "Distracting pins were placed in the body of C4 and in to the body of C"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "The disc was then completely removed at C4-C"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "procedure",
+    "text": "The disc was then completely removed at C4-C"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "There was very significant compression of the cord.  This was carefully removed to avoid any type of pressure on the cord.  This was very severe and multiple free fragments were noted.  This was taken down to the level of ligamentum.  Both foramen were then also opened.  Other free fragments were also found behind the body of C5, part of the body of C5 was taken down to assure that all of these were removed.  The exact same procedure was done at C5-C6; however, if there were again free fragments noted, there was less not as severe compression at the C4-C5 area.  Again part of the body at C5 was removed to make sure that there was no additional constriction.  Both nerve roots were then widely decompressed.  Machine bone allograft was placed into the C4-C5 as well as C5-C6 and then a Zephyr plate was placed in the body of C4 and to the body of C6 with a metal pin placed into the body at C"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "procedure",
+    "text": "There was very significant compression of the cord.  This was carefully removed to avoid any type of pressure on the cord.  This was very severe and multiple free fragments were noted.  This was taken down to the level of ligamentum.  Both foramen were then also opened.  Other free fragments were also found behind the body of C5, part of the body of C5 was taken down to assure that all of these were removed.  The exact same procedure was done at C5-C6; however, if there were again free fragments noted, there was less not as severe compression at the C4-C5 area.  Again part of the body at C5 was removed to make sure that there was no additional constriction.  Both nerve roots were then widely decompressed.  Machine bone allograft was placed into the C4-C5 as well as C5-C6 and then a Zephyr plate was placed in the body of C4 and to the body of C6 with a metal pin placed into the body at C"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "diagnosis",
+    "text": "Excellent purchase was obtained.  Fluoroscopy showed good placement and meticulous hemostasis was obtained.  Fascia was closed with 3-0 Vicryl, subcuticular 3-0 Dermabond for skin.  The patient tolerated the procedure well and went to recovery in good condition"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "procedure",
+    "text": "Excellent purchase was obtained.  Fluoroscopy showed good placement and meticulous hemostasis was obtained.  Fascia was closed with 3-0 Vicryl, subcuticular 3-0 Dermabond for skin.  The patient tolerated the procedure well and went to recovery in good condition"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M5000: Cervical disc disorder with myelopathy, unspecified cervical region (score: 0.4705)\n[ICD-10-CM 2027] M5001: Cervical disc disorder with myelopathy, high cervical region (score: 0.4304)\n[ICD-10-CM 2027] M5003: Cervical disc disorder with myelopathy, cervicothoracic region (score: 0.4130)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] M5000: Cervical disc disorder with myelopathy, unspecified cervical region (score: 0.4729)\n[ICD-10-CM 2027] M5001: Cervical disc disorder with myelopathy, high cervical region (score: 0.4326)\n[ICD-10-CM 2027] M5003: Cervical disc disorder with myelopathy, cervicothoracic region (score: 0.4151)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] M5080: Other cervical disc disorders, unspecified cervical region (score: 0.4893)\n[ICD-10-CM 2027] M5090: Cervical disc disorder, unspecified, unspecified cervical region (score: 0.4893)\n[ICD-10-CM 2027] M47012: Anterior spinal artery compression syndromes, cervical region (score: 0.4766)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Anterior cervical discectomy, C4-C5 and C5-C6' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Z981: Arthrodesis status (score: 0.8814)\n[ICD-10-CM 2027] M960: Pseudarthrosis after fusion or arthrodesis (score: 0.5656)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Arthrodesis, C4-C5 and C5-C6' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Q922: Partial trisomy (score: 0.5629)\n[ICD-10-CM 2027] S08129D: Partial traumatic amputation of unspecified ear, subsequent encounter (score: 0.5553)\n[ICD-10-CM 2027] S08129A: Partial traumatic amputation of unspecified ear, initial encounter (score: 0.5515)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Partial corpectomy, C5' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] J4A8: Other chronic lung allograft dysfunction (score: 0.4851)\n[ICD-10-CM 2027] J4A9: Chronic lung allograft dysfunction, unspecified (score: 0.4851)\n[ICD-10-CM 2027] T86820: Skin graft (allograft) rejection (score: 0.4546)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Machine bone allograft, C4-C5 and C5-C6' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] S63438D: Traumatic rupture of volar plate of other finger at metacarpophalangeal and interphalangeal joint, subsequent encounter (score: 0.3550)\n[ICD-10-CM 2027] S63439D: Traumatic rupture of volar plate of unspecified finger at metacarpophalangeal and interphalangeal joint, subsequent encounter (score: 0.3550)\n[ICD-10-CM 2027] S63438A: Traumatic rupture of volar plate of other finger at metacarpophalangeal and interphalangeal joint, initial encounter (score: 0.3541)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'Placement of anterior cervical plate with a Zephyr C4 to C6' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] M2654: Insufficient anterior guidance (score: 0.7470)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'Fluoroscopic guidance' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.4414)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.4396)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.4395)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'Microscopic dissection.,ANESTHESIA:,  General.,ESTIMATED BLOOD LOSS: , 60 mL.,COMPLICATIONS: , None.,INDICATIONS:,  This is a patient who presents with progressive weakness in the left upper extremity as well as imbalance.  He has also noted to have cord signal at the C4-C5 level secondary to a very large disc herniation that came behind the body at C5 as well and as well as a large disc herniation at C5-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Measurement] 60.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] R39192: Position dependent micturition (score: 0.1970)\n[ICD-10-CM 2027] Y92230: Patient room in hospital as the place of occurrence of the external cause (score: 0.1906)\n[ICD-10-CM 2027] Y653: Endotracheal tube wrongly placed during anesthetic procedure (score: 0.1878)\n[ICD-10-CM 2027] Match unresolved (top score 0.1970 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Procedure] 'Risks and benefits of the surgery including bleeding, infection, neurologic deficit, nonunion, progressive spondylosis, and lack of improvement were all discussed.  He understood and wished to proceed.,DESCRIPTION OF PROCEDURE: , The patient was brought to the operating room and placed in the supine position.  Preoperative antibiotics were given.  The patient was placed in the supine position with all pressure points noted and well padded.  The patient was prepped and draped in standard fashion.  An incision was made approximately above the level of the cricoid.  Blunt dissection was used to expose the anterior portion of the spine with carotid moved laterally and trachea and esophagus moved medially.  We then placed needle into the disc spaces and was found to be at C5-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] S13111D: Dislocation of C0/C1 cervical vertebrae, subsequent encounter (score: 0.3659)\n[ICD-10-CM 2027] S13121D: Dislocation of C1/C2 cervical vertebrae, subsequent encounter (score: 0.3659)\n[ICD-10-CM 2027] S13131D: Dislocation of C2/C3 cervical vertebrae, subsequent encounter (score: 0.3659)"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[Procedure] 'Distracting pins were placed in the body of C4 and in to the body of C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] M50821: Other cervical disc disorders at C4-C5 level (score: 0.5102)\n[ICD-10-CM 2027] M50822: Other cervical disc disorders at C5-C6 level (score: 0.5102)\n[ICD-10-CM 2027] M50823: Other cervical disc disorders at C6-C7 level (score: 0.5102)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[Procedure] 'The disc was then completely removed at C4-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] Z87821: Personal history of retained foreign body fully removed (score: 0.2759)\n[ICD-10-CM 2027] Y93B3: Activity, free weights (score: 0.2586)\n[ICD-10-CM 2027] Z1889: Other specified retained foreign body fragments (score: 0.2169)"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[Procedure] 'There was very significant compression of the cord.  This was carefully removed to avoid any type of pressure on the cord.  This was very severe and multiple free fragments were noted.  This was taken down to the level of ligamentum.  Both foramen were then also opened.  Other free fragments were also found behind the body of C5, part of the body of C5 was taken down to assure that all of these were removed.  The exact same procedure was done at C5-C6; however, if there were again free fragments noted, there was less not as severe compression at the C4-C5 area.  Again part of the body at C5 was removed to make sure that there was no additional constriction.  Both nerve roots were then widely decompressed.  Machine bone allograft was placed into the C4-C5 as well as C5-C6 and then a Zephyr plate was placed in the body of C4 and to the body of C6 with a metal pin placed into the body at C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.5021)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.5001)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.5000)"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[Procedure] 'Excellent purchase was obtained.  Fluoroscopy showed good placement and meticulous hemostasis was obtained.  Fascia was closed with 3-0 Vicryl, subcuticular 3-0 Dermabond for skin.  The patient tolerated the procedure well and went to recovery in good condition' \u2014 extracted from header, not verified against any coding system"
+  }
+]

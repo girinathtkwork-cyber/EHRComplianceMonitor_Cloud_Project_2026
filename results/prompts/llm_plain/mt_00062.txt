@@ -1,0 +1,142 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+HISTORY OF PRESENT ILLNESS: , The patient is a 61-year-old female who was treated with CyberKnife therapy to a right upper lobe stage IA non-small cell lung cancer.  CyberKnife treatment was completed one month ago.  She is now being seen for her first post-CyberKnife treatment visit.,Since undergoing CyberKnife treatment, she has had low-level nausea without vomiting.  She continues to have pain with deep inspiration and resolving dysphagia.  She has no heartburn, cough, hemoptysis, rash, or palpable rib pain.,MEDICATIONS: , Dilantin 100 mg four times a day, phenobarbital 30 mg three times per day, levothyroxine 0.025 mg p.o. q. day, Tylenol with Codeine b.i.d., prednisone 5 mg p.r.n., citalopram 10 mg p.o. q. day, Spiriva q. day, Combivent inhaler p.r.n., omeprazole 20 mg p.o. q. day, Lidoderm patch every 12 hours, Naprosyn 375 mg p.o. b.i.d., oxaprozin 600 mg p.o. b.i.d., Megace 40 mg p.o. b.i.d., and Asacol p.r.n.,PHYSICAL EXAMINATION: , BP:  122/86.  Temp:  96.8.  HR:  79.  RR:  26.  RAS:  100%.,HEENT:  Normocephalic.  Pupils are equal and reactive to light and accommodation.  EOMs intact.,NECK:  Supple without masses or lymphadenopathy.,LUNGS:  Clear to auscultation bilaterally,CARDIAC:  Regular rate and rhythm without rubs, murmurs, or gallops.,EXTREMITIES:  No cyanosis, clubbing or edema.,ASSESSMENT: , The patient has done well with CyberKnife treatment of a stage IA non-small cell lung cancer, right upper lobe, one month ago.,PLAN: , She is to return to clinic in three months with a PET CT.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Dilantin"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "dosage",
+    "text": "100 mg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "phenobarbital"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "levothyroxine"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "0.025 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Tylenol with Codeine"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "prednisone"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "5 mg"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "citalopram"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Spiriva"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Combivent"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "omeprazole"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Lidoderm"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "Naprosyn"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "dosage",
+    "text": "375 mg"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "oxaprozin"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "dosage",
+    "text": "600 mg"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "measurement",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "The patient has done well with CyberKnife treatment of a stage IA non-small cell lung cancer, right upper lobe, one month ago.,PLAN:"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "She is to return to clinic in three months with a PET CT"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

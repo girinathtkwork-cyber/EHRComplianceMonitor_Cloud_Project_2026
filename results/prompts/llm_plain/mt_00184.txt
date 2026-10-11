@@ -1,0 +1,162 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PAST MEDICAL HISTORY:  Include:,1.  Type II diabetes mellitus.,2.  Hypertension.,3.  Hyperlipidemia.,4.  Gastroesophageal reflux disease.,5.  Renal insufficiency.,6.  Degenerative joint disease, status post bilateral hip and bilateral knee replacements.,7.  Enterocutaneous fistula.,8.  Respiratory failure.,9.  History of atrial fibrillation.,10.  Obstructive sleep apnea.,11.  History of uterine cancer, status post total hysterectomy.,12.  History of ventral hernia repair for incarcerated hernia.,SOCIAL HISTORY:  The patient has been admitted to multiple hospitals over the last several months.,FAMILY HISTORY:  Positive for diabetes mellitus type 2 in both mother and her sister.,MEDICATIONS:  Currently include,,1.  Albuterol inhaler q.4 h.,2.  Paradox swish and spit mouthwash twice a day.,3.  Digoxin 0.12mg daily.,4.  Theophylline 50 mg q.6 h.,5.  Prozac 20 mg daily.,6.  Lasix 40 mg daily.,7.  Humulin regular high dose sliding scale insulin subcu. q.6 h.,8.  Atrovent q.4 h.,9.  Lantus 12 units subcu. q.12 h.,10.  Lisinopril 10 mg daily.,11.  Magnesium oxide 400 mg three times a day.,12.  Metoprolol 25 mg twice daily.,13.  Nitroglycerin topical q.6 h.,14.  Zegerid 40 mg daily.,15.  Simvastatin 10 mg daily.,ALLERGIES:  Percocet, Percodan, oxycodone, and Duragesic.,REVIEW OF SYSTEMS:  The patient currently denies any pain, denies any headache or blurred vision.  Denies chest pain or shortness of breath.  She denies any nausea or vomiting.  Otherwise, systems are negative.,PHYSICAL EXAM:,General:  The patient is awake, alert, and oriented.  She is in no apparent respiratory distress.,Vital Signs:  Temperature 97.6, blood pressure is 139/53, pulse 100, respirations 24.  The patient has a tracheostomy in place.  She will also have an esophageal gastric tube in place.,Cardiac:  Regular rate and rhythm without audible murmurs, rubs or gallops.  Lungs are clear to auscultation bilaterally with slightly diminished breath sounds on the bases.  No adventitious sounds are noted.,Abdomen:  Obese.  There is an open wound on the ventral abdomen overlying the midline abdominal incision from previous surgery.  The area is covered with bandage with serosanguineous fluid.  Abdomen is nontender to palpation.  Bowel sounds are heard in all 4 quadrants.,Extremities:  Bilateral lower extremities are edematous and very cool to touch.,LABORATORY DATA:  Pending.  Capillary blood sugars thus far have been 132 and 135.,ASSESSMENT:  This is an 80-year-old female with an unfortunate past medical history with recent complications of sepsis and respiratory failure who is now receiving tube feeds.,PLAN:  For her diabetes mellitus, we will continue the patient on her current regimen of Lantus 12 units subcu. q.12 h. and Regular Insulin at a high dose sliding scale every 6 hours.  The patient had been previously controlled on this.  We will continue to check her sugars every 6 hours and adjust insulin as necessary.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Albuterol"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Digoxin"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "dosage",
+    "text": "0.12mg"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Theophylline"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "50 mg"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Prozac"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Lasix"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Humulin"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Atrovent"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Lantus"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "12 units"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Lisinopril"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Magnesium oxide"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "400 mg"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "Metoprolol"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "dosage",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "Nitroglycerin"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "measurement",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "Simvastatin"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "medication",
+    "text": "Percocet"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "medication",
+    "text": "oxycodone"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "diagnosis",
+    "text": "This is an 80-year-old female with an unfortunate past medical history with recent complications of sepsis and respiratory failure who is now receiving tube feeds.,PLAN:  For her diabetes mellitus, we will continue the patient on her current regimen of Lantus 12 units subcu. q.12 h. and Regular Insulin at a high dose sliding scale every 6 hours.  The patient had been previously controlled on this.  We will continue to check her sugars every 6 hours and adjust insulin as necessary"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "medication",
+    "text": "Lantus"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "dosage",
+    "text": "12 units"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

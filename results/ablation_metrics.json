@@ -1,0 +1,440 @@
+{
+  "test_headline_no_reference": {
+    "stage_a_only": {
+      "n": 190,
+      "confusion": {
+        "tp": 15,
+        "fp": 45,
+        "fn": 49,
+        "tn": 81
+      },
+      "precision": 0.25,
+      "recall": 0.234375,
+      "f1": 0.24193548387096775,
+      "precision_ci": {
+        "value": 0.25,
+        "low": 0.1577638557841185,
+        "high": 0.372323109454848
+      },
+      "recall_ci": {
+        "value": 0.234375,
+        "low": 0.1474976721963502,
+        "high": 0.35133490250707655
+      },
+      "false_positive_rate_clean": 0.35714285714285715,
+      "false_positive_rate_ci": {
+        "value": 0.35714285714285715,
+        "low": 0.2788422340709708,
+        "high": 0.44389685725261124
+      },
+      "findings_per_clean_record": 0.9365079365079365,
+      "per_error_type": {
+        "fabricated_diagnosis": {
+          "n": 27,
+          "localized_recall": 0.07407407407407407,
+          "ci": {
+            "value": 0.07407407407407407,
+            "low": 0.020554221697383523,
+            "high": 0.2336997729073062
+          }
+        },
+        "fabricated_procedure": {
+          "n": 16,
+          "localized_recall": 0.25,
+          "ci": {
+            "value": 0.25,
+            "low": 0.10181901984237346,
+            "high": 0.49498768929398645
+          }
+        },
+        "wrong_dosage": {
+          "n": 13,
+          "localized_recall": 0.6923076923076923,
+          "ci": {
+            "value": 0.6923076923076923,
+            "low": 0.4236888781333764,
+            "high": 0.8731950283838191
+          }
+        },
+        "wrong_medication": {
+          "n": 8,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.3244156195108769
+          }
+        }
+      },
+      "llm_calls": 0,
+      "fallback_rate": 0.0,
+      "rag_uncited_suspicious_downgrades": 0
+    },
+    "llm_plain": {
+      "n": 190,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 64,
+        "tn": 126
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "precision_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.0
+      },
+      "recall_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.056626022971156334
+      },
+      "false_positive_rate_clean": 0.0,
+      "false_positive_rate_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.029586819632536877
+      },
+      "findings_per_clean_record": 0.0,
+      "per_error_type": {
+        "fabricated_diagnosis": {
+          "n": 27,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.12455903714463581
+          }
+        },
+        "fabricated_procedure": {
+          "n": 16,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.19361341827271994
+          }
+        },
+        "wrong_dosage": {
+          "n": 13,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.22810184305529166
+          }
+        },
+        "wrong_medication": {
+          "n": 8,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.3244156195108769
+          }
+        }
+      },
+      "llm_calls": 0,
+      "fallback_rate": 0.0,
+      "rag_uncited_suspicious_downgrades": 0
+    },
+    "llm_rag": {
+      "n": 190,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 64,
+        "tn": 126
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "precision_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.0
+      },
+      "recall_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.056626022971156334
+      },
+      "false_positive_rate_clean": 0.0,
+      "false_positive_rate_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.029586819632536877
+      },
+      "findings_per_clean_record": 0.0,
+      "per_error_type": {
+        "fabricated_diagnosis": {
+          "n": 27,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.12455903714463581
+          }
+        },
+        "fabricated_procedure": {
+          "n": 16,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.19361341827271994
+          }
+        },
+        "wrong_dosage": {
+          "n": 13,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.22810184305529166
+          }
+        },
+        "wrong_medication": {
+          "n": 8,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.3244156195108769
+          }
+        }
+      },
+      "llm_calls": 0,
+      "fallback_rate": 0.0,
+      "rag_uncited_suspicious_downgrades": 0
+    },
+    "paired_llm_rag_vs_plain": {
+      "only_rag": 0,
+      "only_plain": 0,
+      "both": 0,
+      "neither": 190,
+      "mcnemar_p": 1.0
+    }
+  },
+  "all_270_includes_dev": {
+    "stage_a_only": {
+      "n": 270,
+      "confusion": {
+        "tp": 22,
+        "fp": 80,
+        "fn": 68,
+        "tn": 100
+      },
+      "precision": 0.21568627450980393,
+      "recall": 0.24444444444444444,
+      "f1": 0.22916666666666663,
+      "precision_ci": {
+        "value": 0.21568627450980393,
+        "low": 0.14697094402656707,
+        "high": 0.3050403634366611
+      },
+      "recall_ci": {
+        "value": 0.24444444444444444,
+        "low": 0.16732663395366268,
+        "high": 0.3424856454618631
+      },
+      "false_positive_rate_clean": 0.4444444444444444,
+      "false_positive_rate_ci": {
+        "value": 0.4444444444444444,
+        "low": 0.37376583474975517,
+        "high": 0.5174448596741402
+      },
+      "findings_per_clean_record": 1.3277777777777777,
+      "per_error_type": {
+        "fabricated_diagnosis": {
+          "n": 38,
+          "localized_recall": 0.07894736842105263,
+          "ci": {
+            "value": 0.07894736842105263,
+            "low": 0.02721410139426493,
+            "high": 0.2079967892026529
+          }
+        },
+        "fabricated_procedure": {
+          "n": 23,
+          "localized_recall": 0.2608695652173913,
+          "ci": {
+            "value": 0.2608695652173913,
+            "low": 0.1254844588924897,
+            "high": 0.4647039054375056
+          }
+        },
+        "wrong_dosage": {
+          "n": 18,
+          "localized_recall": 0.6666666666666666,
+          "ci": {
+            "value": 0.6666666666666666,
+            "low": 0.4374906934425036,
+            "high": 0.8372144563633714
+          }
+        },
+        "wrong_medication": {
+          "n": 11,
+          "localized_recall": 0.09090909090909091,
+          "ci": {
+            "value": 0.09090909090909091,
+            "low": 0.016231752262826,
+            "high": 0.37736462548620375
+          }
+        }
+      },
+      "llm_calls": 0,
+      "fallback_rate": 0.0,
+      "rag_uncited_suspicious_downgrades": 0
+    },
+    "llm_plain": {
+      "n": 270,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 90,
+        "tn": 180
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "precision_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.0
+      },
+      "recall_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.04093706842168078
+      },
+      "false_positive_rate_clean": 0.0,
+      "false_positive_rate_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.02089624981505818
+      },
+      "findings_per_clean_record": 0.0,
+      "per_error_type": {
+        "fabricated_diagnosis": {
+          "n": 38,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.09181293258383999
+          }
+        },
+        "fabricated_procedure": {
+          "n": 23,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.14312112541726274
+          }
+        },
+        "wrong_dosage": {
+          "n": 18,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.1758845505823749
+          }
+        },
+        "wrong_medication": {
+          "n": 11,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 2.7755575615628914e-17,
+            "high": 0.2588400172488141
+          }
+        }
+      },
+      "llm_calls": 0,
+      "fallback_rate": 0.0,
+      "rag_uncited_suspicious_downgrades": 0
+    },
+    "llm_rag": {
+      "n": 270,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 90,
+        "tn": 180
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "precision_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.0
+      },
+      "recall_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.04093706842168078
+      },
+      "false_positive_rate_clean": 0.0,
+      "false_positive_rate_ci": {
+        "value": 0.0,
+        "low": 0.0,
+        "high": 0.02089624981505818
+      },
+      "findings_per_clean_record": 0.0,
+      "per_error_type": {
+        "fabricated_diagnosis": {
+          "n": 38,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.09181293258383999
+          }
+        },
+        "fabricated_procedure": {
+          "n": 23,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.14312112541726274
+          }
+        },
+        "wrong_dosage": {
+          "n": 18,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 0.0,
+            "high": 0.1758845505823749
+          }
+        },
+        "wrong_medication": {
+          "n": 11,
+          "localized_recall": 0.0,
+          "ci": {
+            "value": 0.0,
+            "low": 2.7755575615628914e-17,
+            "high": 0.2588400172488141
+          }
+        }
+      },
+      "llm_calls": 0,
+      "fallback_rate": 0.0,
+      "rag_uncited_suspicious_downgrades": 0
+    },
+    "paired_llm_rag_vs_plain": {
+      "only_rag": 0,
+      "only_plain": 0,
+      "both": 0,
+      "neither": 270,
+      "mcnemar_p": 1.0
+    }
+  }
+}

@@ -1,0 +1,63 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM: , CT abdomen without contrast and pelvis without contrast, reconstruction. Additional diagnosis noted: Major Depressive Disorder.,REASON FOR EXAM: , Right lower quadrant pain, rule out appendicitis.,TECHNIQUE:  ,Noncontrast CT abdomen and pelvis.  An intravenous line could not be obtained for the use of intravenous contrast material.,FINDINGS: , The appendix is normal.  There is a moderate amount of stool throughout the colon.  There is no evidence of a small bowel obstruction or evidence of pericolonic inflammatory process.  Examination of the extreme lung bases appear clear, no pleural effusions.  The visualized portions of the liver, spleen, adrenal glands, and pancreas appear normal given the lack of contrast.  There is a small hiatal hernia.  There is no intrarenal stone or evidence of obstruction bilaterally.  There is a questionable vague region of low density in the left anterior mid pole region, this may indicate a tiny cyst, but it is not well seen given the lack of contrast.  This can be correlated with a followup ultrasound if necessary.  The gallbladder has been resected.  There is no abdominal free fluid or pathologic adenopathy.  There is abdominal atherosclerosis without evidence of an aneurysm.,Dedicated scans of the pelvis disclosed phleboliths, but no free fluid or adenopathy.  There are surgical clips present.  There is a tiny airdrop within the bladder.  If this patient has not had a recent catheterization, correlate for signs and symptoms of urinary tract infection.,IMPRESSION:,1.Normal appendix.,2.Moderate stool throughout the colon.,3.No intrarenal stones.,4.Tiny airdrop within the bladder.  If this patient has not had a recent catheterization, correlate for signs and symptoms of urinary tract infection.  The report was faxed upon dictation.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Major Depressive Disorder.,REASON FOR EXAM:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Right lower quadrant pain, rule out appendicitis.,TECHNIQUE:  ,Noncontrast CT abdomen and pelvis.  An intravenous line could not be obtained for the use of intravenous contrast material.,FINDINGS:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "The appendix is normal.  There is a moderate amount of stool throughout the colon.  There is no evidence of a small bowel obstruction or evidence of pericolonic inflammatory process.  Examination of the extreme lung bases appear clear, no pleural effusions.  The visualized portions of the liver, spleen, adrenal glands, and pancreas appear normal given the lack of contrast.  There is a small hiatal hernia.  There is no intrarenal stone or evidence of obstruction bilaterally.  There is a questionable vague region of low density in the left anterior mid pole region, this may indicate a tiny cyst, but it is not well seen given the lack of contrast.  This can be correlated with a followup ultrasound if necessary.  The gallbladder has been resected.  There is no abdominal free fluid or pathologic adenopathy.  There is abdominal atherosclerosis without evidence of an aneurysm.,Dedicated scans of the pelvis disclosed phleboliths, but no free fluid or adenopathy.  There are surgical clips present.  There is a tiny airdrop within the bladder.  If this patient has not had a recent catheterization, correlate for signs and symptoms of urinary tract infection.,IMPRESSION:,1.Normal appendix.,2.Moderate stool throughout the colon.,3.No intrarenal stones.,4.Tiny airdrop within the bladder.  If this patient has not had a recent catheterization, correlate for signs and symptoms of urinary tract infection.  The report was faxed upon dictation"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "1.Normal appendix.,2.Moderate stool throughout the colon.,3.No intrarenal stones.,4.Tiny airdrop within the bladder.  If this patient has not had a recent catheterization, correlate for signs and symptoms of urinary tract infection.  The report was faxed upon dictation"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] F339: Major depressive disorder, recurrent, unspecified (score: 0.4674)\n[ICD-10-CM 2027] F3340: Major depressive disorder, recurrent, in remission, unspecified (score: 0.4211)\n[ICD-10-CM 2027] F331: Major depressive disorder, recurrent, moderate (score: 0.4195)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] T411X6D: Underdosing of intravenous anesthetics, subsequent encounter (score: 0.3866)\n[ICD-10-CM 2027] T411X6A: Underdosing of intravenous anesthetics, initial encounter (score: 0.3850)\n[ICD-10-CM 2027] T411X6S: Underdosing of intravenous anesthetics, sequela (score: 0.3849)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2095)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.2031)\n[ICD-10-CM 2027] Y630: Excessive amount of blood or other fluid given during transfusion or infusion (score: 0.1653)\n[ICD-10-CM 2027] Match unresolved (top score 0.2095 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] N6459: Other signs and symptoms in breast (score: 0.3022)\n[ICD-10-CM 2027] N390: Urinary tract infection, site not specified (score: 0.2864)\n[ICD-10-CM 2027] R6889: Other general symptoms and signs (score: 0.2814)"
+  }
+]

@@ -1,0 +1,233 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+FAMILY HISTORY:,  Her father died from leukemia.  Her mother died from kidney and heart failure.  She has two brothers; five sisters, one with breast cancer; two sons; and a daughter.  She describes cancer, hypertension, nervous condition, kidney disease, high cholesterol, and depression in her family.,SOCIAL HISTORY:,  She is divorced.  She does not have support at home.  She denies tobacco, alcohol, and illicit drug use.,ALLERGIES: , Hypaque dye when she had x-rays for her kidneys.,MEDICATIONS: , Prempro q.d., Levoxyl 75 mcg q.d., Lexapro 20 mg q.d., Fiorinal as needed, currently she is taking it three times a day, and aspirin as needed.  She also takes various supplements including multivitamin q.d., calcium with vitamin D b.i.d., magnesium b.i.d., Ester-C b.i.d., vitamin E b.i.d., flax oil and fish oil b.i.d., evening primrose 1000 mg b.i.d., Quercetin 500 mg b.i.d., Policosanol 20 mg two a day, glucosamine chondroitin three a day, coenzyme-Q 10 30 mg two a day, holy basil two a day, sea vegetables two a day, and very green vegetables.,PAST MEDICAL HISTORY:,  Anemia, high cholesterol, and hypothyroidism.,PAST SURGICAL HISTORY:,  In 1979, tubal ligation and three milk ducts removed.  In 1989 she had a breast biopsy and in 2007 a colonoscopy.  She is G4, P3, with no cesarean section.,REVIEW OF SYSTEMS:  ,HEENT:  For headaches and sore throat.  Musculoskeletal:  She is right handed with joint pain, stiffness, and decreased range of motion.  Cardiac:  For heart murmur.  GI:  Negative and noncontributory.  Respiratory:  Negative and noncontributory.  Urinary:  Negative and noncontributory.  Hem-Onc:  Negative and noncontributory.  Vascular:  Negative and noncontributory.  Psychiatric:  Negative and noncontributory.  Genital:  Negative and noncontributory.  She denies any bowel or bladder dysfunction or loss of sensation in her genital area.,PHYSICAL EXAMINATION: , She is 5 feet 2 inches tall.  Current weight is 132 pounds, weight one year ago was 126 pounds.  BP is 122/68.  On physical exam, patient is alert and oriented with normal mentation and appropriate speech, in no acute distress.  General, a well-developed and well-nourished female in no acute distress.  HEENT exam, head is atraumatic and normocephalic.  Eyes, sclerae are anicteric.  Teeth good dentition.  Cranial nerves II, III, IV, and VI, vision is intact, visual fields are full to confrontation, EOMs full bilaterally, and pupils are equal, round, and reactive to light.  Cranial nerves V and VII, normal facial sensation and symmetrical facial movement.  Cranial nerve VIII, hearing intact.  Cranial nerves IX, X, and XII, tongue protrudes midline and palate elevates symmetrically.,Cranial nerve XI, strong and symmetrical shoulder shrugs against resistance.  Cardiac, regular rate and rhythm.  Chest and lungs are clear bilaterally.  Skin is warm and dry, normal turgor and texture.  No rashes or lesions are noted.  General musculoskeletal exam reveals no gross deformities, fasciculations, or atrophy.  Peripheral vascular, no cyanosis, clubbing, or edema.  Examination of the low back reveals some mild paralumbar spasms.  She is nontender to palpation of her spinous processes, SI joints, and paralumbar musculature.  She does have some poking sensation to deep palpation into the left buttock where she describes some zinging sensation.  Deep tendon reflexes are 2+ bilateral knees and ankles.  No ankle clonus is elicited.  Babinski, toes are downgoing.  Straight leg raising is negative bilaterally.  Strength on manual exam is 5/5 and equal bilateral lower extremity.  She is able to ambulate on her toes and her heels without any difficulty.  She is able to get up standing on one foot on to the toes.  She does have some difficulty getting up on to her heels when standing on one foot.  She has trouble with this on the left and right.  She complains of increased pain while doing this as well.  She also has positive Patrick/FABER on the right with pain with internal and external rotation, negative on the left.  Sensation is intact.  She has good accuracy to pinprick, dull versus sharp.,FINDINGS: , The patient brings in lumbar spine MRI dated November 20, 2007, which demonstrates degenerative disc disease throughout.  At L4-L5, there is an annular disc bulge with fissuring with facet arthrosis and ligamentum flavum hypertrophy yielding moderate central stenosis and neuroforaminal narrowing but the nerves do not appear to be impinged.  At L5-S1, in the right neuroforamina, there appears to be soft tissue density just lateral and posterior to the nerve root, which may cause some displacement, but it is unclear.  This could represent a facet synovial cyst.  This is lateral to the facet.  She does not have x-rays for review.  She has had hip and knee x-rays taken but does not bring them in with her.,ASSESSMENT: , Low back pain, lumbar radiculopathy, degenerative disc disease, lumbar spinal stenosis, history of anemia, high cholesterol, and hypothyroidism.,PLAN: , We discussed treatment options with this patient including:,1  Do nothing.,2.  Conservative therapies.,3.  Surgery.,She seems to have some issues with her right hip, so I would like for her to fax us over the report of her hip and knee x-rays.  We will also order some x-rays of her lumbar spine as well as lower extremity EMG.,At this point, the patient has not exhausted conservative measures and would like to start with epidural steroid injections, so we will go ahead and send her out for that.  After she has gotten her second epidural injection, she will return to the office for a followup visit to see how she is doing.  All questions and concerns were addressed.  If she should have any further questions, concerns, or complications, she will contact our office immediately.  Otherwise, we will see her as scheduled.  Case was reviewed and discussed with Dr. L.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "cholesterol"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Levoxyl"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "dosage",
+    "text": "75 mcg"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Lexapro"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "aspirin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "vitamin D"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "magnesium"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "vitamin E"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "1000 mg"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Quercetin"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "dosage",
+    "text": "500 mg"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Policosanol"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "glucosamine"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "dosage",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "cholesterol"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Low back pain, lumbar radiculopathy, degenerative disc disease, lumbar spinal stenosis, history of anemia, high cholesterol, and hypothyroidism.,PLAN: , We discussed treatment options with this patient including:,1  Do nothing"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "cholesterol"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "Conservative therapies"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "Surgery.,She seems to have some issues with her right hip, so I would like for her to fax us over the report of her hip and knee x-rays.  We will also order some x-rays of her lumbar spine as well as lower extremity EMG.,At this point, the patient has not exhausted conservative measures and would like to start with epidural steroid injections, so we will go ahead and send her out for that.  After she has gotten her second epidural injection, she will return to the office for a followup visit to see how she is doing.  All questions and concerns were addressed.  If she should have any further questions, concerns, or complications, she will contact our office immediately.  Otherwise, we will see her as scheduled.  Case was reviewed and discussed with Dr. L"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'cholesterol' \u2192 RXCUI 2438, canonical: cholesterol, match: exact\n[RxNorm] Ingredient: cholesterol (RXCUI 2438)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Levoxyl' \u2192 RXCUI 218002, canonical: Levoxyl, match: exact\n[RxNorm] Ingredient: levothyroxine (RXCUI 10582)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): levothyroxine sodium 0.1 MG Injection; levothyroxine sodium 0.2 MG Injection; levothyroxine sodium 0.0022 MG/MG Oral Powder; levothyroxine sodium 0.175 MG Oral Capsule; levothyroxine sodium 0.2 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "Dose 75.0mcg associated with Levoxyl \u2014 dose 75.0mcg not among known product strengths"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Lexapro' \u2192 RXCUI 352741, canonical: Lexapro, match: exact\n[RxNorm] Ingredient: escitalopram (RXCUI 321988)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): escitalopram 15 MG Oral Capsule; escitalopram 10 MG Oral Tablet; escitalopram 5 MG Oral Tablet; escitalopram 20 MG Oral Tablet; escitalopram 1 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "Dose 20.0mg associated with Lexapro"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'vitamin D' \u2192 RXCUI 11253, canonical: vitamin D, match: exact\n[RxNorm] Ingredient: vitamin D (RXCUI 11253)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'magnesium' \u2192 RXCUI 6574, canonical: magnesium, match: exact\n[RxNorm] Ingredient: magnesium (RXCUI 6574)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'vitamin E' \u2192 RXCUI 11256, canonical: vitamin E, match: exact\n[RxNorm] Ingredient: vitamin E (RXCUI 11256)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): vitamin E 100 MG/ML Oral Suspension; 24 HR ascorbic acid 500 MG / biotin 0.15 MG / copper sulfate 3 MG / dl-alpha tocopheryl acetate 30 UNT / docusate sodium 50 MG / folic acid 1 MG / iron carbonyl 150 MG / vitamin B12 0.06 MG Extended Release Oral Tablet; ubidecarenone 20 MG/ML / vitamin E 0.2 UNT/ML Oral Solution; ascorbic acid 60 MG / beta carotene 5000 UNT / copper sulfate 40 MG / dl-alpha tocopheryl acetate 30 UNT / sodium selenite 0.04 MG / zinc oxide 40 MG Oral Tablet; ubidecarenone 6 MG/ML / vitamin E 3 UNT/ML Oral Solution"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "Dose 1000.0mg associated with Quercetin \u2014 dose 1000.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Quercetin' \u2192 RXCUI 9060, canonical: quercetin, match: exact\n[RxNorm] Ingredient: quercetin (RXCUI 9060)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): quercetin 50 MG Oral Tablet; quercetin 250 MG Oral Tablet; ascorbic acid 100 MG / pantothenic acid 100 MG / quercetin 50 MG Oral Tablet; quercetin 500 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "Dose 500.0mg associated with Quercetin"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Policosanol' \u2192 RXCUI 69440, canonical: policosanol, match: exact\n[RxNorm] Ingredient: policosanol (RXCUI 69440)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): policosanol 30 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "Dose 20.0mg associated with Policosanol \u2014 dose 20.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'glucosamine' \u2192 RXCUI 4845, canonical: glucosamine, match: exact\n[RxNorm] Ingredient: glucosamine (RXCUI 4845)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): chondroitin sulfates 200 MG / glucosamine sulfate 500 MG / methylsulfonylmethane 150 MG Oral Tablet; chondroitin sulfates 400 MG / glucosamine hydrochloride 500 MG Extended Release Oral Tablet; chondroitin sulfates 133 MG / glucosamine hydrochloride 167 MG Oral Capsule; cholecalciferol 500 UNT / chondroitin sulfates 600 MG / glucosamine 750 MG Oral Tablet; chondroitin sulfates 1200 MG / glucosamine sulfate 1500 MG / methylsulfonylmethane 500 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "Dose 30.0mg associated with glucosamine \u2014 dose 30.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'cholesterol' \u2192 RXCUI 2438, canonical: cholesterol, match: exact\n[RxNorm] Ingredient: cholesterol (RXCUI 2438)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] M5416: Radiculopathy, lumbar region (score: 0.3483)\n[ICD-10-CM 2027] M51369: Other intervertebral disc degeneration, lumbar region without mention of lumbar back pain or lower extremity pain (score: 0.3406)\n[ICD-10-CM 2027] M5116: Intervertebral disc disorders with radiculopathy, lumbar region (score: 0.3373)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'cholesterol' \u2192 RXCUI 2438, canonical: cholesterol, match: exact\n[RxNorm] Ingredient: cholesterol (RXCUI 2438)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] Z9229: Personal history of other drug therapy (score: 0.6519)\n[ICD-10-CM 2027] T8181XD: Complication of inhalation therapy, subsequent encounter (score: 0.6346)\n[ICD-10-CM 2027] T8181XA: Complication of inhalation therapy, initial encounter (score: 0.6321)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.3455)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.3445)\n[ICD-10-CM 2027] W880XXS: Exposure to X-rays, sequela (score: 0.3445)"
+  }
+]

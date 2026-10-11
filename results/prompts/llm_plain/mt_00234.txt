@@ -1,0 +1,77 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , History of polyps.,POSTOPERATIVE DIAGNOSES:,1.  Normal colonoscopy, left colonic diverticular disease.,2.  3+ benign prostatic hypertrophy.,PROCEDURE PERFORMED: , Total colonoscopy and photography.,GROSS FINDINGS: , This is a 74-year-old white male here for recheck colonoscopy for a history of polyps.  After signed informed consent, blood pressure monitoring, EKG monitoring, and pulse oximetry monitoring, he was brought to the Endoscopic Suite.  He was given 100 mg of Demerol, 3 mg of Versed IV push slowly.  Digital examination revealed a large prostate for which he is following up with his urologist.  No nodules.  3+ BPH.  Anorectal canal was within normal limits.  No stricture tumor or ulcer.  The Olympus CF 20L video endoscope was inserted per anus.  The anorectal canal was visualized, was normal.  The sigmoid, descending, splenic, and transverse showed scattered diverticula.  The hepatic, ascending, cecum, and ileocecal valve was visualized and was normal.  The colonoscope was removed.  The air was aspirated.  The patient was discharged with high-fiber, diverticular diet.  Recheck colonoscopy three years.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "History of polyps.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Normal colonoscopy, left colonic diverticular disease"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "3+ benign prostatic hypertrophy.,PROCEDURE PERFORMED: , Total colonoscopy and photography.,GROSS FINDINGS: , This is a 74-year-old white male here for recheck colonoscopy for a history of polyps.  After signed informed consent, blood pressure monitoring, EKG monitoring, and pulse oximetry monitoring, he was brought to the Endoscopic Suite.  He was given 100 mg of Demerol, 3 mg of Versed IV push slowly.  Digital examination revealed a large prostate for which he is following up with his urologist.  No nodules.  3+ BPH.  Anorectal canal was within normal limits.  No stricture tumor or ulcer.  The Olympus CF 20L video endoscope was inserted per anus.  The anorectal canal was visualized, was normal.  The sigmoid, descending, splenic, and transverse showed scattered diverticula.  The hepatic, ascending, cecum, and ileocecal valve was visualized and was normal.  The colonoscope was removed.  The air was aspirated.  The patient was discharged with high-fiber, diverticular diet.  Recheck colonoscopy three years"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Total colonoscopy and photography.,GROSS FINDINGS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "This is a 74-year-old white male here for recheck colonoscopy for a history of polyps.  After signed informed consent, blood pressure monitoring"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "EKG monitoring, and pulse oximetry monitoring, he was brought to the Endoscopic Suite.  He was given 100 mg of Demerol"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "100 mg"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Demerol"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "3 mg of Versed IV push slowly.  Digital examination revealed a large prostate for which he is following up with his urologist.  No nodules.  3+ BPH.  Anorectal canal was within normal limits.  No stricture tumor or ulcer.  The Olympus CF 20L video endoscope was inserted per anus.  The anorectal canal was visualized, was normal.  The sigmoid, descending, splenic, and transverse showed scattered diverticula.  The hepatic, ascending, cecum, and ileocecal valve was visualized and was normal.  The colonoscope was removed.  The air was aspirated.  The patient was discharged with high-fiber, diverticular diet.  Recheck colonoscopy three years"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "3 mg"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

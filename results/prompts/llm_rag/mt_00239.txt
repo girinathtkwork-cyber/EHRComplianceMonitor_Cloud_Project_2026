@@ -1,0 +1,163 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Right lower quadrant abdominal pain, rule out acute appendicitis. Additional diagnosis noted: Hyperlipidemia.,POSTOPERATIVE DIAGNOSIS:,  Acute suppurative appendicitis.,PROCEDURE PERFORMED:,1.  Diagnostic laparoscopy.,2.  Laparoscopic appendectomy.,ANESTHESIA: , General endotracheal and injectable 1% lidocaine and 0.25% Marcaine.,ESTIMATED BLOOD LOSS: , Minimal.,SPECIMEN: , Appendix.,COMPLICATIONS: , None.,BRIEF HISTORY: , This is a 37-year-old Caucasian female presented to ABCD General Hospital with progressively worsening suprapubic and right lower quadrant abdominal pain, which progressed throughout its course starting approximately 12 hours prior to presentation.  She admits to some nausea associated with it.  There have been no fevers, chills, and/or genitourinary symptoms.  The patient had right lower quadrant tenderness with rebound and percussion tenderness in the right lower quadrant.  She had a leukocytosis of 12.8.  She did undergo a CT of the abdomen and pelvis, which was non diagnostic for an acute appendicitis.  Given the severity of her abdominal examination and her persistence of her symptoms, we recommend the patient undergo diagnostic laparoscopy with probable need for laparoscopic appendectomy and possible open appendectomy.  The risks, benefits, complications of the procedure, she gave us informed consent to proceed.,OPERATIVE FINDINGS:  ,Exploration of the abdomen via laparoscopy revealed an appendix with suppurative fluid surrounding it, it was slightly enlarged.  The left ovary revealed some follicular cysts.  There was no evidence of adnexal masses and/or torsion of the fallopian tubes.  The uterus revealed no evidence of mass and/or fibroid tumors.  The remainder of the abdomen was unremarkable.,OPERATIVE PROCEDURE: , The patient was brought to the operative suite, placed in the supine position.  The abdomen was prepped and draped in the normal sterile fashion with Betadine solution.  The patient underwent general endotracheal anesthesia.  The patient also received a preoperative dose of Ancef 1 gram IV.  After adequate sedation was achieved, a #10 blade scalpel was used to make an infraumbilical transverse incision utilizing a Veress needle.  Veress needle was inserted into the abdomen and the abdomen was insufflated approximately 15 mmHg.  Once the abdomen was sufficiently insufflated, a 10 mm bladed trocar was inserted into the abdomen without difficulty.  A video laparoscope was inserted into the infraumbilical trocar site and the abdomen was explored.  Next, a 5 mm port was inserted in the midclavicular line of the right upper quadrant region.  This was inserted under direct visualization.  Finally, a suprapubic 12 mm portal was created.  This was performed with #10 blade scalpel to create a transverse incision.  A bladed trocar was inserted into the suprapubic region.  This was done again under direct visualization.  Maryland dissector was inserted into the suprapubic region and a window was created between the appendix and mesoappendix at the base of the cecum.  This was done while the 5 mm trocar was used to grasp the middle portion of the appendix and retracted anteriorly.  Utilizing a endovascular stapling device, the appendix was transected and doubly stapled with this device.  Next, the mesoappendix was doubly stapled and transected with the endovascular stapling device.  The staple line was visualized and there was no evidence of bleeding.  The abdomen was fully irrigated with copious amounts of normal saline.  The abdomen was then aspirated.  There was no evidence of bleeding.  All ports were removed under direct visualization.  No evidence of bleeding from the port sites.  The infraumbilical and suprapubic ports were then closed.  The fascias were then closed with #0-Vicryl suture on a UR6 needle.  Once the fascias were closed, all incisions were closed with #4-0 undyed Vicryl.  The areas were cleaned, Steri-Strips were placed across the wound.  Sterile dressing was applied.,The patient tolerated the procedure well.  She was extubated following the procedure, returned to Postanesthesia Care Unit in stable condition.  She will be admitted to General Medical Floor and she will be followed closely in the early postoperative course.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Right lower quadrant abdominal pain, rule out acute appendicitis. Additional diagnosis noted: Hyperlipidemia.,POSTOPERATIVE DIAGNOSIS:,  Acute suppurative appendicitis.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Acute suppurative appendicitis.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Diagnostic laparoscopy"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Diagnostic laparoscopy"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Laparoscopic appendectomy.,ANESTHESIA: , General endotracheal and injectable 1% lidocaine and 0.25% Marcaine.,ESTIMATED BLOOD LOSS: , Minimal.,SPECIMEN: , Appendix.,COMPLICATIONS: , None.,BRIEF HISTORY: , This is a 37-year-old Caucasian female presented to ABCD General Hospital with progressively worsening suprapubic and right lower quadrant abdominal pain, which progressed throughout its course starting approximately 12 hours prior to presentation.  She admits to some nausea associated with it.  There have been no fevers, chills, and/or genitourinary symptoms.  The patient had right lower quadrant tenderness with rebound and percussion tenderness in the right lower quadrant.  She had a leukocytosis of 12"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Laparoscopic appendectomy.,ANESTHESIA: , General endotracheal and injectable 1% lidocaine and 0.25% Marcaine.,ESTIMATED BLOOD LOSS: , Minimal.,SPECIMEN: , Appendix.,COMPLICATIONS: , None.,BRIEF HISTORY: , This is a 37-year-old Caucasian female presented to ABCD General Hospital with progressively worsening suprapubic and right lower quadrant abdominal pain, which progressed throughout its course starting approximately 12 hours prior to presentation.  She admits to some nausea associated with it.  There have been no fevers, chills, and/or genitourinary symptoms.  The patient had right lower quadrant tenderness with rebound and percussion tenderness in the right lower quadrant.  She had a leukocytosis of 12"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "0.25%"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Marcaine"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "She did undergo a CT of the abdomen and pelvis, which was non diagnostic for an acute appendicitis.  Given the severity of her abdominal examination and her persistence of her symptoms, we recommend the patient undergo diagnostic laparoscopy with probable need for laparoscopic appendectomy and possible open appendectomy.  The risks, benefits, complications of the procedure, she gave us informed consent to proceed.,OPERATIVE FINDINGS:  ,Exploration of the abdomen via laparoscopy revealed an appendix with suppurative fluid surrounding it, it was slightly enlarged.  The left ovary revealed some follicular cysts.  There was no evidence of adnexal masses and/or torsion of the fallopian tubes.  The uterus revealed no evidence of mass and/or fibroid tumors.  The remainder of the abdomen was unremarkable.,OPERATIVE PROCEDURE: , The patient was brought to the operative suite, placed in the supine position.  The abdomen was prepped and draped in the normal sterile fashion with Betadine solution.  The patient underwent general endotracheal anesthesia.  The patient also received a preoperative dose of Ancef 1 gram IV.  After adequate sedation was achieved, a #10 blade scalpel was used to make an infraumbilical transverse incision utilizing a Veress needle.  Veress needle was inserted into the abdomen and the abdomen was insufflated approximately 15 mmHg.  Once the abdomen was sufficiently insufflated, a 10 mm bladed trocar was inserted into the abdomen without difficulty.  A video laparoscope was inserted into the infraumbilical trocar site and the abdomen was explored.  Next, a 5 mm port was inserted in the midclavicular line of the right upper quadrant region.  This was inserted under direct visualization.  Finally, a suprapubic 12 mm portal was created.  This was performed with #10 blade scalpel to create a transverse incision.  A bladed trocar was inserted into the suprapubic region.  This was done again under direct visualization.  Maryland dissector was inserted into the suprapubic region and a window was created between the appendix and mesoappendix at the base of the cecum.  This was done while the 5 mm trocar was used to grasp the middle portion of the appendix and retracted anteriorly.  Utilizing a endovascular stapling device, the appendix was transected and doubly stapled with this device.  Next, the mesoappendix was doubly stapled and transected with the endovascular stapling device.  The staple line was visualized and there was no evidence of bleeding.  The abdomen was fully irrigated with copious amounts of normal saline.  The abdomen was then aspirated.  There was no evidence of bleeding.  All ports were removed under direct visualization.  No evidence of bleeding from the port sites.  The infraumbilical and suprapubic ports were then closed.  The fascias were then closed with #0-Vicryl suture on a UR6 needle.  Once the fascias were closed, all incisions were closed with #4-0 undyed Vicryl.  The areas were cleaned, Steri-Strips were placed across the wound.  Sterile dressing was applied.,The patient tolerated the procedure well.  She was extubated following the procedure, returned to Postanesthesia Care Unit in stable condition.  She will be admitted to General Medical Floor and she will be followed closely in the early postoperative course"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "She did undergo a CT of the abdomen and pelvis, which was non diagnostic for an acute appendicitis.  Given the severity of her abdominal examination and her persistence of her symptoms, we recommend the patient undergo diagnostic laparoscopy with probable need for laparoscopic appendectomy and possible open appendectomy.  The risks, benefits, complications of the procedure, she gave us informed consent to proceed.,OPERATIVE FINDINGS:  ,Exploration of the abdomen via laparoscopy revealed an appendix with suppurative fluid surrounding it, it was slightly enlarged.  The left ovary revealed some follicular cysts.  There was no evidence of adnexal masses and/or torsion of the fallopian tubes.  The uterus revealed no evidence of mass and/or fibroid tumors.  The remainder of the abdomen was unremarkable.,OPERATIVE PROCEDURE: , The patient was brought to the operative suite, placed in the supine position.  The abdomen was prepped and draped in the normal sterile fashion with Betadine solution.  The patient underwent general endotracheal anesthesia.  The patient also received a preoperative dose of Ancef 1 gram IV.  After adequate sedation was achieved, a #10 blade scalpel was used to make an infraumbilical transverse incision utilizing a Veress needle.  Veress needle was inserted into the abdomen and the abdomen was insufflated approximately 15 mmHg.  Once the abdomen was sufficiently insufflated, a 10 mm bladed trocar was inserted into the abdomen without difficulty.  A video laparoscope was inserted into the infraumbilical trocar site and the abdomen was explored.  Next, a 5 mm port was inserted in the midclavicular line of the right upper quadrant region.  This was inserted under direct visualization.  Finally, a suprapubic 12 mm portal was created.  This was performed with #10 blade scalpel to create a transverse incision.  A bladed trocar was inserted into the suprapubic region.  This was done again under direct visualization.  Maryland dissector was inserted into the suprapubic region and a window was created between the appendix and mesoappendix at the base of the cecum.  This was done while the 5 mm trocar was used to grasp the middle portion of the appendix and retracted anteriorly.  Utilizing a endovascular stapling device, the appendix was transected and doubly stapled with this device.  Next, the mesoappendix was doubly stapled and transected with the endovascular stapling device.  The staple line was visualized and there was no evidence of bleeding.  The abdomen was fully irrigated with copious amounts of normal saline.  The abdomen was then aspirated.  There was no evidence of bleeding.  All ports were removed under direct visualization.  No evidence of bleeding from the port sites.  The infraumbilical and suprapubic ports were then closed.  The fascias were then closed with #0-Vicryl suture on a UR6 needle.  Once the fascias were closed, all incisions were closed with #4-0 undyed Vicryl.  The areas were cleaned, Steri-Strips were placed across the wound.  Sterile dressing was applied.,The patient tolerated the procedure well.  She was extubated following the procedure, returned to Postanesthesia Care Unit in stable condition.  She will be admitted to General Medical Floor and she will be followed closely in the early postoperative course"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Betadine"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] K3580: Unspecified acute appendicitis (score: 0.5448)\n[ICD-10-CM 2027] K36: Other appendicitis (score: 0.4782)\n[ICD-10-CM 2027] K37: Unspecified appendicitis (score: 0.4782)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] K3580: Unspecified acute appendicitis (score: 0.7122)\n[ICD-10-CM 2027] K36: Other appendicitis (score: 0.6251)\n[ICD-10-CM 2027] K37: Unspecified appendicitis (score: 0.6251)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] T508X6D: Underdosing of diagnostic agents, subsequent encounter (score: 0.6991)\n[ICD-10-CM 2027] T508X6A: Underdosing of diagnostic agents, initial encounter (score: 0.6953)\n[ICD-10-CM 2027] T508X6S: Underdosing of diagnostic agents, sequela (score: 0.6951)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Diagnostic laparoscopy' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] R10823: Right lower quadrant rebound abdominal tenderness (score: 0.4059)\n[ICD-10-CM 2027] R10813: Right lower quadrant abdominal tenderness (score: 0.4013)\n[ICD-10-CM 2027] R10824: Left lower quadrant rebound abdominal tenderness (score: 0.3962)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Laparoscopic appendectomy.,ANESTHESIA: , General endotracheal and injectable 1% lidocaine and 0.25% Marcaine.,ESTIMATED BLOOD LOSS: , Minimal.,SPECIMEN: , Appendix.,COMPLICATIONS: , None.,BRIEF HISTORY: , This is a 37-year-old Caucasian female presented to ABCD General Hospital with progressively worsening suprapubic and right lower quadrant abdominal pain, which progressed throughout its course starting approximately 12 hours prior to presentation.  She admits to some nausea associated with it.  There have been no fevers, chills, and/or genitourinary symptoms.  The patient had right lower quadrant tenderness with rebound and percussion tenderness in the right lower quadrant.  She had a leukocytosis of 12' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "Dose 1.0% associated with lidocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "Dose 0.25% associated with Marcaine \u2014 dose 0.25% not among known product strengths"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Marcaine' \u2192 RXCUI 1012397, canonical: Marcaine, match: exact\n[RxNorm] Ingredient: bupivacaine (RXCUI 1815)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bupivacaine hydrochloride 3.75 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; bupivacaine hydrochloride 2.5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; bupivacaine hydrochloride 5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; 30 ML bupivacaine hydrochloride 7.5 MG/ML / epinephrine 0.005 MG/ML Injection; bupivacaine hydrochloride 2.5 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] S3991XD: Unspecified injury of abdomen, subsequent encounter (score: 0.3839)\n[ICD-10-CM 2027] S3991XA: Unspecified injury of abdomen, initial encounter (score: 0.3799)\n[ICD-10-CM 2027] S3991XS: Unspecified injury of abdomen, sequela (score: 0.3797)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'She did undergo a CT of the abdomen and pelvis, which was non diagnostic for an acute appendicitis.  Given the severity of her abdominal examination and her persistence of her symptoms, we recommend the patient undergo diagnostic laparoscopy with probable need for laparoscopic appendectomy and possible open appendectomy.  The risks, benefits, complications of the procedure, she gave us informed consent to proceed.,OPERATIVE FINDINGS:  ,Exploration of the abdomen via laparoscopy revealed an appendix with suppurative fluid surrounding it, it was slightly enlarged.  The left ovary revealed some follicular cysts.  There was no evidence of adnexal masses and/or torsion of the fallopian tubes.  The uterus revealed no evidence of mass and/or fibroid tumors.  The remainder of the abdomen was unremarkable.,OPERATIVE PROCEDURE: , The patient was brought to the operative suite, placed in the supine position.  The abdomen was prepped and draped in the normal sterile fashion with Betadine solution.  The patient underwent general endotracheal anesthesia.  The patient also received a preoperative dose of Ancef 1 gram IV.  After adequate sedation was achieved, a #10 blade scalpel was used to make an infraumbilical transverse incision utilizing a Veress needle.  Veress needle was inserted into the abdomen and the abdomen was insufflated approximately 15 mmHg.  Once the abdomen was sufficiently insufflated, a 10 mm bladed trocar was inserted into the abdomen without difficulty.  A video laparoscope was inserted into the infraumbilical trocar site and the abdomen was explored.  Next, a 5 mm port was inserted in the midclavicular line of the right upper quadrant region.  This was inserted under direct visualization.  Finally, a suprapubic 12 mm portal was created.  This was performed with #10 blade scalpel to create a transverse incision.  A bladed trocar was inserted into the suprapubic region.  This was done again under direct visualization.  Maryland dissector was inserted into the suprapubic region and a window was created between the appendix and mesoappendix at the base of the cecum.  This was done while the 5 mm trocar was used to grasp the middle portion of the appendix and retracted anteriorly.  Utilizing a endovascular stapling device, the appendix was transected and doubly stapled with this device.  Next, the mesoappendix was doubly stapled and transected with the endovascular stapling device.  The staple line was visualized and there was no evidence of bleeding.  The abdomen was fully irrigated with copious amounts of normal saline.  The abdomen was then aspirated.  There was no evidence of bleeding.  All ports were removed under direct visualization.  No evidence of bleeding from the port sites.  The infraumbilical and suprapubic ports were then closed.  The fascias were then closed with #0-Vicryl suture on a UR6 needle.  Once the fascias were closed, all incisions were closed with #4-0 undyed Vicryl.  The areas were cleaned, Steri-Strips were placed across the wound.  Sterile dressing was applied.,The patient tolerated the procedure well.  She was extubated following the procedure, returned to Postanesthesia Care Unit in stable condition.  She will be admitted to General Medical Floor and she will be followed closely in the early postoperative course' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Betadine' \u2192 RXCUI 202750, canonical: Betadine, match: exact\n[RxNorm] Ingredient: povidone-iodine (RXCUI 8611)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): povidone-iodine 75 MG/ML Medicated Pad; povidone-iodine 10 MG/ML Medicated Pad; povidone-iodine 50 MG/ML Medicated Pad; isopropyl alcohol 0.725 ML/ML / povidone-iodine 83 MG/ML Topical Solution; povidone-iodine 40 MG/ML Medicated Shampoo"
+  }
+]

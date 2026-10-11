@@ -1,0 +1,87 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+CHIEF COMPLAINT:,1.  Infection.,2.  Pelvic pain.,3.  Mood swings.,4.  Painful sex.,HISTORY OF PRESENT ILLNESS:,  The patient is a 29-year-old female who is here today with the above-noted complaints.  She states that she has been having a lot of swelling and infection in her inner thigh area with the folliculitis she has had in the past.  She is requesting antibiotics.  She has been squeezing them and some of them are very bruised and irritated.  She also states that she is having significant pelvic pain and would like to go back and see Dr. XYZ again.  She also states that she took herself off of lithium, but she has been having significant mood swings, anger outbursts and not dealing with the situation well at all.  She also has had some psychiatric evaluation, but she states that she did not feel like herself on the medication, so she took herself off.  She states she does not wish to be on any medication at the current time.  She otherwise states that sex is so painful that she is unable to have sex with her husband, even though she "wants to.",PAST MEDICAL HISTORY:,  Significant for cleft palate.,ALLERGIES:,  She is allergic to Lortab.,CURRENT MEDICATIONS:,  None.,REVIEW OF SYSTEMS:,  Please see history of present illness.,Psychiatric:  She has had some suicidal thoughts, but no plans.  She denies being suicidal at the current time.,Cardiopulmonary:  She has not had any chest pain or shortness of breath.,GI:  Denies any nausea or vomiting.,Neurological:  No numbness, weakness or tingling.,PHYSICAL EXAMINATION:,General:  The patient is a well-developed, well-nourished, 29-year-old female who is in no acute distress.,Vital signs:  Weight:  160 pounds.  Blood pressure:  100/60.  Pulse:  62.,Psychiatric:  I did spend over 25 minutes face-to-face with the patient talking about the situation she was in and the medication and her discontinuing use of that.,Extremities:  Her inner thighs are covered with multiple areas of folliculitis and mild abscesses.  They are bruised from her squeezing them.  We talked about that in detail.,ASSESSMENT:,1.  Folliculitis.,2.  Pelvic pain.,3.  Mood swings.,4.  Dyspareunia.,PLAN:,1.  I would like her to go to the lab and get a CBC, chem-12, TSH and UA.,2.  We will put her on cephalexin 50mg three times a day.,3.  We will send her back to see Dr. XYZ regarding the pelvic pain per her request.,4.  We will get her an appointment with a psychiatrist for evaluation and treatment.,5.  She is to call if she has any further problems or concerns.  Otherwise I will see her back for her routine care or sooner if there are any further issues.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "lithium"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Folliculitis"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Pelvic pain"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Mood swings"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Dyspareunia.,PLAN:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "I would like her to go to the lab and get a CBC, chem-12, TSH and UA"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "We will put her on cephalexin 50mg three times a day"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "cephalexin"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "50mg"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "We will send her back to see Dr. XYZ regarding the pelvic pain per her request"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "We will get her an appointment with a psychiatrist for evaluation and treatment"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "She is to call if she has any further problems or concerns.  Otherwise I will see her back for her routine care or sooner if there are any further issues"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

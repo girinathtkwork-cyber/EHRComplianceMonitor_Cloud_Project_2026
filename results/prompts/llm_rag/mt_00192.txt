@@ -1,0 +1,213 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+DIAGNOSIS:,  Refractory anemia that is transfusion dependent.,CHIEF COMPLAINT: , I needed a blood transfusion.,HISTORY: , The patient is a 78-year-old gentleman with no substantial past medical history except for diabetes.  He denies any comorbid complications of the diabetes including kidney disease, heart disease, stroke, vision loss, or neuropathy.  At this time, he has been admitted for anemia with hemoglobin of 7.1 and requiring transfusion.  He reports that he has no signs or symptom of bleeding and had a blood transfusion approximately two months ago and actually several weeks before that blood transfusion, he had a transfusion for anemia.  He has been placed on B12, oral iron, and Procrit.  At this time, we are asked to evaluate him for further causes and treatment for his anemia.  He denies any constitutional complaints except for fatigue, malaise, and some dyspnea.  He has no adenopathy that he reports.  No fevers, night sweats, bone pain, rash, arthralgias, or myalgias.,PAST MEDICAL HISTORY:  ,Diabetes.,PAST SURGICAL HISTORY:,  Hernia repair.,ALLERGIES: , He has no allergies.,MEDICATIONS: , Listed in the chart and include Coumadin, Lasix, metformin, folic acid, diltiazem, B12, Prevacid, and Feosol.,SOCIAL HISTORY: , He is a tobacco user.  He does not drink.  He lives alone, but has family and social support to look on him.,FAMILY HISTORY:,  Negative for blood or cancer disorders according to the patient.,PHYSICAL EXAMINATION:,GENERAL:  He is an elderly gentleman in no acute distress.  He is sitting up in bed eating his breakfast.  He is alert and oriented and answering questions appropriately.,VITAL SIGNS:  Blood pressure of 110/60, pulse of 99, respiratory rate of 14, and temperature of 97.4.  He is 69 inches tall and weighs 174 pounds.,HEENT:  Sclerae show mild arcus senilis in the right.  Left is clear.  Pupils are equally round and reactive to light.  Extraocular movements are intact.  Oropharynx is clear.,NECK:  Supple.  Trachea is midline.  No jugular venous pressure distention is noted.  No adenopathy in the cervical, supraclavicular, or axillary areas.,CHEST:  Clear.,HEART:  Regular rate and rhythm.,ABDOMEN:  Soft and nontender.  There may be some fullness in the left upper quadrant, although I do not appreciate a true spleen with inspiration.,EXTREMITIES:  No clubbing, but there is some edema, but no cyanosis.,NEUROLOGIC:  Noncontributory.,DERMATOLOGIC:  Noncontributory.,CARDIOVASCULAR:  Noncontributory.,IMPRESSION: , At this time is refractory anemia, which is transfusion dependent.  He is on B12, iron, folic acid, and Procrit.  There are no sign or symptom of blood loss and a recent esophagogastroduodenoscopy, which was negative.  His creatinine was 1.  My impression at this time is that he probably has an underlying myelodysplastic syndrome or bone marrow failure.  His creatinine on this hospitalization was up slightly to 1.6 and this may contribute to his anemia.,RECOMMENDATIONS:  ,At this time, my recommendation for the patient is that he undergoes further serologic evaluation with reticulocyte count, serum protein, and electrophoresis, LDH, B12, folate, erythropoietin level, and he should undergo a bone marrow aspiration and biopsy.  I have discussed the procedure in detail which the patient.  I have discussed the risks, benefits, and successes of that treatment and usefulness of the bone marrow and predicting his cause of refractory anemia and further therapeutic interventions, which might be beneficial to him.  He is willing to proceed with the studies I have described to him.  We will order an ultrasound of his abdomen because of the possible fullness of the spleen, and I will probably see him in follow up after this hospitalization.,As always, we greatly appreciate being able to participate in the care of your patient.  We appreciate the consultation of the patient.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Refractory anemia that is transfusion dependent.,CHIEF COMPLAINT: , I needed a blood transfusion.,HISTORY: , The patient is a 78-year-old gentleman with no substantial past medical history except for diabetes.  He denies any comorbid complications of the diabetes including kidney disease, heart disease, stroke, vision loss, or neuropathy.  At this time, he has been admitted for anemia with hemoglobin of 7.1 and requiring transfusion.  He reports that he has no signs or symptom of bleeding and had a blood transfusion approximately two months ago and actually several weeks before that blood transfusion, he had a transfusion for anemia.  He has been placed on B12, oral iron, and Procrit.  At this time, we are asked to evaluate him for further causes and treatment for his anemia.  He denies any constitutional complaints except for fatigue, malaise, and some dyspnea.  He has no adenopathy that he reports.  No fevers, night sweats, bone pain, rash, arthralgias, or myalgias.,PAST MEDICAL HISTORY:  ,Diabetes.,PAST SURGICAL HISTORY:,  Hernia repair.,ALLERGIES: , He has no allergies.,MEDICATIONS: , Listed in the chart and include Coumadin, Lasix, metformin, folic acid, diltiazem, B12, Prevacid, and Feosol.,SOCIAL HISTORY: , He is a tobacco user.  He does not drink.  He lives alone, but has family and social support to look on him.,FAMILY HISTORY:,  Negative for blood or cancer disorders according to the patient.,PHYSICAL EXAMINATION:,GENERAL:  He is an elderly gentleman in no acute distress.  He is sitting up in bed eating his breakfast.  He is alert and oriented and answering questions appropriately.,VITAL SIGNS:  Blood pressure of 110/60, pulse of 99, respiratory rate of 14, and temperature of 97"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Procrit"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Lasix"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "metformin"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "folic acid"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "diltiazem"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Prevacid"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Feosol"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "He is 69 inches tall and weighs 174 pounds.,HEENT:  Sclerae show mild arcus senilis in the right.  Left is clear.  Pupils are equally round and reactive to light.  Extraocular movements are intact.  Oropharynx is clear.,NECK:  Supple.  Trachea is midline.  No jugular venous pressure distention is noted.  No adenopathy in the cervical, supraclavicular, or axillary areas.,CHEST:  Clear.,HEART:  Regular rate and rhythm.,ABDOMEN:  Soft and nontender.  There may be some fullness in the left upper quadrant, although I do not appreciate a true spleen with inspiration.,EXTREMITIES:  No clubbing, but there is some edema, but no cyanosis.,NEUROLOGIC:  Noncontributory.,DERMATOLOGIC:  Noncontributory.,CARDIOVASCULAR:  Noncontributory.,IMPRESSION: , At this time is refractory anemia, which is transfusion dependent.  He is on B12, iron, folic acid, and Procrit.  There are no sign or symptom of blood loss and a recent esophagogastroduodenoscopy, which was negative.  His creatinine was"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "At this time is refractory anemia, which is transfusion dependent.  He is on B12, iron, folic acid, and Procrit.  There are no sign or symptom of blood loss and a recent esophagogastroduodenoscopy, which was negative.  His creatinine was 1.  My impression at this time is that he probably has an underlying myelodysplastic syndrome or bone marrow failure.  His creatinine on this hospitalization was up slightly to 1.6 and this may contribute to his anemia.,RECOMMENDATIONS:  ,At this time, my recommendation for the patient is that he undergoes further serologic evaluation with reticulocyte count, serum protein, and electrophoresis"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "folic acid"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Procrit"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "My impression at this time is that he probably has an underlying myelodysplastic syndrome or bone marrow failure.  His creatinine on this hospitalization was up slightly to 1.6 and this may contribute to his anemia.,RECOMMENDATIONS:  ,At this time, my recommendation for the patient is that he undergoes further serologic evaluation with reticulocyte count, serum protein, and electrophoresis, LDH, B12, folate, erythropoietin level, and he should undergo a bone marrow aspiration and biopsy.  I have discussed the procedure in detail which the patient.  I have discussed the risks, benefits, and successes of that treatment and usefulness of the bone marrow and predicting his cause of refractory anemia and further therapeutic interventions, which might be beneficial to him.  He is willing to proceed with the studies I have described to him.  We will order an ultrasound of his abdomen because of the possible fullness of the spleen, and I will probably see him in follow up after this hospitalization.,As always, we greatly appreciate being able to participate in the care of your patient.  We appreciate the consultation of the patient"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "B12, folate, erythropoietin level, and he should undergo a bone marrow aspiration and biopsy.  I have discussed the procedure in detail which the patient.  I have discussed the risks, benefits, and successes of that treatment and usefulness of the bone marrow and predicting his cause of refractory anemia and further therapeutic interventions, which might be beneficial to him.  He is willing to proceed with the studies I have described to him.  We will order an ultrasound of his abdomen because of the possible fullness of the spleen, and I will probably see him in follow up after this hospitalization.,As always, we greatly appreciate being able to participate in the care of your patient.  We appreciate the consultation of the patient"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "folate"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "in detail which the patient.  I have discussed the risks, benefits, and successes of that treatment and usefulness of the bone marrow and predicting his cause of refractory anemia and further therapeutic interventions, which might be beneficial to him.  He is willing to proceed with the studies I have described to him.  We will order an ultrasound of his abdomen because of the possible fullness of the spleen, and I will probably see him in follow up after this hospitalization.,As always, we greatly appreciate being able to participate in the care of your patient.  We appreciate the consultation of the patient"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2609)\n[ICD-10-CM 2027] Z833: Family history of diabetes mellitus (score: 0.2438)\n[ICD-10-CM 2027] T8092XD: Unspecified transfusion reaction, subsequent encounter (score: 0.2333)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Procrit' \u2192 RXCUI 227303, canonical: Procrit, match: exact\n[RxNorm] Ingredient: epoetin alfa (RXCUI 105694)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML epoetin alfa 10000 UNT/ML Injection; 1 ML epoetin alfa-epbx 10000 UNT/ML Injection; 1 ML epoetin alfa-epbx 2000 UNT/ML Injection; 1 ML epoetin alfa-epbx 3000 UNT/ML Injection; 1 ML epoetin alfa-epbx 4000 UNT/ML Injection"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Lasix' \u2192 RXCUI 202991, canonical: Lasix, match: exact\n[RxNorm] Ingredient: furosemide (RXCUI 4603)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): furosemide 4 MG/ML Oral Solution; 10 ML furosemide 10 MG/ML Injection; 2 ML furosemide 10 MG/ML Injection; 4 ML furosemide 10 MG/ML Injection; furosemide 10 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'metformin' \u2192 RXCUI 6809, canonical: metformin, match: exact\n[RxNorm] Ingredient: metformin (RXCUI 6809)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR metformin hydrochloride 1000 MG / saxagliptin 2.5 MG Extended Release Oral Tablet; 24 HR metformin hydrochloride 1000 MG / saxagliptin 5 MG Extended Release Oral Tablet; 24 HR metformin hydrochloride 500 MG / saxagliptin 5 MG Extended Release Oral Tablet; linagliptin 2.5 MG / metformin hydrochloride 1000 MG Oral Tablet; linagliptin 2.5 MG / metformin hydrochloride 500 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'folic acid' \u2192 RXCUI 4511, canonical: folic acid, match: exact\n[RxNorm] Ingredient: folic acid (RXCUI 4511)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alpha tocopherol 30 UNT / ascorbic acid 28 MG / cholecalciferol 400 UNT / docosahexaenoic acid 300 MG / docusate sodium 55 MG / ferrous fumarate 27 MG / folic acid 1.25 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; ferrous sulfate 150 MG / folic acid 0.5 MG Extended Release Oral Capsule; ferrous fumarate 305 MG / folic acid 0.35 MG Oral Capsule; ascorbic acid 10 MG / ferrous gluconate 250 MG / folic acid 5 MG Oral Tablet; folic acid 0.08 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'diltiazem' \u2192 RXCUI 3443, canonical: diltiazem, match: exact\n[RxNorm] Ingredient: diltiazem (RXCUI 3443)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 5 ML diltiazem hydrochloride 5 MG/ML Injection; 10 ML diltiazem hydrochloride 5 MG/ML Injection; 25 ML diltiazem hydrochloride 5 MG/ML Injection; diltiazem hydrochloride 100 MG Injection; 250 ML diltiazem hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Prevacid' \u2192 RXCUI 83156, canonical: Prevacid, match: exact\n[RxNorm] Ingredient: lansoprazole (RXCUI 17128)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lansoprazole 30 MG Delayed Release Oral Capsule; lansoprazole 30 MG Disintegrating Oral Tablet; lansoprazole 15 MG Disintegrating Oral Tablet; lansoprazole 6 MG/ML Injectable Solution; lansoprazole 15 MG Delayed Release Oral Capsule"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Feosol' \u2192 RXCUI 217091, canonical: Feosol, match: exact\n[RxNorm] Ingredient: ferrous sulfate (RXCUI 24947)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): ferrous sulfate 116 MG/ML Oral Solution; ferrous sulfate 150 MG / folic acid 0.5 MG Extended Release Oral Capsule; ferrous sulfate 140 MG Extended Release Oral Tablet; ferrous sulfate 88 MG Oral Tablet; ferrous sulfate 143 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2154)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.2089)\n[ICD-10-CM 2027] P2410: Neonatal aspiration of (clear) amniotic fluid and mucus without respiratory symptoms (score: 0.1835)\n[ICD-10-CM 2027] Match unresolved (top score 0.2154 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] D464: Refractory anemia, unspecified (score: 0.3195)\n[ICD-10-CM 2027] D6489: Other specified anemias (score: 0.2860)\n[ICD-10-CM 2027] D649: Anemia, unspecified (score: 0.2860)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'folic acid' \u2192 RXCUI 4511, canonical: folic acid, match: exact\n[RxNorm] Ingredient: folic acid (RXCUI 4511)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alpha tocopherol 30 UNT / ascorbic acid 28 MG / cholecalciferol 400 UNT / docosahexaenoic acid 300 MG / docusate sodium 55 MG / ferrous fumarate 27 MG / folic acid 1.25 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; ferrous sulfate 150 MG / folic acid 0.5 MG Extended Release Oral Capsule; ferrous fumarate 305 MG / folic acid 0.35 MG Oral Capsule; ascorbic acid 10 MG / ferrous gluconate 250 MG / folic acid 5 MG Oral Tablet; folic acid 0.08 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Procrit' \u2192 RXCUI 227303, canonical: Procrit, match: exact\n[RxNorm] Ingredient: epoetin alfa (RXCUI 105694)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML epoetin alfa 10000 UNT/ML Injection; 1 ML epoetin alfa-epbx 10000 UNT/ML Injection; 1 ML epoetin alfa-epbx 2000 UNT/ML Injection; 1 ML epoetin alfa-epbx 3000 UNT/ML Injection; 1 ML epoetin alfa-epbx 4000 UNT/ML Injection"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] T8602: Bone marrow transplant failure (score: 0.3740)\n[ICD-10-CM 2027] D6189: Other specified aplastic anemias and other bone marrow failure syndromes (score: 0.3600)\n[ICD-10-CM 2027] Z523: Bone marrow donor (score: 0.3514)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] Z523: Bone marrow donor (score: 0.3148)\n[ICD-10-CM 2027] C7952: Secondary malignant neoplasm of bone marrow (score: 0.3100)\n[ICD-10-CM 2027] T8600: Unspecified complication of bone marrow transplant (score: 0.3097)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'folate' \u2192 RXCUI 62356, canonical: folate, match: exact\n[RxNorm] Ingredient: folate (RXCUI 62356)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'in detail which the patient.  I have discussed the risks, benefits, and successes of that treatment and usefulness of the bone marrow and predicting his cause of refractory anemia and further therapeutic interventions, which might be beneficial to him.  He is willing to proceed with the studies I have described to him.  We will order an ultrasound of his abdomen because of the possible fullness of the spleen, and I will probably see him in follow up after this hospitalization.,As always, we greatly appreciate being able to participate in the care of your patient.  We appreciate the consultation of the patient' \u2014 extracted from header, not verified against any coding system"
+  }
+]

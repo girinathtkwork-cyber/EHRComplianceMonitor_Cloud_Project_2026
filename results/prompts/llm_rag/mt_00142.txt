@@ -1,0 +1,53 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM:,  Single frontal view of the chest.,HISTORY:,  Respiratory distress.  The patient has a history of malrotation.  The patient is back for a re-anastomosis of the bowel with no acute distress.,TECHNIQUE:,  Single frontal view of the chest was evaluated and correlated with the prior film dated MM/DD/YY.,FINDINGS:,  A single frontal view of the chest was evaluated.  It reveals interval placement of an ET tube and an NG tube.  ET tube is midway between the patient's thoracic inlet and carina.  NG tube courses with the distal tip in the left upper quadrant beneath the left hemidiaphragm.  There is no evidence of any focal areas of consolidation, pneumothoraces, or pleural effusions.  The mediastinum seen was slightly prominent; however, this may be secondary to thymus and/or technique.  There is a slight increase seen with regards to the central pulmonary vessels.  Again, this may represent a minimal amount of pulmonary vascular congestion.  There is paucity of bowel gas seen in the upper abdomen.  The osseous thorax appears to be grossly intact and symmetrical.  Slightly low lung volumes, however, this may be secondary to the film being taken on the expiratory phase of respiration.,IMPRESSION:,1.  No evidence of any focal areas of consolidation, pneumothoraces, or pleural effusions.,2.  Slight prominence to the mediastinum which may be secondary to thymus and/or technique.,3.  Slight prominence of some of the central pulmonary vasculature which may represent a minimal amount of vascular congestion.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "No evidence of any focal areas of consolidation, pneumothoraces, or pleural effusions"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Slight prominence to the mediastinum which may be secondary to thymus and/or technique"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Slight prominence of some of the central pulmonary vasculature which may represent a minimal amount of vascular congestion"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] J910: Malignant pleural effusion (score: 0.5491)\n[ICD-10-CM 2027] J90: Pleural effusion, not elsewhere classified (score: 0.5241)\n[ICD-10-CM 2027] J918: Pleural effusion in other conditions classified elsewhere (score: 0.4815)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] C781: Secondary malignant neoplasm of mediastinum (score: 0.4649)\n[ICD-10-CM 2027] E329: Disease of thymus, unspecified (score: 0.4196)\n[ICD-10-CM 2027] E328: Other diseases of thymus (score: 0.4065)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] R0981: Nasal congestion (score: 0.3237)\n[ICD-10-CM 2027] N421: Congestion and hemorrhage of prostate (score: 0.3059)\n[ICD-10-CM 2027] K0821: Minimal atrophy of the mandible (score: 0.2828)"
+  }
+]

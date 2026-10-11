@@ -1,0 +1,173 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+HISTORY: , The patient is a 19-year-old male who was involved in a fight approximately an hour prior to his ED presentation.  He punched a guy few times on the face, might be the mouth and then punched a drinking glass, breaking it and lacerating his right hand.  He has three lacerations on his right hand.  His wound was cleaned out thoroughly with tap water, and one of the navy corpsman tried to use Superglue and gauze to repair it.  However, it continues to bleed and he is here for evaluation.,PAST MEDICATION HISTORY:,  Significant for asthma and acne.,CURRENT MEDICATIONS: , Accutane and takes no other medications.,TETANUS STATUS: , Up-to-date.,SOCIAL HISTORY: , He is a nonsmoker.  He has been drinking alcohol today, but has no history of alcohol or drug abuse.,REVIEW OF SYSTEMS: , Otherwise well.  No febrile illness.  No motor or sensory complaints of any sort or paresthesias in the hand.,PHYSICAL EXAM:  ,GENERAL:  He is in no apparent distress.  He is alert and oriented x3.  Mental status is clear and appropriate.  VITALS SIGNS:  Temperature is 98.3, heart rate 100, respirations 18, blood pressure 161/98, oxygen saturation 99% on room air by pulse oximetry, which is normal.  EXTREMITIES:  Right hand, he has three lacerations all over the MCP joint of his right hand, irregular shaped over the fifth MCP and then over the fourth and third half wound, similarly the lacerations.  All total approximately 4 cm in length.  I see no foreign bodies, just capillary refills less than 2 seconds.  Radial pulses intact.  There is full range of motion with no gross deformities.  No significant amount of edema associated with these in the dorsum of the hand.,STUDIES: , X-rays shows no open fracture or bony abnormality.,EMERGENCY DEPARTMENT COURSE:  ,The patient was anesthetized with 1% Xylocaine.  Wounds were thoroughly irrigated with tap water with at least 2 liters.  They were repaired with simple sutures of 4-0 Ethilon, total of 17 sutures, 16 of which were simple, one is a horizontal mattress.  The patient was given Augmentin 87mg p.o. due to the possibility of human bite wound.,ASSESSMENT: , RIGHT HAND LACERATIONS, SIMPLE X3, REPAIRED AS DESCRIBED.  NO SIGNS OF BONY ABNORMALITY OR FOREIGN BODY.,PLAN:  ,The patient will be given Augmentin 875 mg 1 p.o. b.i.d. for 7 days.  He will be given a prescription of Vicoprofen as he is unable to tolerate the Tylenol due to his Accutane.  He will take 1 p.o. every 6 hours or as needed, #12.  He will follow up for suture removal in 8 days.  Should he develop any signs of infection, he will come immediately here for reevaluation.  He is discharged in stable condition.,
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Accutane"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "measurement",
+    "text": "99%"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Xylocaine"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Augmentin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "87mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "RIGHT HAND LACERATIONS"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "SIMPLE X3"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "REPAIRED AS DESCRIBED.  NO SIGNS OF BONY ABNORMALITY OR FOREIGN BODY.,PLAN:  ,The patient will be given Augmentin 875 mg 1 p.o. b.i.d. for 7 days.  He will be given a prescription of Vicoprofen as he is unable to tolerate the Tylenol due to his Accutane.  He will take 1 p.o. every 6 hours or as needed, #12.  He will follow up for suture removal in 8 days.  Should he develop any signs of infection, he will come immediately here for reevaluation.  He is discharged in stable condition"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Augmentin"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "dosage",
+    "text": "875 mg"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Vicoprofen"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Tylenol"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "Accutane"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Accutane' \u2192 RXCUI 202795, canonical: Accutane, match: exact\n[RxNorm] Ingredient: isotretinoin (RXCUI 6064)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): isotretinoin 5 MG Oral Capsule; isotretinoin 0.0005 MG/MG Topical Gel; erythromycin 0.02 MG/MG / isotretinoin 0.0005 MG/MG Topical Gel; isotretinoin 25 MG Oral Capsule; isotretinoin 35 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Measurement] 99.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 1.0% associated with Xylocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Xylocaine' \u2192 RXCUI 202398, canonical: Xylocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Augmentin' \u2192 RXCUI 151392, canonical: Augmentin, match: exact\n[RxNorm] Ingredient: clavulanate (RXCUI 48203)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amoxicillin 50 MG / clavulanate 12.5 MG Oral Tablet; amoxicillin 200 MG / clavulanate 50 MG Oral Tablet; amoxicillin 300 MG / clavulanate 75 MG Oral Tablet; amoxicillin 100 MG / clavulanate 25 MG Oral Tablet; amoxicillin 100 MG / clavulanate 25 MG Chewable Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 87.0mg associated with Augmentin \u2014 dose 87.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] S61411D: Laceration without foreign body of right hand, subsequent encounter (score: 0.7182)\n[ICD-10-CM 2027] S61421D: Laceration with foreign body of right hand, subsequent encounter (score: 0.7182)\n[ICD-10-CM 2027] S61411A: Laceration without foreign body of right hand, initial encounter (score: 0.7097)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] H10429: Simple chronic conjunctivitis, unspecified eye (score: 0.6203)\n[ICD-10-CM 2027] H10422: Simple chronic conjunctivitis, left eye (score: 0.6134)\n[ICD-10-CM 2027] H10421: Simple chronic conjunctivitis, right eye (score: 0.6133)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] H5311: Day blindness (score: 0.2771)\n[ICD-10-CM 2027] T63443D: Toxic effect of venom of bees, assault, subsequent encounter (score: 0.2192)\n[ICD-10-CM 2027] T63444D: Toxic effect of venom of bees, undetermined, subsequent encounter (score: 0.2189)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Augmentin' \u2192 RXCUI 151392, canonical: Augmentin, match: exact\n[RxNorm] Ingredient: clavulanate (RXCUI 48203)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amoxicillin 50 MG / clavulanate 12.5 MG Oral Tablet; amoxicillin 200 MG / clavulanate 50 MG Oral Tablet; amoxicillin 300 MG / clavulanate 75 MG Oral Tablet; amoxicillin 100 MG / clavulanate 25 MG Oral Tablet; amoxicillin 100 MG / clavulanate 25 MG Chewable Tablet"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "Dose 875.0mg associated with Augmentin"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Vicoprofen' \u2192 RXCUI 220826, canonical: Vicoprofen, match: exact\n[RxNorm] Ingredient: hydrocodone (RXCUI 5489)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 20 MG/ML / hydrocodone bitartrate 0.667 MG/ML Oral Solution; 12 HR chlorpheniramine polistirex 1.6 MG/ML / hydrocodone polistirex 2 MG/ML Extended Release Suspension; brompheniramine maleate 0.4 MG/ML / guaifenesin 40 MG/ML / hydrocodone bitartrate 1 MG/ML Oral Solution; Abuse-Deterrent 24 HR hydrocodone bitartrate 20 MG Extended Release Oral Tablet; Abuse-Deterrent 24 HR hydrocodone bitartrate 30 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Tylenol' \u2192 RXCUI 202433, canonical: Tylenol, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'Accutane' \u2192 RXCUI 202795, canonical: Accutane, match: exact\n[RxNorm] Ingredient: isotretinoin (RXCUI 6064)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): isotretinoin 5 MG Oral Capsule; isotretinoin 0.0005 MG/MG Topical Gel; erythromycin 0.02 MG/MG / isotretinoin 0.0005 MG/MG Topical Gel; isotretinoin 25 MG Oral Capsule; isotretinoin 35 MG Oral Capsule"
+  }
+]

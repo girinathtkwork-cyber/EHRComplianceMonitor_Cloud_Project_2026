@@ -1,0 +1,127 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+SUBJECTIVE: , The patient is not in acute distress.,PHYSICAL EXAMINATION:,VITAL SIGNS:  Blood pressure of 121/63, pulse is 75, and O2 saturation is 94% on room air.,HEAD AND NECK:  Face is symmetrical.  Cranial nerves are intact.,CHEST:  There is prolonged expiration.,CARDIOVASCULAR:  First and second heart sounds are heard.  No murmur was appreciated.,ABDOMEN:  Soft and nontender.  Bowel sounds are positive.,EXTREMITIES:  He has 2+ pedal swelling.,NEUROLOGIC:  The patient is asleep, but easily arousable.,LABORATORY DATA:,  PTT is 49.  INR is pending.  BUN is improved to 20.6, creatinine is 0.7, sodium is 123, and potassium is 3.8.  AST is down to 45 and ALT to 99.,DIAGNOSTIC STUDIES: , Nuclear stress test showed moderate size, mostly fixed defect involving the inferior wall with a small area of peri-infarct ischemia.  Ejection fraction is 25%.,ASSESSMENT AND PLAN:,1.  Congestive heart failure due to rapid atrial fibrillation and systolic dysfunction.  Continue current treatment as per Cardiology.  We will consider adding ACE inhibitors as renal function improves.,2.  Acute pulmonary edema, resolved.,3.  Rapid atrial fibrillation, rate controlled.  The patient is on beta-blockers and digoxin.  Continue Coumadin.  Monitor INR.,4.  Coronary artery disease with ischemic cardiomyopathy.  Continue beta-blockers.,5.  Urinary tract infection.  Continue Rocephin.,6.  Bilateral perfusion secondary to congestive heart failure.  We will monitor.,7.  Chronic obstructive pulmonary disease, stable.,8.  Abnormal liver function due to congestive heart failure with liver congestion, improving.,9.  Rule out hypercholesterolemia.  We will check lipid profile.,10.  Tobacco smoking disorder.  The patient has been counseled.,11.  Hyponatremia, stable.  This is due to fluid overload.  Continue diuresis as per Nephrology.,12.  Deep venous thrombosis prophylaxis.  The patient is on heparin drip.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "measurement",
+    "text": "94%"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "sodium"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "potassium"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "measurement",
+    "text": "25%"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "AND PLAN:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Congestive heart failure due to rapid atrial fibrillation and systolic dysfunction.  Continue current treatment as per Cardiology.  We will consider adding ACE inhibitors as renal function improves"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Acute pulmonary edema, resolved"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Rapid atrial fibrillation, rate controlled.  The patient is on beta-blockers and digoxin.  Continue Coumadin.  Monitor INR"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "digoxin"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Coronary artery disease with ischemic cardiomyopathy.  Continue beta-blockers"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Urinary tract infection.  Continue Rocephin"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Bilateral perfusion secondary to congestive heart failure.  We will monitor"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Chronic obstructive pulmonary disease, stable"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Abnormal liver function due to congestive heart failure with liver congestion, improving"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Rule out hypercholesterolemia.  We will check lipid profile"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Tobacco smoking disorder.  The patient has been counseled"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Hyponatremia, stable.  This is due to fluid overload.  Continue diuresis as per Nephrology"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "Deep venous thrombosis prophylaxis.  The patient is on heparin drip"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "heparin"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

@@ -1,0 +1,313 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+HISTORY OF PRESENT ILLNESS: , This is a 43-year-old black man with no apparent past medical history who presented to the emergency room with the chief complaint of weakness, malaise and dyspnea on exertion for approximately one month. Additional diagnosis noted: Atrial Fibrillation.  The patient also reports a 15-pound weight loss.  He denies fever, chills and sweats.  He denies cough and diarrhea.  He has mild anorexia.,PAST MEDICAL HISTORY:,  Essentially unremarkable except for chest wall cysts which apparently have been biopsied by a dermatologist in the past, and he was given a benign diagnosis.  He had a recent PPD which was negative in August 1994.,MEDICATIONS: , None.,ALLERGIES: , No known drug allergies.,SOCIAL HISTORY: , He occasionally drinks and is a nonsmoker.  The patient participated in homosexual activity in Haiti during 1982 which he described as "very active." Denies intravenous drug use.  The patient is currently employed.,FAMILY HISTORY:,  Unremarkable.,PHYSICAL EXAMINATION:,GENERAL:  This is a thin, black cachectic man speaking in full sentences with oxygen.,VITAL SIGNS:  Blood pressure 96/56, heart rate 120.  No change with orthostatics.  Temperature 101.6 degrees Fahrenheit.  Respirations 30.,HEENT:  Funduscopic examination normal.  He has oral thrush.,LYMPH:  He has marked adenopathy including right bilateral epitrochlear and posterior cervical nodes.,NECK:  No goiter, no jugular venous distention.,CHEST:  Bilateral basilar crackles, and egophony at the right and left middle lung fields.,HEART:  Regular rate and rhythm, no murmur, rub or gallop.,ABDOMEN:  Soft and nontender.,GENITOURINARY:  Normal.,RECTAL:  Unremarkable.,SKIN:  The patient has multiple, subcutaneous mobile nodules on the chest wall that are nontender.  He has very pale palms., ,LABORATORY AND X-RAY DATA: , Sodium 133, potassium 5.3, BUN 29, creatinine 1.8.  Hemoglobin 14, white count 7100, platelet count 515.  Total protein 10, albumin 3.1, AST 131, ALT 31.  Urinalysis shows 1+ protein, trace blood.  Total bilirubin 2.4, direct bilirubin 0.1.  Arterial blood gases:  pH 7.46, pC02 32, p02 46 on room air.  Electrocardiogram shows normal sinus rhythm.  Chest x-ray shows bilateral alveolar and interstitial infiltrates.,IMPRESSION:,1.  Bilateral pneumonia; suspect atypical pneumonia, rule out Pneumocystis carinii pneumonia and tuberculosis.,2.  Thrush.,3.  Elevated unconjugated bilirubins.,4.  Hepatitis.,5.  Elevated globulin fraction.,6.  Renal insufficiency.,7.  Subcutaneous nodules.,8.  Risky sexual behavior in 1982 in Haiti.,PLAN:,1.  Induced sputum, rule out Pneumocystis carinii pneumonia and tuberculosis.,2.  Begin intravenous Bactrim and erythromycin.,3.  Begin prednisone.,4.  Oxygen.,5.  Nystatin swish and swallow.,6.  Dermatologic biopsy of lesions.,7.  Check HIV and RPR.,8.  Administer Pneumovax, tetanus shot and Heptavax if indicated.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Atrial Fibrillation.  The patient also reports a 15-pound weight loss.  He denies fever, chills and sweats.  He denies cough and diarrhea.  He has mild anorexia.,PAST MEDICAL HISTORY:,  Essentially unremarkable except for chest wall cysts which apparently have been biopsied by a dermatologist in the past, and he was given a benign diagnosis.  He had a recent PPD which was negative in August 1994.,MEDICATIONS: , None.,ALLERGIES: , No known drug allergies.,SOCIAL HISTORY: , He occasionally drinks and is a nonsmoker.  The patient participated in homosexual activity in Haiti during 1982 which he described as \"very active.\" Denies intravenous drug use.  The patient is currently employed.,FAMILY HISTORY:,  Unremarkable.,PHYSICAL EXAMINATION:,GENERAL:  This is a thin, black cachectic man speaking in full sentences with oxygen.,VITAL SIGNS:  Blood pressure 96/56, heart rate"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "No change with orthostatics.  Temperature 101.6 degrees Fahrenheit.  Respirations 30.,HEENT:  Funduscopic examination normal.  He has oral thrush.,LYMPH:  He has marked adenopathy including right bilateral epitrochlear and posterior cervical nodes.,NECK:  No goiter, no jugular venous distention.,CHEST:  Bilateral basilar crackles, and egophony at the right and left middle lung fields.,HEART:  Regular rate and rhythm, no murmur, rub or gallop.,ABDOMEN:  Soft and nontender.,GENITOURINARY:  Normal.,RECTAL:  Unremarkable.,SKIN:  The patient has multiple, subcutaneous mobile nodules on the chest wall that are nontender.  He has very pale palms., ,LABORATORY AND X-RAY DATA: , Sodium 133, potassium 5.3, BUN 29, creatinine 1"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Sodium"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "potassium"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Hemoglobin 14, white count 7100, platelet count"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Total protein 10, albumin 3.1, AST 131, ALT"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Urinalysis shows 1+ protein, trace blood.  Total bilirubin 2.4, direct bilirubin 0"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Arterial blood gases:  pH 7.46, pC02 32, p02 46 on room air.  Electrocardiogram shows normal sinus rhythm.  Chest x-ray shows bilateral alveolar and interstitial infiltrates.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Bilateral pneumonia; suspect atypical pneumonia, rule out Pneumocystis carinii pneumonia and tuberculosis"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Thrush"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Elevated unconjugated bilirubins"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Hepatitis"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Elevated globulin fraction"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Renal insufficiency"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Subcutaneous nodules"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Risky sexual behavior in 1982 in Haiti.,PLAN:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Induced sputum, rule out Pneumocystis carinii pneumonia and tuberculosis"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Begin intravenous Bactrim and erythromycin"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "Bactrim"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "erythromycin"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "Begin prednisone"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "medication",
+    "text": "prednisone"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "Oxygen"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Nystatin swish and swallow"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "medication",
+    "text": "Nystatin"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "diagnosis",
+    "text": "Dermatologic biopsy of lesions"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "diagnosis",
+    "text": "Check HIV and RPR"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "diagnosis",
+    "text": "Administer Pneumovax, tetanus shot and Heptavax if indicated"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] T7840XD: Allergy, unspecified, subsequent encounter (score: 0.2161)\n[ICD-10-CM 2027] T7849XD: Other allergy, subsequent encounter (score: 0.2161)\n[ICD-10-CM 2027] T7840XA: Allergy, unspecified, initial encounter (score: 0.2140)\n[ICD-10-CM 2027] Match unresolved (top score 0.2161 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2357)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.2285)\n[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.1747)\n[ICD-10-CM 2027] Match unresolved (top score 0.2357 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Sodium' \u2192 RXCUI 9853, canonical: sodium, match: exact\n[RxNorm] Ingredient: sodium (RXCUI 9853)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'potassium' \u2192 RXCUI 8588, canonical: potassium, match: exact\n[RxNorm] Ingredient: potassium (RXCUI 8588)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): potassium 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] D72818: Other decreased white blood cell count (score: 0.6118)\n[ICD-10-CM 2027] D72819: Decreased white blood cell count, unspecified (score: 0.6118)\n[ICD-10-CM 2027] D72828: Other elevated white blood cell count (score: 0.5978)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] R770: Abnormality of albumin (score: 0.6141)\n[ICD-10-CM 2027] H26139: Total traumatic cataract, unspecified eye (score: 0.3437)\n[ICD-10-CM 2027] D530: Protein deficiency anemia (score: 0.3412)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] E806: Other disorders of bilirubin metabolism (score: 0.6612)\n[ICD-10-CM 2027] E807: Disorder of bilirubin metabolism, unspecified (score: 0.6612)\n[ICD-10-CM 2027] H26139: Total traumatic cataract, unspecified eye (score: 0.2155)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.3998)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.3986)\n[ICD-10-CM 2027] W880XXS: Exposure to X-rays, sequela (score: 0.3986)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] P239: Congenital pneumonia, unspecified (score: 0.6611)\n[ICD-10-CM 2027] J1289: Other viral pneumonia (score: 0.5930)\n[ICD-10-CM 2027] J129: Viral pneumonia, unspecified (score: 0.5930)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] No matches found for 'Thrush' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] E806: Other disorders of bilirubin metabolism (score: 0.6160)\n[ICD-10-CM 2027] E807: Disorder of bilirubin metabolism, unspecified (score: 0.6160)\n[ICD-10-CM 2027] E7841: Elevated Lipoprotein(a) (score: 0.4389)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] K739: Chronic hepatitis, unspecified (score: 0.8691)\n[ICD-10-CM 2027] K738: Other chronic hepatitis, not elsewhere classified (score: 0.6987)\n[ICD-10-CM 2027] B188: Other chronic viral hepatitis (score: 0.6810)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] R771: Abnormality of globulin (score: 0.6455)\n[ICD-10-CM 2027] E7841: Elevated Lipoprotein(a) (score: 0.4490)\n[ICD-10-CM 2027] Z2914: Encounter for prophylactic rabies immune globulin (score: 0.4266)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] I6781: Acute cerebrovascular insufficiency (score: 0.5076)\n[ICD-10-CM 2027] S35403D: Unspecified injury of unspecified renal artery, subsequent encounter (score: 0.4698)\n[ICD-10-CM 2027] S35493D: Other specified injury of unspecified renal artery, subsequent encounter (score: 0.4698)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] J382: Nodules of vocal cords (score: 0.6461)\n[ICD-10-CM 2027] L988: Other specified disorders of the skin and subcutaneous tissue (score: 0.3472)\n[ICD-10-CM 2027] L989: Disorder of the skin and subcutaneous tissue, unspecified (score: 0.3472)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] F66: Other sexual disorders (score: 0.6323)\n[ICD-10-CM 2027] Z701: Counseling related to patient's sexual behavior and orientation (score: 0.5262)\n[ICD-10-CM 2027] R37: Sexual dysfunction, unspecified (score: 0.5203)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] R093: Abnormal sputum (score: 0.5788)\n[ICD-10-CM 2027] A1850: Tuberculosis of eye, unspecified (score: 0.3727)\n[ICD-10-CM 2027] A1859: Other tuberculosis of eye (score: 0.3727)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] T411X6D: Underdosing of intravenous anesthetics, subsequent encounter (score: 0.7083)\n[ICD-10-CM 2027] T411X6A: Underdosing of intravenous anesthetics, initial encounter (score: 0.7053)\n[ICD-10-CM 2027] T411X6S: Underdosing of intravenous anesthetics, sequela (score: 0.7051)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'Bactrim' \u2192 RXCUI 151399, canonical: Bactrim, match: exact\n[RxNorm] Ingredient: sulfamethoxazole (RXCUI 10180)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): phenazopyridine hydrochloride 200 MG / sulfamethoxazole 800 MG / trimethoprim 160 MG Oral Tablet; sulfamethoxazole 100 MG / trimethoprim 20 MG Oral Tablet; 5 ML sulfamethoxazole 80 MG/ML / trimethoprim 16 MG/ML Injection; sulfamethoxazole 500 MG Oral Tablet; sulfamethoxazole 400 MG / trimethoprim 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'erythromycin' \u2192 RXCUI 4053, canonical: erythromycin, match: exact\n[RxNorm] Ingredient: erythromycin (RXCUI 4053)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): erythromycin 20 MG/ML Topical Lotion; erythromycin 40 MG/ML / zinc acetate 12 MG/ML Topical Solution; erythromycin 0.02 MG/MG / isotretinoin 0.0005 MG/MG Topical Gel; erythromycin lactobionate 500 MG Injection; erythromycin 500 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] No matches found for 'Begin prednisone' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[RxNorm] 'prednisone' \u2192 RXCUI 8640, canonical: prednisone, match: exact\n[RxNorm] Ingredient: prednisone (RXCUI 8640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): prednisone 1 MG Delayed Release Oral Tablet; prednisone 2 MG Delayed Release Oral Tablet; prednisone 5 MG Delayed Release Oral Tablet; prednisone 1 MG Oral Tablet; prednisone 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] T7120XD: Asphyxiation due to systemic oxygen deficiency due to low oxygen content in ambient air due to unspecified cause, subsequent encounter (score: 0.6856)\n[ICD-10-CM 2027] T7120XA: Asphyxiation due to systemic oxygen deficiency due to low oxygen content in ambient air due to unspecified cause, initial encounter (score: 0.6851)\n[ICD-10-CM 2027] T7120XS: Asphyxiation due to systemic oxygen deficiency due to low oxygen content in ambient air due to unspecified cause, sequela (score: 0.6851)"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] No matches found for 'Nystatin swish and swallow' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[RxNorm] 'Nystatin' \u2192 RXCUI 7597, canonical: nystatin, match: exact\n[RxNorm] Ingredient: nystatin (RXCUI 7597)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): nystatin 100 UNT/MG / triamcinolone acetonide 0.001 MG/MG Topical Ointment; nystatin 100000 UNT/ML / triamcinolone acetonide 1 MG/ML Topical Cream; neomycin 0.025 MG/MG / nystatin 100 UNT/MG / thiostrepton 2.5 UNT/MG / triamcinolone 0.001 MG/MG Topical Ointment; nystatin 1000000 UNT Oral Capsule; nystatin 100000 UNT/ML / tolnaftate 10 MG/ML Topical Cream"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[ICD-10-CM 2027] L7621: Postprocedural hemorrhage of skin and subcutaneous tissue following a dermatologic procedure (score: 0.4665)\n[ICD-10-CM 2027] L7611: Accidental puncture and laceration of skin and subcutaneous tissue during a dermatologic procedure (score: 0.4636)\n[ICD-10-CM 2027] L7631: Postprocedural hematoma of skin and subcutaneous tissue following a dermatologic procedure (score: 0.4481)"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[ICD-10-CM 2027] E8814: HIV-associated lipodystrophy (score: 0.6058)\n[ICD-10-CM 2027] B20: Human immunodeficiency virus [HIV] disease (score: 0.5309)\n[ICD-10-CM 2027] Z2981: Encounter for HIV pre-exposure prophylaxis (score: 0.5218)"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[ICD-10-CM 2027] A35: Other tetanus (score: 1.0000)\n[ICD-10-CM 2027] A33: Tetanus neonatorum (score: 0.7071)\n[ICD-10-CM 2027] A34: Obstetrical tetanus (score: 0.6931)"
+  }
+]

@@ -1,0 +1,123 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:,  Prior history of anemia, abdominal bloating.,POSTOPERATIVE DIAGNOSIS:,  External hemorrhoids, otherwise unremarkable colonoscopy.,PREMEDICATIONS:,  Versed 5 mg, Demerol 50 mg IV.,REPORT OF PROCEDURE:,  Digital rectal exam revealed external hemorrhoids.  The colonoscope was inserted into the rectal ampulla and advanced to the cecum.  The position of the scope within the cecum was verified by identification of the appendiceal orifice.  The cecum, the ascending colon, hepatic flexure, transverse colon, splenic flexure, descending colon, and rectum were normal.  The scope was retroflexed in the rectum and no abnormality was seen.  So the scope was straightened, withdrawn, and the procedure terminated.,ENDOSCOPIC IMPRESSION:,1.  Normal colonoscopy.,2.  External hemorrhoids.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Prior history of anemia, abdominal bloating.,POSTOPERATIVE DIAGNOSIS:,  External hemorrhoids, otherwise unremarkable colonoscopy.,PREMEDICATIONS:,  Versed 5 mg, Demerol 50 mg IV.,REPORT OF PROCEDURE:,  Digital rectal exam revealed external hemorrhoids.  The colonoscope was inserted into the rectal ampulla and advanced to the cecum.  The position of the scope within the cecum was verified by identification of the appendiceal orifice.  The cecum, the ascending colon, hepatic flexure, transverse colon, splenic flexure, descending colon, and rectum were normal.  The scope was retroflexed in the rectum and no abnormality was seen.  So the scope was straightened, withdrawn, and the procedure terminated.,ENDOSCOPIC IMPRESSION:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "External hemorrhoids, otherwise unremarkable colonoscopy.,PREMEDICATIONS:,  Versed 5 mg, Demerol 50 mg IV.,REPORT OF PROCEDURE:,  Digital rectal exam revealed external hemorrhoids.  The colonoscope was inserted into the rectal ampulla and advanced to the cecum.  The position of the scope within the cecum was verified by identification of the appendiceal orifice.  The cecum, the ascending colon, hepatic flexure, transverse colon, splenic flexure, descending colon, and rectum were normal.  The scope was retroflexed in the rectum and no abnormality was seen.  So the scope was straightened, withdrawn, and the procedure terminated.,ENDOSCOPIC IMPRESSION:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "External hemorrhoids"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "5 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Demerol"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "50 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Digital rectal exam revealed external hemorrhoids.  The colonoscope was inserted into the rectal ampulla and advanced to the cecum.  The position of the scope within the cecum was verified by identification of the appendiceal orifice.  The cecum, the ascending colon, hepatic flexure, transverse colon, splenic flexure, descending colon, and rectum were normal.  The scope was retroflexed in the rectum and no abnormality was seen.  So the scope was straightened, withdrawn, and the procedure terminated.,ENDOSCOPIC IMPRESSION:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Normal colonoscopy"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Normal colonoscopy"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "External hemorrhoids"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] C180: Malignant neoplasm of cecum (score: 0.3296)\n[ICD-10-CM 2027] D120: Benign neoplasm of cecum (score: 0.3169)\n[ICD-10-CM 2027] N80531: Superficial endometriosis of the cecum (score: 0.3092)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] C180: Malignant neoplasm of cecum (score: 0.3390)\n[ICD-10-CM 2027] D120: Benign neoplasm of cecum (score: 0.3260)\n[ICD-10-CM 2027] N80531: Superficial endometriosis of the cecum (score: 0.3181)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] K648: Other hemorrhoids (score: 0.8888)\n[ICD-10-CM 2027] K649: Unspecified hemorrhoids (score: 0.8888)\n[ICD-10-CM 2027] K642: Third degree hemorrhoids (score: 0.7653)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 5.0mg associated with Demerol \u2014 dose 5.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Demerol' \u2192 RXCUI 282381, canonical: Demerol, match: exact\n[RxNorm] Ingredient: meperidine (RXCUI 6754)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML meperidine hydrochloride 100 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 25 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 75 MG/ML Cartridge"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 50.0mg associated with Demerol"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Digital rectal exam revealed external hemorrhoids.  The colonoscope was inserted into the rectal ampulla and advanced to the cecum.  The position of the scope within the cecum was verified by identification of the appendiceal orifice.  The cecum, the ascending colon, hepatic flexure, transverse colon, splenic flexure, descending colon, and rectum were normal.  The scope was retroflexed in the rectum and no abnormality was seen.  So the scope was straightened, withdrawn, and the procedure terminated.,ENDOSCOPIC IMPRESSION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Z3480: Encounter for supervision of other normal pregnancy, unspecified trimester (score: 0.6460)\n[ICD-10-CM 2027] Z3490: Encounter for supervision of normal pregnancy, unspecified, unspecified trimester (score: 0.6460)\n[ICD-10-CM 2027] Z3483: Encounter for supervision of other normal pregnancy, third trimester (score: 0.6134)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Normal colonoscopy' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'External hemorrhoids' \u2014 extracted from header, not verified against any coding system"
+  }
+]

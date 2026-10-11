@@ -1,0 +1,122 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Septic left total knee arthroplasty.,POSTOPERATIVE DIAGNOSIS: , Septic left total knee arthroplasty.,OPERATION PERFORMED: , Arthroscopic irrigation and debridement of same with partial synovectomy.,ANESTHESIA:,  LMA.,ESTIMATED BLOOD LOSS:,  Minimal.,COMPLICATIONS: , None.,DRAINS:,  None.,INDICATIONS:,  The patient is an 81-year-old female, who is approximately 10 years status post total knee replacement performed in another state, who presented a couple of days ago to the office with worsening pain without injury and whose symptoms have been present for approximately a month following a possible urinary tract infection.  The patient' knee was aspirated in the office and cultures were positive for Escherichia coli.  She presents for operative therapy.,DESCRIPTION OF OPERATION: , After obtaining informed consent and the administration of antibiotics since her cultures had already been obtained, the patient was taken to the operating room and following satisfactory induction and the patient was placed on the table in supine position.  The left upper extremity was prepped and draped without a tourniquet.  The knee was injected with 30 mL of normal saline and standard arthroscopy portals were created.  The arthroscopy was inserted and a complete diagnostic was performed.  Arthroscopic pictures were taken throughout the procedure.  The knee was copiously irrigated with 9 L of irrigant.  A partial synovectomy was performed in all compartments.  Minimal amount of polyethylene wear was noted.  The total knee components were identified arthroscopically for future revision surgery.  The knee was then drained and the arthroscopic instruments were removed.  The portals were closed with 4-0 nylon and local anesthetic was injected.  A sterile dressing was applied and the patient was placed in a knee immobilizer, awakened from anesthesia and transported to the recovery room in stable condition and tolerated the procedure well.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Septic left total knee arthroplasty.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Septic left total knee arthroplasty.,OPERATION PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Arthroscopic irrigation and debridement of same with partial synovectomy.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Arthroscopic irrigation and debridement of same with partial synovectomy.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "LMA.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "LMA.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Minimal.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Minimal.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "None.,DRAINS:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "None.,DRAINS:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "None.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "None.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "The patient is an 81-year-old female, who is approximately 10 years status post total knee replacement performed in another state, who presented a couple of days ago to the office with worsening pain without injury and whose symptoms have been present for approximately a month following a possible urinary tract infection.  The patient' knee was aspirated in the office and cultures were positive for Escherichia coli.  She presents for operative therapy.,DESCRIPTION OF OPERATION:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "The patient is an 81-year-old female, who is approximately 10 years status post total knee replacement performed in another state, who presented a couple of days ago to the office with worsening pain without injury and whose symptoms have been present for approximately a month following a possible urinary tract infection.  The patient' knee was aspirated in the office and cultures were positive for Escherichia coli.  She presents for operative therapy.,DESCRIPTION OF OPERATION:"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Escherichia coli"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "After obtaining informed consent and the administration of antibiotics since her cultures had already been obtained, the patient was taken to the operating room and following satisfactory induction and the patient was placed on the table in supine position.  The left upper extremity was prepped and draped without a tourniquet.  The knee was injected with 30 mL of normal saline and standard arthroscopy portals were created.  The arthroscopy was inserted and a complete diagnostic was performed.  Arthroscopic pictures were taken throughout the procedure.  The knee was copiously irrigated with 9 L of irrigant.  A partial synovectomy was performed in all compartments.  Minimal amount of polyethylene wear was noted.  The total knee components were identified arthroscopically for future revision surgery.  The knee was then drained and the arthroscopic instruments were removed.  The portals were closed with 4-0 nylon and local anesthetic was injected.  A sterile dressing was applied and the patient was placed in a knee immobilizer, awakened from anesthesia and transported to the recovery room in stable condition and tolerated the procedure well"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "After obtaining informed consent and the administration of antibiotics since her cultures had already been obtained, the patient was taken to the operating room and following satisfactory induction and the patient was placed on the table in supine position.  The left upper extremity was prepped and draped without a tourniquet.  The knee was injected with 30 mL of normal saline and standard arthroscopy portals were created.  The arthroscopy was inserted and a complete diagnostic was performed.  Arthroscopic pictures were taken throughout the procedure.  The knee was copiously irrigated with 9 L of irrigant.  A partial synovectomy was performed in all compartments.  Minimal amount of polyethylene wear was noted.  The total knee components were identified arthroscopically for future revision surgery.  The knee was then drained and the arthroscopic instruments were removed.  The portals were closed with 4-0 nylon and local anesthetic was injected.  A sterile dressing was applied and the patient was placed in a knee immobilizer, awakened from anesthesia and transported to the recovery room in stable condition and tolerated the procedure well"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "measurement",
+    "text": "30 mL"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "well"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

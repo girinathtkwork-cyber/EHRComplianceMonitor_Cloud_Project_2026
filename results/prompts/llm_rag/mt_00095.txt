@@ -1,0 +1,163 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:  ,1.  Cervical spondylosis C5-C6 greater than C6-C7 (721.0).,2.  Neck pain, progressive (723.1) with right greater than left radiculopathy (723.4).,POSTOPERATIVE DIAGNOSES:  ,1.  Cervical spondylosis C5-C6 greater than C6-C7 (721.0).,2.  Neck pain, progressive (723.1) with right greater than left radiculopathy (723.4), surgical findings confirmed.,PROCEDURES:  ,1.  Anterior cervical discectomy at C5-C6 and C6-C7 for neural decompression (63075, 63076).,2.  Anterior interbody fusion at C5-C6 and C6-C7 (22554, 22585) utilizing Bengal cages x2 (22851).,3.  Anterior instrumentation by Uniplate construction C5, C6, and C7 (22845); with intraoperative x-ray x2.,ANESTHESIA:  ,General.,OPERATIONS: , The patient was brought to the operating room and placed in the supine position where general anesthesia was administered.  Then the anterior aspect of the neck was prepped and draped in the routine sterile fashion.  A linear skin incision was made in the skin fold line from just to the right of the midline to the leading edge of the right sternocleidomastoid muscle and taken sharply to platysma, which was dissected in a subplatysmal manner and then with only blunt dissection, the prevertebral space was encountered and localizing intraoperative x-ray was obtained once cauterized the longus colli muscle bilaterally allowed for the placement along its mesial portion of self-retaining retractors for exposure of tissues.  Prominent anterior osteophytes once identified and compared to preoperative studies were removed at C5-C6 and then at C6-C7 with rongeur, allowing for an annulotomy with an #11 blade through collapsed disc space at C5-6, and even more collapsed at C6-C7.  Gross instability appeared and though minimally at both interspaces and residual disc were removed then with the straight disc forceps providing a discectomy at both levels, sending to Pathology in a routine fashion as disc specimen.  This was sent separately and allowed for residual disc removal of power drill where drilling extended in normal cortical and cancellous elements of the C5 and C6 interspaces and at C6-C7 removing large osteophytes and process, residual osteophytes from which were removed finally with 1 and 2 mm micro Kerrison rongeurs allowing for excision of other hypertrophied ligament posteriorly as well.  This allowed for the bulging into the interspace of the dura, sign of decompressed status, and this was done widely bilaterally to decompress the nerve roots themselves and this was assured by inspection with a double ball dissector as needed.  At no time during the case was there evidence of CSF leakage and hemostasis was well achieved with pledgets of Gelfoam and subsequently removed with copious amounts of antibiotic irrigation as well as Surgifoam.  Once hemostasis well achieved, Bengal cage was filled with the patient's own bone elements of appropriate size, and this was countersunk into position and quite tightly applied it at first C5-C6, then secondly at C6-C7.  These were checked and found to be well applied and further stability was then added by placement nonetheless of a Uniplate of appropriate size.  The appropriate size screws and post-placement x-ray showed well-aligned elements and removal of osteophytes, etc.  The wound was again irrigated with antibiotic solution, inspected, and finally closed in a multiple layered closure by approximation of platysma with interrupted #3-0 Vicryl and the skin with subcuticular stitch of #4-0 Vicryl incorporating a Penrose drain from vertebral space externally through the skin wound and safety pin, and later incorporated itself into sterile bandage.,Once the bandage was placed, the patient was taken, extubated from the operating room to the Recovery area, having in stable, but guarded condition.  At the conclusion of the case, all instrument, needle, and sponge counts were accurate and correct.  There were no intraoperative complications of any type.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Neck pain, progressive (723.1) with right greater than left radiculopathy (723.4).,POSTOPERATIVE DIAGNOSES:  "
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Cervical spondylosis C5-C6 greater than C6-C7 (721.0)"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Neck pain, progressive (723.1) with right greater than left radiculopathy (723.4), surgical findings confirmed.,PROCEDURES:  "
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical discectomy at C5-C6 and C6-C7 for neural decompression (63075, 63076)"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Anterior cervical discectomy at C5-C6 and C6-C7 for neural decompression (63075, 63076)"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Anterior interbody fusion at C5-C6 and C6-C7 (22554, 22585) utilizing Bengal cages x2 (22851)"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Anterior interbody fusion at C5-C6 and C6-C7 (22554, 22585) utilizing Bengal cages x2 (22851)"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Anterior instrumentation by Uniplate construction C5, C6, and C7 (22845); with intraoperative x-ray x2.,ANESTHESIA:  ,General.,OPERATIONS: , The patient was brought to the operating room and placed in the supine position where general anesthesia was administered.  Then the anterior aspect of the neck was prepped and draped in the routine sterile fashion.  A linear skin incision was made in the skin fold line from just to the right of the midline to the leading edge of the right sternocleidomastoid muscle and taken sharply to platysma, which was dissected in a subplatysmal manner and then with only blunt dissection, the prevertebral space was encountered and localizing intraoperative x-ray was obtained once cauterized the longus colli muscle bilaterally allowed for the placement along its mesial portion of self-retaining retractors for exposure of tissues.  Prominent anterior osteophytes once identified and compared to preoperative studies were removed at C5-C6 and then at C6-C7 with rongeur, allowing for an annulotomy with an #11 blade through collapsed disc space at C5-6, and even more collapsed at C6-C"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Anterior instrumentation by Uniplate construction C5, C6, and C7 (22845); with intraoperative x-ray x2.,ANESTHESIA:  ,General.,OPERATIONS: , The patient was brought to the operating room and placed in the supine position where general anesthesia was administered.  Then the anterior aspect of the neck was prepped and draped in the routine sterile fashion.  A linear skin incision was made in the skin fold line from just to the right of the midline to the leading edge of the right sternocleidomastoid muscle and taken sharply to platysma, which was dissected in a subplatysmal manner and then with only blunt dissection, the prevertebral space was encountered and localizing intraoperative x-ray was obtained once cauterized the longus colli muscle bilaterally allowed for the placement along its mesial portion of self-retaining retractors for exposure of tissues.  Prominent anterior osteophytes once identified and compared to preoperative studies were removed at C5-C6 and then at C6-C7 with rongeur, allowing for an annulotomy with an #11 blade through collapsed disc space at C5-6, and even more collapsed at C6-C"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "The patient was brought to the operating room and placed in the supine position where general anesthesia was administered.  Then the anterior aspect of the neck was prepped and draped in the routine sterile fashion.  A linear skin incision was made in the skin fold line from just to the right of the midline to the leading edge of the right sternocleidomastoid muscle and taken sharply to platysma, which was dissected in a subplatysmal manner and then with only blunt dissection, the prevertebral space was encountered and localizing intraoperative x-ray was obtained once cauterized the longus colli muscle bilaterally allowed for the placement along its mesial portion of self-retaining retractors for exposure of tissues.  Prominent anterior osteophytes once identified and compared to preoperative studies were removed at C5-C6 and then at C6-C7 with rongeur, allowing for an annulotomy with an #11 blade through collapsed disc space at C5-6, and even more collapsed at C6-C"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Gross instability appeared and though minimally at both interspaces and residual disc were removed then with the straight disc forceps providing a discectomy at both levels, sending to Pathology in a routine fashion as disc specimen.  This was sent separately and allowed for residual disc removal of power drill where drilling extended in normal cortical and cancellous elements of the C5 and C6 interspaces and at C6-C7 removing large osteophytes and process, residual osteophytes from which were removed finally with 1 and 2 mm micro Kerrison rongeurs allowing for excision of other hypertrophied ligament posteriorly as well.  This allowed for the bulging into the interspace of the dura, sign of decompressed status, and this was done widely bilaterally to decompress the nerve roots themselves and this was assured by inspection with a double ball dissector as needed.  At no time during the case was there evidence of CSF leakage and hemostasis was well achieved with pledgets of Gelfoam and subsequently removed with copious amounts of antibiotic irrigation as well as Surgifoam.  Once hemostasis well achieved, Bengal cage was filled with the patient's own bone elements of appropriate size, and this was countersunk into position and quite tightly applied it at first C5-C6, then secondly at C6-C"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Gross instability appeared and though minimally at both interspaces and residual disc were removed then with the straight disc forceps providing a discectomy at both levels, sending to Pathology in a routine fashion as disc specimen.  This was sent separately and allowed for residual disc removal of power drill where drilling extended in normal cortical and cancellous elements of the C5 and C6 interspaces and at C6-C7 removing large osteophytes and process, residual osteophytes from which were removed finally with 1 and 2 mm micro Kerrison rongeurs allowing for excision of other hypertrophied ligament posteriorly as well.  This allowed for the bulging into the interspace of the dura, sign of decompressed status, and this was done widely bilaterally to decompress the nerve roots themselves and this was assured by inspection with a double ball dissector as needed.  At no time during the case was there evidence of CSF leakage and hemostasis was well achieved with pledgets of Gelfoam and subsequently removed with copious amounts of antibiotic irrigation as well as Surgifoam.  Once hemostasis well achieved, Bengal cage was filled with the patient's own bone elements of appropriate size, and this was countersunk into position and quite tightly applied it at first C5-C6, then secondly at C6-C"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "These were checked and found to be well applied and further stability was then added by placement nonetheless of a Uniplate of appropriate size.  The appropriate size screws and post-placement x-ray showed well-aligned elements and removal of osteophytes, etc.  The wound was again irrigated with antibiotic solution, inspected, and finally closed in a multiple layered closure by approximation of platysma with interrupted #3-0 Vicryl and the skin with subcuticular stitch of #4-0 Vicryl incorporating a Penrose drain from vertebral space externally through the skin wound and safety pin, and later incorporated itself into sterile bandage.,Once the bandage was placed, the patient was taken, extubated from the operating room to the Recovery area, having in stable, but guarded condition.  At the conclusion of the case, all instrument, needle, and sponge counts were accurate and correct.  There were no intraoperative complications of any type"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "These were checked and found to be well applied and further stability was then added by placement nonetheless of a Uniplate of appropriate size.  The appropriate size screws and post-placement x-ray showed well-aligned elements and removal of osteophytes, etc.  The wound was again irrigated with antibiotic solution, inspected, and finally closed in a multiple layered closure by approximation of platysma with interrupted #3-0 Vicryl and the skin with subcuticular stitch of #4-0 Vicryl incorporating a Penrose drain from vertebral space externally through the skin wound and safety pin, and later incorporated itself into sterile bandage.,Once the bandage was placed, the patient was taken, extubated from the operating room to the Recovery area, having in stable, but guarded condition.  At the conclusion of the case, all instrument, needle, and sponge counts were accurate and correct.  There were no intraoperative complications of any type"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M5410: Radiculopathy, site unspecified (score: 0.4200)\n[ICD-10-CM 2027] R52: Pain, unspecified (score: 0.3842)\n[ICD-10-CM 2027] M5412: Radiculopathy, cervical region (score: 0.3731)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] M47892: Other spondylosis, cervical region (score: 0.6542)\n[ICD-10-CM 2027] M479: Spondylosis, unspecified (score: 0.6309)\n[ICD-10-CM 2027] M47899: Other spondylosis, site unspecified (score: 0.5422)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] M5410: Radiculopathy, site unspecified (score: 0.3101)\n[ICD-10-CM 2027] T8189XD: Other complications of procedures, not elsewhere classified, subsequent encounter (score: 0.2979)\n[ICD-10-CM 2027] T8189XA: Other complications of procedures, not elsewhere classified, initial encounter (score: 0.2966)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] T703XXD: Caisson disease [decompression sickness], subsequent encounter (score: 0.4086)\n[ICD-10-CM 2027] T703XXA: Caisson disease [decompression sickness], initial encounter (score: 0.4078)\n[ICD-10-CM 2027] T703XXS: Caisson disease [decompression sickness], sequela (score: 0.4078)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Anterior cervical discectomy at C5-C6 and C6-C7 for neural decompression (63075, 63076)' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] M4320: Fusion of spine, site unspecified (score: 0.6555)\n[ICD-10-CM 2027] M4322: Fusion of spine, cervical region (score: 0.6085)\n[ICD-10-CM 2027] M4324: Fusion of spine, thoracic region (score: 0.6058)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Anterior interbody fusion at C5-C6 and C6-C7 (22554, 22585) utilizing Bengal cages x2 (22851)' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.3726)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.3715)\n[ICD-10-CM 2027] W880XXS: Exposure to X-rays, sequela (score: 0.3714)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Anterior instrumentation by Uniplate construction C5, C6, and C7 (22845); with intraoperative x-ray x2.,ANESTHESIA:  ,General.,OPERATIONS: , The patient was brought to the operating room and placed in the supine position where general anesthesia was administered.  Then the anterior aspect of the neck was prepped and draped in the routine sterile fashion.  A linear skin incision was made in the skin fold line from just to the right of the midline to the leading edge of the right sternocleidomastoid muscle and taken sharply to platysma, which was dissected in a subplatysmal manner and then with only blunt dissection, the prevertebral space was encountered and localizing intraoperative x-ray was obtained once cauterized the longus colli muscle bilaterally allowed for the placement along its mesial portion of self-retaining retractors for exposure of tissues.  Prominent anterior osteophytes once identified and compared to preoperative studies were removed at C5-C6 and then at C6-C7 with rongeur, allowing for an annulotomy with an #11 blade through collapsed disc space at C5-6, and even more collapsed at C6-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'The patient was brought to the operating room and placed in the supine position where general anesthesia was administered.  Then the anterior aspect of the neck was prepped and draped in the routine sterile fashion.  A linear skin incision was made in the skin fold line from just to the right of the midline to the leading edge of the right sternocleidomastoid muscle and taken sharply to platysma, which was dissected in a subplatysmal manner and then with only blunt dissection, the prevertebral space was encountered and localizing intraoperative x-ray was obtained once cauterized the longus colli muscle bilaterally allowed for the placement along its mesial portion of self-retaining retractors for exposure of tissues.  Prominent anterior osteophytes once identified and compared to preoperative studies were removed at C5-C6 and then at C6-C7 with rongeur, allowing for an annulotomy with an #11 blade through collapsed disc space at C5-6, and even more collapsed at C6-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.3975)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.3959)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.3958)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Gross instability appeared and though minimally at both interspaces and residual disc were removed then with the straight disc forceps providing a discectomy at both levels, sending to Pathology in a routine fashion as disc specimen.  This was sent separately and allowed for residual disc removal of power drill where drilling extended in normal cortical and cancellous elements of the C5 and C6 interspaces and at C6-C7 removing large osteophytes and process, residual osteophytes from which were removed finally with 1 and 2 mm micro Kerrison rongeurs allowing for excision of other hypertrophied ligament posteriorly as well.  This allowed for the bulging into the interspace of the dura, sign of decompressed status, and this was done widely bilaterally to decompress the nerve roots themselves and this was assured by inspection with a double ball dissector as needed.  At no time during the case was there evidence of CSF leakage and hemostasis was well achieved with pledgets of Gelfoam and subsequently removed with copious amounts of antibiotic irrigation as well as Surgifoam.  Once hemostasis well achieved, Bengal cage was filled with the patient's own bone elements of appropriate size, and this was countersunk into position and quite tightly applied it at first C5-C6, then secondly at C6-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.3002)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.2989)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.2989)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'These were checked and found to be well applied and further stability was then added by placement nonetheless of a Uniplate of appropriate size.  The appropriate size screws and post-placement x-ray showed well-aligned elements and removal of osteophytes, etc.  The wound was again irrigated with antibiotic solution, inspected, and finally closed in a multiple layered closure by approximation of platysma with interrupted #3-0 Vicryl and the skin with subcuticular stitch of #4-0 Vicryl incorporating a Penrose drain from vertebral space externally through the skin wound and safety pin, and later incorporated itself into sterile bandage.,Once the bandage was placed, the patient was taken, extubated from the operating room to the Recovery area, having in stable, but guarded condition.  At the conclusion of the case, all instrument, needle, and sponge counts were accurate and correct.  There were no intraoperative complications of any type' \u2014 extracted from header, not verified against any coding system"
+  }
+]

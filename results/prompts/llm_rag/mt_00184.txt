@@ -1,0 +1,303 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PAST MEDICAL HISTORY:  Include:,1.  Type II diabetes mellitus.,2.  Hypertension.,3.  Hyperlipidemia.,4.  Gastroesophageal reflux disease.,5.  Renal insufficiency.,6.  Degenerative joint disease, status post bilateral hip and bilateral knee replacements.,7.  Enterocutaneous fistula.,8.  Respiratory failure.,9.  History of atrial fibrillation.,10.  Obstructive sleep apnea.,11.  History of uterine cancer, status post total hysterectomy.,12.  History of ventral hernia repair for incarcerated hernia.,SOCIAL HISTORY:  The patient has been admitted to multiple hospitals over the last several months.,FAMILY HISTORY:  Positive for diabetes mellitus type 2 in both mother and her sister.,MEDICATIONS:  Currently include,,1.  Albuterol inhaler q.4 h.,2.  Paradox swish and spit mouthwash twice a day.,3.  Digoxin 0.12mg daily.,4.  Theophylline 50 mg q.6 h.,5.  Prozac 20 mg daily.,6.  Lasix 40 mg daily.,7.  Humulin regular high dose sliding scale insulin subcu. q.6 h.,8.  Atrovent q.4 h.,9.  Lantus 12 units subcu. q.12 h.,10.  Lisinopril 10 mg daily.,11.  Magnesium oxide 400 mg three times a day.,12.  Metoprolol 25 mg twice daily.,13.  Nitroglycerin topical q.6 h.,14.  Zegerid 40 mg daily.,15.  Simvastatin 10 mg daily.,ALLERGIES:  Percocet, Percodan, oxycodone, and Duragesic.,REVIEW OF SYSTEMS:  The patient currently denies any pain, denies any headache or blurred vision.  Denies chest pain or shortness of breath.  She denies any nausea or vomiting.  Otherwise, systems are negative.,PHYSICAL EXAM:,General:  The patient is awake, alert, and oriented.  She is in no apparent respiratory distress.,Vital Signs:  Temperature 97.6, blood pressure is 139/53, pulse 100, respirations 24.  The patient has a tracheostomy in place.  She will also have an esophageal gastric tube in place.,Cardiac:  Regular rate and rhythm without audible murmurs, rubs or gallops.  Lungs are clear to auscultation bilaterally with slightly diminished breath sounds on the bases.  No adventitious sounds are noted.,Abdomen:  Obese.  There is an open wound on the ventral abdomen overlying the midline abdominal incision from previous surgery.  The area is covered with bandage with serosanguineous fluid.  Abdomen is nontender to palpation.  Bowel sounds are heard in all 4 quadrants.,Extremities:  Bilateral lower extremities are edematous and very cool to touch.,LABORATORY DATA:  Pending.  Capillary blood sugars thus far have been 132 and 135.,ASSESSMENT:  This is an 80-year-old female with an unfortunate past medical history with recent complications of sepsis and respiratory failure who is now receiving tube feeds.,PLAN:  For her diabetes mellitus, we will continue the patient on her current regimen of Lantus 12 units subcu. q.12 h. and Regular Insulin at a high dose sliding scale every 6 hours.  The patient had been previously controlled on this.  We will continue to check her sugars every 6 hours and adjust insulin as necessary.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Albuterol"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Digoxin"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "dosage",
+    "text": "0.12mg"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Theophylline"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "50 mg"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Prozac"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Lasix"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Humulin"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Atrovent"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Lantus"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "12 units"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Lisinopril"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Magnesium oxide"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "400 mg"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "Metoprolol"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "dosage",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "Nitroglycerin"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "measurement",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "Simvastatin"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "medication",
+    "text": "Percocet"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "medication",
+    "text": "oxycodone"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "diagnosis",
+    "text": "This is an 80-year-old female with an unfortunate past medical history with recent complications of sepsis and respiratory failure who is now receiving tube feeds.,PLAN:  For her diabetes mellitus, we will continue the patient on her current regimen of Lantus 12 units subcu. q.12 h. and Regular Insulin at a high dose sliding scale every 6 hours.  The patient had been previously controlled on this.  We will continue to check her sugars every 6 hours and adjust insulin as necessary"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "medication",
+    "text": "Lantus"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "dosage",
+    "text": "12 units"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Albuterol' \u2192 RXCUI 435, canonical: albuterol, match: exact\n[RxNorm] Ingredient: albuterol (RXCUI 435)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): albuterol 0.4 MG Inhalation Powder; 120 ACTUAT albuterol 0.1 MG/ACTUAT / ipratropium bromide 0.02 MG/ACTUAT Inhalation Spray; albuterol 1 MG/ML / ipratropium bromide 0.2 MG/ML Inhalation Solution; albuterol 0.833 MG/ML / ipratropium bromide 0.167 MG/ML Inhalation Solution; albuterol 4 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Digoxin' \u2192 RXCUI 3407, canonical: digoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "Dose 0.12mg associated with Digoxin \u2014 dose 0.12mg not among known product strengths"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Theophylline' \u2192 RXCUI 10438, canonical: theophylline, match: exact\n[RxNorm] Ingredient: theophylline (RXCUI 10438)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): theophylline 2 MG/ML Oral Solution; ephedrine hydrochloride 11 MG / theophylline 120 MG Oral Tablet; ephedrine sulfate 15 MG / theophylline 120 MG Oral Tablet; theophylline 100 MG Oral Capsule; theophylline 100 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "Dose 50.0mg associated with Theophylline \u2014 dose 50.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Prozac' \u2192 RXCUI 58827, canonical: Prozac, match: exact\n[RxNorm] Ingredient: fluoxetine (RXCUI 4493)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fluoxetine 60 MG Oral Tablet; fluoxetine 60 MG Oral Capsule; fluoxetine 20 MG Oral Tablet; PMDD fluoxetine 10 MG Oral Tablet; PMDD fluoxetine 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 20.0mg associated with Prozac"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Lasix' \u2192 RXCUI 202991, canonical: Lasix, match: exact\n[RxNorm] Ingredient: furosemide (RXCUI 4603)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): furosemide 4 MG/ML Oral Solution; 10 ML furosemide 10 MG/ML Injection; 2 ML furosemide 10 MG/ML Injection; 4 ML furosemide 10 MG/ML Injection; furosemide 10 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "Dose 40.0mg associated with Lasix"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Humulin' \u2192 RXCUI 1372744, canonical: Humulin, match: exact\n[RxNorm] Ingredient: insulin isophane (RXCUI 1605101)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 3 ML insulin isophane, human 100 UNT/ML Pen Injector; insulin isophane, human 85 UNT/ML / insulin, regular, human 15 UNT/ML Injectable Suspension; insulin isophane, human 50 UNT/ML / insulin, regular, human 50 UNT/ML Injectable Suspension; insulin isophane, human 90 UNT/ML / insulin, regular, human 10 UNT/ML Injectable Suspension; insulin isophane, human 80 UNT/ML / insulin, regular, human 20 UNT/ML Injectable Suspension"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Atrovent' \u2192 RXCUI 151390, canonical: Atrovent, match: exact\n[RxNorm] Ingredient: ipratropium (RXCUI 7213)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 120 ACTUAT albuterol 0.1 MG/ACTUAT / ipratropium bromide 0.02 MG/ACTUAT Inhalation Spray; albuterol 1 MG/ML / ipratropium bromide 0.2 MG/ML Inhalation Solution; albuterol 0.833 MG/ML / ipratropium bromide 0.167 MG/ML Inhalation Solution; ipratropium bromide 0.021 MG/ACTUAT Metered Dose Nasal Spray; ipratropium bromide 0.042 MG/ACTUAT Metered Dose Nasal Spray"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Lantus' \u2192 RXCUI 261551, canonical: Lantus, match: exact\n[RxNorm] Ingredient: insulin glargine (RXCUI 274783)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1.5 ML insulin glargine 300 UNT/ML Pen Injector; 3 ML insulin glargine 100 UNT/ML / lixisenatide 0.033 MG/ML Pen Injector; 3 ML insulin glargine 300 UNT/ML Pen Injector; Sensor 3 ML insulin glargine 100 UNT/ML Pen Injector; 3 ML insulin glargine-yfgn 100 UNT/ML Pen Injector"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "Dose 12.0units associated with Lantus \u2014 dose 12.0units not among known product strengths"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Lisinopril' \u2192 RXCUI 29046, canonical: lisinopril, match: exact\n[RxNorm] Ingredient: lisinopril (RXCUI 29046)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lisinopril 1 MG/ML Oral Solution; lisinopril 40 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 10 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 20 MG Oral Tablet; hydrochlorothiazide 25 MG / lisinopril 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 10.0mg associated with Lisinopril"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Magnesium oxide' \u2192 RXCUI 6582, canonical: magnesium oxide, match: exact\n[RxNorm] Ingredient: magnesium oxide (RXCUI 6582)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): calcium carbonate 400 MG / cholecalciferol 133 UNT / magnesium oxide 167 MG Oral Tablet; boron 1.5 MG / calcium carbonate 500 MG / cholecalciferol 300 UNT / folic acid 1.1 MG / magnesium oxide 100 MG / pyridoxine 12.5 MG / vitamin B12 0.25 MG Oral Tablet; calcium carbonate 250 MG / magnesium oxide 155 MG Oral Tablet; magnesium citrate 45 MG / magnesium oxide 45 MG / potassium citrate 49.5 MG / pyridoxine hydrochloride 3.75 MG Extended Release Oral Tablet; ascorbic acid 100 MG / calcium carbonate 200 MG / cholecalciferol 0.01 MG / copper sulfate 2 MG / dl-alpha tocopheryl acetate 30 UNT / ferrous fumarate 65 MG / folic acid 1 MG / magnesium oxide 10 MG / niacinamide 20 MG / potassium iodide 0.15 MG / pyridoxine hydrochloride 5 MG / retinol acetate 4000 UNT / riboflavin 3.4 MG / thiamine mononitrate 3 MG / vitamin B12 0.012 MG / zinc sulfate 15 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "Dose 400.0mg associated with Magnesium oxide"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'Metoprolol' \u2192 RXCUI 6918, canonical: metoprolol, match: exact\n[RxNorm] Ingredient: metoprolol (RXCUI 6918)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR hydrochlorothiazide 25 MG / metoprolol tartrate 200 MG Extended Release Oral Tablet; metoprolol tartrate 37.5 MG Oral Tablet; metoprolol tartrate 75 MG Oral Tablet; 5 ML metoprolol tartrate 1 MG/ML Cartridge; 24 HR metoprolol succinate 100 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "Dose 25.0mg associated with Metoprolol"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'Nitroglycerin' \u2192 RXCUI 4917, canonical: nitroglycerin, match: exact\n[RxNorm] Ingredient: nitroglycerin (RXCUI 4917)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): nitroglycerin 0.004 MG/MG Rectal Ointment; nitroglycerin 0.4 MG Sublingual Powder; 250 ML nitroglycerin 0.4 MG/ML Injection; 250 ML nitroglycerin 0.1 MG/ML Injection; nitroglycerin 0.3 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[Measurement] 40.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[RxNorm] 'Simvastatin' \u2192 RXCUI 36567, canonical: simvastatin, match: exact\n[RxNorm] Ingredient: simvastatin (RXCUI 36567)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): simvastatin 4 MG/ML Oral Suspension; simvastatin 8 MG/ML Oral Suspension; simvastatin 40 MG Oral Tablet; simvastatin 80 MG Oral Tablet; simvastatin 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "Dose 10.0mg associated with Simvastatin"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[RxNorm] 'Percocet' \u2192 RXCUI 42844, canonical: Percocet, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[RxNorm] 'oxycodone' \u2192 RXCUI 7804, canonical: oxycodone, match: exact\n[RxNorm] Ingredient: oxycodone (RXCUI 7804)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 325 MG / oxycodone hydrochloride 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[ICD-10-CM 2027] O24414: Gestational diabetes mellitus in pregnancy, insulin controlled (score: 0.3216)\n[ICD-10-CM 2027] O24434: Gestational diabetes mellitus in the puerperium, insulin controlled (score: 0.3061)\n[ICD-10-CM 2027] O24424: Gestational diabetes mellitus in childbirth, insulin controlled (score: 0.3036)"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[RxNorm] 'Lantus' \u2192 RXCUI 261551, canonical: Lantus, match: exact\n[RxNorm] Ingredient: insulin glargine (RXCUI 274783)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1.5 ML insulin glargine 300 UNT/ML Pen Injector; 3 ML insulin glargine 100 UNT/ML / lixisenatide 0.033 MG/ML Pen Injector; 3 ML insulin glargine 300 UNT/ML Pen Injector; Sensor 3 ML insulin glargine 100 UNT/ML Pen Injector; 3 ML insulin glargine-yfgn 100 UNT/ML Pen Injector"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "Dose 12.0units associated with Lantus \u2014 dose 12.0units not among known product strengths"
+  }
+]

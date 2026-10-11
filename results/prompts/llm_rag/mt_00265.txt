@@ -1,0 +1,73 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM:,  CT examination of the abdomen and pelvis with intravenous contrast.,INDICATIONS:,  Abdominal pain.,TECHNIQUE:  ,CT examination of the abdomen and pelvis was performed after 100 mL of intravenous Isovue-300 contrast administration.  Oral contrast was not administered.  There was no comparison of studies.,FINDINGS,CT PELVIS:,Within the pelvis, the uterus demonstrates a thickened-appearing endometrium.  There is also a 4.4 x 2.5 x 3.4 cm hypodense mass in the cervix and lower uterine segment of uncertain etiology.  There is also a 2.5 cm intramural hypodense mass involving the dorsal uterine fundus likely representing a fibroid.  Several smaller fibroids were also suspected.,The ovaries are unremarkable in appearance.  There is no free pelvic fluid or adenopathy.,CT ABDOMEN:,The appendix has normal appearance in the right lower quadrant.  There are few scattered diverticula in the sigmoid colon without evidence of diverticulitis.  The small and large bowels are otherwise unremarkable.  The stomach is grossly unremarkable.  There is no abdominal or retroperitoneal adenopathy.  There are no adrenal masses.  The kidneys, liver, gallbladder, and pancreas are in unremarkable appearance.  The spleen contains several small calcified granulomas, but no evidence of masses.  It is normal in size.  The lung bases are clear bilaterally.  The osseous structures are unremarkable other than mild facet degenerative changes at L4-L5 and L5-S1.,IMPRESSION:,1.  Hypoattenuating mass in the lower uterine segment and cervix of uncertain etiology measuring approximately 4.4 x 2.5 x 3.4 cm.,2.  Multiple uterine fibroids.,3.  Prominent endometrium.,4.  Followup pelvic ultrasound is recommended.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "measurement",
+    "text": "100 mL"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Hypoattenuating mass in the lower uterine segment and cervix of uncertain etiology measuring approximately 4.4 x 2.5 x 3.4 cm"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Multiple uterine fibroids"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Prominent endometrium"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Followup pelvic ultrasound is recommended"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Measurement] 100.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] Q960: Karyotype 45, X (score: 0.4160)\n[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.3606)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.3595)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] S35533D: Injury of unspecified uterine artery, subsequent encounter (score: 0.7054)\n[ICD-10-CM 2027] S35533A: Injury of unspecified uterine artery, initial encounter (score: 0.7007)\n[ICD-10-CM 2027] S35533S: Injury of unspecified uterine artery, sequela (score: 0.7005)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] Q175: Prominent ear (score: 0.6904)\n[ICD-10-CM 2027] C541: Malignant neoplasm of endometrium (score: 0.5670)\n[ICD-10-CM 2027] D070: Carcinoma in situ of endometrium (score: 0.5031)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] K6A09: Other pelvic abscess (score: 0.7246)\n[ICD-10-CM 2027] N80D9: Endometriosis of other pelvic nerve (score: 0.6130)\n[ICD-10-CM 2027] S37898D: Other injury of other urinary and pelvic organ, subsequent encounter (score: 0.5991)"
+  }
+]

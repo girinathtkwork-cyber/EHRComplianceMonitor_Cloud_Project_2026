@@ -1,0 +1,143 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+SUBJECTIVE:,  The patient is admitted for lung mass and also pleural effusion.  The patient had a chest tube placement, which has been taken out.  The patient has chronic atrial fibrillation, on anticoagulation.  The patient is doing fairly well.  This afternoon, she called me because heart rate was in the range of 120 to 140.  The patient is lying down.  She does have shortness of breath, but denies any other significant symptoms.,PAST MEDICAL HISTORY:,  History of mastectomy, chest tube placement, and atrial fibrillation; chronic.,MEDICATIONS:,1.  Cardizem, which is changed to 60 mg p.o. t.i.d.,2.  Digoxin 0.25 mg daily.,3.  Cardura, adjusted dose.,4.  Clindamycin.,PHYSICAL EXAMINATION,VITAL SIGNS:  Pulse 122 and blood pressure 102/68.,LUNGS:  Air entry decreased.,HEART:  PMI is displaced.  S1 and S2 are irregular.,ABDOMEN:  Soft and nontender.,IMPRESSION:,1.  Pulmonary disorder with lung mass.,2.  Pleural effusion.,3.  Chronic uncontrolled atrial fibrillation secondary to pulmonary disorder.,RECOMMENDATIONS:,1.  From cardiac standpoint, follow with pulmonary treatment.,2.  The patient has an INR of 2.09.  She is on anticoagulation.  Atrial fibrillation is chronic with the rate increased.,Adjust the medications accordingly as above.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Cardizem"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "dosage",
+    "text": "60 mg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Digoxin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "0.25 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Cardura"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Clindamycin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Pulmonary disorder with lung mass"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Pleural effusion"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Chronic uncontrolled atrial fibrillation secondary to pulmonary disorder.,RECOMMENDATIONS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "From cardiac standpoint, follow with pulmonary treatment"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "The patient has an INR of 2"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "She is on anticoagulation.  Atrial fibrillation is chronic with the rate increased.,Adjust the medications accordingly as above"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Cardizem' \u2192 RXCUI 203494, canonical: Cardizem, match: exact\n[RxNorm] Ingredient: diltiazem (RXCUI 3443)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 5 ML diltiazem hydrochloride 5 MG/ML Injection; 10 ML diltiazem hydrochloride 5 MG/ML Injection; 25 ML diltiazem hydrochloride 5 MG/ML Injection; diltiazem hydrochloride 100 MG Injection; 250 ML diltiazem hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "Dose 60.0mg associated with Cardizem"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Digoxin' \u2192 RXCUI 3407, canonical: digoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 0.25mg associated with Digoxin"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Cardura' \u2192 RXCUI 196468, canonical: Cardura, match: exact\n[RxNorm] Ingredient: doxazosin (RXCUI 49276)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): doxazosin 1 MG Oral Tablet; doxazosin 2 MG Oral Tablet; doxazosin 4 MG Oral Tablet; doxazosin 8 MG Oral Tablet; 24 HR doxazosin 4 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Clindamycin' \u2192 RXCUI 2582, canonical: clindamycin, match: exact\n[RxNorm] Ingredient: clindamycin (RXCUI 2582)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): clindamycin 20 MG/ML Topical Cream; benzoyl peroxide 0.05 MG/MG / clindamycin phosphate 0.012 MG/MG Topical Gel; benzoyl peroxide 0.0375 MG/MG / clindamycin phosphate 0.012 MG/MG Topical Gel; 2 ML clindamycin 150 MG/ML Injection; 4 ML clindamycin 150 MG/ML Injection"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] J984: Other disorders of lung (score: 0.6130)\n[ICD-10-CM 2027] S27309D: Unspecified injury of lung, unspecified, subsequent encounter (score: 0.4576)\n[ICD-10-CM 2027] S27309A: Unspecified injury of lung, unspecified, initial encounter (score: 0.4519)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] J910: Malignant pleural effusion (score: 0.9332)\n[ICD-10-CM 2027] J90: Pleural effusion, not elsewhere classified (score: 0.8907)\n[ICD-10-CM 2027] J918: Pleural effusion in other conditions classified elsewhere (score: 0.8182)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.7430)\n[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.7051)\n[ICD-10-CM 2027] I4819: Other persistent atrial fibrillation (score: 0.6110)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] Z08: Encounter for follow-up examination after completed treatment for malignant neoplasm (score: 0.5216)\n[ICD-10-CM 2027] Z09: Encounter for follow-up examination after completed treatment for conditions other than malignant neoplasm (score: 0.4760)\n[ICD-10-CM 2027] Z392: Encounter for routine postpartum follow-up (score: 0.4442)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] O2620: Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester (score: 0.4323)\n[ICD-10-CM 2027] Z3181: Encounter for male factor infertility in female patient (score: 0.4179)\n[ICD-10-CM 2027] O2623: Pregnancy care for patient with recurrent pregnancy loss, third trimester (score: 0.4177)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.5987)\n[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.5682)\n[ICD-10-CM 2027] I4819: Other persistent atrial fibrillation (score: 0.4923)"
+  }
+]

@@ -1,0 +1,37 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+INDICATIONS: , The patient is a 22-year-old female with past medical history of syncope.  The patient is also complaining of dizziness.  She was referred here by Dr. X for tilt table.,TECHNIQUE: , Risks and benefits explained to the patient.  Consent obtained.  She was lying down on her back for 20 minutes and her blood pressure was 111/75 and heart rate 89.  She was standing up on the tilt tablet for 20 minutes and her heart rate went up to 127 and blood pressure was still in 120/80.  Then, the patient received sublingual nitroglycerin 0.4 mg.  The patient felt dizzy at that time and heart rate was in the 120 and blood pressure was 110/50.  The patient felt nauseous and felt hot at that time.  She did not pass out.,COMPLICATIONS:,  None.,Tilt table was then terminated.,SUMMARY:,  Positive tilt table for vasovagal syncope with significant increase of heart rate with minimal decrease of blood pressure.,RECOMMENDATIONS: , I recommend followup in the office in one week and she will need Toprol-XL 12.5 mg every day if symptoms persist.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "nitroglycerin"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "dosage",
+    "text": "0.4 mg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "measurement",
+    "text": "12.5 mg"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

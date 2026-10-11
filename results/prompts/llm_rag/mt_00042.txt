@@ -1,0 +1,163 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Subcapital left hip fracture.,POSTOPERATIVE DIAGNOSIS: , Subcapital left hip fracture.,PROCEDURE PERFORMED: , Austin-Moore bipolar hemiarthroplasty, left hip.,ANESTHESIA:  ,Spinal.,COMPLICATIONS: , None.,ESTIMATED BLOOD LOSS:  ,Less than 100 cc.,HISTORY:  ,The patient is an 86-year-old female who was seen and evaluated in ABCD General Hospital Emergency Department on 08/30/03 after sustaining a fall at her friend's house.  The patient states that she was knocked over by her friend's dog.  She sustained a subcapital left hip fracture.  Prior to admission, she lived alone in Terrano, was ambulating with a walker.  All risks, benefits, and potential complications of the procedure were then discussed with the patient and informed consent was obtained.,HARDWARE SPECIFICATIONS: , A 28 mm medium head was used, a small cemented femoral stem was used, and a 28 x 46 cup was used.,PROCEDURE:  ,All risks, benefits, and potential complications of the procedure were discussed with the patient, informed consent was obtained.  She was then transferred from the preoperative care unit to operating suite #1.  Department of Anesthesia administered spinal anesthetic without complications.,After this, the patient was transferred to the operating table and positioned.  All bony prominences were well padded.  She was positioned on a beanbag in the right lateral decubitus position with the left hip facing upwards.  The left lower extremity was then sterilely prepped and draped in the normal fashion.  A skin maker was then used to mark all bony prominences.  Skin incision was then carried out extending from the greater trochanter in a curvilinear fashion posteriorly across the buttocks.  A #10 blade Bard-Parker scalpel was used to incise the skin through to the subcutaneous tissues.  A second #10 blade was then used to incise through the subcutaneous tissue down to the fascia lata.  This was then incised utilizing Metzenbaum scissors.  This was taken down to the bursa, which was removed utilizing a rongeur.  Utilizing a periosteal elevator as well as the sponge, the fat was then freed from the short external rotators of the left hip after these were placed and stretched.  The sciatic nerve was then visualized and retracted utilizing a Richardson retractor.  Bovie was used to remove the short external rotators from the greater trochanter, which revealed the joint capsule.  The capsule was cleared and incised utilizing a T-shape incision.  A fracture hematoma was noted upon entering the joint capsule as well as subcapital hip fracture.  A cork screw was then used to remove the fractured femoral head, which was given to the scrub tech which was sized on the back table.  All bony remnants were then removed from the acetabulum and surrounding soft tissue with a rongeur.  Acetabulum was then inspected and found to be clear.  Attention was then turned to the proximal femur where a cutting tunnel was used to mark the femur for the femoral neck cut.  An oscillating saw was then used to make the femoral cut.  Box osteotome was then used to remove the bone from proximal femur.  A Charnley awl was then used to open the femoral canal, paying close attention to keep the awl in the lateral position.  Next, attention was turned to broaching.  Initially, a small broach was placed, first making efforts to lateralize the broach then the femoral canal.  It was felt that the patient has less benefit from a cemented prosthesis and a small size was appropriate.  Next, the trial components were inserted consisting of the above-mentioned component sizes.  The hip was taken through range of motion and tested to adduction, internal and external rotations as well as with a shuck and a posterior directed force on a flexed tip.  It was noted that these size were stable through the range of motion.  Next, the trial components were removed and the femoral canal was copiously irrigated and suctioned dried utilizing Super sucker and __________ then inserted pressuring the femoral canal.  The femoral component was then inserted and then held under pressure.  Extruding cement was removed from the proximal femur.  After the cement had fully hardened and dried, the head and cup were applied.  The hip was subsequently reduced and taken again through range of motion, which was felt to be stable.,Next, the capsule was closed utilizing #1 Ethibond in figure-of-eight fashion.  Next, the fascia lata was repaired utilizing a figure-of-eight Ethibond sutures.  The most proximal region at the musculotendinous junction was repaired utilizing a running #1 Vicryl suture.  The wound was then copiously irrigated again to suction dry.  Next, the subcutaneous tissues were reapproximated using #2-0 Vicryl simple interrupted sutures.  The skin was then reapproximated utilizing skin clips.  Sterile dressing was applied consisting of Adaptic, 4x4s, ABDs as well as foam tape.  The patient was then transferred from the operating table to the gurney.  Leg lengths were checked, which were noted to be equal and abduction pillow was placed.  The patient was then transferred to the Postoperative Care Unit in stable condition. Patient also underwent cardiac catheterization during this visit.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Subcapital left hip fracture.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Subcapital left hip fracture.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Austin-Moore bipolar hemiarthroplasty, left hip.,ANESTHESIA:  ,Spinal.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Austin-Moore bipolar hemiarthroplasty, left hip.,ANESTHESIA:  ,Spinal.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "None.,ESTIMATED BLOOD LOSS:  ,Less than 100 cc.,HISTORY:  ,The patient is an 86-year-old female who was seen and evaluated in ABCD General Hospital Emergency Department on 08/30/03 after sustaining a fall at her friend's house.  The patient states that she was knocked over by her friend's dog.  She sustained a subcapital left hip fracture.  Prior to admission, she lived alone in Terrano, was ambulating with a walker.  All risks, benefits, and potential complications of the procedure were then discussed with the patient and informed consent was obtained.,HARDWARE SPECIFICATIONS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "None.,ESTIMATED BLOOD LOSS:  ,Less than 100 cc.,HISTORY:  ,The patient is an 86-year-old female who was seen and evaluated in ABCD General Hospital Emergency Department on 08/30/03 after sustaining a fall at her friend's house.  The patient states that she was knocked over by her friend's dog.  She sustained a subcapital left hip fracture.  Prior to admission, she lived alone in Terrano, was ambulating with a walker.  All risks, benefits, and potential complications of the procedure were then discussed with the patient and informed consent was obtained.,HARDWARE SPECIFICATIONS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "measurement",
+    "text": "100 cc"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "A 28 mm medium head was used, a small cemented femoral stem was used, and a 28 x 46 cup was used.,PROCEDURE:  ,All risks, benefits, and potential complications of the procedure were discussed with the patient, informed consent was obtained.  She was then transferred from the preoperative care unit to operating suite #1.  Department of Anesthesia administered spinal anesthetic without complications.,After this, the patient was transferred to the operating table and positioned.  All bony prominences were well padded.  She was positioned on a beanbag in the right lateral decubitus position with the left hip facing upwards.  The left lower extremity was then sterilely prepped and draped in the normal fashion.  A skin maker was then used to mark all bony prominences.  Skin incision was then carried out extending from the greater trochanter in a curvilinear fashion posteriorly across the buttocks.  A #10 blade Bard-Parker scalpel was used to incise the skin through to the subcutaneous tissues.  A second #10 blade was then used to incise through the subcutaneous tissue down to the fascia lata.  This was then incised utilizing Metzenbaum scissors.  This was taken down to the bursa, which was removed utilizing a rongeur.  Utilizing a periosteal elevator as well as the sponge, the fat was then freed from the short external rotators of the left hip after these were placed and stretched.  The sciatic nerve was then visualized and retracted utilizing a Richardson retractor.  Bovie was used to remove the short external rotators from the greater trochanter, which revealed the joint capsule.  The capsule was cleared and incised utilizing a T-shape incision.  A fracture hematoma was noted upon entering the joint capsule as well as subcapital hip fracture.  A cork screw was then used to remove the fractured femoral head, which was given to the scrub tech which was sized on the back table.  All bony remnants were then removed from the acetabulum and surrounding soft tissue with a rongeur.  Acetabulum was then inspected and found to be clear.  Attention was then turned to the proximal femur where a cutting tunnel was used to mark the femur for the femoral neck cut.  An oscillating saw was then used to make the femoral cut.  Box osteotome was then used to remove the bone from proximal femur.  A Charnley awl was then used to open the femoral canal, paying close attention to keep the awl in the lateral position.  Next, attention was turned to broaching.  Initially, a small broach was placed, first making efforts to lateralize the broach then the femoral canal.  It was felt that the patient has less benefit from a cemented prosthesis and a small size was appropriate.  Next, the trial components were inserted consisting of the above-mentioned component sizes.  The hip was taken through range of motion and tested to adduction, internal and external rotations as well as with a shuck and a posterior directed force on a flexed tip.  It was noted that these size were stable through the range of motion.  Next, the trial components were removed and the femoral canal was copiously irrigated and suctioned dried utilizing Super sucker and __________ then inserted pressuring the femoral canal.  The femoral component was then inserted and then held under pressure.  Extruding cement was removed from the proximal femur.  After the cement had fully hardened and dried, the head and cup were applied.  The hip was subsequently reduced and taken again through range of motion, which was felt to be stable.,Next, the capsule was closed utilizing #1 Ethibond in figure-of-eight fashion.  Next, the fascia lata was repaired utilizing a figure-of-eight Ethibond sutures.  The most proximal region at the musculotendinous junction was repaired utilizing a running #1 Vicryl suture.  The wound was then copiously irrigated again to suction dry.  Next, the subcutaneous tissues were reapproximated using #2-0 Vicryl simple interrupted sutures.  The skin was then reapproximated utilizing skin clips.  Sterile dressing was applied consisting of Adaptic"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "A 28 mm medium head was used, a small cemented femoral stem was used, and a 28 x 46 cup was used.,PROCEDURE:  ,All risks, benefits, and potential complications of the procedure were discussed with the patient, informed consent was obtained.  She was then transferred from the preoperative care unit to operating suite #1.  Department of Anesthesia administered spinal anesthetic without complications.,After this, the patient was transferred to the operating table and positioned.  All bony prominences were well padded.  She was positioned on a beanbag in the right lateral decubitus position with the left hip facing upwards.  The left lower extremity was then sterilely prepped and draped in the normal fashion.  A skin maker was then used to mark all bony prominences.  Skin incision was then carried out extending from the greater trochanter in a curvilinear fashion posteriorly across the buttocks.  A #10 blade Bard-Parker scalpel was used to incise the skin through to the subcutaneous tissues.  A second #10 blade was then used to incise through the subcutaneous tissue down to the fascia lata.  This was then incised utilizing Metzenbaum scissors.  This was taken down to the bursa, which was removed utilizing a rongeur.  Utilizing a periosteal elevator as well as the sponge, the fat was then freed from the short external rotators of the left hip after these were placed and stretched.  The sciatic nerve was then visualized and retracted utilizing a Richardson retractor.  Bovie was used to remove the short external rotators from the greater trochanter, which revealed the joint capsule.  The capsule was cleared and incised utilizing a T-shape incision.  A fracture hematoma was noted upon entering the joint capsule as well as subcapital hip fracture.  A cork screw was then used to remove the fractured femoral head, which was given to the scrub tech which was sized on the back table.  All bony remnants were then removed from the acetabulum and surrounding soft tissue with a rongeur.  Acetabulum was then inspected and found to be clear.  Attention was then turned to the proximal femur where a cutting tunnel was used to mark the femur for the femoral neck cut.  An oscillating saw was then used to make the femoral cut.  Box osteotome was then used to remove the bone from proximal femur.  A Charnley awl was then used to open the femoral canal, paying close attention to keep the awl in the lateral position.  Next, attention was turned to broaching.  Initially, a small broach was placed, first making efforts to lateralize the broach then the femoral canal.  It was felt that the patient has less benefit from a cemented prosthesis and a small size was appropriate.  Next, the trial components were inserted consisting of the above-mentioned component sizes.  The hip was taken through range of motion and tested to adduction, internal and external rotations as well as with a shuck and a posterior directed force on a flexed tip.  It was noted that these size were stable through the range of motion.  Next, the trial components were removed and the femoral canal was copiously irrigated and suctioned dried utilizing Super sucker and __________ then inserted pressuring the femoral canal.  The femoral component was then inserted and then held under pressure.  Extruding cement was removed from the proximal femur.  After the cement had fully hardened and dried, the head and cup were applied.  The hip was subsequently reduced and taken again through range of motion, which was felt to be stable.,Next, the capsule was closed utilizing #1 Ethibond in figure-of-eight fashion.  Next, the fascia lata was repaired utilizing a figure-of-eight Ethibond sutures.  The most proximal region at the musculotendinous junction was repaired utilizing a running #1 Vicryl suture.  The wound was then copiously irrigated again to suction dry.  Next, the subcutaneous tissues were reapproximated using #2-0 Vicryl simple interrupted sutures.  The skin was then reapproximated utilizing skin clips.  Sterile dressing was applied consisting of Adaptic"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "4x4s"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "4x4s"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "ABDs as well as foam tape.  The patient was then transferred from the operating table to the gurney.  Leg lengths were checked, which were noted to be equal and abduction pillow was placed.  The patient was then transferred to the Postoperative Care Unit in stable condition. Patient also underwent cardiac catheterization during this visit"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "ABDs as well as foam tape.  The patient was then transferred from the operating table to the gurney.  Leg lengths were checked, which were noted to be equal and abduction pillow was placed.  The patient was then transferred to the Postoperative Care Unit in stable condition. Patient also underwent cardiac catheterization during this visit"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] R030: Elevated blood-pressure reading, without diagnosis of hypertension (score: 0.4896)\n[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.3506)\n[ICD-10-CM 2027] S79912D: Unspecified injury of left hip, subsequent encounter (score: 0.3239)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] T819XXD: Unspecified complication of procedure, subsequent encounter (score: 0.5768)\n[ICD-10-CM 2027] T819XXA: Unspecified complication of procedure, initial encounter (score: 0.5706)\n[ICD-10-CM 2027] T819XXS: Unspecified complication of procedure, sequela (score: 0.5703)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] T8859XD: Other complications of anesthesia, subsequent encounter (score: 0.6011)\n[ICD-10-CM 2027] T8859XA: Other complications of anesthesia, initial encounter (score: 0.5958)\n[ICD-10-CM 2027] T8859XS: Other complications of anesthesia, sequela (score: 0.5956)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Austin-Moore bipolar hemiarthroplasty, left hip.,ANESTHESIA:  ,Spinal.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Z5321: Procedure and treatment not carried out due to patient leaving prior to being seen by health care provider (score: 0.2536)\n[ICD-10-CM 2027] Y0754: Acquaintance or friend, perpetrator of maltreatment and neglect (score: 0.2148)\n[ICD-10-CM 2027] Z3181: Encounter for male factor infertility in female patient (score: 0.2129)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'None.,ESTIMATED BLOOD LOSS:  ,Less than 100 cc.,HISTORY:  ,The patient is an 86-year-old female who was seen and evaluated in ABCD General Hospital Emergency Department on 08/30/03 after sustaining a fall at her friend's house.  The patient states that she was knocked over by her friend's dog.  She sustained a subcapital left hip fracture.  Prior to admission, she lived alone in Terrano, was ambulating with a walker.  All risks, benefits, and potential complications of the procedure were then discussed with the patient and informed consent was obtained.,HARDWARE SPECIFICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Measurement] 100.0cc \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] Y651: Wrong fluid used in infusion (score: 0.2433)\n[ICD-10-CM 2027] T367X6D: Underdosing of antifungal antibiotics, systemically used, subsequent encounter (score: 0.2419)\n[ICD-10-CM 2027] T367X6A: Underdosing of antifungal antibiotics, systemically used, initial encounter (score: 0.2413)\n[ICD-10-CM 2027] Match unresolved (top score 0.2433 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'A 28 mm medium head was used, a small cemented femoral stem was used, and a 28 x 46 cup was used.,PROCEDURE:  ,All risks, benefits, and potential complications of the procedure were discussed with the patient, informed consent was obtained.  She was then transferred from the preoperative care unit to operating suite #1.  Department of Anesthesia administered spinal anesthetic without complications.,After this, the patient was transferred to the operating table and positioned.  All bony prominences were well padded.  She was positioned on a beanbag in the right lateral decubitus position with the left hip facing upwards.  The left lower extremity was then sterilely prepped and draped in the normal fashion.  A skin maker was then used to mark all bony prominences.  Skin incision was then carried out extending from the greater trochanter in a curvilinear fashion posteriorly across the buttocks.  A #10 blade Bard-Parker scalpel was used to incise the skin through to the subcutaneous tissues.  A second #10 blade was then used to incise through the subcutaneous tissue down to the fascia lata.  This was then incised utilizing Metzenbaum scissors.  This was taken down to the bursa, which was removed utilizing a rongeur.  Utilizing a periosteal elevator as well as the sponge, the fat was then freed from the short external rotators of the left hip after these were placed and stretched.  The sciatic nerve was then visualized and retracted utilizing a Richardson retractor.  Bovie was used to remove the short external rotators from the greater trochanter, which revealed the joint capsule.  The capsule was cleared and incised utilizing a T-shape incision.  A fracture hematoma was noted upon entering the joint capsule as well as subcapital hip fracture.  A cork screw was then used to remove the fractured femoral head, which was given to the scrub tech which was sized on the back table.  All bony remnants were then removed from the acetabulum and surrounding soft tissue with a rongeur.  Acetabulum was then inspected and found to be clear.  Attention was then turned to the proximal femur where a cutting tunnel was used to mark the femur for the femoral neck cut.  An oscillating saw was then used to make the femoral cut.  Box osteotome was then used to remove the bone from proximal femur.  A Charnley awl was then used to open the femoral canal, paying close attention to keep the awl in the lateral position.  Next, attention was turned to broaching.  Initially, a small broach was placed, first making efforts to lateralize the broach then the femoral canal.  It was felt that the patient has less benefit from a cemented prosthesis and a small size was appropriate.  Next, the trial components were inserted consisting of the above-mentioned component sizes.  The hip was taken through range of motion and tested to adduction, internal and external rotations as well as with a shuck and a posterior directed force on a flexed tip.  It was noted that these size were stable through the range of motion.  Next, the trial components were removed and the femoral canal was copiously irrigated and suctioned dried utilizing Super sucker and __________ then inserted pressuring the femoral canal.  The femoral component was then inserted and then held under pressure.  Extruding cement was removed from the proximal femur.  After the cement had fully hardened and dried, the head and cup were applied.  The hip was subsequently reduced and taken again through range of motion, which was felt to be stable.,Next, the capsule was closed utilizing #1 Ethibond in figure-of-eight fashion.  Next, the fascia lata was repaired utilizing a figure-of-eight Ethibond sutures.  The most proximal region at the musculotendinous junction was repaired utilizing a running #1 Vicryl suture.  The wound was then copiously irrigated again to suction dry.  Next, the subcutaneous tissues were reapproximated using #2-0 Vicryl simple interrupted sutures.  The skin was then reapproximated utilizing skin clips.  Sterile dressing was applied consisting of Adaptic' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] No matches found for '4x4s' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] '4x4s' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] O2620: Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester (score: 0.2494)\n[ICD-10-CM 2027] Y633: Inadvertent exposure of patient to radiation during medical care (score: 0.2437)\n[ICD-10-CM 2027] O2623: Pregnancy care for patient with recurrent pregnancy loss, third trimester (score: 0.2410)\n[ICD-10-CM 2027] Match unresolved (top score 0.2494 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'ABDs as well as foam tape.  The patient was then transferred from the operating table to the gurney.  Leg lengths were checked, which were noted to be equal and abduction pillow was placed.  The patient was then transferred to the Postoperative Care Unit in stable condition. Patient also underwent cardiac catheterization during this visit' \u2014 extracted from header, not verified against any coding system"
+  }
+]

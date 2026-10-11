@@ -1,0 +1,283 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT:, Bright red blood per rectum ,HISTORY OF PRESENT ILLNESS: ,This 73-year-old woman had a recent medical history significant for renal and bladder cancer, deep venous thrombosis of the right lower extremity, and anticoagulation therapy complicated by lower gastrointestinal bleeding. Colonoscopy during that admission showed internal hemorrhoids and diverticulosis, but a bleeding site was not identified. Five days after discharge to a nursing home, she again experienced bloody bowel movements and returned to the emergency department for evaluation. ,REVIEW OF SYMPTOMS: ,No chest pain, palpitations, abdominal pain or cramping, nausea, vomiting, or lightheadedness. Positive for generalized weakness and diarrhea the day of admission. ,PRIOR MEDICAL HISTORY:, Long-standing hypertension, intermittent atrial fibrillation, and hypercholesterolemia. Renal cell carcinoma and transitional cell bladder cancer status post left nephrectomy, radical cystectomy, and ileal loop diversion 6 weeks prior to presentation, postoperative course complicated by pneumonia, urinary tract infection, and retroperitoneal bleed. Deep venous thrombosis 2 weeks prior to presentation, management complicated by lower gastrointestinal bleeding, status post inferior vena cava filter placement. ,MEDICATIONS: ,Diltiazem 30 mg tid, pantoprazole 40 mg qd, epoetin alfa 40,000 units weekly, iron 325 mg bid, cholestyramine. Warfarin discontinued approximately 10 days earlier. ,ALLERGIES: ,Celecoxib (rash).,SOCIAL HISTORY:, Resided at nursing home. Denied alcohol, tobacco, and drug use. ,FAMILY HISTORY:, Non-contributory.,PHYSICAL EXAM: ,Temp = 38.3C BP =146/52 HR= 113 RR = 18 SaO2 = 98% room air ,General: Pale, ill-appearing elderly female. ,HEENT: Pale conjunctivae, oral mucous membranes moist. ,CVS: Irregularly irregular, tachycardia. ,Lungs: Decreased breath sounds at the bases. ,Abdomen: Positive bowel sounds, soft, nontender, nondistended, gross blood on rectal exam. ,Extremities: No cyanosis, clubbing, or edema. ,Skin: Warm, normal turgor. ,Neuro: Alert and oriented. Nonfocal. ,LABS: ,CBC: ,WBC count: 6,500 per mL ,Hemoglobin: 10.3 g/dL ,Hematocrit:31.8% ,Platelet count: 248 per mL ,Mean corpuscular volume: 86.5 fL ,RDW: 18% ,CHEM 7: ,Sodium: 131 mmol/L ,Potassium: 3.5 mmol/L ,Chloride: 98 mmol/L ,Bicarbonate: 23 mmol/L ,BUN: 11 mg/dL ,Creatinine: 1.1 mg/dL ,Glucose: 105 mg/dL ,COAGULATION STUDIES: ,PT 15.7 sec ,INR 1.6 ,PTT 29.5 sec ,HOSPITAL COURSE: ,The patient received 1 liter normal saline and diltiazem (a total of 20 mg intravenously and 30 mg orally) in the emergency department. Emergency department personnel made several attempts to place a nasogastric tube for gastric lavage, but were unsuccessful. During her evaluation, the patient was noted to desaturate to 80% on room air, with an increase in her respiratory rate to 34 breaths per minute. She was administered 50% oxygen by nonrebreadier mask, with improvement in her oxygen saturation to 89%. Computed tomographic angiography was negative for pulmonary embolism. 
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Diltiazem"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "dosage",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "pantoprazole"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "epoetin alfa"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "000 units"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "325 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Warfarin"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Celecoxib"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "measurement",
+    "text": "98%"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "measurement",
+    "text": "10.3 g"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "measurement",
+    "text": "31.8%"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "18%"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Sodium"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "Potassium"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "dosage",
+    "text": "11 mg"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "Creatinine"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "dosage",
+    "text": "1.1 mg"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "Glucose"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "dosage",
+    "text": "105 mg"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "diltiazem"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "dosage",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "measurement",
+    "text": "80%"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "measurement",
+    "text": "50%"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "measurement",
+    "text": "89%"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Diltiazem' \u2192 RXCUI 3443, canonical: diltiazem, match: exact\n[RxNorm] Ingredient: diltiazem (RXCUI 3443)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 5 ML diltiazem hydrochloride 5 MG/ML Injection; 10 ML diltiazem hydrochloride 5 MG/ML Injection; 25 ML diltiazem hydrochloride 5 MG/ML Injection; diltiazem hydrochloride 100 MG Injection; 250 ML diltiazem hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "Dose 30.0mg associated with Diltiazem \u2014 dose 30.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'pantoprazole' \u2192 RXCUI 40790, canonical: pantoprazole, match: exact\n[RxNorm] Ingredient: pantoprazole (RXCUI 40790)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pantoprazole 20 MG Delayed Release Oral Tablet; 100 ML pantoprazole 0.4 MG/ML Injection; 50 ML pantoprazole 0.8 MG/ML Injection; 100 ML pantoprazole 0.8 MG/ML Injection; pantoprazole 40 MG Injection"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 40.0mg associated with pantoprazole"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'epoetin alfa' \u2192 RXCUI 105694, canonical: epoetin alfa, match: exact\n[RxNorm] Ingredient: epoetin alfa (RXCUI 105694)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML epoetin alfa 10000 UNT/ML Injection; 1 ML epoetin alfa-epbx 10000 UNT/ML Injection; 1 ML epoetin alfa-epbx 2000 UNT/ML Injection; 1 ML epoetin alfa-epbx 3000 UNT/ML Injection; 1 ML epoetin alfa-epbx 4000 UNT/ML Injection"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 0.0units associated with epoetin alfa \u2014 dose 0.0units not among known product strengths"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 325.0mg associated with epoetin alfa \u2014 dose 325.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Warfarin' \u2192 RXCUI 11289, canonical: warfarin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Celecoxib' \u2192 RXCUI 140587, canonical: celecoxib, match: exact\n[RxNorm] Ingredient: celecoxib (RXCUI 140587)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amlodipine 2.5 MG / celecoxib 200 MG Oral Tablet; amlodipine 5 MG / celecoxib 200 MG Oral Tablet; amlodipine 10 MG / celecoxib 200 MG Oral Tablet; celecoxib 100 MG Oral Capsule; celecoxib 200 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Measurement] 98.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Measurement] 10.3g \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Measurement] 31.8% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "Dose 18.0% associated with Sodium"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Sodium' \u2192 RXCUI 9853, canonical: sodium, match: exact\n[RxNorm] Ingredient: sodium (RXCUI 9853)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'Potassium' \u2192 RXCUI 8588, canonical: potassium, match: exact\n[RxNorm] Ingredient: potassium (RXCUI 8588)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): potassium 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "Dose 11.0mg associated with Creatinine"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'Creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "Dose 1.1mg associated with Creatinine"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'Glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "Dose 105.0mg associated with Glucose \u2014 dose 105.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'diltiazem' \u2192 RXCUI 3443, canonical: diltiazem, match: exact\n[RxNorm] Ingredient: diltiazem (RXCUI 3443)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 5 ML diltiazem hydrochloride 5 MG/ML Injection; 10 ML diltiazem hydrochloride 5 MG/ML Injection; 25 ML diltiazem hydrochloride 5 MG/ML Injection; diltiazem hydrochloride 100 MG Injection; 250 ML diltiazem hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "Dose 20.0mg associated with diltiazem \u2014 dose 20.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "Dose 30.0mg associated with diltiazem \u2014 dose 30.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[Measurement] 80.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[Measurement] 50.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[Measurement] 89.0% \u2014 not associated with any medication"
+  }
+]

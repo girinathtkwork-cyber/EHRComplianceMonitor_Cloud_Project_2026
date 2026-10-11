@@ -1,0 +1,373 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT: , Severe back pain and sleepiness.,The patient is not a good historian and history was obtained from the patient's husband at bedside.,HISTORY OF PRESENT ILLNESS:  ,The patient is a 76-year-old obese Caucasian female with past medical conditions that includes hypertension, history of urinary incontinence, dementia, and chronic back pain, basically brought by the husband to the emergency room because of having excruciating back pain.  As per the husband, the patient has this back pain for about almost 1 year and seeing Dr. X in Neurosurgery and had an epidural injection x2, and then the patient's pain somewhat got better between, but last time the patient went to see Dr. X, the patient given injection and the patient passed out, so the doctor stopped giving any other epidural injection.  The patient has severe pain and all in all, the patient cries at home.  As per the husband, the patient woke up in the morning with severe pain, unable to eat, drink today, and crying in the morning, so brought her to the emergency room for further evaluation.  The patient denied any history of fever, cough, chest pain, diarrhea, dysuria or polyuria.  While I was examining the patient, the patient explained about possible diagnosis and treatment plan and possible nursing home discharge for pain control.  The patient passed out for about 3 to 4 minutes, unable to respond to even painful stimuli.  The patient's heart rate went down to 50s and blood pressure was 92 systolic, so the patient was later on given IV fluid and blood pressure checked.  The patient woke up after 5 to 6 minutes, so the patient was later on evaluated for admission because of near syncopal episode.,PAST MEDICAL CONDITIONS:,  Include hypertension, dementia, urinary incontinence, chronic back pain, and degenerative joint disease of the spine.  No history of diabetes, stroke or coronary artery disease.,SURGICAL HISTORY: , Include left total hip replacement many years ago, history of hysterectomy, and appendectomy in the young age.,ALLERGIES: , DENIED.,CURRENT MEDICATIONS: , According to the list shows the patient takes hydrocodone 10/32mg every 6 hours, Flexeril 10 mg p.o. at bedtime, and Xanax 0.25 mg p.o. 4 times a day.  The patient also takes Neurontin 200 mg 3 times a day, propranolol 10 mg twice a day, oxybutynin 5 mg p.o. twice a day, Namenda 10 mg p.o. daily, and Aricept 10 mg p.o. daily.,SOCIAL HISTORY: , She lives with her husband, usually walks with a walker and wheelchair-bound, does not walk much as per the husband knows.  No history of alcohol abuse or smoking.,PHYSICAL EXAMINATION:,GENERAL:  Currently lying in the bed without apparent distress, very lethargic.,VITAL SIGNS:  Pulse rate of 55, blood pressure is 92/52, after IV fluid came up to 105/58.,CHEST:  Shows bilateral air entry present, clear to auscultate.,HEART:  S1 and S2 regular.,ABDOMEN:  Soft, nondistended, and nontender.,EXTREMITIES:  Shows the patient's straight leg raising to be only up to 30% causing the patient severe back pain.,IMAGING: , The patient's x-ray of the lumbosacral spine done shows there is a L1 compression fracture with some osteophyte formation in the lumbar spine suggestive of degenerative joint disease.,LABORATORY DATA: , The patient's lab test is not done currently, but previous lab test done in 3/2009 seems to be in acceptable range.,IMPRESSION: , The patient, because of near syncopal episode and polypharmacy, almost passed out for about 3 to 4 minutes in front of me with a low blood pressure.,1.  Vasovagal syncope versus polypharmacy because of 3 to 4 medications and muscle relaxants.,2.  Osteoporosis of the spine with L1 compression fracture causing the patient severe pain.,3.  Hypertension, now hypotension.,4.  Incontinence of the bladder.,5.  Dementia, most likely Alzheimer type.,PLAN AND SUGGESTION: , Initial plan was to send the patient to the nursing home, but because of the patient's low blood pressure and heart rate low, we will admit the patient to DOU for 23-hour observation, start the patient on IV fluid, normal saline, 20 mEq KCl, and Protonix 40 mg, and we will also continue the patient's Namenda and Aricept.  I will hold the patient's hydrocodone.  I will hold the Flexeril and I will also hold gabapentin at this moment.  We will give the patient's pain control with Percocet and very minimal morphine sulfate as needed.  Also give the patient calcium with vitamin D and physical therapy.  We will also order a blood test and further management will be based on the patient's all test results.  I also explained to the husband that tomorrow if the patient is better and more alert and awake, then we will send her to the nursing care versus home, it depends on the pain control.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "and treatment plan and possible nursing home discharge for pain control.  The patient passed out for about 3 to 4 minutes, unable to respond to even painful stimuli.  The patient's heart rate went down to 50s and blood pressure was 92 systolic, so the patient was later on given IV fluid and blood pressure checked.  The patient woke up after 5 to 6 minutes, so the patient was later on evaluated for admission because of near syncopal episode.,PAST MEDICAL CONDITIONS:,  Include hypertension, dementia, urinary incontinence, chronic back pain, and degenerative joint disease of the spine.  No history of diabetes, stroke or coronary artery disease.,SURGICAL HISTORY: , Include left total hip replacement many years ago, history of hysterectomy, and appendectomy in the young age.,ALLERGIES: , DENIED.,CURRENT MEDICATIONS: , According to the list shows the patient takes hydrocodone 10/32mg every 6 hours, Flexeril 10 mg p.o. at bedtime, and Xanax 0.25 mg p.o. 4 times a day.  The patient also takes Neurontin 200 mg 3 times a day, propranolol 10 mg twice a day, oxybutynin 5 mg p.o. twice a day, Namenda 10 mg p.o. daily, and Aricept 10 mg p.o. daily.,SOCIAL HISTORY: , She lives with her husband, usually walks with a walker and wheelchair-bound, does not walk much as per the husband knows.  No history of alcohol abuse or smoking.,PHYSICAL EXAMINATION:,GENERAL:  Currently lying in the bed without apparent distress, very lethargic.,VITAL SIGNS:  Pulse rate of 55, blood pressure is 92/52, after IV fluid came up to 105/58.,CHEST:  Shows bilateral air entry present, clear to auscultate.,HEART:  S1 and S2 regular.,ABDOMEN:  Soft, nondistended, and nontender.,EXTREMITIES:  Shows the patient's straight leg raising to be only up to 30% causing the patient severe back pain.,IMAGING: , The patient's x-ray of the lumbosacral spine done shows there is a L1 compression fracture with some osteophyte formation in the lumbar spine suggestive of degenerative joint disease.,LABORATORY DATA: , The patient's lab test is not done currently, but previous lab test done in 3/2009 seems to be in acceptable range.,IMPRESSION: , The patient, because of near syncopal episode and polypharmacy, almost passed out for about 3 to 4 minutes in front of me with a low blood pressure"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "hydrocodone"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "32mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Xanax"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "0.25 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Neurontin"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "200 mg"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "propranolol"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "oxybutynin"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "5 mg"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Namenda"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Aricept"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "measurement",
+    "text": "30%"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "The patient, because of near syncopal episode and polypharmacy, almost passed out for about 3 to 4 minutes in front of me with a low blood pressure"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "Vasovagal syncope versus polypharmacy because of 3 to 4 medications and muscle relaxants"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "Osteoporosis of the spine with L1 compression fracture causing the patient severe pain"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "Hypertension, now hypotension"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "Incontinence of the bladder"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "Dementia, most likely Alzheimer type.,PLAN AND SUGGESTION: , Initial plan was to send the patient to the nursing home, but because of the patient's low blood pressure and heart rate low, we will admit the patient to DOU for 23-hour observation, start the patient on IV fluid, normal saline, 20 mEq KCl, and Protonix 40 mg, and we will also continue the patient's Namenda and Aricept.  I will hold the patient's hydrocodone.  I will hold the Flexeril and I will also hold gabapentin at this moment.  We will give the patient's pain control with Percocet and very minimal morphine sulfate as needed.  Also give the patient calcium with vitamin D and physical therapy.  We will also order a blood test and further management will be based on the patient's all test results.  I also explained to the husband that tomorrow if the patient is better and more alert and awake, then we will send her to the nursing care versus home, it depends on the pain control"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "dosage",
+    "text": "20 mEq"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "medication",
+    "text": "Protonix"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "medication",
+    "text": "Namenda"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "medication",
+    "text": "Aricept"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "medication",
+    "text": "hydrocodone"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "medication",
+    "text": "gabapentin"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "medication",
+    "text": "Percocet"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "medication",
+    "text": "morphine sulfate"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "medication",
+    "text": "vitamin D"
+  },
+  {
+    "entity_id": "E35",
+    "entity_type": "medication",
+    "text": "tomorrow"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] Y901: Blood alcohol level of 20-39 mg/100 ml (score: 0.2649)\n[ICD-10-CM 2027] Y902: Blood alcohol level of 40-59 mg/100 ml (score: 0.2649)\n[ICD-10-CM 2027] Y903: Blood alcohol level of 60-79 mg/100 ml (score: 0.2649)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'hydrocodone' \u2192 RXCUI 5489, canonical: hydrocodone, match: exact\n[RxNorm] Ingredient: hydrocodone (RXCUI 5489)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 20 MG/ML / hydrocodone bitartrate 0.667 MG/ML Oral Solution; 12 HR chlorpheniramine polistirex 1.6 MG/ML / hydrocodone polistirex 2 MG/ML Extended Release Suspension; brompheniramine maleate 0.4 MG/ML / guaifenesin 40 MG/ML / hydrocodone bitartrate 1 MG/ML Oral Solution; Abuse-Deterrent 24 HR hydrocodone bitartrate 20 MG Extended Release Oral Tablet; Abuse-Deterrent 24 HR hydrocodone bitartrate 30 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 32.0mg associated with hydrocodone \u2014 dose 32.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "Dose 10.0mg associated with hydrocodone"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Xanax' \u2192 RXCUI 202363, canonical: Xanax, match: exact\n[RxNorm] Ingredient: alprazolam (RXCUI 596)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alprazolam 1 MG Oral Tablet; alprazolam 2 MG Oral Tablet; alprazolam 0.25 MG Oral Tablet; alprazolam 0.5 MG Oral Tablet; alprazolam 0.1 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 0.25mg associated with Xanax"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Neurontin' \u2192 RXCUI 196498, canonical: Neurontin, match: exact\n[RxNorm] Ingredient: gabapentin (RXCUI 25480)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): gabapentin enacarbil 600 MG Extended Release Oral Tablet; gabapentin enacarbil 300 MG Extended Release Oral Tablet; Once-Daily gabapentin 300 MG Oral Tablet; Once-Daily gabapentin 600 MG Oral Tablet; Once-Daily gabapentin 900 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "Dose 200.0mg associated with Neurontin"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'propranolol' \u2192 RXCUI 8787, canonical: propranolol, match: exact\n[RxNorm] Ingredient: propranolol (RXCUI 8787)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): propranolol hydrochloride 4.28 MG/ML Oral Solution; hydrochlorothiazide 25 MG / propranolol hydrochloride 40 MG Oral Tablet; hydrochlorothiazide 25 MG / propranolol hydrochloride 80 MG Oral Tablet; 1 ML propranolol hydrochloride 1 MG/ML Injection; propranolol hydrochloride 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "Dose 10.0mg associated with propranolol"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'oxybutynin' \u2192 RXCUI 32675, canonical: oxybutynin, match: exact\n[RxNorm] Ingredient: oxybutynin (RXCUI 32675)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 84 HR oxybutynin 0.162 MG/HR Transdermal System; oxybutynin chloride 1 MG/ML Oral Solution; 24 HR oxybutynin chloride 10 MG Extended Release Oral Tablet; 24 HR oxybutynin chloride 15 MG Extended Release Oral Tablet; 24 HR oxybutynin chloride 5 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "Dose 5.0mg associated with oxybutynin"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Namenda' \u2192 RXCUI 405206, canonical: Namenda, match: exact\n[RxNorm] Ingredient: memantine (RXCUI 6719)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 28 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 14 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 21 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 7 MG Extended Release Oral Capsule; memantine hydrochloride 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 10.0mg associated with Namenda"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Aricept' \u2192 RXCUI 135446, canonical: Aricept, match: exact\n[RxNorm] Ingredient: donepezil (RXCUI 135447)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): donepezil hydrochloride 23 MG Oral Tablet; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 28 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 14 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 21 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 7 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "Dose 10.0mg associated with Aricept"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Measurement] 30.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] Z2801: Immunization not carried out because of acute illness of patient (score: 0.3676)\n[ICD-10-CM 2027] Z2821: Immunization not carried out because of patient refusal (score: 0.3650)\n[ICD-10-CM 2027] Z2802: Immunization not carried out because of chronic illness or condition of patient (score: 0.3544)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] T671XXD: Heat syncope, subsequent encounter (score: 0.3701)\n[ICD-10-CM 2027] T671XXA: Heat syncope, initial encounter (score: 0.3686)\n[ICD-10-CM 2027] T671XXS: Heat syncope, sequela (score: 0.3685)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] M546: Pain in thoracic spine (score: 0.4651)\n[ICD-10-CM 2027] R52: Pain, unspecified (score: 0.3781)\n[ICD-10-CM 2027] M79646: Pain in unspecified finger(s) (score: 0.3325)"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] I9589: Other hypotension (score: 0.7750)\n[ICD-10-CM 2027] I959: Hypotension, unspecified (score: 0.7750)\n[ICD-10-CM 2027] I952: Hypotension due to drugs (score: 0.6931)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] N39498: Other specified urinary incontinence (score: 0.6428)\n[ICD-10-CM 2027] R32: Unspecified urinary incontinence (score: 0.6428)\n[ICD-10-CM 2027] N3946: Mixed incontinence (score: 0.6158)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] O2620: Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester (score: 0.3292)\n[ICD-10-CM 2027] O2623: Pregnancy care for patient with recurrent pregnancy loss, third trimester (score: 0.3180)\n[ICD-10-CM 2027] O2621: Pregnancy care for patient with recurrent pregnancy loss, first trimester (score: 0.3174)"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "Dose 20.0meq associated with Protonix \u2014 dose 20.0meq not among known product strengths"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[RxNorm] 'Protonix' \u2192 RXCUI 261624, canonical: Protonix, match: exact\n[RxNorm] Ingredient: pantoprazole (RXCUI 40790)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pantoprazole 20 MG Delayed Release Oral Tablet; 100 ML pantoprazole 0.4 MG/ML Injection; 50 ML pantoprazole 0.8 MG/ML Injection; 100 ML pantoprazole 0.8 MG/ML Injection; pantoprazole 40 MG Injection"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "Dose 40.0mg associated with Protonix"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[RxNorm] 'Namenda' \u2192 RXCUI 405206, canonical: Namenda, match: exact\n[RxNorm] Ingredient: memantine (RXCUI 6719)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 28 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 14 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 21 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 7 MG Extended Release Oral Capsule; memantine hydrochloride 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[RxNorm] 'Aricept' \u2192 RXCUI 135446, canonical: Aricept, match: exact\n[RxNorm] Ingredient: donepezil (RXCUI 135447)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): donepezil hydrochloride 23 MG Oral Tablet; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 28 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 14 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 21 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 7 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[RxNorm] 'hydrocodone' \u2192 RXCUI 5489, canonical: hydrocodone, match: exact\n[RxNorm] Ingredient: hydrocodone (RXCUI 5489)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 20 MG/ML / hydrocodone bitartrate 0.667 MG/ML Oral Solution; 12 HR chlorpheniramine polistirex 1.6 MG/ML / hydrocodone polistirex 2 MG/ML Extended Release Suspension; brompheniramine maleate 0.4 MG/ML / guaifenesin 40 MG/ML / hydrocodone bitartrate 1 MG/ML Oral Solution; Abuse-Deterrent 24 HR hydrocodone bitartrate 20 MG Extended Release Oral Tablet; Abuse-Deterrent 24 HR hydrocodone bitartrate 30 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[RxNorm] 'gabapentin' \u2192 RXCUI 25480, canonical: gabapentin, match: exact\n[RxNorm] Ingredient: gabapentin (RXCUI 25480)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): gabapentin enacarbil 600 MG Extended Release Oral Tablet; gabapentin enacarbil 300 MG Extended Release Oral Tablet; Once-Daily gabapentin 300 MG Oral Tablet; Once-Daily gabapentin 600 MG Oral Tablet; Once-Daily gabapentin 900 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[RxNorm] 'Percocet' \u2192 RXCUI 42844, canonical: Percocet, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F33",
+    "entity_id": "E33",
+    "text": "[RxNorm] 'morphine sulfate' \u2192 RXCUI 30236, canonical: morphine sulfate, match: exact\n[RxNorm] Ingredient: morphine sulfate (RXCUI 30236)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): morphine sulfate 40 MG Extended Release Oral Capsule; 1 ML morphine sulfate 5 MG/ML Prefilled Syringe; 10 ML morphine sulfate 0.5 MG/ML Injection; 2 ML morphine sulfate 0.5 MG/ML Injection; 10 ML morphine sulfate 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F34",
+    "entity_id": "E34",
+    "text": "[RxNorm] 'vitamin D' \u2192 RXCUI 11253, canonical: vitamin D, match: exact\n[RxNorm] Ingredient: vitamin D (RXCUI 11253)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F35",
+    "entity_id": "E35",
+    "text": "[RxNorm] 'tomorrow' \u2192 RXCUI 96797, canonical: Tomorrow, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  }
+]

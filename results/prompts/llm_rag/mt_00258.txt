@@ -1,0 +1,43 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+MEDICATIONS:,1.  Versed intravenously.,2.  Demerol intravenously.,DESCRIPTION OF THE PROCEDURE: , After informed consent was obtained, the patient was placed in the left lateral decubitus position and sedated with the above medications.  The Olympus video colonoscope was inserted through the anus and was advanced in retrograde fashion through the sigmoid colon, descending colon, around the splenic flexure, into the transverse colon, around the hepatic flexure, down the ascending colon, into the cecum.  The cecum was identified by the presence of the appendiceal orifice and the ileocecal valve.  The colonoscope was then advanced through the ileocecal valve into the terminal ileum, which was normal on examination.  The scope was then pulled back into the cecum and then slowly withdrawn.  The mucosa was examined in detail.  The mucosa was entirely normal.  Upon reaching the rectum, retroflex examination of the rectum was normal.  The scope was then straightened out, the air removed and the scope withdrawn.  The patient tolerated the procedure well.  There were no apparent complications.,
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Demerol"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "After informed consent was obtained, the patient was placed in the left lateral decubitus position and sedated with the above medications.  The Olympus video colonoscope was inserted through the anus and was advanced in retrograde fashion through the sigmoid colon, descending colon, around the splenic flexure, into the transverse colon, around the hepatic flexure, down the ascending colon, into the cecum.  The cecum was identified by the presence of the appendiceal orifice and the ileocecal valve.  The colonoscope was then advanced through the ileocecal valve into the terminal ileum, which was normal on examination.  The scope was then pulled back into the cecum and then slowly withdrawn.  The mucosa was examined in detail.  The mucosa was entirely normal.  Upon reaching the rectum, retroflex examination of the rectum was normal.  The scope was then straightened out, the air removed and the scope withdrawn.  The patient tolerated the procedure well.  There were no apparent complications"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Demerol' \u2192 RXCUI 282381, canonical: Demerol, match: exact\n[RxNorm] Ingredient: meperidine (RXCUI 6754)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML meperidine hydrochloride 100 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 25 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 75 MG/ML Cartridge"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'After informed consent was obtained, the patient was placed in the left lateral decubitus position and sedated with the above medications.  The Olympus video colonoscope was inserted through the anus and was advanced in retrograde fashion through the sigmoid colon, descending colon, around the splenic flexure, into the transverse colon, around the hepatic flexure, down the ascending colon, into the cecum.  The cecum was identified by the presence of the appendiceal orifice and the ileocecal valve.  The colonoscope was then advanced through the ileocecal valve into the terminal ileum, which was normal on examination.  The scope was then pulled back into the cecum and then slowly withdrawn.  The mucosa was examined in detail.  The mucosa was entirely normal.  Upon reaching the rectum, retroflex examination of the rectum was normal.  The scope was then straightened out, the air removed and the scope withdrawn.  The patient tolerated the procedure well.  There were no apparent complications' \u2014 extracted from header, not verified against any coding system"
+  }
+]

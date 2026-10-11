@@ -1,0 +1,113 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PROCEDURE:, Esophagogastroduodenoscopy with biopsy and snare polypectomy.,INDICATION FOR THE PROCEDURE:, Iron-deficiency anemia.,MEDICATIONS:, MAC.,The risks of the procedure were made aware to the patient and consisted of medication reaction, bleeding, perforation, and aspiration.,PROCEDURE:, After informed consent and appropriate sedation, the upper endoscope was inserted into the oropharynx down into the stomach and beyond the pylorus and the second portion of the duodenum. The duodenal mucosa was completely normal. The pylorus was normal. In the stomach, there was evidence of diffuse atrophic-appearing nodular gastritis. Multiple biopsies were obtained. There also was a 1.5-cm adenomatous appearing polyp along the greater curvature at the junction of the body and antrum. There was mild ulceration on the tip of this polyp. It was decided to remove the polyp via snare polypectomy. Retroflexion was performed, and this revealed a small hiatal hernia in the distal esophagus. The Z-line was identified and was unremarkable. The esophageal mucosa was normal.,FINDINGS:,1. Hiatal hernia.,2. Diffuse nodular and atrophic appearing gastritis, biopsies taken.,3. A 1.5-cm polyp with ulceration along the greater curvature, removed.,RECOMMENDATIONS:,1. Follow up biopsies.,2. Continue PPI.,3. Hold Lovenox for 5 days.,4. Place SCDs.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "Esophagogastroduodenoscopy with biopsy and snare polypectomy.,INDICATION FOR THE PROCEDURE:, Iron-deficiency anemia.,MEDICATIONS:, MAC.,The risks of the procedure were made aware to the patient and consisted of medication reaction, bleeding, perforation, and aspiration.,PROCEDURE:, After informed consent and appropriate sedation, the upper endoscope was inserted into the oropharynx down into the stomach and beyond the pylorus and the second portion of the duodenum. The duodenal mucosa was completely normal. The pylorus was normal. In the stomach, there was evidence of diffuse atrophic-appearing nodular gastritis. Multiple biopsies were obtained. There also was a 1.5-cm adenomatous appearing polyp along the greater curvature at the junction of the body and antrum. There was mild ulceration on the tip of this polyp. It was decided to remove the polyp via snare polypectomy. Retroflexion was performed, and this revealed a small hiatal hernia in the distal esophagus. The Z-line was identified and was unremarkable. The esophageal mucosa was normal.,FINDINGS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "Hiatal hernia"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Diffuse nodular and atrophic appearing gastritis, biopsies taken"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "A 1.5-cm polyp with ulceration along the greater curvature, removed.,RECOMMENDATIONS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Follow up biopsies"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Continue PPI"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Hold Lovenox for 5 days"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Lovenox"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Place SCDs"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'Esophagogastroduodenoscopy with biopsy and snare polypectomy.,INDICATION FOR THE PROCEDURE:, Iron-deficiency anemia.,MEDICATIONS:, MAC.,The risks of the procedure were made aware to the patient and consisted of medication reaction, bleeding, perforation, and aspiration.,PROCEDURE:, After informed consent and appropriate sedation, the upper endoscope was inserted into the oropharynx down into the stomach and beyond the pylorus and the second portion of the duodenum. The duodenal mucosa was completely normal. The pylorus was normal. In the stomach, there was evidence of diffuse atrophic-appearing nodular gastritis. Multiple biopsies were obtained. There also was a 1.5-cm adenomatous appearing polyp along the greater curvature at the junction of the body and antrum. There was mild ulceration on the tip of this polyp. It was decided to remove the polyp via snare polypectomy. Retroflexion was performed, and this revealed a small hiatal hernia in the distal esophagus. The Z-line was identified and was unremarkable. The esophageal mucosa was normal.,FINDINGS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'Hiatal hernia' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'Diffuse nodular and atrophic appearing gastritis, biopsies taken' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'A 1.5-cm polyp with ulceration along the greater curvature, removed.,RECOMMENDATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Follow up biopsies' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Continue PPI' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Hold Lovenox for 5 days' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Lovenox' \u2192 RXCUI 225036, canonical: Lovenox, match: exact\n[RxNorm] Ingredient: enoxaparin (RXCUI 67108)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 0.3 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.4 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.6 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.8 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.8 ML enoxaparin sodium 150 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Place SCDs' \u2014 extracted from header, not verified against any coding system"
+  }
+]

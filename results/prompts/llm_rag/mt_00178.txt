@@ -1,0 +1,203 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+HISTORY OF PRESENT ILLNESS: , I was kindly asked to see this patient for transesophageal echocardiogram performance by Dr. A and Neurology.  Please see also my cardiovascular consultation dictated separately.  But essentially, this is a pleasant 72-year-old woman admitted to the hospital with a large right MCA CVA causing a left-sided neurological deficit incidentally found to have atrial fibrillation on telemetry.  She has been recommended for a transesophageal echocardiogram for cardioembolic source of her CNS insult.,I discussed the procedure in detail with the patient as well as with her daughter, who was present at the patient's bedside with the patient's verbal consent.  I then performed a risk/benefit/alternative analysis with benefits being more definitive exclusion of intracardiac thrombus as well as assessment for intracardiac shunts; alternatives being transthoracic echo imaging, which she had already had, with an inherent false negativity for this indication as well as empiric medical management, which the patient was not interested in; risks including, but not limited to, and the patient was aware this was not an all-inclusive list, of oversedation from conscious sedation, risk of aspiration pneumonia from regurgitation of stomach contents, risk of oropharyngeal, esophageal, oral, tracheal, pulmonary and/or gastric perforation, hemorrhage, or tear.  The patient expressed understanding of this risk/benefit/alternative analysis, had the opportunity to ask questions, which I invited from her and her daughter, all of which were answered to their self-stated satisfaction.  The patient then stated in a clear competent and coherent fashion that she wished to go forward with the transesophageal echocardiogram.,PROCEDURE: , The appropriate time-out procedure was performed as per Medical Center protocol under my direct supervision with appropriate identification of the patient, position, physician, procedure documentation; there were no safety issues identified by staff nor myself.  She received 20 cc of viscous lidocaine for topical oral anesthetic effect.  She received a total of 4 mg of Versed and 100 micrograms of fentanyl utilizing titrated conscious sedation with continuous hemodynamic and oximetric monitoring with reasonable effect.  The multi-plane probe was passed using digital guidance for several passes, after an oral bite block had been put into place for protection of oral dentition.  This was placed into the posterior oropharynx and advanced into the esophagus, then advanced into the stomach and then rotated and withdrawn and removed with adequate imaging obtained throughout.  She was recovered as per the Medical Center conscious sedation protocol, and there were no apparent complications of the procedure.,FINDINGS: , Normal left ventricular size and systolic function.  LVEF of 60%.  Mild left atrial enlargement.  Normal right atrial size.  Normal right ventricular size and systolic function.  No left ventricular wall motion abnormalities identified.  The four pulmonary veins are identified.  The left atrial appendage is interrogated, including with Doppler and color flow, and while there is good to-and-fro motion seen, echo smoke is seen, and in fact, an intracardiac thrombus is identified and circumscribed at 1.83 cm in circumference at the base of the left atrial appendage.  No intracardiac vegetations nor endocarditis seen on any of the intracardiac valves.  The mitral valve is seen.  There is mild mitral regurgitation with two jets.  No mitral stenosis.  Four pulmonary veins were identified without reversible pulmonary venous flow.  There are three cusps of the aortic valve seen.  No aortic stenosis.  There is trace aortic insufficiency.  There is trace pulmonic insufficiency.  The pulmonary artery is seen and is within normal limits.  There is trace to mild tricuspid regurgitation.  Unable to estimate PA systolic pressure accurately; however, on the recent transthoracic echocardiogram (which I would direct the reader to) on January 5, 2010, RVSP was calculated at 40 mmHg on that study.  E wave velocity on average is 0.95 m/sec with a deceleration time of 232 milliseconds.  The proximal aorta is within normal limits, annulus 1.19 cm, sinuses of Valsalva 2.54 cm, ascending aorta 2.61 cm.  The intra-atrial septum is identified as are the SVC and IVC, and these are within normal limits.  The intra-atrial septum is interrogated with color flow as well as agitated D5W and there is no evidence of intracardiac shunting, including no atrial septal defect nor patent foramen ovale.  No pericardial effusion.  There is mild nonmobile descending aortic atherosclerosis seen.,IMPRESSION:,1.  Normal left ventricular size and systolic function.  Left ventricular ejection fraction visually estimated at 60% without regional wall motion abnormalities.,2.  Mild left atrial enlargement.,3.  Intracardiac thrombus identified at the base of the left atrial appendage.,4.  Mild mitral regurgitation with two jets.,5.  Mild nonmobile descending aortic atherosclerosis.,Compared to the transthoracic echocardiogram done previously, other than identification of the intracardiac thrombus, other findings appear quite similar.,These results have been discussed with Dr. A of inpatient Internal Medicine service as well as the patient, who was recovering from conscious sedation, and her daughter with the patient's verbal consent.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "in detail with the patient as well as with her daughter, who was present at the patient's bedside with the patient's verbal consent.  I then performed a risk/benefit/alternative analysis with benefits being more definitive exclusion of intracardiac thrombus as well as assessment for intracardiac shunts; alternatives being transthoracic echo imaging, which she had already had, with an inherent false negativity for this indication as well as empiric medical management, which the patient was not interested in; risks including, but not limited to, and the patient was aware this was not an all-inclusive list, of oversedation from conscious sedation, risk of aspiration pneumonia from regurgitation of stomach contents, risk of oropharyngeal, esophageal, oral, tracheal, pulmonary and/or gastric perforation, hemorrhage, or tear.  The patient expressed understanding of this risk/benefit/alternative analysis, had the opportunity to ask questions, which I invited from her and her daughter, all of which were answered to their self-stated satisfaction.  The patient then stated in a clear competent and coherent fashion that she wished to go forward with the transesophageal echocardiogram.,PROCEDURE: , The appropriate time-out procedure was performed as per Medical Center protocol under my direct supervision with appropriate identification of the patient, position, physician, procedure documentation; there were no safety issues identified by staff nor myself.  She received 20 cc of viscous lidocaine for topical oral anesthetic effect.  She received a total of 4 mg of Versed and 100 micrograms of fentanyl utilizing titrated conscious sedation with continuous hemodynamic and oximetric monitoring with reasonable effect.  The multi-plane probe was passed using digital guidance for several passes, after an oral bite block had been put into place for protection of oral dentition.  This was placed into the posterior oropharynx and advanced into the esophagus, then advanced into the stomach and then rotated and withdrawn and removed with adequate imaging obtained throughout.  She was recovered as per the Medical Center conscious sedation protocol, and there were no apparent complications of the procedure.,FINDINGS: , Normal left ventricular size and systolic function.  LVEF of 60%.  Mild left atrial enlargement.  Normal right atrial size.  Normal right ventricular size and systolic function.  No left ventricular wall motion abnormalities identified.  The four pulmonary veins are identified.  The left atrial appendage is interrogated, including with Doppler and color flow, and while there is good to-and-fro motion seen, echo smoke is seen, and in fact, an intracardiac thrombus is identified and circumscribed at 1.83 cm in circumference at the base of the left atrial appendage.  No intracardiac vegetations nor endocarditis seen on any of the intracardiac valves.  The mitral valve is seen.  There is mild mitral regurgitation with two jets.  No mitral stenosis.  Four pulmonary veins were identified without reversible pulmonary venous flow.  There are three cusps of the aortic valve seen.  No aortic stenosis.  There is trace aortic insufficiency.  There is trace pulmonic insufficiency.  The pulmonary artery is seen and is within normal limits.  There is trace to mild tricuspid regurgitation.  Unable to estimate PA systolic pressure accurately; however, on the recent transthoracic echocardiogram (which I would direct the reader to) on January 5, 2010, RVSP was calculated at 40 mmHg on that study.  E wave velocity on average is 0.95 m/sec with a deceleration time of 232 milliseconds.  The proximal aorta is within normal limits, annulus 1.19 cm, sinuses of Valsalva 2.54 cm, ascending aorta 2.61 cm.  The intra-atrial septum is identified as are the SVC and IVC, and these are within normal limits.  The intra-atrial septum is interrogated with color flow as well as agitated D5W and there is no evidence of intracardiac shunting, including no atrial septal defect nor patent foramen ovale.  No pericardial effusion.  There is mild nonmobile descending aortic atherosclerosis seen.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "for intracardiac shunts; alternatives being transthoracic echo imaging, which she had already had, with an inherent false negativity for this indication as well as empiric medical management, which the patient was not interested in; risks including, but not limited to, and the patient was aware this was not an all-inclusive list, of oversedation from conscious sedation, risk of aspiration pneumonia from regurgitation of stomach contents, risk of oropharyngeal, esophageal, oral, tracheal, pulmonary and/or gastric perforation, hemorrhage, or tear.  The patient expressed understanding of this risk/benefit/alternative analysis, had the opportunity to ask questions, which I invited from her and her daughter, all of which were answered to their self-stated satisfaction.  The patient then stated in a clear competent and coherent fashion that she wished to go forward with the transesophageal echocardiogram.,PROCEDURE: , The appropriate time-out procedure was performed as per Medical Center protocol under my direct supervision with appropriate identification of the patient, position, physician, procedure documentation; there were no safety issues identified by staff nor myself.  She received 20 cc of viscous lidocaine for topical oral anesthetic effect.  She received a total of 4 mg of Versed and 100 micrograms of fentanyl utilizing titrated conscious sedation with continuous hemodynamic and oximetric monitoring with reasonable effect.  The multi-plane probe was passed using digital guidance for several passes, after an oral bite block had been put into place for protection of oral dentition.  This was placed into the posterior oropharynx and advanced into the esophagus, then advanced into the stomach and then rotated and withdrawn and removed with adequate imaging obtained throughout.  She was recovered as per the Medical Center conscious sedation protocol, and there were no apparent complications of the procedure.,FINDINGS: , Normal left ventricular size and systolic function.  LVEF of 60%.  Mild left atrial enlargement.  Normal right atrial size.  Normal right ventricular size and systolic function.  No left ventricular wall motion abnormalities identified.  The four pulmonary veins are identified.  The left atrial appendage is interrogated, including with Doppler and color flow, and while there is good to-and-fro motion seen, echo smoke is seen, and in fact, an intracardiac thrombus is identified and circumscribed at 1.83 cm in circumference at the base of the left atrial appendage.  No intracardiac vegetations nor endocarditis seen on any of the intracardiac valves.  The mitral valve is seen.  There is mild mitral regurgitation with two jets.  No mitral stenosis.  Four pulmonary veins were identified without reversible pulmonary venous flow.  There are three cusps of the aortic valve seen.  No aortic stenosis.  There is trace aortic insufficiency.  There is trace pulmonic insufficiency.  The pulmonary artery is seen and is within normal limits.  There is trace to mild tricuspid regurgitation.  Unable to estimate PA systolic pressure accurately; however, on the recent transthoracic echocardiogram (which I would direct the reader to) on January 5, 2010, RVSP was calculated at 40 mmHg on that study.  E wave velocity on average is 0.95 m/sec with a deceleration time of 232 milliseconds.  The proximal aorta is within normal limits, annulus 1.19 cm, sinuses of Valsalva 2.54 cm, ascending aorta 2.61 cm.  The intra-atrial septum is identified as are the SVC and IVC, and these are within normal limits.  The intra-atrial septum is interrogated with color flow as well as agitated D5W and there is no evidence of intracardiac shunting, including no atrial septal defect nor patent foramen ovale.  No pericardial effusion.  There is mild nonmobile descending aortic atherosclerosis seen.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "dosage",
+    "text": "20 cc"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "4 mg"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "fentanyl"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "measurement",
+    "text": "60%"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Mild left atrial enlargement"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Mild left atrial enlargement"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Normal left ventricular size and systolic function.  Left ventricular ejection fraction visually estimated at 60% without regional wall motion abnormalities"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Normal left ventricular size and systolic function.  Left ventricular ejection fraction visually estimated at 60% without regional wall motion abnormalities"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "measurement",
+    "text": "60%"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Intracardiac thrombus identified at the base of the left atrial appendage"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Intracardiac thrombus identified at the base of the left atrial appendage"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Mild mitral regurgitation with two jets"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "Mild mitral regurgitation with two jets"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Mild nonmobile descending aortic atherosclerosis.,Compared to the transthoracic echocardiogram done previously, other than identification of the intracardiac thrombus, other findings appear quite similar.,These results have been discussed with Dr. A of inpatient Internal Medicine service as well as the patient, who was recovering from conscious sedation, and her daughter with the patient's verbal consent"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "Mild nonmobile descending aortic atherosclerosis.,Compared to the transthoracic echocardiogram done previously, other than identification of the intracardiac thrombus, other findings appear quite similar.,These results have been discussed with Dr. A of inpatient Internal Medicine service as well as the patient, who was recovering from conscious sedation, and her daughter with the patient's verbal consent"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'in detail with the patient as well as with her daughter, who was present at the patient's bedside with the patient's verbal consent.  I then performed a risk/benefit/alternative analysis with benefits being more definitive exclusion of intracardiac thrombus as well as assessment for intracardiac shunts; alternatives being transthoracic echo imaging, which she had already had, with an inherent false negativity for this indication as well as empiric medical management, which the patient was not interested in; risks including, but not limited to, and the patient was aware this was not an all-inclusive list, of oversedation from conscious sedation, risk of aspiration pneumonia from regurgitation of stomach contents, risk of oropharyngeal, esophageal, oral, tracheal, pulmonary and/or gastric perforation, hemorrhage, or tear.  The patient expressed understanding of this risk/benefit/alternative analysis, had the opportunity to ask questions, which I invited from her and her daughter, all of which were answered to their self-stated satisfaction.  The patient then stated in a clear competent and coherent fashion that she wished to go forward with the transesophageal echocardiogram.,PROCEDURE: , The appropriate time-out procedure was performed as per Medical Center protocol under my direct supervision with appropriate identification of the patient, position, physician, procedure documentation; there were no safety issues identified by staff nor myself.  She received 20 cc of viscous lidocaine for topical oral anesthetic effect.  She received a total of 4 mg of Versed and 100 micrograms of fentanyl utilizing titrated conscious sedation with continuous hemodynamic and oximetric monitoring with reasonable effect.  The multi-plane probe was passed using digital guidance for several passes, after an oral bite block had been put into place for protection of oral dentition.  This was placed into the posterior oropharynx and advanced into the esophagus, then advanced into the stomach and then rotated and withdrawn and removed with adequate imaging obtained throughout.  She was recovered as per the Medical Center conscious sedation protocol, and there were no apparent complications of the procedure.,FINDINGS: , Normal left ventricular size and systolic function.  LVEF of 60%.  Mild left atrial enlargement.  Normal right atrial size.  Normal right ventricular size and systolic function.  No left ventricular wall motion abnormalities identified.  The four pulmonary veins are identified.  The left atrial appendage is interrogated, including with Doppler and color flow, and while there is good to-and-fro motion seen, echo smoke is seen, and in fact, an intracardiac thrombus is identified and circumscribed at 1.83 cm in circumference at the base of the left atrial appendage.  No intracardiac vegetations nor endocarditis seen on any of the intracardiac valves.  The mitral valve is seen.  There is mild mitral regurgitation with two jets.  No mitral stenosis.  Four pulmonary veins were identified without reversible pulmonary venous flow.  There are three cusps of the aortic valve seen.  No aortic stenosis.  There is trace aortic insufficiency.  There is trace pulmonic insufficiency.  The pulmonary artery is seen and is within normal limits.  There is trace to mild tricuspid regurgitation.  Unable to estimate PA systolic pressure accurately; however, on the recent transthoracic echocardiogram (which I would direct the reader to) on January 5, 2010, RVSP was calculated at 40 mmHg on that study.  E wave velocity on average is 0.95 m/sec with a deceleration time of 232 milliseconds.  The proximal aorta is within normal limits, annulus 1.19 cm, sinuses of Valsalva 2.54 cm, ascending aorta 2.61 cm.  The intra-atrial septum is identified as are the SVC and IVC, and these are within normal limits.  The intra-atrial septum is interrogated with color flow as well as agitated D5W and there is no evidence of intracardiac shunting, including no atrial septal defect nor patent foramen ovale.  No pericardial effusion.  There is mild nonmobile descending aortic atherosclerosis seen.,IMPRESSION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] Z5321: Procedure and treatment not carried out due to patient leaving prior to being seen by health care provider (score: 0.2041)\n[ICD-10-CM 2027] I513: Intracardiac thrombosis, not elsewhere classified (score: 0.1913)\n[ICD-10-CM 2027] Q2110: Atrial septal defect, unspecified (score: 0.1892)\n[ICD-10-CM 2027] Match unresolved (top score 0.2041 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "Dose 20.0cc associated with lidocaine \u2014 dose 20.0cc not among known product strengths"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "Dose 4.0mg associated with fentanyl \u2014 dose 4.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'fentanyl' \u2192 RXCUI 4337, canonical: fentanyl, match: exact\n[RxNorm] Ingredient: fentanyl (RXCUI 4337)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fentanyl 0.1 MG Sublingual Tablet; fentanyl 0.2 MG Sublingual Tablet; fentanyl 0.3 MG Sublingual Tablet; fentanyl 0.4 MG Sublingual Tablet; fentanyl 0.6 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Measurement] 60.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] H05342: Enlargement of left orbit (score: 0.5378)\n[ICD-10-CM 2027] H05349: Enlargement of unspecified orbit (score: 0.5251)\n[ICD-10-CM 2027] H05341: Enlargement of right orbit (score: 0.5187)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Mild left atrial enlargement' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] I501: Left ventricular failure, unspecified (score: 0.4328)\n[ICD-10-CM 2027] I4720: Ventricular tachycardia, unspecified (score: 0.3590)\n[ICD-10-CM 2027] I4729: Other ventricular tachycardia (score: 0.3590)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Normal left ventricular size and systolic function.  Left ventricular ejection fraction visually estimated at 60% without regional wall motion abnormalities' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Measurement] 60.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] I513: Intracardiac thrombosis, not elsewhere classified (score: 0.4322)\n[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.2664)\n[ICD-10-CM 2027] I4892: Unspecified atrial flutter (score: 0.2576)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'Intracardiac thrombus identified at the base of the left atrial appendage' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] P921: Regurgitation and rumination of newborn (score: 0.4108)\n[ICD-10-CM 2027] Q232: Congenital mitral stenosis (score: 0.3193)\n[ICD-10-CM 2027] V9733XD: Sucked into jet engine, subsequent encounter (score: 0.3034)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'Mild mitral regurgitation with two jets' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] I513: Intracardiac thrombosis, not elsewhere classified (score: 0.2421)\n[ICD-10-CM 2027] Z9185: Personal history of military service (score: 0.2316)\n[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.2177)\n[ICD-10-CM 2027] Match unresolved (top score 0.2421 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Procedure] 'Mild nonmobile descending aortic atherosclerosis.,Compared to the transthoracic echocardiogram done previously, other than identification of the intracardiac thrombus, other findings appear quite similar.,These results have been discussed with Dr. A of inpatient Internal Medicine service as well as the patient, who was recovering from conscious sedation, and her daughter with the patient's verbal consent' \u2014 extracted from header, not verified against any coding system"
+  }
+]

@@ -1,0 +1,423 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CONSULT REQUEST FOR:, Medical management.,The patient has been in special procedures now for over 2 hours and I am unable to examine.,HISTORY OF PRESENT ILLNESS:, Obtained from Dr. A on an 81-year-old white female, who is right handed, who by history, had a large stroke to the right brain, causing left body findings, last night. She was unfortunately outside of the window for emergent treatment and had a negative CT scan of the head. Was started on protocol medication and that is similar to TPA, which is an investigational study.,During the evaluation she was found to be in atrial fibrillation on admission with hypertension that was treated with labetalol en route. Her heart rate was 130. She was brought down with Cardizem. She received the study drug in the night and about an hour later thought to have another large stroke effecting the opposite side of the brain, that the doctors and company think is probably cardioembolic and not related to the study drug, as TPA has no obvious known association with this.,At that time the patient became comatose and required emergent intubation and paralyzation. Her diastolic at that time rose up to 190, likely the result of the acute second stroke. She is currently in arteriogram and a clot has been extracted from the proximal left carotid, but there is still distal clot that they are working on. Dr. A has updated the family to her extremely guarded and critical prognosis.,At present, it is not known yet, we do not have the STAT echocardiogram, if she has a large clot in the heart or if she could have a patent foramen ovale clot in the legs that has been passed to the heart. Echo that is pending, and cannot be done till the patient is out of arteriogram, which is her lifesaving procedure right now.,REVIEW OF SYSTEMS:, Complete review of systems is unobtainable at present. From what I can tell, is that she is scheduled for an upcoming bladder distension surgery and I do not know if this is why she is off Coumadin for chronic AFib or what, at this point. Tremor for 3-4 years, diagnosed as early Parkinson's.,PAST MEDICAL HISTORY:, GERD, hypertension times 20 years, arthritis, Parkinson's, TIA, chronic atrial fibrillation, on Coumadin three years.,PAST SURGICAL HISTORY:, Cholecystectomy, TAH 33, gallstones, back surgery 1998, thoracotomy for unknown reason at present.,ALLERGIES:, MORPHINE, SULFAS (RASH), PROZAC.,MEDICATIONS AT HOME: Lanoxin 0.25 daily; Inderal LA 80 daily; MOBIC 7.5 daily; Robaxin 750 q.8; aspirin 80 one daily; acyclovir dose unknown daily; potassium, dose unknown; oxazepam 15 mg daily; aspirin 80 one daily; ibuprofen PRN; Darvocet-N 100 PRN.,SOCIAL HISTORY:, She does not drink or smoke. Lives in Fayetteville, Tennessee.,FAMILY HISTORY:, Mother died of cancer, unknown type. Dad died of an MI.,VACCINATION STATUS: Unknown.,PHYSICAL EXAMINATION:,VITAL SIGNS: On arrival were temperature 97.1, blood pressure 174/100, heart rate 100, 97%, respirations 15.,GENERAL: She was apparently alert and able to give history on arrival. Currently do not have any available vital signs or physical exam, as I cannot get to the patient.,LABORATORY: ,Reviewed and are remarkable for white count of 13 with 76 neutrophils. BMP is normal, except for a blood sugar of 157, hemoglobin A1c is pending. TSH 2.1, cholesterol 165, Digoxin 1.24, CPK 57. ABG 7.47/32/459 on 100%. Magnesium 1.5. ESR 9, coags normal.,EKG is pending my review.,Chest x-ray is read as mild cardiomegaly and atherosclerotic aorta.,Chest x-ray, shoulder films and CT scan of the head: I have reviewed. Chest x-ray has good ET tube placement. She has mild cardiomegaly. Some mild interstitial opacities consistent with OGD and minimal amount of atherosclerosis of the aorta.,CT scan of the head: I do not see any active bleeding.,X-rays of the shoulders appear intact to me and we are awaiting radiologies final approval on those.,ASSESSMENT/PLAN/PROBLEMS:,1. Large cardioembolic stroke initially to the right brain, with devastating effects, and now stroke into the left brain as well, with fluctuating mental status. Obviously she is in critical condition and stable with multiple strokes. One must also wonder if she could have a large clot burden below the heart and patent foramen ovale, etc. We need STAT records from her prior cardiologist and prior echocardiogram report to see exactly what are the details. I have ordered a STAT echo and to have the group that sees her read it, that if he has a large clot burdened in the heart or has distal clot with a PFO we may be able to better prognosticate at this point. Obviously, she cannot have any anticoagulants, except for the study drug, at present, which is her only chance and hopefully they will be able to retrieve most of the clot with emergency retrieval device as activated heroically, by Dr. A and interventional radiology.,2. Hypertension/atrial fibrillation: This will be a difficult management and the fact that she has been on a beta-blocker for Parkinson's, she may have withdrawal to the beta-blockers as we remove this. Given her atrial fibrillation, I do agree the safest agent right now is to use a Cardizem drip as needed and would use it for systolic greater than 160 to 180, or diastolics greater than 90 to 100. Also, would use it to control the atrial fibrillation. We would, however, be very cautious not to put her in heart block with the Digoxin and the beta-blocker on board. Weighing all risks and benefits, I think that given the fact that she has a beta-blocker on board and Digoxin, we would like to avoid the beta-blocker for vasospasm protection and will favor using calcium channel blocker for now. If, however, we run into trouble with this, I would prefer to switch her to Brevibloc or an Esmolol drip and see how she does, as she may withdraw from the beta-blocker. I will be watching this closely and managing the hypertension as I see fit at the moment, based on all factors. Will also ask cardiology if she has one that sees her here, to help guide this. Her Digoxin level is appropriate, as well as a TSH. I do not feel that we need to work this up further, other than the STAT echo and ultrasound of the leg.,3. Respiratory failure requiring ventilator: I have discussed this with Dr. Devlin, we do not feel the need to hyperventilate her at present. We will keep her comfortable on the breathing machine and try to keep her pH in a normal range, around 7.4, and her CO2 in the 30 to 40 range. If she has brain swelling, we will need to hyperventilate her to a pCO2 of 30 and a pH of 7.5, to optimize the cardiac arrhythmia potential of alkalosis weighed with the control of brain swelling.,4. Optimize electrolytes as you can.,5. Deep vein thrombosis prophylaxis for now, with thigh-high TED hose, possibly SCDs, although I do not have experience with the vampire/venom to know if we need to worry about DIC which the SCDs may worsen. Will follow daily CBCs for that.,6. Nutrition: Will go ahead and start a low dose of tube feeds and hope that she does survive.,I will defer all updates to the family for the next 24 to 48 hours to Dr. Devlin's expertise, given her unknown and fluctuating neurologic prognosis.,Thank you so much for allowing us to participate in her care. We will be happy to do all medication treatment until the point that I feel that I would need any help from critical care. I believe that we will be able to manage her fully at this point, for simplicity sake.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "now for over 2 hours and I am unable to examine.,HISTORY OF PRESENT ILLNESS:, Obtained from Dr. A on an 81-year-old white female, who is right handed, who by history, had a large stroke to the right brain, causing left body findings, last night. She was unfortunately outside of the window for emergent treatment and had a negative CT scan of the head. Was started on protocol medication and that is similar to TPA, which is an investigational study.,During the evaluation she was found to be in atrial fibrillation on admission with hypertension that was treated with labetalol en route. Her heart rate was"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "labetalol"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "She was brought down with Cardizem. She received the study drug in the night and about an hour later thought to have another large stroke effecting the opposite side of the brain, that the doctors and company think is probably cardioembolic and not related to the study drug, as TPA has no obvious known association with this.,At that time the patient became comatose and required emergent intubation and paralyzation. Her diastolic at that time rose up to 190, likely the result of the acute second stroke. She is currently in arteriogram and a clot has been extracted from the proximal left carotid, but there is still distal clot that they are working on. Dr. A has updated the family to her extremely guarded and critical prognosis.,At present, it is not known yet, we do not have the STAT echocardiogram, if she has a large clot in the heart or if she could have a patent foramen ovale clot in the legs that has been passed to the heart. Echo that is pending, and cannot be done till the patient is out of arteriogram, which is her lifesaving procedure right now.,REVIEW OF SYSTEMS:, Complete review of systems is unobtainable at present. From what I can tell, is that she is scheduled for an upcoming bladder distension surgery and I do not know if this is why she is off Coumadin for chronic AFib or what, at this point. Tremor for 3-4 years, diagnosed as early Parkinson's.,PAST MEDICAL HISTORY:, GERD, hypertension times 20 years, arthritis, Parkinson's, TIA, chronic atrial fibrillation, on Coumadin three years.,PAST SURGICAL HISTORY:, Cholecystectomy, TAH 33, gallstones, back surgery 1998, thoracotomy for unknown reason at present.,ALLERGIES:, MORPHINE, SULFAS (RASH), PROZAC.,MEDICATIONS AT HOME: Lanoxin 0.25 daily; Inderal LA 80 daily; MOBIC 7.5 daily; Robaxin 750 q.8; aspirin 80 one daily; acyclovir dose unknown daily; potassium, dose unknown; oxazepam 15 mg daily; aspirin 80 one daily; ibuprofen PRN; Darvocet-N 100 PRN.,SOCIAL HISTORY:, She does not drink or smoke. Lives in Fayetteville, Tennessee.,FAMILY HISTORY:, Mother died of cancer, unknown type. Dad died of an MI.,VACCINATION STATUS: Unknown.,PHYSICAL EXAMINATION:,VITAL SIGNS: On arrival were temperature 97.1, blood pressure 174/100, heart rate 100, 97%, respirations 15.,GENERAL: She was apparently alert and able to give history on arrival. Currently do not have any available vital signs or physical exam, as I cannot get to the patient.,LABORATORY: ,Reviewed and are remarkable for white count of 13 with 76 neutrophils. BMP is normal, except for a blood sugar of 157, hemoglobin A1c is pending. TSH 2.1, cholesterol 165, Digoxin 1.24, CPK"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Cardizem"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "right now.,REVIEW OF SYSTEMS:, Complete review of systems is unobtainable at present. From what I can tell, is that she is scheduled for an upcoming bladder distension surgery and I do not know if this is why she is off Coumadin for chronic AFib or what, at this point. Tremor for 3-4 years, diagnosed as early Parkinson's.,PAST MEDICAL HISTORY:, GERD, hypertension times 20 years, arthritis, Parkinson's, TIA, chronic atrial fibrillation, on Coumadin three years.,PAST SURGICAL HISTORY:, Cholecystectomy, TAH 33, gallstones, back surgery 1998, thoracotomy for unknown reason at present.,ALLERGIES:, MORPHINE, SULFAS (RASH), PROZAC.,MEDICATIONS AT HOME: Lanoxin 0.25 daily; Inderal LA 80 daily; MOBIC 7.5 daily; Robaxin 750 q.8; aspirin 80 one daily; acyclovir dose unknown daily; potassium, dose unknown; oxazepam 15 mg daily; aspirin 80 one daily; ibuprofen PRN; Darvocet-N 100 PRN.,SOCIAL HISTORY:, She does not drink or smoke. Lives in Fayetteville, Tennessee.,FAMILY HISTORY:, Mother died of cancer, unknown type. Dad died of an MI.,VACCINATION STATUS: Unknown.,PHYSICAL EXAMINATION:,VITAL SIGNS: On arrival were temperature 97.1, blood pressure 174/100, heart rate 100, 97%, respirations 15.,GENERAL: She was apparently alert and able to give history on arrival. Currently do not have any available vital signs or physical exam, as I cannot get to the patient.,LABORATORY: ,Reviewed and are remarkable for white count of 13 with 76 neutrophils. BMP is normal, except for a blood sugar of 157, hemoglobin A1c is pending. TSH 2.1, cholesterol 165, Digoxin 1.24, CPK"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "MORPHINE"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "PROZAC"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Lanoxin"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Inderal"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "MOBIC"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Robaxin"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "aspirin"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "acyclovir"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "potassium"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "oxazepam"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "dosage",
+    "text": "15 mg"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "aspirin"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "ibuprofen"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "measurement",
+    "text": "97%"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "cholesterol"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "medication",
+    "text": "Digoxin"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "procedure",
+    "text": "ABG 7.47/32/459 on 100%. Magnesium 1"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "medication",
+    "text": "Magnesium"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "procedure",
+    "text": "ESR 9, coags normal.,EKG is pending my review.,Chest x-ray is read as mild cardiomegaly and atherosclerotic aorta.,Chest x-ray, shoulder films and CT scan of the head: I have reviewed. Chest x-ray has good ET tube placement. She has mild cardiomegaly. Some mild interstitial opacities consistent with OGD and minimal amount of atherosclerosis of the aorta.,CT scan of the head: I do not see any active bleeding.,X-rays of the shoulders appear intact to me and we are awaiting radiologies final approval on those.,ASSESSMENT/PLAN/PROBLEMS:"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "procedure",
+    "text": "Large cardioembolic stroke initially to the right brain, with devastating effects, and now stroke into the left brain as well, with fluctuating mental status. Obviously she is in critical condition and stable with multiple strokes. One must also wonder if she could have a large clot burden below the heart and patent foramen ovale, etc. We need STAT records from her prior cardiologist and prior echocardiogram report to see exactly what are the details. I have ordered a STAT echo and to have the group that sees her read it, that if he has a large clot burdened in the heart or has distal clot with a PFO we may be able to better prognosticate at this point. Obviously, she cannot have any anticoagulants, except for the study drug, at present, which is her only chance and hopefully they will be able to retrieve most of the clot with emergency retrieval device as activated heroically, by Dr. A and interventional radiology"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "procedure",
+    "text": "Hypertension/atrial fibrillation: This will be a difficult management and the fact that she has been on a beta-blocker for Parkinson's, she may have withdrawal to the beta-blockers as we remove this. Given her atrial fibrillation, I do agree the safest agent right now is to use a Cardizem drip as needed and would use it for systolic greater than 160 to 180, or diastolics greater than 90 to"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "medication",
+    "text": "Cardizem"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "procedure",
+    "text": "Also, would use it to control the atrial fibrillation. We would, however, be very cautious not to put her in heart block with the Digoxin and the beta-blocker on board. Weighing all risks and benefits, I think that given the fact that she has a beta-blocker on board and Digoxin, we would like to avoid the beta-blocker for vasospasm protection and will favor using calcium channel blocker for now. If, however, we run into trouble with this, I would prefer to switch her to Brevibloc or an Esmolol drip and see how she does, as she may withdraw from the beta-blocker. I will be watching this closely and managing the hypertension as I see fit at the moment, based on all factors. Will also ask cardiology if she has one that sees her here, to help guide this. Her Digoxin level is appropriate, as well as a TSH. I do not feel that we need to work this up further, other than the STAT echo and ultrasound of the leg"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "medication",
+    "text": "Digoxin"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "medication",
+    "text": "Digoxin"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "medication",
+    "text": "Brevibloc"
+  },
+  {
+    "entity_id": "E35",
+    "entity_type": "medication",
+    "text": "Esmolol"
+  },
+  {
+    "entity_id": "E36",
+    "entity_type": "medication",
+    "text": "Digoxin"
+  },
+  {
+    "entity_id": "E37",
+    "entity_type": "procedure",
+    "text": "Respiratory failure requiring ventilator: I have discussed this with Dr. Devlin, we do not feel the need to hyperventilate her at present. We will keep her comfortable on the breathing machine and try to keep her pH in a normal range, around 7.4, and her CO2 in the 30 to 40 range. If she has brain swelling, we will need to hyperventilate her to a pCO2 of 30 and a pH of 7.5, to optimize the cardiac arrhythmia potential of alkalosis weighed with the control of brain swelling"
+  },
+  {
+    "entity_id": "E38",
+    "entity_type": "procedure",
+    "text": "Optimize electrolytes as you can"
+  },
+  {
+    "entity_id": "E39",
+    "entity_type": "procedure",
+    "text": "Deep vein thrombosis prophylaxis for now, with thigh-high TED hose, possibly SCDs, although I do not have experience with the vampire/venom to know if we need to worry about DIC which the SCDs may worsen. Will follow daily CBCs for that"
+  },
+  {
+    "entity_id": "E40",
+    "entity_type": "procedure",
+    "text": "Nutrition: Will go ahead and start a low dose of tube feeds and hope that she does survive.,I will defer all updates to the family for the next 24 to 48 hours to Dr. Devlin's expertise, given her unknown and fluctuating neurologic prognosis.,Thank you so much for allowing us to participate in her care. We will be happy to do all medication treatment until the point that I feel that I would need any help from critical care. I believe that we will be able to manage her fully at this point, for simplicity sake"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'now for over 2 hours and I am unable to examine.,HISTORY OF PRESENT ILLNESS:, Obtained from Dr. A on an 81-year-old white female, who is right handed, who by history, had a large stroke to the right brain, causing left body findings, last night. She was unfortunately outside of the window for emergent treatment and had a negative CT scan of the head. Was started on protocol medication and that is similar to TPA, which is an investigational study.,During the evaluation she was found to be in atrial fibrillation on admission with hypertension that was treated with labetalol en route. Her heart rate was' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'labetalol' \u2192 RXCUI 6185, canonical: labetalol, match: exact\n[RxNorm] Ingredient: labetalol (RXCUI 6185)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 4 ML labetalol hydrochloride 5 MG/ML Cartridge; 4 ML labetalol hydrochloride 5 MG/ML Injection; 200 ML labetalol hydrochloride 1 MG/ML Injection; 100 ML labetalol hydrochloride 1 MG/ML Injection; 300 ML labetalol hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'She was brought down with Cardizem. She received the study drug in the night and about an hour later thought to have another large stroke effecting the opposite side of the brain, that the doctors and company think is probably cardioembolic and not related to the study drug, as TPA has no obvious known association with this.,At that time the patient became comatose and required emergent intubation and paralyzation. Her diastolic at that time rose up to 190, likely the result of the acute second stroke. She is currently in arteriogram and a clot has been extracted from the proximal left carotid, but there is still distal clot that they are working on. Dr. A has updated the family to her extremely guarded and critical prognosis.,At present, it is not known yet, we do not have the STAT echocardiogram, if she has a large clot in the heart or if she could have a patent foramen ovale clot in the legs that has been passed to the heart. Echo that is pending, and cannot be done till the patient is out of arteriogram, which is her lifesaving procedure right now.,REVIEW OF SYSTEMS:, Complete review of systems is unobtainable at present. From what I can tell, is that she is scheduled for an upcoming bladder distension surgery and I do not know if this is why she is off Coumadin for chronic AFib or what, at this point. Tremor for 3-4 years, diagnosed as early Parkinson's.,PAST MEDICAL HISTORY:, GERD, hypertension times 20 years, arthritis, Parkinson's, TIA, chronic atrial fibrillation, on Coumadin three years.,PAST SURGICAL HISTORY:, Cholecystectomy, TAH 33, gallstones, back surgery 1998, thoracotomy for unknown reason at present.,ALLERGIES:, MORPHINE, SULFAS (RASH), PROZAC.,MEDICATIONS AT HOME: Lanoxin 0.25 daily; Inderal LA 80 daily; MOBIC 7.5 daily; Robaxin 750 q.8; aspirin 80 one daily; acyclovir dose unknown daily; potassium, dose unknown; oxazepam 15 mg daily; aspirin 80 one daily; ibuprofen PRN; Darvocet-N 100 PRN.,SOCIAL HISTORY:, She does not drink or smoke. Lives in Fayetteville, Tennessee.,FAMILY HISTORY:, Mother died of cancer, unknown type. Dad died of an MI.,VACCINATION STATUS: Unknown.,PHYSICAL EXAMINATION:,VITAL SIGNS: On arrival were temperature 97.1, blood pressure 174/100, heart rate 100, 97%, respirations 15.,GENERAL: She was apparently alert and able to give history on arrival. Currently do not have any available vital signs or physical exam, as I cannot get to the patient.,LABORATORY: ,Reviewed and are remarkable for white count of 13 with 76 neutrophils. BMP is normal, except for a blood sugar of 157, hemoglobin A1c is pending. TSH 2.1, cholesterol 165, Digoxin 1.24, CPK' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Cardizem' \u2192 RXCUI 203494, canonical: Cardizem, match: exact\n[RxNorm] Ingredient: diltiazem (RXCUI 3443)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 5 ML diltiazem hydrochloride 5 MG/ML Injection; 10 ML diltiazem hydrochloride 5 MG/ML Injection; 25 ML diltiazem hydrochloride 5 MG/ML Injection; diltiazem hydrochloride 100 MG Injection; 250 ML diltiazem hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'right now.,REVIEW OF SYSTEMS:, Complete review of systems is unobtainable at present. From what I can tell, is that she is scheduled for an upcoming bladder distension surgery and I do not know if this is why she is off Coumadin for chronic AFib or what, at this point. Tremor for 3-4 years, diagnosed as early Parkinson's.,PAST MEDICAL HISTORY:, GERD, hypertension times 20 years, arthritis, Parkinson's, TIA, chronic atrial fibrillation, on Coumadin three years.,PAST SURGICAL HISTORY:, Cholecystectomy, TAH 33, gallstones, back surgery 1998, thoracotomy for unknown reason at present.,ALLERGIES:, MORPHINE, SULFAS (RASH), PROZAC.,MEDICATIONS AT HOME: Lanoxin 0.25 daily; Inderal LA 80 daily; MOBIC 7.5 daily; Robaxin 750 q.8; aspirin 80 one daily; acyclovir dose unknown daily; potassium, dose unknown; oxazepam 15 mg daily; aspirin 80 one daily; ibuprofen PRN; Darvocet-N 100 PRN.,SOCIAL HISTORY:, She does not drink or smoke. Lives in Fayetteville, Tennessee.,FAMILY HISTORY:, Mother died of cancer, unknown type. Dad died of an MI.,VACCINATION STATUS: Unknown.,PHYSICAL EXAMINATION:,VITAL SIGNS: On arrival were temperature 97.1, blood pressure 174/100, heart rate 100, 97%, respirations 15.,GENERAL: She was apparently alert and able to give history on arrival. Currently do not have any available vital signs or physical exam, as I cannot get to the patient.,LABORATORY: ,Reviewed and are remarkable for white count of 13 with 76 neutrophils. BMP is normal, except for a blood sugar of 157, hemoglobin A1c is pending. TSH 2.1, cholesterol 165, Digoxin 1.24, CPK' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'MORPHINE' \u2192 RXCUI 7052, canonical: morphine, match: exact\n[RxNorm] Ingredient: morphine (RXCUI 7052)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): morphine sulfate 40 MG Extended Release Oral Capsule; 1 ML morphine sulfate 5 MG/ML Prefilled Syringe; 10 ML morphine sulfate 0.5 MG/ML Injection; 2 ML morphine sulfate 0.5 MG/ML Injection; 10 ML morphine sulfate 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'PROZAC' \u2192 RXCUI 58827, canonical: Prozac, match: exact\n[RxNorm] Ingredient: fluoxetine (RXCUI 4493)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fluoxetine 60 MG Oral Tablet; fluoxetine 60 MG Oral Capsule; fluoxetine 20 MG Oral Tablet; PMDD fluoxetine 10 MG Oral Tablet; PMDD fluoxetine 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Lanoxin' \u2192 RXCUI 202988, canonical: Lanoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Inderal' \u2192 RXCUI 151890, canonical: Inderal, match: exact\n[RxNorm] Ingredient: propranolol (RXCUI 8787)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): propranolol hydrochloride 4.28 MG/ML Oral Solution; hydrochlorothiazide 25 MG / propranolol hydrochloride 40 MG Oral Tablet; hydrochlorothiazide 25 MG / propranolol hydrochloride 80 MG Oral Tablet; 1 ML propranolol hydrochloride 1 MG/ML Injection; propranolol hydrochloride 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'MOBIC' \u2192 RXCUI 152699, canonical: Mobic, match: exact\n[RxNorm] Ingredient: meloxicam (RXCUI 41493)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): meloxicam 5 MG/ML Injectable Solution; meloxicam 0.5 MG/ML Oral Suspension; meloxicam 15 MG Rectal Suppository; meloxicam 15 MG Oral Tablet; meloxicam 5 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Robaxin' \u2192 RXCUI 202955, canonical: Robaxin, match: exact\n[RxNorm] Ingredient: methocarbamol (RXCUI 6845)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methocarbamol 500 MG Oral Tablet; methocarbamol 750 MG Oral Tablet; aspirin 325 MG / methocarbamol 400 MG Oral Tablet; 10 ML methocarbamol 100 MG/ML Injection; methocarbamol 1000 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'acyclovir' \u2192 RXCUI 281, canonical: acyclovir, match: exact\n[RxNorm] Ingredient: acyclovir (RXCUI 281)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acyclovir 80 MG/ML Oral Suspension; acyclovir 50 MG/ML Topical Cream; acyclovir 50 MG Buccal Tablet; 10 ML acyclovir 50 MG/ML Injection; 20 ML acyclovir 50 MG/ML Injection"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'potassium' \u2192 RXCUI 8588, canonical: potassium, match: exact\n[RxNorm] Ingredient: potassium (RXCUI 8588)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): potassium 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'oxazepam' \u2192 RXCUI 7781, canonical: oxazepam, match: exact\n[RxNorm] Ingredient: oxazepam (RXCUI 7781)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): oxazepam 10 MG Oral Capsule; oxazepam 15 MG Oral Tablet; oxazepam 30 MG Oral Capsule; oxazepam 10 MG Oral Tablet; oxazepam 15 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "Dose 15.0mg associated with oxazepam"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'ibuprofen' \u2192 RXCUI 5640, canonical: ibuprofen, match: exact\n[RxNorm] Ingredient: ibuprofen (RXCUI 5640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): ibuprofen 400 MG / oxycodone hydrochloride 5 MG Oral Tablet; famotidine 26.6 MG / ibuprofen 800 MG Oral Tablet; chlorpheniramine maleate 2 MG / ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Tablet; ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Capsule; ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[Measurement] 97.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[RxNorm] 'cholesterol' \u2192 RXCUI 2438, canonical: cholesterol, match: exact\n[RxNorm] Ingredient: cholesterol (RXCUI 2438)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[RxNorm] 'Digoxin' \u2192 RXCUI 3407, canonical: digoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[Procedure] 'ABG 7.47/32/459 on 100%. Magnesium 1' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[Measurement] 100.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[RxNorm] 'Magnesium' \u2192 RXCUI 6574, canonical: magnesium, match: exact\n[RxNorm] Ingredient: magnesium (RXCUI 6574)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[Procedure] 'ESR 9, coags normal.,EKG is pending my review.,Chest x-ray is read as mild cardiomegaly and atherosclerotic aorta.,Chest x-ray, shoulder films and CT scan of the head: I have reviewed. Chest x-ray has good ET tube placement. She has mild cardiomegaly. Some mild interstitial opacities consistent with OGD and minimal amount of atherosclerosis of the aorta.,CT scan of the head: I do not see any active bleeding.,X-rays of the shoulders appear intact to me and we are awaiting radiologies final approval on those.,ASSESSMENT/PLAN/PROBLEMS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[Procedure] 'Large cardioembolic stroke initially to the right brain, with devastating effects, and now stroke into the left brain as well, with fluctuating mental status. Obviously she is in critical condition and stable with multiple strokes. One must also wonder if she could have a large clot burden below the heart and patent foramen ovale, etc. We need STAT records from her prior cardiologist and prior echocardiogram report to see exactly what are the details. I have ordered a STAT echo and to have the group that sees her read it, that if he has a large clot burdened in the heart or has distal clot with a PFO we may be able to better prognosticate at this point. Obviously, she cannot have any anticoagulants, except for the study drug, at present, which is her only chance and hopefully they will be able to retrieve most of the clot with emergency retrieval device as activated heroically, by Dr. A and interventional radiology' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[Procedure] 'Hypertension/atrial fibrillation: This will be a difficult management and the fact that she has been on a beta-blocker for Parkinson's, she may have withdrawal to the beta-blockers as we remove this. Given her atrial fibrillation, I do agree the safest agent right now is to use a Cardizem drip as needed and would use it for systolic greater than 160 to 180, or diastolics greater than 90 to' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[RxNorm] 'Cardizem' \u2192 RXCUI 203494, canonical: Cardizem, match: exact\n[RxNorm] Ingredient: diltiazem (RXCUI 3443)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 5 ML diltiazem hydrochloride 5 MG/ML Injection; 10 ML diltiazem hydrochloride 5 MG/ML Injection; 25 ML diltiazem hydrochloride 5 MG/ML Injection; diltiazem hydrochloride 100 MG Injection; 250 ML diltiazem hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[Procedure] 'Also, would use it to control the atrial fibrillation. We would, however, be very cautious not to put her in heart block with the Digoxin and the beta-blocker on board. Weighing all risks and benefits, I think that given the fact that she has a beta-blocker on board and Digoxin, we would like to avoid the beta-blocker for vasospasm protection and will favor using calcium channel blocker for now. If, however, we run into trouble with this, I would prefer to switch her to Brevibloc or an Esmolol drip and see how she does, as she may withdraw from the beta-blocker. I will be watching this closely and managing the hypertension as I see fit at the moment, based on all factors. Will also ask cardiology if she has one that sees her here, to help guide this. Her Digoxin level is appropriate, as well as a TSH. I do not feel that we need to work this up further, other than the STAT echo and ultrasound of the leg' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[RxNorm] 'Digoxin' \u2192 RXCUI 3407, canonical: digoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F33",
+    "entity_id": "E33",
+    "text": "[RxNorm] 'Digoxin' \u2192 RXCUI 3407, canonical: digoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F34",
+    "entity_id": "E34",
+    "text": "[RxNorm] 'Brevibloc' \u2192 RXCUI 151448, canonical: Brevibloc, match: exact\n[RxNorm] Ingredient: esmolol (RXCUI 49737)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 250 ML esmolol hydrochloride 10 MG/ML Injection; 10 ML esmolol hydrochloride 10 MG/ML Injection; 100 ML esmolol hydrochloride 20 MG/ML Injection; esmolol hydrochloride 250 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F35",
+    "entity_id": "E35",
+    "text": "[RxNorm] 'Esmolol' \u2192 RXCUI 49737, canonical: esmolol, match: exact\n[RxNorm] Ingredient: esmolol (RXCUI 49737)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 250 ML esmolol hydrochloride 10 MG/ML Injection; 10 ML esmolol hydrochloride 10 MG/ML Injection; 100 ML esmolol hydrochloride 20 MG/ML Injection; esmolol hydrochloride 250 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F36",
+    "entity_id": "E36",
+    "text": "[RxNorm] 'Digoxin' \u2192 RXCUI 3407, canonical: digoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F37",
+    "entity_id": "E37",
+    "text": "[Procedure] 'Respiratory failure requiring ventilator: I have discussed this with Dr. Devlin, we do not feel the need to hyperventilate her at present. We will keep her comfortable on the breathing machine and try to keep her pH in a normal range, around 7.4, and her CO2 in the 30 to 40 range. If she has brain swelling, we will need to hyperventilate her to a pCO2 of 30 and a pH of 7.5, to optimize the cardiac arrhythmia potential of alkalosis weighed with the control of brain swelling' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F38",
+    "entity_id": "E38",
+    "text": "[Procedure] 'Optimize electrolytes as you can' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F39",
+    "entity_id": "E39",
+    "text": "[Procedure] 'Deep vein thrombosis prophylaxis for now, with thigh-high TED hose, possibly SCDs, although I do not have experience with the vampire/venom to know if we need to worry about DIC which the SCDs may worsen. Will follow daily CBCs for that' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F40",
+    "entity_id": "E40",
+    "text": "[Procedure] 'Nutrition: Will go ahead and start a low dose of tube feeds and hope that she does survive.,I will defer all updates to the family for the next 24 to 48 hours to Dr. Devlin's expertise, given her unknown and fluctuating neurologic prognosis.,Thank you so much for allowing us to participate in her care. We will be happy to do all medication treatment until the point that I feel that I would need any help from critical care. I believe that we will be able to manage her fully at this point, for simplicity sake' \u2014 extracted from header, not verified against any coding system"
+  }
+]

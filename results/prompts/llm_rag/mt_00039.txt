@@ -1,0 +1,233 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DX:,1.  Menorrhagia,2.  Desires permanent sterilization.,POSTOPERATIVE DX:,1.  Menorrhagia,2.  Desires permanent sterilization.,OPERATIVE PROCEDURE:,  Hysteroscopy, Essure, tubal occlusion, and ThermaChoice endometrial ablation.,ANESTHESIA: , General with paracervical block.,ESTIMATED BLOOD LOSS: , Minimal.,FLUIDS:,  On hysteroscopy, 100 ml deficit of lactated Ringer's via IV, 850 ml of lactated Ringer's.,COMPLICATIONS: , None.,PATHOLOGY: , None.,DISPOSITION:  ,Stable to recovery room.,FINDINGS:,  A nulliparous cervix without lesions.  Uterine cavity sounding to 10 cm, normal appearing tubal ostia bilaterally, fluffy endometrium, normal appearing cavity without obvious polyps or fibroids.,PROCEDURE: , The patient was taken to the operating room, where general anesthesia was found to be adequate.  She was prepped and draped in the usual sterile fashion.  A speculum was placed into the vagina.  The anterior lip of the cervix was grasped with a single-tooth tenaculum and a paracervical block was performed using 20 ml of 0.50% lidocaine with 1:200,000 of epinephrine.,The cervical vaginal junction at the 4 o'clock position was injected and 5 ml was instilled.  The block was performed at 8 o'clock as well with 5 ml at 10 and 2 o'clock.  The lidocaine was injected into the cervix.  The cervix was minimally dilated with #17 Hanks dilator.  The 5-mm 30-degree hysteroscope was then inserted under direct visualization using lactated Ringer's as a distention medium.  The uterine cavity was viewed and the above normal findings were noted.  The Essure tubal occlusion was then inserted through the operative port and the tip of the Essure device easily slid into the right ostia.  The coil was advanced and easily placed and the device withdrawn.  There were three coils into the uterine cavity after removal of the insertion device.  The device was removed and reloaded.  The advice was to advance under direct visualization and the tip was inserted into the left ostia.  This passed easily and the device was inserted.  It was removed easily and three coils again were into the uterine cavity.  The hysteroscope was then removed and the ThermaChoice ablation was performed.  The uterus was then sounded to 9.5 to 10 cm.  The ThermaChoice balloon was primed and pressure was drawn to a negative 150.  The device was then moistened and inserted into the uterine cavity and the balloon was slowly filled with 40 ml of D5W.  The pressure was brought up to 170 and the cycle was initiated.  A full cycle of eight minutes was performed.  At no time there was a significant loss of pressure from the catheter balloon.  After the cycle was complete, the balloon was deflated and withdrawn.  The tenaculum was withdrawn.  No bleeding was noted.  The patient was then awakened, transferred, and taken to the recovery room in satisfactory condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "Hysteroscopy"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "Essure, tubal occlusion, and ThermaChoice endometrial ablation.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "General with paracervical block.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Minimal.,FLUIDS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "On hysteroscopy"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "100 ml deficit of lactated Ringer's via IV"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "measurement",
+    "text": "100 ml"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "850 ml of lactated Ringer's.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "measurement",
+    "text": "850 ml"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "None.,PATHOLOGY:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "None.,DISPOSITION:  ,Stable to recovery room.,FINDINGS:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "A nulliparous cervix without lesions.  Uterine cavity sounding to 10 cm, normal appearing tubal ostia bilaterally, fluffy endometrium, normal appearing cavity without obvious polyps or fibroids.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "The patient was taken to the operating room, where general anesthesia was found to be adequate.  She was prepped and draped in the usual sterile fashion.  A speculum was placed into the vagina.  The anterior lip of the cervix was grasped with a single-tooth tenaculum and a paracervical block was performed using 20 ml of 0.50% lidocaine with 1:200,000 of epinephrine.,The cervical vaginal junction at the 4 o'clock position was injected and 5 ml was instilled.  The block was performed at 8 o'clock as well with 5 ml at 10 and 2 o'clock.  The lidocaine was injected into the cervix.  The cervix was minimally dilated with #17 Hanks dilator.  The 5-mm 30-degree hysteroscope was then inserted under direct visualization using lactated Ringer's as a distention medium.  The uterine cavity was viewed and the above normal findings were noted.  The Essure tubal occlusion was then inserted through the operative port and the tip of the Essure device easily slid into the right ostia.  The coil was advanced and easily placed and the device withdrawn.  There were three coils into the uterine cavity after removal of the insertion device.  The device was removed and reloaded.  The advice was to advance under direct visualization and the tip was inserted into the left ostia.  This passed easily and the device was inserted.  It was removed easily and three coils again were into the uterine cavity.  The hysteroscope was then removed and the ThermaChoice ablation was performed.  The uterus was then sounded to 9.5 to 10 cm.  The ThermaChoice balloon was primed and pressure was drawn to a negative 150.  The device was then moistened and inserted into the uterine cavity and the balloon was slowly filled with 40 ml of D5W.  The pressure was brought up to 170 and the cycle was initiated.  A full cycle of eight minutes was performed.  At no time there was a significant loss of pressure from the catheter balloon.  After the cycle was complete, the balloon was deflated and withdrawn.  The tenaculum was withdrawn.  No bleeding was noted.  The patient was then awakened, transferred, and taken to the recovery room in satisfactory condition"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "dosage",
+    "text": "20 ml"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "0.50%"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "measurement",
+    "text": "5 ml"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "measurement",
+    "text": "5 ml"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "measurement",
+    "text": "40 ml"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'Hysteroscopy' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'Essure, tubal occlusion, and ThermaChoice endometrial ablation.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'General with paracervical block.,ESTIMATED BLOOD LOSS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Minimal.,FLUIDS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'On hysteroscopy' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] '100 ml deficit of lactated Ringer's via IV' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Measurement] 100.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] '850 ml of lactated Ringer's.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Measurement] 850.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'None.,PATHOLOGY:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'None.,DISPOSITION:  ,Stable to recovery room.,FINDINGS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'A nulliparous cervix without lesions.  Uterine cavity sounding to 10 cm, normal appearing tubal ostia bilaterally, fluffy endometrium, normal appearing cavity without obvious polyps or fibroids.,PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'The patient was taken to the operating room, where general anesthesia was found to be adequate.  She was prepped and draped in the usual sterile fashion.  A speculum was placed into the vagina.  The anterior lip of the cervix was grasped with a single-tooth tenaculum and a paracervical block was performed using 20 ml of 0.50% lidocaine with 1:200,000 of epinephrine.,The cervical vaginal junction at the 4 o'clock position was injected and 5 ml was instilled.  The block was performed at 8 o'clock as well with 5 ml at 10 and 2 o'clock.  The lidocaine was injected into the cervix.  The cervix was minimally dilated with #17 Hanks dilator.  The 5-mm 30-degree hysteroscope was then inserted under direct visualization using lactated Ringer's as a distention medium.  The uterine cavity was viewed and the above normal findings were noted.  The Essure tubal occlusion was then inserted through the operative port and the tip of the Essure device easily slid into the right ostia.  The coil was advanced and easily placed and the device withdrawn.  There were three coils into the uterine cavity after removal of the insertion device.  The device was removed and reloaded.  The advice was to advance under direct visualization and the tip was inserted into the left ostia.  This passed easily and the device was inserted.  It was removed easily and three coils again were into the uterine cavity.  The hysteroscope was then removed and the ThermaChoice ablation was performed.  The uterus was then sounded to 9.5 to 10 cm.  The ThermaChoice balloon was primed and pressure was drawn to a negative 150.  The device was then moistened and inserted into the uterine cavity and the balloon was slowly filled with 40 ml of D5W.  The pressure was brought up to 170 and the cycle was initiated.  A full cycle of eight minutes was performed.  At no time there was a significant loss of pressure from the catheter balloon.  After the cycle was complete, the balloon was deflated and withdrawn.  The tenaculum was withdrawn.  No bleeding was noted.  The patient was then awakened, transferred, and taken to the recovery room in satisfactory condition' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "Dose 20.0ml associated with lidocaine"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 0.5% associated with lidocaine \u2014 dose 0.5% not among known product strengths"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Measurement] 5.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Measurement] 5.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[Measurement] 40.0ml \u2014 not associated with any medication"
+  }
+]

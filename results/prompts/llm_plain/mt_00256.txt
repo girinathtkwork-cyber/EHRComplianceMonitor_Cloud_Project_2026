@@ -1,0 +1,202 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+CHIEF COMPLAINT:,  GI bleed.,HISTORY OF PRESENT ILLNESS:,  The patient is an 80-year-old white female with history of atrial fibrillation, on Coumadin, who presented as outpatient, complaining of increasing fatigue.  CBC revealed microcytic anemia with hemoglobin of 8.9.  Stool dark brown, strongly OB positive.  The patient denied any shortness of breath.  No chest pain.  No GI complaints.  The patient was admitted to ABCD for further evaluation.,PAST MEDICAL HISTORY:  ,Significant for atrial fibrillation, hypertension, osteoarthritis of the knees, hypercholesterolemia, non-insulin-dependent diabetes mellitus, asthma, and hypothyroidism.,PHYSICAL EXAMINATION:,GENERAL:  The patient is in no acute distress.,VITAL SIGNS:  Stable.,HEENT:  Benign.,NECK:  Supple.  No adenopathy.,LUNGS:  Clear with good air movement.,HEART:  Irregularly regular.  No gallops.,ABDOMEN:  Positive bowel sounds, soft, and nontender.  No masses or organomegaly.,EXTREMITIES:  1+ lower extremity edema bilaterally.,HOSPITAL COURSE: , The patient underwent upper endoscopy performed by Dr. A, which revealed erosive gastritis.  Colonoscopy did reveal diverticulosis as well as polyp, which was resected.  The patient tolerated the procedure well.  She was transfused, and prior to discharge hemoglobin was stable at 10.7.  The patient was without further GI complaints.  Coumadin was held during hospital stay and recommendations were given by GI to hold Coumadin for an additional three days after discharge then resume.  The patient was discharged with outpatient PMD, GI, and Cardiology followup.,DISCHARGE DIAGNOSES:,1.  Upper gastrointestinal bleed.,2.  Anemia.,3.  Atrial fibrillation.,4.  Non-insulin-dependent diabetes mellitus.,5.  Hypertension.,6.  Hypothyroidism.,7.  Asthma.,CONDITION UPON DISCHARGE: , Stable.,MEDICATIONS: , Feosol 325 mg daily, multivitamins one daily, Protonix 40 mg b.i.d., KCl 20 mEq daily, Lasix 40 mg b.i.d., atenolol 50 mg daily, Synthroid 80 mcg daily, Actos 30 mg daily, Mevacor 40 mg daily, and lisinopril 20 mg daily.,ALLERGIES:,  None.,DIET: , 1800-calorie ADA.,ACTIVITY: , As tolerated.,FOLLOWUP: , The patient to hold Coumadin through weekend.  Followup CBC and INR were ordered.  Outpatient followup as arranged.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "well.  She was transfused, and prior to discharge hemoglobin was stable at 10"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "The patient was without further GI complaints.  Coumadin was held during hospital stay and recommendations were given by GI to hold Coumadin for an additional three days after discharge then resume.  The patient was discharged with outpatient PMD, GI, and Cardiology followup.,DISCHARGE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Upper gastrointestinal bleed"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Upper gastrointestinal bleed"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Anemia"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Anemia"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Atrial fibrillation"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Atrial fibrillation"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Non-insulin-dependent diabetes mellitus"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "Non-insulin-dependent diabetes mellitus"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Hypertension"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "Hypertension"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Hypothyroidism"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Hypothyroidism"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Asthma.,CONDITION UPON DISCHARGE: , Stable.,MEDICATIONS: , Feosol 325 mg daily, multivitamins one daily, Protonix 40 mg b.i.d., KCl 20 mEq daily, Lasix 40 mg b.i.d., atenolol 50 mg daily, Synthroid 80 mcg daily, Actos 30 mg daily, Mevacor 40 mg daily, and lisinopril 20 mg daily.,ALLERGIES:,  None.,DIET: , 1800-calorie ADA.,ACTIVITY: , As tolerated.,FOLLOWUP: , The patient to hold Coumadin through weekend.  Followup CBC and INR were ordered.  Outpatient followup as arranged"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "Asthma.,CONDITION UPON DISCHARGE: , Stable.,MEDICATIONS: , Feosol 325 mg daily, multivitamins one daily, Protonix 40 mg b.i.d., KCl 20 mEq daily, Lasix 40 mg b.i.d., atenolol 50 mg daily, Synthroid 80 mcg daily, Actos 30 mg daily, Mevacor 40 mg daily, and lisinopril 20 mg daily.,ALLERGIES:,  None.,DIET: , 1800-calorie ADA.,ACTIVITY: , As tolerated.,FOLLOWUP: , The patient to hold Coumadin through weekend.  Followup CBC and INR were ordered.  Outpatient followup as arranged"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "Feosol"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "dosage",
+    "text": "325 mg"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "Protonix"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "dosage",
+    "text": "20 mEq"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "medication",
+    "text": "Lasix"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "medication",
+    "text": "atenolol"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "dosage",
+    "text": "50 mg"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "medication",
+    "text": "Synthroid"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "dosage",
+    "text": "80 mcg"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "medication",
+    "text": "Actos"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "dosage",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "medication",
+    "text": "lisinopril"
+  },
+  {
+    "entity_id": "E35",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E36",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

@@ -1,0 +1,73 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PROCEDURE:,  Upper endoscopy with biopsy.,PROCEDURE INDICATION: , This is a 44-year-old man who was admitted for coffee-ground emesis, which has been going on for the past several days.  An endoscopy is being done to evaluate for source of upper GI bleeding.,Informed consent was obtained.  Outlining the risks, benefits and alternatives of the procedure included, but not to risks of bleeding, infection, perforation, the patient agreed for the procedure.,MEDICATIONS: , Versed 4 mg IV push and Sufenta 75 mcg IV push given throughout the procedure in incremental fashion with careful monitoring of patient's pressures and vital signs.,PROCEDURE IN DETAIL:  ,The patient was placed in the left lateral decubitus position.  Medications were given.  After adequate sedation was achieved, the Olympus video endoscope was inserted into the mouth and advanced towards the duodenum.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "Upper endoscopy with biopsy.,PROCEDURE INDICATION:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "This is a 44-year-old man who was admitted for coffee-ground emesis, which has been going on for the past several days.  An endoscopy is being done to evaluate for source of upper GI bleeding.,Informed consent was obtained.  Outlining the risks, benefits and alternatives of the procedure included, but not to risks of bleeding, infection, perforation, the patient agreed for the procedure.,MEDICATIONS:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Versed 4 mg IV push and Sufenta 75 mcg IV push given throughout the procedure in incremental fashion with careful monitoring of patient's pressures and vital signs.,PROCEDURE IN DETAIL:  ,The patient was placed in the left lateral decubitus position.  Medications were given.  After adequate sedation was achieved, the Olympus video endoscope was inserted into the mouth and advanced towards the duodenum"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "measurement",
+    "text": "4 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "measurement",
+    "text": "75 mcg"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'Upper endoscopy with biopsy.,PROCEDURE INDICATION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'This is a 44-year-old man who was admitted for coffee-ground emesis, which has been going on for the past several days.  An endoscopy is being done to evaluate for source of upper GI bleeding.,Informed consent was obtained.  Outlining the risks, benefits and alternatives of the procedure included, but not to risks of bleeding, infection, perforation, the patient agreed for the procedure.,MEDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'Versed 4 mg IV push and Sufenta 75 mcg IV push given throughout the procedure in incremental fashion with careful monitoring of patient's pressures and vital signs.,PROCEDURE IN DETAIL:  ,The patient was placed in the left lateral decubitus position.  Medications were given.  After adequate sedation was achieved, the Olympus video endoscope was inserted into the mouth and advanced towards the duodenum' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Measurement] 4.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Measurement] 75.0mcg \u2014 not associated with any medication"
+  }
+]

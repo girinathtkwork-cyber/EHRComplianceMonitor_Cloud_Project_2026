@@ -1,0 +1,67 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES,1. Additional diagnosis noted: Type 2 Diabetes Mellitus.  Empyema thoracis.,2.  Need for intravenous antibiotics.,POSTOPERATIVE DIAGNOSES,1.  Empyema thoracis.,2.  Need for intravenous antibiotics.,PROCEDURE:,  Central line insertion.,DESCRIPTION OF PROCEDURE: , With the patient in his room, after obtaining the informed consent, his left deltopectoral area was prepped and draped in the usual fashion.  Xylocaine 1% was infiltrated and with the patient in the Trendelenburg position, the left subclavian vein was subcutaneously cannulated without any difficulty.  The triple-lumen catheter was inserted and all ports were flushed out and were irrigated with normal saline.  The catheter was fixed to the skin with sutures.  The dressing was applied and then the chest x-ray was obtained which showed no complications of the procedure and good position of the catheter.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Additional diagnosis noted: Type 2 Diabetes Mellitus.  Empyema thoracis"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.  Empyema thoracis"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Need for intravenous antibiotics.,POSTOPERATIVE DIAGNOSES"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Empyema thoracis"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Need for intravenous antibiotics.,PROCEDURE:,  Central line insertion.,DESCRIPTION OF PROCEDURE: , With the patient in his room, after obtaining the informed consent, his left deltopectoral area was prepped and draped in the usual fashion.  Xylocaine 1% was infiltrated and with the patient in the Trendelenburg position, the left subclavian vein was subcutaneously cannulated without any difficulty.  The triple-lumen catheter was inserted and all ports were flushed out and were irrigated with normal saline.  The catheter was fixed to the skin with sutures.  The dressing was applied and then the chest x-ray was obtained which showed no complications of the procedure and good position of the catheter"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Central line insertion.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "With the patient in his room, after obtaining the informed consent, his left deltopectoral area was prepped and draped in the usual fashion.  Xylocaine 1% was infiltrated and with the patient in the Trendelenburg position, the left subclavian vein was subcutaneously cannulated without any difficulty.  The triple-lumen catheter was inserted and all ports were flushed out and were irrigated with normal saline.  The catheter was fixed to the skin with sutures.  The dressing was applied and then the chest x-ray was obtained which showed no complications of the procedure and good position of the catheter"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Xylocaine"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "1%"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

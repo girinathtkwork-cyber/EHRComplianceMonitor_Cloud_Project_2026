@@ -1,0 +1,33 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CC:, Headache,HX: ,This 16 y/o RHF was in good health, until 11:00PM, the evening of 11/27/87, when she suddenly awoke from sleep with severe headache. Her parents described her as holding her head between her hands. She had no prior history of severe headaches. 30 minutes later she felt nauseated and vomited. The vomiting continued every 30 minutes and she developed neck stiffness. At 2:00AM on 11/28/97, she got up to go to the bathroom and collapsed in her mother's arms. Her mother noted she appeared weak on the left side. Shortly after this she experienced fecal and urinary incontinence. She was taken to a local ER and transferred to UIHC.,PMH/FHX/SHX:, completely unremarkable FHx. Has boyfriend and is sexually active.,Denied drug/ETOH/Tobacco use.,MEDS:, Oral Contraceptive pill QD.,EXAM:, BP152/82 HR74 RR16 T36.9C,MS: Somnolent and difficult to keep awake. Prefer to lie on right side because of neck pain/stiffness. Answers appropriately though when questioned.,CN: No papilledema noted. Pupils 4/4 decreasing to 2/2. EOM Intact. Face: ?left facial weakness. The rest of the CN exam was unremarkable.,Motor: Upper extremities: 5/3 with left pronator drift. Lower extremities: 5/4 with LLE weakness evident throughout.,Coordination: left sided weakness evident.,Station: left pronator drift.,Gait: left hemiparesis.,Reflexes: 2/2 throughout. No clonus. Plantars were flexor bilaterally.,Gen Exam: unremarkable.,COURSE: ,The patient underwent emergent CT Brain. This revealed a perimesencephalic subarachnoid hemorrhage and contrast enhancing structures in the medial aspect of the parietotemporal region. She then underwent a 4-vessel cerebral angiogram. This study was unremarkable except for delayed transit of the contrast material through the vascular system of the brain and poor opacification of the straight sinus. This suggested straight sinus thromboses. MRI Brain was then done; this was unremarkable and did not show sign of central venous thrombosis. CBC/Blood Cx/ESR/PT/PTT/GS/CSF Cx/ANA were negative.,Lumbar puncture on 12/1/87 revealed an opening pressure of 55cmH20, RBC18550, WBC25, 18neutrophils, 7lymphocytes, Protein25mg/dl, Glucose47mg/dl, Cx negative.,The patient was assumed to have had a SAH secondary to central venous thrombosis due to oral contraceptive use. She recovered well, but returned to Neurology at age 32 for episodic blurred vision and lightheadedness. EEG was compatible with seizure tendency (right greater than left theta bursts from the mid-temporal regions), and she was recommended an anticonvulsant which she refused.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Glucose"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  }
+]

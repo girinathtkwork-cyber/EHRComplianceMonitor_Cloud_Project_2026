@@ -1,0 +1,63 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PAST MEDICAL HISTORY: , Significant for arthritis in her knee, anxiety, depression, high insulin levels, gallstone attacks, and PCOS.,PAST SURGICAL HISTORY: , None.,SOCIAL HISTORY: , Currently employed.  She is married.  She is in sales.  She does not smoke.  She drinks wine a few drinks a month.,CURRENT MEDICATIONS: , She is on Carafate and Prilosec.  She was on metformin, but she stopped it because of her abdominal pains.,ALLERGIES: , She is allergic to PENICILLIN.,REVIEW OF SYSTEMS:,  Negative for heart, lungs, GI, GU, cardiac, or neurologic.  Denies specifically asthma, allergies, high blood pressure, high cholesterol, diabetes, chronic lung disease, ulcers, headache, seizures, epilepsy, strokes, thyroid disorder, tuberculosis, bleeding, clotting disorder, gallbladder disease, positive liver disease, kidney disease, cancer, heart disease, and heart attack.,PHYSICAL EXAMINATION: , She is afebrile.  Vital Signs are stable.  HEENT:  EOMI.  PERRLA.  Neck is soft and supple.  Lungs clear to auscultation.  She is mildly tender in the abdomen in the right upper quadrant.  No rebound.  Abdomen is otherwise soft.  Positive bowel sounds.  Extremities are nonedematous.  Ultrasound reveals gallstones, no inflammation, common bile duct in 4 mm.,IMPRESSION/PLAN: , I have explained the risks and potential complications of laparoscopic cholecystectomy in detail including bleeding, infection, deep venous thrombosis, pulmonary embolism, cystic leak, duct leak, possible need for ERCP, and possible need for further surgery among other potential complications.  She understands and we will proceed with the surgery in the near future.,
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Carafate"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Prilosec"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "metformin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "cholesterol"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Carafate' \u2192 RXCUI 227743, canonical: Carafate, match: exact\n[RxNorm] Ingredient: sucralfate (RXCUI 10156)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): sucralfate malate 100 MG/ML Oral Paste; sucralfate 200 MG/ML Oral Suspension; sucralfate 100 MG/ML Oral Suspension; sucralfate 1000 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Prilosec' \u2192 RXCUI 203345, canonical: Prilosec, match: exact\n[RxNorm] Ingredient: omeprazole (RXCUI 7646)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 81 MG / omeprazole 40 MG Delayed Release Oral Tablet; aspirin 325 MG / omeprazole 40 MG Delayed Release Oral Tablet; omeprazole 20 MG Delayed Release Oral Capsule; omeprazole 10 MG Delayed Release Oral Capsule; omeprazole 40 MG Delayed Release Oral Capsule"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'metformin' \u2192 RXCUI 6809, canonical: metformin, match: exact\n[RxNorm] Ingredient: metformin (RXCUI 6809)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR metformin hydrochloride 1000 MG / saxagliptin 2.5 MG Extended Release Oral Tablet; 24 HR metformin hydrochloride 1000 MG / saxagliptin 5 MG Extended Release Oral Tablet; 24 HR metformin hydrochloride 500 MG / saxagliptin 5 MG Extended Release Oral Tablet; linagliptin 2.5 MG / metformin hydrochloride 1000 MG Oral Tablet; linagliptin 2.5 MG / metformin hydrochloride 500 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'cholesterol' \u2192 RXCUI 2438, canonical: cholesterol, match: exact\n[RxNorm] Ingredient: cholesterol (RXCUI 2438)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  }
+]

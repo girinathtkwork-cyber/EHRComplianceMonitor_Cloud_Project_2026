@@ -1,0 +1,97 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Colon polyps.,POSTOPERATIVE DIAGNOSES:,1.  Universal diverticulosis.,2.  Nonsurgical internal hemorrhoids.,PROCEDURE PERFORMED:, Total colonoscopy with photos.,ANESTHESIA:,  Demerol 100 mg IV with Versed 3 mg IV.,SPECIMENS: , None.,ESTIMATED BLOOD LOSS: , Minimal.,INDICATIONS FOR PROCEDURE:  ,The patient is a 62-year-old white male who presents to the office with a history of colon polyps and need for recheck.,PROCEDURE:,  Informed consent was obtained.  All risks and benefits of the procedure were explained and all questions were answered.  The patient was brought back to the Endoscopy Suite where he was connected to cardiopulmonary monitoring.  Demerol 100 mg IV and Versed 3 mg IV was given in a titrated fashion until appropriate anesthesia was obtained.  Upon appropriate anesthesia, a digital rectal exam was performed, which showed no masses.  The colonoscope was then placed into the anus and the air was insufflated.  The scope was then advanced under direct vision into the rectum, rectosigmoid colon, descending colon, transverse colon, ascending colon until it reached the cecum.  Upon entering the sigmoid colon and throughout the rest of the colon, there was noted diverticulosis.  After reaching the cecum, the scope was fully withdrawn visualizing all walls again noting universal diverticulosis.,Upon reaching the rectum, the scope was then retroflexed upon itself and there was noted to be nonsurgical internal hemorrhoids.  The scope was then subsequently removed.  The patient tolerated the procedure well and there were no complications.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Colon polyps.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Universal diverticulosis"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Nonsurgical internal hemorrhoids.,PROCEDURE PERFORMED:, Total colonoscopy with photos.,ANESTHESIA:,  Demerol 100 mg IV with Versed 3 mg IV.,SPECIMENS: , None.,ESTIMATED BLOOD LOSS: , Minimal.,INDICATIONS FOR PROCEDURE:  ,The patient is a 62-year-old white male who presents to the office with a history of colon polyps and need for recheck.,PROCEDURE:,  Informed consent was obtained.  All risks and benefits of the procedure were explained and all questions were answered.  The patient was brought back to the Endoscopy Suite where he was connected to cardiopulmonary monitoring.  Demerol 100 mg IV and Versed 3 mg IV was given in a titrated fashion until appropriate anesthesia was obtained.  Upon appropriate anesthesia, a digital rectal exam was performed, which showed no masses.  The colonoscope was then placed into the anus and the air was insufflated.  The scope was then advanced under direct vision into the rectum, rectosigmoid colon, descending colon, transverse colon, ascending colon until it reached the cecum.  Upon entering the sigmoid colon and throughout the rest of the colon, there was noted diverticulosis.  After reaching the cecum, the scope was fully withdrawn visualizing all walls again noting universal diverticulosis.,Upon reaching the rectum, the scope was then retroflexed upon itself and there was noted to be nonsurgical internal hemorrhoids.  The scope was then subsequently removed.  The patient tolerated the procedure well and there were no complications"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Total colonoscopy with photos.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Demerol 100 mg IV with Versed 3 mg IV.,SPECIMENS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Demerol"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "100 mg"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "3 mg"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "None.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Minimal.,INDICATIONS FOR PROCEDURE:  ,The patient is a 62-year-old white male who presents to the office with a history of colon polyps and need for recheck.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Informed consent was obtained.  All risks and benefits of the procedure were explained and all questions were answered.  The patient was brought back to the Endoscopy Suite where he was connected to cardiopulmonary monitoring.  Demerol 100 mg IV and Versed 3 mg IV was given in a titrated fashion until appropriate anesthesia was obtained.  Upon appropriate anesthesia, a digital rectal exam was performed, which showed no masses.  The colonoscope was then placed into the anus and the air was insufflated.  The scope was then advanced under direct vision into the rectum, rectosigmoid colon, descending colon, transverse colon, ascending colon until it reached the cecum.  Upon entering the sigmoid colon and throughout the rest of the colon, there was noted diverticulosis.  After reaching the cecum, the scope was fully withdrawn visualizing all walls again noting universal diverticulosis.,Upon reaching the rectum, the scope was then retroflexed upon itself and there was noted to be nonsurgical internal hemorrhoids.  The scope was then subsequently removed.  The patient tolerated the procedure well and there were no complications"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Demerol"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "dosage",
+    "text": "100 mg"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "3 mg"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

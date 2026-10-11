@@ -1,0 +1,52 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+EXAM:,  Echocardiogram.,INTERPRETATION: , Echocardiogram was performed including 2-D and M-mode imaging, Doppler analysis continuous wave and pulse echo outflow velocity mapping was all seen in M-mode.  Cardiac chamber dimensions, left atrial enlargement 4.4 cm.  Left ventricle, right ventricle, and right atrium are grossly normal.  LV wall thickness and wall motion appeared normal.  LV ejection fraction is estimated at 65%.  Aortic root and cardiac valves appeared normal.  No evidence of pericardial effusion.  No evidence of intracardiac mass or thrombus.  Doppler analysis outflow velocity through the aortic valve normal, inflow velocities through the mitral valve are normal.  There is mild tricuspid regurgitation.  Calculated pulmonary systolic pressure 42 mmHg.,ECHOCARDIOGRAPHIC DIAGNOSES:,1.  LV Ejection fraction, estimated at 65%.,2.  Mild left atrial enlargement.,3.  Mild tricuspid regurgitation.,4.  Mildly elevated pulmonary systolic pressure.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "measurement",
+    "text": "65%"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "LV Ejection fraction, estimated at 65%"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "measurement",
+    "text": "65%"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Mild left atrial enlargement"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Mild tricuspid regurgitation"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Mildly elevated pulmonary systolic pressure"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

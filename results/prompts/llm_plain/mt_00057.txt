@@ -1,0 +1,47 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+CLINICAL HISTORY: , Patient is a 37-year-old female with a history of colectomy for adenoma. Additional diagnosis noted: Type 2 Diabetes Mellitus.  During her preop evaluation it was noted that she had a lesion on her chest x-ray.  CT scan of the chest confirmed a left lower mass.,SPECIMEN: , Lung, left lower lobe resection.,IMMUNOHISTOCHEMICAL STUDIES:,  Tumor cells show no reactivity with cytokeratin AE1/AE3.  No significant reactivity with CAM5.2 and no reactivity with cytokeratin-20 are seen.  Tumor cells show partial reactivity with cytokeratin-7.  PAS with diastase demonstrates no convincing intracytoplasmic mucin.  No neuroendocrine differentiation is demonstrated with synaptophysin and chromogranin stains.  Tumor cells show cytoplasmic and nuclear reactivity with S100 antibody.  No significant reactivity is demonstrated with melanoma marker HMB-45 or Melan-A.  Tumor cell nuclei (spindle cell and pleomorphic/giant cell carcinoma components) show nuclear reactivity with thyroid transcription factor marker (TTF-1).  The immunohistochemical studies are consistent with primary lung sarcomatoid carcinoma with pleomorphic/giant cell carcinoma and spindle cell carcinoma components.,FINAL DIAGNOSIS:,Histologic Tumor Type:  Sarcomatoid carcinoma with areas of pleomorphic/giant cell carcinoma and spindle cell carcinoma.,Tumor Size:  2.7 x 2.0 x 1.4 cm.,Visceral Pleura Involvement:  The tumor closely approaches the pleural surface but does not invade the pleura.,Vascular Invasion:  Present.,Margins:  Bronchial resection margins and vascular margins are free of tumor.,Lymph Nodes:  Metastatic sarcomatoid carcinoma into one of four hilar lymph nodes.,Pathologic Stage:  pT1N1MX.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.  During her preop evaluation it was noted that she had a lesion on her chest x-ray.  CT scan of the chest confirmed a left lower mass.,SPECIMEN: , Lung, left lower lobe resection.,IMMUNOHISTOCHEMICAL STUDIES:,  Tumor cells show no reactivity with cytokeratin AE1/AE"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "preop"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "No significant reactivity with CAM5.2 and no reactivity with cytokeratin-20 are seen.  Tumor cells show partial reactivity with cytokeratin-"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "PAS with diastase demonstrates no convincing intracytoplasmic mucin.  No neuroendocrine differentiation is demonstrated with synaptophysin and chromogranin stains.  Tumor cells show cytoplasmic and nuclear reactivity with S100 antibody.  No significant reactivity is demonstrated with melanoma marker HMB-45 or Melan-A.  Tumor cell nuclei (spindle cell and pleomorphic/giant cell carcinoma components) show nuclear reactivity with thyroid transcription factor marker (TTF-1).  The immunohistochemical studies are consistent with primary lung sarcomatoid carcinoma with pleomorphic/giant cell carcinoma and spindle cell carcinoma components.,FINAL DIAGNOSIS:,Histologic Tumor Type:  Sarcomatoid carcinoma with areas of pleomorphic/giant cell carcinoma and spindle cell carcinoma.,Tumor Size:  2.7 x 2.0 x 1.4 cm.,Visceral Pleura Involvement:  The tumor closely approaches the pleural surface but does not invade the pleura.,Vascular Invasion:  Present.,Margins:  Bronchial resection margins and vascular margins are free of tumor.,Lymph Nodes:  Metastatic sarcomatoid carcinoma into one of four hilar lymph nodes.,Pathologic Stage:  pT1N1MX"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Histologic Tumor Type:  Sarcomatoid carcinoma with areas of pleomorphic/giant cell carcinoma and spindle cell carcinoma.,Tumor Size:  2.7 x 2.0 x 1.4 cm.,Visceral Pleura Involvement:  The tumor closely approaches the pleural surface but does not invade the pleura.,Vascular Invasion:  Present.,Margins:  Bronchial resection margins and vascular margins are free of tumor.,Lymph Nodes:  Metastatic sarcomatoid carcinoma into one of four hilar lymph nodes.,Pathologic Stage:  pT1N1MX"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

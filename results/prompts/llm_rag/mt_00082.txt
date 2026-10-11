@@ -1,0 +1,213 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:,1. Additional diagnosis noted: Type 2 Diabetes Mellitus.  Ventilator-dependent respiratory failure.,2.  Laryngeal edema.,POSTOPERATIVE DIAGNOSES:,1.  Ventilator-dependent respiratory failure.,2.  Laryngeal edema.,PROCEDURE PERFORMED: , Tracheostomy change.  A #6 Shiley with proximal extension was changed to a #6 Shiley with proximal extension.,INDICATIONS: , The patient is a 60-year-old Caucasian female who presented to ABCD General Hospital with exacerbation of COPD and CHF.  The patient had subsequently been taken to the operating room by Department of Otolaryngology and a direct laryngoscope was performed.  The patient was noted at that time to have transglottic edema.  Biopsies were taken.  At the time of surgery, it was decided that the patient required a tracheostomy for maintenance of continued ventilation and airway protection.  The patient is currently postop day #6 and appears to be unable to be weaned from ventilator at this time and may require prolonged ventricular support.  A decision was made to perform tracheostomy change.,DESCRIPTION OF PROCEDURE: , The patient was seen in the Intensive Care Unit.  The patient was placed in a supine position.  The neck was then extended.  The sutures that were previously in place in the #6 Shiley with proximal extension were removed.  The patient was preoxygenated to 100%.  After several minutes, the patient was noted to have a pulse oximetry of 100%.  The IV tubing that was supporting the patient's trache was then cut.  The tracheostomy tube was then suctioned.,The inner cannula was then removed from the tracheostomy and a nasogastric tube was placed down the lumen of the tracheostomy tube as a guidewire.  The tracheostomy tube was then removed over the nasogastric tube and the operative field was suctioned.  With the guidewire in place and with adequate visualization, a new #6 Shiley with proximal extension was then passed over the nasogastric tube guidewire and carefully inserted into the trachea.  The guidewire was then removed and the inner cannula was then placed into the tracheostomy.  The patient was then reconnected to the ventilator and was noted to have normal tidal volumes.  The patient had a tidal volume of 500 and was returning 500 cc to 510 cc.  The patient continued to saturate well with saturations 99%.  The patient appeared comfortable and her vital signs were stable.  A soft trache collar was then connected to the trachesotomy.  A drain sponge was then inserted underneath the new trache site.  The patient was observed for several minutes and was found to be in no distress and continued to maintain adequate saturations and continued to return normal tidal volumes.,COMPLICATIONS: , None.,DISPOSITION: , The patient tolerated the procedure well.  0.25% acetic acid soaks were ordered to the drain sponge every shift.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Additional diagnosis noted: Type 2 Diabetes Mellitus.  Ventilator-dependent respiratory failure"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.  Ventilator-dependent respiratory failure"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Laryngeal edema.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Ventilator-dependent respiratory failure"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Laryngeal edema.,PROCEDURE PERFORMED: , Tracheostomy change.  A #6 Shiley with proximal extension was changed to a #6 Shiley with proximal extension.,INDICATIONS: , The patient is a 60-year-old Caucasian female who presented to ABCD General Hospital with exacerbation of COPD and CHF.  The patient had subsequently been taken to the operating room by Department of Otolaryngology and a direct laryngoscope was performed.  The patient was noted at that time to have transglottic edema.  Biopsies were taken.  At the time of surgery, it was decided that the patient required a tracheostomy for maintenance of continued ventilation and airway protection.  The patient is currently postop day #6 and appears to be unable to be weaned from ventilator at this time and may require prolonged ventricular support.  A decision was made to perform tracheostomy change.,DESCRIPTION OF PROCEDURE: , The patient was seen in the Intensive Care Unit.  The patient was placed in a supine position.  The neck was then extended.  The sutures that were previously in place in the #6 Shiley with proximal extension were removed.  The patient was preoxygenated to 100%.  After several minutes, the patient was noted to have a pulse oximetry of 100%.  The IV tubing that was supporting the patient's trache was then cut.  The tracheostomy tube was then suctioned.,The inner cannula was then removed from the tracheostomy and a nasogastric tube was placed down the lumen of the tracheostomy tube as a guidewire.  The tracheostomy tube was then removed over the nasogastric tube and the operative field was suctioned.  With the guidewire in place and with adequate visualization, a new #6 Shiley with proximal extension was then passed over the nasogastric tube guidewire and carefully inserted into the trachea.  The guidewire was then removed and the inner cannula was then placed into the tracheostomy.  The patient was then reconnected to the ventilator and was noted to have normal tidal volumes.  The patient had a tidal volume of 500 and was returning 500 cc to 510 cc.  The patient continued to saturate well with saturations 99%.  The patient appeared comfortable and her vital signs were stable.  A soft trache collar was then connected to the trachesotomy.  A drain sponge was then inserted underneath the new trache site.  The patient was observed for several minutes and was found to be in no distress and continued to maintain adequate saturations and continued to return normal tidal volumes.,COMPLICATIONS: , None.,DISPOSITION: , The patient tolerated the procedure well.  0.25% acetic acid soaks were ordered to the drain sponge every shift"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Tracheostomy change.  A #6 Shiley with proximal extension was changed to a #6 Shiley with proximal extension.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "The patient is a 60-year-old Caucasian female who presented to ABCD General Hospital with exacerbation of COPD and CHF.  The patient had subsequently been taken to the operating room by Department of Otolaryngology and a direct laryngoscope was performed.  The patient was noted at that time to have transglottic edema.  Biopsies were taken.  At the time of surgery, it was decided that the patient required a tracheostomy for maintenance of continued ventilation and airway protection.  The patient is currently postop day #6 and appears to be unable to be weaned from ventilator at this time and may require prolonged ventricular support.  A decision was made to perform tracheostomy change.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "perform"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "The patient was seen in the Intensive Care Unit.  The patient was placed in a supine position.  The neck was then extended.  The sutures that were previously in place in the #6 Shiley with proximal extension were removed.  The patient was preoxygenated to 100%.  After several minutes, the patient was noted to have a pulse oximetry of 100%.  The IV tubing that was supporting the patient's trache was then cut.  The tracheostomy tube was then suctioned.,The inner cannula was then removed from the tracheostomy and a nasogastric tube was placed down the lumen of the tracheostomy tube as a guidewire.  The tracheostomy tube was then removed over the nasogastric tube and the operative field was suctioned.  With the guidewire in place and with adequate visualization, a new #6 Shiley with proximal extension was then passed over the nasogastric tube guidewire and carefully inserted into the trachea.  The guidewire was then removed and the inner cannula was then placed into the tracheostomy.  The patient was then reconnected to the ventilator and was noted to have normal tidal volumes.  The patient had a tidal volume of 500 and was returning 500 cc to 510 cc.  The patient continued to saturate well with saturations 99%.  The patient appeared comfortable and her vital signs were stable.  A soft trache collar was then connected to the trachesotomy.  A drain sponge was then inserted underneath the new trache site.  The patient was observed for several minutes and was found to be in no distress and continued to maintain adequate saturations and continued to return normal tidal volumes.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "measurement",
+    "text": "500 cc"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "measurement",
+    "text": "510 cc"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "measurement",
+    "text": "99%"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "None.,DISPOSITION:"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "The patient tolerated the procedure well.  0.25% acetic acid soaks were ordered to the drain sponge every shift"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "dosage",
+    "text": "0.25%"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "acetic acid"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] P285: Respiratory failure of newborn (score: 0.3168)\n[ICD-10-CM 2027] J95851: Ventilator associated pneumonia (score: 0.3152)\n[ICD-10-CM 2027] Z9912: Encounter for respirator [ventilator] dependence during power failure (score: 0.3040)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] P285: Respiratory failure of newborn (score: 0.3566)\n[ICD-10-CM 2027] J95851: Ventilator associated pneumonia (score: 0.3548)\n[ICD-10-CM 2027] Z9912: Encounter for respirator [ventilator] dependence during power failure (score: 0.3422)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] J385: Laryngeal spasm (score: 0.6815)\n[ICD-10-CM 2027] Q312: Laryngeal hypoplasia (score: 0.6737)\n[ICD-10-CM 2027] A362: Laryngeal diphtheria (score: 0.6296)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] P285: Respiratory failure of newborn (score: 0.4545)\n[ICD-10-CM 2027] J95851: Ventilator associated pneumonia (score: 0.4522)\n[ICD-10-CM 2027] Z9912: Encounter for respirator [ventilator] dependence during power failure (score: 0.4361)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] J9500: Unspecified tracheostomy complication (score: 0.3719)\n[ICD-10-CM 2027] J9509: Other tracheostomy complication (score: 0.3719)\n[ICD-10-CM 2027] Z930: Tracheostomy status (score: 0.3433)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Tracheostomy change.  A #6 Shiley with proximal extension was changed to a #6 Shiley with proximal extension.,INDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'The patient is a 60-year-old Caucasian female who presented to ABCD General Hospital with exacerbation of COPD and CHF.  The patient had subsequently been taken to the operating room by Department of Otolaryngology and a direct laryngoscope was performed.  The patient was noted at that time to have transglottic edema.  Biopsies were taken.  At the time of surgery, it was decided that the patient required a tracheostomy for maintenance of continued ventilation and airway protection.  The patient is currently postop day #6 and appears to be unable to be weaned from ventilator at this time and may require prolonged ventricular support.  A decision was made to perform tracheostomy change.,DESCRIPTION OF PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'perform' \u2192 RXCUI 1043225, canonical: Perform, match: exact\n[RxNorm] Ingredient: menthol (RXCUI 6750)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): benzocaine 0.2 MG/MG / menthol 0.02 MG/MG Oral Gel; menthol 0.075 MG/MG Medicated Patch; capsaicin 0.25 MG/ML / lidocaine hydrochloride 25 MG/ML / menthol 100 MG/ML / methyl salicylate 250 MG/ML Topical Lotion; menthol 5 MG/ML Oral Cream; benzocaine 200 MG/ML / menthol 10 MG/ML Medicated Pad"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'The patient was seen in the Intensive Care Unit.  The patient was placed in a supine position.  The neck was then extended.  The sutures that were previously in place in the #6 Shiley with proximal extension were removed.  The patient was preoxygenated to 100%.  After several minutes, the patient was noted to have a pulse oximetry of 100%.  The IV tubing that was supporting the patient's trache was then cut.  The tracheostomy tube was then suctioned.,The inner cannula was then removed from the tracheostomy and a nasogastric tube was placed down the lumen of the tracheostomy tube as a guidewire.  The tracheostomy tube was then removed over the nasogastric tube and the operative field was suctioned.  With the guidewire in place and with adequate visualization, a new #6 Shiley with proximal extension was then passed over the nasogastric tube guidewire and carefully inserted into the trachea.  The guidewire was then removed and the inner cannula was then placed into the tracheostomy.  The patient was then reconnected to the ventilator and was noted to have normal tidal volumes.  The patient had a tidal volume of 500 and was returning 500 cc to 510 cc.  The patient continued to saturate well with saturations 99%.  The patient appeared comfortable and her vital signs were stable.  A soft trache collar was then connected to the trachesotomy.  A drain sponge was then inserted underneath the new trache site.  The patient was observed for several minutes and was found to be in no distress and continued to maintain adequate saturations and continued to return normal tidal volumes.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Measurement] 100.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Measurement] 100.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Measurement] 500.0cc \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Measurement] 510.0cc \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Measurement] 99.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'None.,DISPOSITION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'The patient tolerated the procedure well.  0.25% acetic acid soaks were ordered to the drain sponge every shift' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "Dose 0.25% associated with acetic acid \u2014 dose 0.25% not among known product strengths"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'acetic acid' \u2192 RXCUI 168, canonical: acetic acid, match: exact\n[RxNorm] Ingredient: acetic acid (RXCUI 168)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetic acid 20 MG/ML / chlorhexidine gluconate 20 MG/ML / ketoconazole 10 MG/ML Medicated Shampoo; acetic acid 20 MG/ML Otic Solution; acetic acid 0.0092 MG/MG Vaginal Gel; acetic acid 30 MG/ML Irrigation Solution; acetic acid 2.5 MG/ML Irrigation Solution"
+  }
+]

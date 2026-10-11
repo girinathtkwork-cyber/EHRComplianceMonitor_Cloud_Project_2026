@@ -1,0 +1,32 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+RIGHT:,1.  Mild heterogeneous plaque seen in common carotid artery.,2.  Moderate heterogeneous plaque seen in the bulb and internal carotid artery.,3.  Severe heterogeneous plaque seen in external carotid artery with degree of stenosis around 70%.  ,4.  Peak systolic velocity is normal in common carotid, bulb, and internal carotid artery.,5.  Peak systolic velocity is 280 cm/sec in external carotid artery with moderate spectral broadening.,LEFT: , ,1.  Mild heterogeneous plaque seen in common carotid artery and external carotid artery.,2.  Moderate heterogeneous plaque seen in the bulb and internal carotid artery with degree of stenosis less than 50%.,3.  Peak systolic velocity is normal in common carotid artery and in the bulb.,4.  Peak systolic velocity is 128 cm/sec in internal carotid artery and 156 cm/sec in external carotid artery.,VERTEBRALS:,  Antegrade flow seen bilaterally.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "measurement",
+    "text": "70%"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "measurement",
+    "text": "50%"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

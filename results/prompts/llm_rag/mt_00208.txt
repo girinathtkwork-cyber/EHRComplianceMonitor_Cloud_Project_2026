@@ -1,0 +1,223 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT:,  Lump in the chest wall.,HISTORY OF PRESENT ILLNESS: , This is a 56-year-old white male who has been complaining of having had a lump in the chest for the past year or so and it has been getting larger and tender according to the patient.  It is tender on palpation and also he feels like, when he takes a deep breath also, it hurts.,CHRONIC/INACTIVE CONDITIONS,1.  Hypertension.,2.  Hyperlipidemia.,3.  Glucose intolerance.,4.  Chronic obstructive pulmonary disease?,5.  Tobacco abuse.,6.  History of anal fistula.,ILLNESSES:,  See above.,PREVIOUS OPERATIONS: , Anal fistulectomy, incision and drainage of perirectal abscess, hand surgery, colonoscopy, arm nerve surgery, and back surgery.,PREVIOUS INJURIES: , He had a broken ankle in the past.  They questioned the patient who is a truck driver whether he has had an auto accident in the past, he said that he has not had anything major.  He said he bumped his head once, but not his chest, although he told the nurse that a car fell on his chest that is six years ago.  He told me that he hit a moose once, but he does not remember hitting his chest.,ALLERGIES: , TO BACTRIM, SIMVASTATIN, AND CIPRO.,CURRENT MEDICATIONS,1.  Lisinopril.,2.  Metoprolol.,3.  Vitamin B12.,4.  Baby aspirin.,5.  Gemfibrozil.,6.  Felodipine.,7.  Levitra.,8.  Pravastatin.,FAMILY HISTORY: , Positive for hypertension, diabetes, and cancer.  Negative for heart disease, obesity or stroke.,SOCIAL HISTORY:  ,The patient is married.  He works as a truck driver and he drives in town.  He smokes two packs a day and he has two beers a day he says, but not consuming illegal drugs.,REVIEW OF SYSTEMS,CONSTITUTIONAL:  Denies weight loss/gain, fever or chills.,ENMT:  Denies headaches, nosebleeds, voice changes, blurry vision or changes in/loss of vision.,CV:  See history of present illness.  Denies chest pain, SOB supine, palpitations, edema, varicose veins or leg pains.,RESPIRATORY:  He has a chronic cough.  Denies shortness of breath, wheezing, sputum production or bloody sputum.,GI:  Denies heartburn, blood in stools, loss of appetite, abdominal pain or constipation.,GU:  Denies painful/burning urination, cloudy/dark urine, flank pain or groin pain.,MS:  Denies joint pain/stiffness, backaches, tendon/ligaments/muscle pains/strains, bone aches/pains or muscle weakness.,NEURO:  Denies blackouts, seizures, loss of memory, hallucinations, weakness, numbness, tremors or paralysis.,PSYCH:  Denies anxiety, irritability, apathy, depression, sleep disturbances, appetite disturbances or suicidal thoughts.,INTEGUMENTARY:  Denies unusual hair loss/breakage, skin lesions/discoloration or unusual nail breakage/discoloration.,PHYSICAL EXAMINATION,CONSTITUTIONAL:  Blood pressure 140/84, pulse rate 100, respiratory rate 20, temperature 97.2, height 5 feet 10 inches, and weight 218 pounds.  The patient is well developed, well nourished, and with fair attention to grooming.  The patient is moderately overweight.,NECK:  The neck is symmetric, the trachea is in the midline, and there are no masses.  No crepitus is palpated.  The thyroid is palpable, not enlarged, smooth, moves with swallowing, and has no palpable masses.,RESPIRATION:  Normal respiratory effort.  There is no intercostal retraction or action by the accessory muscles.  Normal breath sounds bilaterally with no rhonchi, wheezing or rubs.  There is a localized 2-cm diameter hard mass in relationship to the costosternal cartilages in the lower most position in the left side, just adjacent to the sternum.,CARDIOVASCULAR:  The PMI is palpable at the 5ICS in the MCL.  No thrills on palpation.  S1 and S2 are easily audible.  No audible S3, S4, murmur, click, or rub.  Carotid pulses 2+ without bruits.  Abdominal aorta is not palpable.  No audible abdominal bruits.  Femoral pulses are 2+ bilaterally, without audible bruits.  Extremities show no edema or varicosities.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Glucose"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "Anal fistulectomy, incision and drainage of perirectal abscess, hand surgery, colonoscopy, arm nerve surgery, and back surgery.,PREVIOUS INJURIES: , He had a broken ankle in the past.  They questioned the patient who is a truck driver whether he has had an auto accident in the past, he said that he has not had anything major.  He said he bumped his head once, but not his chest, although he told the nurse that a car fell on his chest that is six years ago.  He told me that he hit a moose once, but he does not remember hitting his chest.,ALLERGIES: , TO BACTRIM, SIMVASTATIN, AND CIPRO.,CURRENT MEDICATIONS"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "BACTRIM"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "SIMVASTATIN"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "CIPRO"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Lisinopril"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Lisinopril"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Metoprolol"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Metoprolol"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Vitamin B12"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Baby aspirin"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "aspirin"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Gemfibrozil"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Gemfibrozil"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "Felodipine"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "Felodipine"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "Levitra"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "Levitra"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "Pravastatin.,FAMILY HISTORY: , Positive for hypertension, diabetes, and cancer.  Negative for heart disease, obesity or stroke.,SOCIAL HISTORY:  ,The patient is married.  He works as a truck driver and he drives in town.  He smokes two packs a day and he has two beers a day he says, but not consuming illegal drugs.,REVIEW OF SYSTEMS,CONSTITUTIONAL:  Denies weight loss/gain, fever or chills.,ENMT:  Denies headaches, nosebleeds, voice changes, blurry vision or changes in/loss of vision.,CV:  See history of present illness.  Denies chest pain, SOB supine, palpitations, edema, varicose veins or leg pains.,RESPIRATORY:  He has a chronic cough.  Denies shortness of breath, wheezing, sputum production or bloody sputum.,GI:  Denies heartburn, blood in stools, loss of appetite, abdominal pain or constipation.,GU:  Denies painful/burning urination, cloudy/dark urine, flank pain or groin pain.,MS:  Denies joint pain/stiffness, backaches, tendon/ligaments/muscle pains/strains, bone aches/pains or muscle weakness.,NEURO:  Denies blackouts, seizures, loss of memory, hallucinations, weakness, numbness, tremors or paralysis.,PSYCH:  Denies anxiety, irritability, apathy, depression, sleep disturbances, appetite disturbances or suicidal thoughts.,INTEGUMENTARY:  Denies unusual hair loss/breakage, skin lesions/discoloration or unusual nail breakage/discoloration.,PHYSICAL EXAMINATION,CONSTITUTIONAL:  Blood pressure 140/84, pulse rate 100, respiratory rate 20, temperature 97.2, height 5 feet 10 inches, and weight 218 pounds.  The patient is well developed, well nourished, and with fair attention to grooming.  The patient is moderately overweight.,NECK:  The neck is symmetric, the trachea is in the midline, and there are no masses.  No crepitus is palpated.  The thyroid is palpable, not enlarged, smooth, moves with swallowing, and has no palpable masses.,RESPIRATION:  Normal respiratory effort.  There is no intercostal retraction or action by the accessory muscles.  Normal breath sounds bilaterally with no rhonchi, wheezing or rubs.  There is a localized 2-cm diameter hard mass in relationship to the costosternal cartilages in the lower most position in the left side, just adjacent to the sternum.,CARDIOVASCULAR:  The PMI is palpable at the 5ICS in the MCL.  No thrills on palpation.  S1 and S2 are easily audible.  No audible S3, S4, murmur, click, or rub.  Carotid pulses 2+ without bruits.  Abdominal aorta is not palpable.  No audible abdominal bruits.  Femoral pulses are 2+ bilaterally, without audible bruits.  Extremities show no edema or varicosities"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "Pravastatin"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'Anal fistulectomy, incision and drainage of perirectal abscess, hand surgery, colonoscopy, arm nerve surgery, and back surgery.,PREVIOUS INJURIES: , He had a broken ankle in the past.  They questioned the patient who is a truck driver whether he has had an auto accident in the past, he said that he has not had anything major.  He said he bumped his head once, but not his chest, although he told the nurse that a car fell on his chest that is six years ago.  He told me that he hit a moose once, but he does not remember hitting his chest.,ALLERGIES: , TO BACTRIM, SIMVASTATIN, AND CIPRO.,CURRENT MEDICATIONS' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'BACTRIM' \u2192 RXCUI 151399, canonical: Bactrim, match: exact\n[RxNorm] Ingredient: sulfamethoxazole (RXCUI 10180)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): phenazopyridine hydrochloride 200 MG / sulfamethoxazole 800 MG / trimethoprim 160 MG Oral Tablet; sulfamethoxazole 100 MG / trimethoprim 20 MG Oral Tablet; 5 ML sulfamethoxazole 80 MG/ML / trimethoprim 16 MG/ML Injection; sulfamethoxazole 500 MG Oral Tablet; sulfamethoxazole 400 MG / trimethoprim 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'SIMVASTATIN' \u2192 RXCUI 36567, canonical: simvastatin, match: exact\n[RxNorm] Ingredient: simvastatin (RXCUI 36567)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): simvastatin 4 MG/ML Oral Suspension; simvastatin 8 MG/ML Oral Suspension; simvastatin 40 MG Oral Tablet; simvastatin 80 MG Oral Tablet; simvastatin 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'CIPRO' \u2192 RXCUI 203563, canonical: Cipro, match: exact\n[RxNorm] Ingredient: ciprofloxacin (RXCUI 2551)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 100 ML ciprofloxacin 2 MG/ML Injection; 200 ML ciprofloxacin 2 MG/ML Injection; 40 ML ciprofloxacin 10 MG/ML Injection; ciprofloxacin 3 MG/ML / fluocinolone acetonide 0.25 MG/ML Otic Solution; ciprofloxacin 250 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Lisinopril' \u2192 RXCUI 29046, canonical: lisinopril, match: exact\n[RxNorm] Ingredient: lisinopril (RXCUI 29046)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lisinopril 1 MG/ML Oral Solution; lisinopril 40 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 10 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 20 MG Oral Tablet; hydrochlorothiazide 25 MG / lisinopril 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Lisinopril' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Metoprolol' \u2192 RXCUI 6918, canonical: metoprolol, match: exact\n[RxNorm] Ingredient: metoprolol (RXCUI 6918)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR hydrochlorothiazide 25 MG / metoprolol tartrate 200 MG Extended Release Oral Tablet; metoprolol tartrate 37.5 MG Oral Tablet; metoprolol tartrate 75 MG Oral Tablet; 5 ML metoprolol tartrate 1 MG/ML Cartridge; 24 HR metoprolol succinate 100 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Metoprolol' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'Vitamin B12' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Baby aspirin' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Gemfibrozil' \u2192 RXCUI 4719, canonical: gemfibrozil, match: exact\n[RxNorm] Ingredient: gemfibrozil (RXCUI 4719)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): gemfibrozil 600 MG Oral Tablet; gemfibrozil 300 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'Gemfibrozil' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'Felodipine' \u2192 RXCUI 4316, canonical: felodipine, match: exact\n[RxNorm] Ingredient: felodipine (RXCUI 4316)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): felodipine 2.5 MG / ramipril 2.5 MG Oral Tablet; felodipine 5 MG / ramipril 5 MG Oral Tablet; 24 HR felodipine 10 MG Extended Release Oral Tablet; 24 HR felodipine 5 MG Extended Release Oral Tablet; 24 HR felodipine 2.5 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'Felodipine' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'Levitra' \u2192 RXCUI 356884, canonical: Levitra, match: exact\n[RxNorm] Ingredient: vardenafil (RXCUI 306674)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): vardenafil 5 MG Oral Tablet; vardenafil 10 MG Oral Tablet; vardenafil 20 MG Oral Tablet; vardenafil 2.5 MG Oral Tablet; vardenafil 10 MG Disintegrating Oral Tablet"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Procedure] 'Levitra' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'Pravastatin.,FAMILY HISTORY: , Positive for hypertension, diabetes, and cancer.  Negative for heart disease, obesity or stroke.,SOCIAL HISTORY:  ,The patient is married.  He works as a truck driver and he drives in town.  He smokes two packs a day and he has two beers a day he says, but not consuming illegal drugs.,REVIEW OF SYSTEMS,CONSTITUTIONAL:  Denies weight loss/gain, fever or chills.,ENMT:  Denies headaches, nosebleeds, voice changes, blurry vision or changes in/loss of vision.,CV:  See history of present illness.  Denies chest pain, SOB supine, palpitations, edema, varicose veins or leg pains.,RESPIRATORY:  He has a chronic cough.  Denies shortness of breath, wheezing, sputum production or bloody sputum.,GI:  Denies heartburn, blood in stools, loss of appetite, abdominal pain or constipation.,GU:  Denies painful/burning urination, cloudy/dark urine, flank pain or groin pain.,MS:  Denies joint pain/stiffness, backaches, tendon/ligaments/muscle pains/strains, bone aches/pains or muscle weakness.,NEURO:  Denies blackouts, seizures, loss of memory, hallucinations, weakness, numbness, tremors or paralysis.,PSYCH:  Denies anxiety, irritability, apathy, depression, sleep disturbances, appetite disturbances or suicidal thoughts.,INTEGUMENTARY:  Denies unusual hair loss/breakage, skin lesions/discoloration or unusual nail breakage/discoloration.,PHYSICAL EXAMINATION,CONSTITUTIONAL:  Blood pressure 140/84, pulse rate 100, respiratory rate 20, temperature 97.2, height 5 feet 10 inches, and weight 218 pounds.  The patient is well developed, well nourished, and with fair attention to grooming.  The patient is moderately overweight.,NECK:  The neck is symmetric, the trachea is in the midline, and there are no masses.  No crepitus is palpated.  The thyroid is palpable, not enlarged, smooth, moves with swallowing, and has no palpable masses.,RESPIRATION:  Normal respiratory effort.  There is no intercostal retraction or action by the accessory muscles.  Normal breath sounds bilaterally with no rhonchi, wheezing or rubs.  There is a localized 2-cm diameter hard mass in relationship to the costosternal cartilages in the lower most position in the left side, just adjacent to the sternum.,CARDIOVASCULAR:  The PMI is palpable at the 5ICS in the MCL.  No thrills on palpation.  S1 and S2 are easily audible.  No audible S3, S4, murmur, click, or rub.  Carotid pulses 2+ without bruits.  Abdominal aorta is not palpable.  No audible abdominal bruits.  Femoral pulses are 2+ bilaterally, without audible bruits.  Extremities show no edema or varicosities' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'Pravastatin' \u2192 RXCUI 42463, canonical: pravastatin, match: exact\n[RxNorm] Ingredient: pravastatin (RXCUI 42463)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pravastatin sodium 10 MG Oral Tablet; pravastatin sodium 20 MG Oral Tablet; pravastatin sodium 40 MG Oral Tablet; pravastatin sodium 80 MG Oral Tablet"
+  }
+]

@@ -1,0 +1,293 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Congenital myotonic muscular dystrophy with bilateral planovalgus feet.,POSTOPERATIVE DIAGNOSIS: , Congenital myotonic muscular dystrophy with bilateral planovalgus feet.,PROCEDURE: , Bilateral Crawford subtalar arthrodesis with open Achilles Z-lengthening and bilateral long-leg cast.,ANESTHESIA: , Surgery performed under general anesthesia.  The patient received 6 mL of 0.25% Marcaine local anesthetic on each side.,TOURNIQUET TIME:  ,Tourniquet time was 53 minutes on the left and 45 minutes on the right.,COMPLICATIONS: , There were no intraoperative complications.,DRAINS:,  None.,SPECIMENS: , None.,HARDWARE USED: , Staple 7/8 inch x1 on each side.,HISTORY AND PHYSICAL:  ,The patient is a 5-year-4-month-old male who presents for evaluation of feet.  He has been having significant feet pain with significant planovalgus deformity.  The patient was noted to have flexible vertical talus.  It was decided that the patient would benefit by subtalar arthrodesis, possible autograft, and Achilles lengthening.  This was explained to the mother in detail.  This is going to be a stabilizing measure and the patient will probably need additional surgery at a later day when his foot is more mature.  Risks of surgery include risks of anesthesia, infection, bleeding, changes in sensation and motion of the extremity, hardware failure, need for other surgical procedures, need to be nonweightbearing for some time.  All questions were answered and the mother agreed to the above plan.,PROCEDURE NOTE: , The patient was taken to the operating room, placed supine on the operating room, general anesthesia was administered.  The patient received Ancef preoperatively.  Bilateral nonsterile tourniquets were placed on each thigh.  A bump was placed underneath the left buttock.  Both the extremities were then prepped and draped in standard surgical fashion.  Attention was first turned towards the left side.  Intended incision was marked on the skin.  The ankle was taken through a range of motion with noted improvement in the reduction of the talocalcaneal alignment with the foot in plantar flexion on the lateral view.  The foot was wrapped in Esmarch prior to inflation of tourniquet to 200 mmHg.  Incision was then made over the left lateral aspect of the hind foot to expose the talocalcaneal joint.  The sinus tarsi was then identified using a U-shaped flap to tack muscles, and periosteum was retracted distally.  Once the foot was reduced a Steinman pin was used to hold it in position.  This position was first checked on the fluoroscopy.  The 7/8th inch staple was then placed across the sinus tarsi to maintain the reduction.  This was also checked with fluoroscopy.  The incision was then extended posteriorly to allow for visualization of the Achilles, which was Z-lengthened with the release of the lateral distal half.  This was sutured using 2-0 Ethibond and that was also oversewn.  The wound was irrigated with normal saline.  The periosteal flap was sutured over the staple using 2-0 Vicryl.  Skin was closed using 2-0 Vicryl interrupted and then with 4-0 Monocryl.  The area was injected with 6 mL of 0.25% Marcaine local anesthetic.  The wound was cleaned and dried, dressed with Steri-Strips, Xeroform, and 4 x 4s and Webril.  Tourniquet was released after 53 minutes.  The exact same procedure was repeated on the right side with no changes or complications.  Tourniquet time on the right side was 45 minutes.  The patient tolerated the procedure well.  Bilateral long-leg casts were then placed with the foot in neutral with some moulding of his medial plantar arch.  The patient was subsequently was taken to Recovery in stable condition.,POSTOPERATIVE PLAN: , The patient will be hospitalized overnight for pain as per parents' request.  The patient is to be strict nonweightbearing for at least 6 weeks.  He is to follow up in the next 10 days for a check.  We will plan of changing to short-leg casts in about 4 weeks postop.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Congenital myotonic muscular dystrophy with bilateral planovalgus feet.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Congenital myotonic muscular dystrophy with bilateral planovalgus feet.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Bilateral Crawford subtalar arthrodesis with open Achilles Z-lengthening and bilateral long-leg cast.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Bilateral Crawford subtalar arthrodesis with open Achilles Z-lengthening and bilateral long-leg cast.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Surgery performed under general anesthesia.  The patient received 6 mL of 0.25% Marcaine local anesthetic on each side.,TOURNIQUET TIME:  ,Tourniquet time was 53 minutes on the left and 45 minutes on the right.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Surgery performed under general anesthesia.  The patient received 6 mL of 0.25% Marcaine local anesthetic on each side.,TOURNIQUET TIME:  ,Tourniquet time was 53 minutes on the left and 45 minutes on the right.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "6 mL"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "0.25%"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Marcaine"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "There were no intraoperative complications.,DRAINS:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "There were no intraoperative complications.,DRAINS:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "None.,SPECIMENS:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "None.,SPECIMENS:"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "None.,HARDWARE USED:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "None.,HARDWARE USED:"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Staple 7/8 inch x1 on each side.,HISTORY AND PHYSICAL:  ,The patient is a 5-year-4-month-old male who presents for evaluation of feet.  He has been having significant feet pain with significant planovalgus deformity.  The patient was noted to have flexible vertical talus.  It was decided that the patient would benefit by subtalar arthrodesis, possible autograft, and Achilles lengthening.  This was explained to the mother in detail.  This is going to be a stabilizing measure and the patient will probably need additional surgery at a later day when his foot is more mature.  Risks of surgery include risks of anesthesia, infection, bleeding, changes in sensation and motion of the extremity, hardware failure, need for other surgical procedures, need to be nonweightbearing for some time.  All questions were answered and the mother agreed to the above plan.,PROCEDURE NOTE:"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Staple 7/8 inch x1 on each side.,HISTORY AND PHYSICAL:  ,The patient is a 5-year-4-month-old male who presents for evaluation of feet.  He has been having significant feet pain with significant planovalgus deformity.  The patient was noted to have flexible vertical talus.  It was decided that the patient would benefit by subtalar arthrodesis, possible autograft, and Achilles lengthening.  This was explained to the mother in detail.  This is going to be a stabilizing measure and the patient will probably need additional surgery at a later day when his foot is more mature.  Risks of surgery include risks of anesthesia, infection, bleeding, changes in sensation and motion of the extremity, hardware failure, need for other surgical procedures, need to be nonweightbearing for some time.  All questions were answered and the mother agreed to the above plan.,PROCEDURE NOTE:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "need to be nonweightbearing for some time.  All questions were answered and the mother agreed to the above plan.,PROCEDURE NOTE:"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "The patient was taken to the operating room, placed supine on the operating room, general anesthesia was administered.  The patient received Ancef preoperatively.  Bilateral nonsterile tourniquets were placed on each thigh.  A bump was placed underneath the left buttock.  Both the extremities were then prepped and draped in standard surgical fashion.  Attention was first turned towards the left side.  Intended incision was marked on the skin.  The ankle was taken through a range of motion with noted improvement in the reduction of the talocalcaneal alignment with the foot in plantar flexion on the lateral view.  The foot was wrapped in Esmarch prior to inflation of tourniquet to 200 mmHg.  Incision was then made over the left lateral aspect of the hind foot to expose the talocalcaneal joint.  The sinus tarsi was then identified using a U-shaped flap to tack muscles, and periosteum was retracted distally.  Once the foot was reduced a Steinman pin was used to hold it in position.  This position was first checked on the fluoroscopy.  The 7/8th inch staple was then placed across the sinus tarsi to maintain the reduction.  This was also checked with fluoroscopy.  The incision was then extended posteriorly to allow for visualization of the Achilles, which was Z-lengthened with the release of the lateral distal half.  This was sutured using 2-0 Ethibond and that was also oversewn.  The wound was irrigated with normal saline.  The periosteal flap was sutured over the staple using 2-0 Vicryl.  Skin was closed using 2-0 Vicryl interrupted and then with 4-0 Monocryl.  The area was injected with 6 mL of 0.25% Marcaine local anesthetic.  The wound was cleaned and dried, dressed with Steri-Strips"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "The patient was taken to the operating room, placed supine on the operating room, general anesthesia was administered.  The patient received Ancef preoperatively.  Bilateral nonsterile tourniquets were placed on each thigh.  A bump was placed underneath the left buttock.  Both the extremities were then prepped and draped in standard surgical fashion.  Attention was first turned towards the left side.  Intended incision was marked on the skin.  The ankle was taken through a range of motion with noted improvement in the reduction of the talocalcaneal alignment with the foot in plantar flexion on the lateral view.  The foot was wrapped in Esmarch prior to inflation of tourniquet to 200 mmHg.  Incision was then made over the left lateral aspect of the hind foot to expose the talocalcaneal joint.  The sinus tarsi was then identified using a U-shaped flap to tack muscles, and periosteum was retracted distally.  Once the foot was reduced a Steinman pin was used to hold it in position.  This position was first checked on the fluoroscopy.  The 7/8th inch staple was then placed across the sinus tarsi to maintain the reduction.  This was also checked with fluoroscopy.  The incision was then extended posteriorly to allow for visualization of the Achilles, which was Z-lengthened with the release of the lateral distal half.  This was sutured using 2-0 Ethibond and that was also oversewn.  The wound was irrigated with normal saline.  The periosteal flap was sutured over the staple using 2-0 Vicryl.  Skin was closed using 2-0 Vicryl interrupted and then with 4-0 Monocryl.  The area was injected with 6 mL of 0.25% Marcaine local anesthetic.  The wound was cleaned and dried, dressed with Steri-Strips"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "dosage",
+    "text": "6 mL"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "dosage",
+    "text": "0.25%"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "medication",
+    "text": "Marcaine"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "Xeroform, and 4 x 4s and Webril.  Tourniquet was released after 53 minutes.  The exact same procedure was repeated on the right side with no changes or complications.  Tourniquet time on the right side was 45 minutes.  The patient tolerated the procedure well.  Bilateral long-leg casts were then placed with the foot in neutral with some moulding of his medial plantar arch.  The patient was subsequently was taken to Recovery in stable condition.,POSTOPERATIVE PLAN:"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "procedure",
+    "text": "Xeroform, and 4 x 4s and Webril.  Tourniquet was released after 53 minutes.  The exact same procedure was repeated on the right side with no changes or complications.  Tourniquet time on the right side was 45 minutes.  The patient tolerated the procedure well.  Bilateral long-leg casts were then placed with the foot in neutral with some moulding of his medial plantar arch.  The patient was subsequently was taken to Recovery in stable condition.,POSTOPERATIVE PLAN:"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "diagnosis",
+    "text": "The patient will be hospitalized overnight for pain as per parents' request.  The patient is to be strict nonweightbearing for at least 6 weeks.  He is to follow up in the next 10 days for a check.  We will plan of changing to short-leg casts in about 4 weeks postop"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "procedure",
+    "text": "The patient will be hospitalized overnight for pain as per parents' request.  The patient is to be strict nonweightbearing for at least 6 weeks.  He is to follow up in the next 10 days for a check.  We will plan of changing to short-leg casts in about 4 weeks postop"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] G7111: Myotonic muscular dystrophy (score: 0.6928)\n[ICD-10-CM 2027] G7100: Muscular dystrophy, unspecified (score: 0.5041)\n[ICD-10-CM 2027] G7119: Other specified myotonic disorders (score: 0.4435)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] G7111: Myotonic muscular dystrophy (score: 0.7630)\n[ICD-10-CM 2027] G7100: Muscular dystrophy, unspecified (score: 0.5551)\n[ICD-10-CM 2027] G7119: Other specified myotonic disorders (score: 0.4884)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Z981: Arthrodesis status (score: 0.5064)\n[ICD-10-CM 2027] S86009D: Unspecified injury of unspecified Achilles tendon, subsequent encounter (score: 0.3439)\n[ICD-10-CM 2027] S86099D: Other specified injury of unspecified Achilles tendon, subsequent encounter (score: 0.3439)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Bilateral Crawford subtalar arthrodesis with open Achilles Z-lengthening and bilateral long-leg cast.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] S06892D: Other specified intracranial injury with loss of consciousness of 31 minutes to 59 minutes, subsequent encounter (score: 0.3316)\n[ICD-10-CM 2027] S069X2D: Unspecified intracranial injury with loss of consciousness of 31 minutes to 59 minutes, subsequent encounter (score: 0.3316)\n[ICD-10-CM 2027] S06892A: Other specified intracranial injury with loss of consciousness of 31 minutes to 59 minutes, initial encounter (score: 0.3308)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Surgery performed under general anesthesia.  The patient received 6 mL of 0.25% Marcaine local anesthetic on each side.,TOURNIQUET TIME:  ,Tourniquet time was 53 minutes on the left and 45 minutes on the right.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 6.0ml associated with Marcaine \u2014 dose 6.0ml not among known product strengths"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "Dose 0.25% associated with Marcaine \u2014 dose 0.25% not among known product strengths"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Marcaine' \u2192 RXCUI 1012397, canonical: Marcaine, match: exact\n[RxNorm] Ingredient: bupivacaine (RXCUI 1815)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bupivacaine hydrochloride 3.75 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; bupivacaine hydrochloride 2.5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; bupivacaine hydrochloride 5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; 30 ML bupivacaine hydrochloride 7.5 MG/ML / epinephrine 0.005 MG/ML Injection; bupivacaine hydrochloride 2.5 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] D7881: Other intraoperative complications of the spleen (score: 0.4050)\n[ICD-10-CM 2027] G9781: Other intraoperative complications of nervous system (score: 0.3894)\n[ICD-10-CM 2027] Z4803: Encounter for change or removal of drains (score: 0.3821)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'There were no intraoperative complications.,DRAINS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] R402310: Coma scale, best motor response, none, unspecified time (score: 0.3780)\n[ICD-10-CM 2027] R402210: Coma scale, best verbal response, none, unspecified time (score: 0.3550)\n[ICD-10-CM 2027] R402313: Coma scale, best motor response, none, at hospital admission (score: 0.3507)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'None.,SPECIMENS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] R402310: Coma scale, best motor response, none, unspecified time (score: 0.3580)\n[ICD-10-CM 2027] Y651: Wrong fluid used in infusion (score: 0.3417)\n[ICD-10-CM 2027] T367X6D: Underdosing of antifungal antibiotics, systemically used, subsequent encounter (score: 0.3398)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'None.,HARDWARE USED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] Z743: Need for continuous supervision (score: 0.2453)\n[ICD-10-CM 2027] Y838: Other surgical procedures as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.2439)\n[ICD-10-CM 2027] Z741: Need for assistance with personal care (score: 0.2411)\n[ICD-10-CM 2027] Match unresolved (top score 0.2453 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'Staple 7/8 inch x1 on each side.,HISTORY AND PHYSICAL:  ,The patient is a 5-year-4-month-old male who presents for evaluation of feet.  He has been having significant feet pain with significant planovalgus deformity.  The patient was noted to have flexible vertical talus.  It was decided that the patient would benefit by subtalar arthrodesis, possible autograft, and Achilles lengthening.  This was explained to the mother in detail.  This is going to be a stabilizing measure and the patient will probably need additional surgery at a later day when his foot is more mature.  Risks of surgery include risks of anesthesia, infection, bleeding, changes in sensation and motion of the extremity, hardware failure, need for other surgical procedures, need to be nonweightbearing for some time.  All questions were answered and the mother agreed to the above plan.,PROCEDURE NOTE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Procedure] 'need to be nonweightbearing for some time.  All questions were answered and the mother agreed to the above plan.,PROCEDURE NOTE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] Y92234: Operating room of hospital as the place of occurrence of the external cause (score: 0.2346)\n[ICD-10-CM 2027] Y653: Endotracheal tube wrongly placed during anesthetic procedure (score: 0.1723)\n[ICD-10-CM 2027] Y37451D: Military operations involving combat using blunt or piercing object, civilian, subsequent encounter (score: 0.1674)\n[ICD-10-CM 2027] Match unresolved (top score 0.2346 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Procedure] 'The patient was taken to the operating room, placed supine on the operating room, general anesthesia was administered.  The patient received Ancef preoperatively.  Bilateral nonsterile tourniquets were placed on each thigh.  A bump was placed underneath the left buttock.  Both the extremities were then prepped and draped in standard surgical fashion.  Attention was first turned towards the left side.  Intended incision was marked on the skin.  The ankle was taken through a range of motion with noted improvement in the reduction of the talocalcaneal alignment with the foot in plantar flexion on the lateral view.  The foot was wrapped in Esmarch prior to inflation of tourniquet to 200 mmHg.  Incision was then made over the left lateral aspect of the hind foot to expose the talocalcaneal joint.  The sinus tarsi was then identified using a U-shaped flap to tack muscles, and periosteum was retracted distally.  Once the foot was reduced a Steinman pin was used to hold it in position.  This position was first checked on the fluoroscopy.  The 7/8th inch staple was then placed across the sinus tarsi to maintain the reduction.  This was also checked with fluoroscopy.  The incision was then extended posteriorly to allow for visualization of the Achilles, which was Z-lengthened with the release of the lateral distal half.  This was sutured using 2-0 Ethibond and that was also oversewn.  The wound was irrigated with normal saline.  The periosteal flap was sutured over the staple using 2-0 Vicryl.  Skin was closed using 2-0 Vicryl interrupted and then with 4-0 Monocryl.  The area was injected with 6 mL of 0.25% Marcaine local anesthetic.  The wound was cleaned and dried, dressed with Steri-Strips' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "Dose 6.0ml associated with Marcaine \u2014 dose 6.0ml not among known product strengths"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "Dose 0.25% associated with Marcaine \u2014 dose 0.25% not among known product strengths"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[RxNorm] 'Marcaine' \u2192 RXCUI 1012397, canonical: Marcaine, match: exact\n[RxNorm] Ingredient: bupivacaine (RXCUI 1815)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bupivacaine hydrochloride 3.75 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; bupivacaine hydrochloride 2.5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; bupivacaine hydrochloride 5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; 30 ML bupivacaine hydrochloride 7.5 MG/ML / epinephrine 0.005 MG/ML Injection; bupivacaine hydrochloride 2.5 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] Y839: Surgical procedure, unspecified as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.2883)\n[ICD-10-CM 2027] Y849: Medical procedure, unspecified as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.2834)\n[ICD-10-CM 2027] T819XXD: Unspecified complication of procedure, subsequent encounter (score: 0.2771)"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[Procedure] 'Xeroform, and 4 x 4s and Webril.  Tourniquet was released after 53 minutes.  The exact same procedure was repeated on the right side with no changes or complications.  Tourniquet time on the right side was 45 minutes.  The patient tolerated the procedure well.  Bilateral long-leg casts were then placed with the foot in neutral with some moulding of his medial plantar arch.  The patient was subsequently was taken to Recovery in stable condition.,POSTOPERATIVE PLAN:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[ICD-10-CM 2027] T63443D: Toxic effect of venom of bees, assault, subsequent encounter (score: 0.3770)\n[ICD-10-CM 2027] T63444D: Toxic effect of venom of bees, undetermined, subsequent encounter (score: 0.3766)\n[ICD-10-CM 2027] T63443A: Toxic effect of venom of bees, assault, initial encounter (score: 0.3756)"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[Procedure] 'The patient will be hospitalized overnight for pain as per parents' request.  The patient is to be strict nonweightbearing for at least 6 weeks.  He is to follow up in the next 10 days for a check.  We will plan of changing to short-leg casts in about 4 weeks postop' \u2014 extracted from header, not verified against any coding system"
+  }
+]

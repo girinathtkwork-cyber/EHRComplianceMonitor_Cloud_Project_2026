@@ -1,0 +1,303 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PROCEDURE PERFORMED: , Esophagogastroduodenoscopy performed in the emergency department.,INDICATION: , Melena, acute upper GI bleed, anemia, and history of cirrhosis and varices.,FINAL IMPRESSION,1.  Scope passage massive liquid in stomach with some fresh blood near the fundus, unable to identify source due to gastric contents.,2.  Endoscopy following erythromycin demonstrated grade I esophageal varices.  No stigmata of active bleeding.  Small amount of fresh blood within the hiatal hernia.  No definite source of bleeding seen.,PLAN,1.  Repeat EGD tomorrow morning following aggressive resuscitation and transfusion.,2.  Proton-pump inhibitor drip.,3.  Octreotide drip.,4.  ICU bed.,PROCEDURE DETAILS:  ,Prior to the procedure, physical exam was stable.  During the procedure, vital signs remained within normal limits.  Prior to sedation, informed consent was obtained.  Risks, benefits, and alternatives including, but not limited to risk of bleeding, infection, perforation, adverse reaction to medication, failure to identify pathology, pancreatitis, and death explained to the patient and his wife, who accepted all risks.  The patient was prepped in the left lateral position.  IV sedation was given to a total of fentanyl 100 mcg and midazolam 4 mg for the initial EGD.  An additional 50 mcg of fentanyl and 2 mg of midazolam were given following erythromycin.  Scope tip of the Olympus gastroscope was passed into the esophagus.  Proximal, middle, and distal thirds of the esophagus were well visualized.  There was fresh blood in the esophagus, which was washed thoroughly, but no source was seen.  No evidence of varices was seen.  The stomach was entered.  The stomach was filled with very large clot and fresh blood and liquid, which could not be suctioned due to the clot burden.  There was a small amount of bright red blood near the fundus, but a source could not be identified due to the clot burden.  Because of this, the gastroscope was withdrawn.  The patient was given 250 mg of erythromycin in the Emergency Department and 30 minutes later, the scope was repassed.  On the second look, the esophagus was cleared.  The liquid gastric contents were cleared.  There was still a moderate amount of clot burden in the stomach, but no active bleeding was seen.  There was a small grade I esophageal varices, but no stigmata of bleed.  There was also a small amount of fresh blood within the hiatal hernia, but no source of bleeding was identified.  The patient was hemodynamically stable; therefore, a decision was made for a second look in the morning.  The scope was withdrawn and air was suctioned.  The patient tolerated the procedure well and was sent to recovery without immediate complications.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "PERFORMED: , Esophagogastroduodenoscopy performed in the emergency department.,INDICATION: , Melena, acute upper GI bleed, anemia, and history of cirrhosis and varices.,FINAL IMPRESSION"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "Esophagogastroduodenoscopy performed in the emergency department.,INDICATION: , Melena, acute upper GI bleed, anemia, and history of cirrhosis and varices.,FINAL IMPRESSION"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Scope passage massive liquid in stomach with some fresh blood near the fundus, unable to identify source due to gastric contents"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Scope passage massive liquid in stomach with some fresh blood near the fundus, unable to identify source due to gastric contents"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Endoscopy following erythromycin demonstrated grade I esophageal varices.  No stigmata of active bleeding.  Small amount of fresh blood within the hiatal hernia.  No definite source of bleeding seen.,PLAN"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Endoscopy following erythromycin demonstrated grade I esophageal varices.  No stigmata of active bleeding.  Small amount of fresh blood within the hiatal hernia.  No definite source of bleeding seen.,PLAN"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "erythromycin"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Repeat EGD tomorrow morning following aggressive resuscitation and transfusion"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Repeat EGD tomorrow morning following aggressive resuscitation and transfusion"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "tomorrow"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Proton-pump inhibitor drip"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Proton-pump inhibitor drip"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Octreotide drip"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Octreotide drip"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "Octreotide"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "ICU bed.,PROCEDURE DETAILS:  ,Prior to the procedure, physical exam was stable.  During the procedure, vital signs remained within normal limits.  Prior to sedation, informed consent was obtained.  Risks, benefits, and alternatives including, but not limited to risk of bleeding, infection, perforation, adverse reaction to medication, failure to identify pathology, pancreatitis, and death explained to the patient and his wife, who accepted all risks.  The patient was prepped in the left lateral position.  IV sedation was given to a total of fentanyl 100 mcg and midazolam 4 mg for the initial EGD.  An additional 50 mcg of fentanyl and 2 mg of midazolam were given following erythromycin.  Scope tip of the Olympus gastroscope was passed into the esophagus.  Proximal, middle, and distal thirds of the esophagus were well visualized.  There was fresh blood in the esophagus, which was washed thoroughly, but no source was seen.  No evidence of varices was seen.  The stomach was entered.  The stomach was filled with very large clot and fresh blood and liquid, which could not be suctioned due to the clot burden.  There was a small amount of bright red blood near the fundus, but a source could not be identified due to the clot burden.  Because of this, the gastroscope was withdrawn.  The patient was given 250 mg of erythromycin in the Emergency Department and 30 minutes later, the scope was repassed.  On the second look, the esophagus was cleared.  The liquid gastric contents were cleared.  There was still a moderate amount of clot burden in the stomach, but no active bleeding was seen.  There was a small grade I esophageal varices, but no stigmata of bleed.  There was also a small amount of fresh blood within the hiatal hernia, but no source of bleeding was identified.  The patient was hemodynamically stable; therefore, a decision was made for a second look in the morning.  The scope was withdrawn and air was suctioned.  The patient tolerated the procedure well and was sent to recovery without immediate complications"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "ICU bed.,PROCEDURE DETAILS:  ,Prior to the procedure, physical exam was stable.  During the procedure, vital signs remained within normal limits.  Prior to sedation, informed consent was obtained.  Risks, benefits, and alternatives including, but not limited to risk of bleeding, infection, perforation, adverse reaction to medication, failure to identify pathology, pancreatitis, and death explained to the patient and his wife, who accepted all risks.  The patient was prepped in the left lateral position.  IV sedation was given to a total of fentanyl 100 mcg and midazolam 4 mg for the initial EGD.  An additional 50 mcg of fentanyl and 2 mg of midazolam were given following erythromycin.  Scope tip of the Olympus gastroscope was passed into the esophagus.  Proximal, middle, and distal thirds of the esophagus were well visualized.  There was fresh blood in the esophagus, which was washed thoroughly, but no source was seen.  No evidence of varices was seen.  The stomach was entered.  The stomach was filled with very large clot and fresh blood and liquid, which could not be suctioned due to the clot burden.  There was a small amount of bright red blood near the fundus, but a source could not be identified due to the clot burden.  Because of this, the gastroscope was withdrawn.  The patient was given 250 mg of erythromycin in the Emergency Department and 30 minutes later, the scope was repassed.  On the second look, the esophagus was cleared.  The liquid gastric contents were cleared.  There was still a moderate amount of clot burden in the stomach, but no active bleeding was seen.  There was a small grade I esophageal varices, but no stigmata of bleed.  There was also a small amount of fresh blood within the hiatal hernia, but no source of bleeding was identified.  The patient was hemodynamically stable; therefore, a decision was made for a second look in the morning.  The scope was withdrawn and air was suctioned.  The patient tolerated the procedure well and was sent to recovery without immediate complications"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "fentanyl"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "dosage",
+    "text": "100 mcg"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "midazolam"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "dosage",
+    "text": "4 mg"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "dosage",
+    "text": "50 mcg"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "medication",
+    "text": "fentanyl"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "dosage",
+    "text": "2 mg"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "medication",
+    "text": "midazolam"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "medication",
+    "text": "erythromycin"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "dosage",
+    "text": "250 mg"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "medication",
+    "text": "erythromycin"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'PERFORMED: , Esophagogastroduodenoscopy performed in the emergency department.,INDICATION: , Melena, acute upper GI bleed, anemia, and history of cirrhosis and varices.,FINAL IMPRESSION' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'Esophagogastroduodenoscopy performed in the emergency department.,INDICATION: , Melena, acute upper GI bleed, anemia, and history of cirrhosis and varices.,FINAL IMPRESSION' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] C161: Malignant neoplasm of fundus of stomach (score: 0.3772)\n[ICD-10-CM 2027] K31A13: Gastric intestinal metaplasia without dysplasia, involving the fundus (score: 0.2729)\n[ICD-10-CM 2027] T17518D: Gastric contents in bronchus causing other injury, subsequent encounter (score: 0.2504)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Scope passage massive liquid in stomach with some fresh blood near the fundus, unable to identify source due to gastric contents' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] I8500: Esophageal varices without bleeding (score: 0.4536)\n[ICD-10-CM 2027] I8501: Esophageal varices with bleeding (score: 0.4536)\n[ICD-10-CM 2027] I8510: Secondary esophageal varices without bleeding (score: 0.4240)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Endoscopy following erythromycin demonstrated grade I esophageal varices.  No stigmata of active bleeding.  Small amount of fresh blood within the hiatal hernia.  No definite source of bleeding seen.,PLAN' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'erythromycin' \u2192 RXCUI 4053, canonical: erythromycin, match: exact\n[RxNorm] Ingredient: erythromycin (RXCUI 4053)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): erythromycin 20 MG/ML Topical Lotion; erythromycin 40 MG/ML / zinc acetate 12 MG/ML Topical Solution; erythromycin 0.02 MG/MG / isotretinoin 0.0005 MG/MG Topical Gel; erythromycin lactobionate 500 MG Injection; erythromycin 500 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Z760: Encounter for issue of repeat prescription (score: 0.3718)\n[ICD-10-CM 2027] K0520: Aggressive periodontitis, unspecified (score: 0.3446)\n[ICD-10-CM 2027] C9621: Aggressive systemic mastocytosis (score: 0.2863)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Repeat EGD tomorrow morning following aggressive resuscitation and transfusion' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'tomorrow' \u2192 RXCUI 96797, canonical: Tomorrow, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] R0982: Postnasal drip (score: 0.5155)\n[ICD-10-CM 2027] T85624D: Displacement of insulin pump, subsequent encounter (score: 0.3584)\n[ICD-10-CM 2027] T85624A: Displacement of insulin pump, initial encounter (score: 0.3570)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Proton-pump inhibitor drip' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] R0982: Postnasal drip (score: 0.7071)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'Octreotide drip' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'Octreotide' \u2192 RXCUI 7617, canonical: octreotide, match: exact\n[RxNorm] Ingredient: octreotide (RXCUI 7617)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML octreotide 0.1 MG/ML Prefilled Syringe; 1 ML octreotide 0.05 MG/ML Prefilled Syringe; 1 ML octreotide 0.5 MG/ML Prefilled Syringe; 2.8 ML octreotide 2.5 MG/ML Pen Injector; octreotide 20 MG Delayed Release Oral Capsule"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] Y630: Excessive amount of blood or other fluid given during transfusion or infusion (score: 0.2578)\n[ICD-10-CM 2027] Z5321: Procedure and treatment not carried out due to patient leaving prior to being seen by health care provider (score: 0.2086)\n[ICD-10-CM 2027] K2210: Ulcer of esophagus without bleeding (score: 0.2074)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'ICU bed.,PROCEDURE DETAILS:  ,Prior to the procedure, physical exam was stable.  During the procedure, vital signs remained within normal limits.  Prior to sedation, informed consent was obtained.  Risks, benefits, and alternatives including, but not limited to risk of bleeding, infection, perforation, adverse reaction to medication, failure to identify pathology, pancreatitis, and death explained to the patient and his wife, who accepted all risks.  The patient was prepped in the left lateral position.  IV sedation was given to a total of fentanyl 100 mcg and midazolam 4 mg for the initial EGD.  An additional 50 mcg of fentanyl and 2 mg of midazolam were given following erythromycin.  Scope tip of the Olympus gastroscope was passed into the esophagus.  Proximal, middle, and distal thirds of the esophagus were well visualized.  There was fresh blood in the esophagus, which was washed thoroughly, but no source was seen.  No evidence of varices was seen.  The stomach was entered.  The stomach was filled with very large clot and fresh blood and liquid, which could not be suctioned due to the clot burden.  There was a small amount of bright red blood near the fundus, but a source could not be identified due to the clot burden.  Because of this, the gastroscope was withdrawn.  The patient was given 250 mg of erythromycin in the Emergency Department and 30 minutes later, the scope was repassed.  On the second look, the esophagus was cleared.  The liquid gastric contents were cleared.  There was still a moderate amount of clot burden in the stomach, but no active bleeding was seen.  There was a small grade I esophageal varices, but no stigmata of bleed.  There was also a small amount of fresh blood within the hiatal hernia, but no source of bleeding was identified.  The patient was hemodynamically stable; therefore, a decision was made for a second look in the morning.  The scope was withdrawn and air was suctioned.  The patient tolerated the procedure well and was sent to recovery without immediate complications' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'fentanyl' \u2192 RXCUI 4337, canonical: fentanyl, match: exact\n[RxNorm] Ingredient: fentanyl (RXCUI 4337)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fentanyl 0.1 MG Sublingual Tablet; fentanyl 0.2 MG Sublingual Tablet; fentanyl 0.3 MG Sublingual Tablet; fentanyl 0.4 MG Sublingual Tablet; fentanyl 0.6 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "Dose 100.0mcg associated with fentanyl \u2014 dose 100.0mcg not among known product strengths"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'midazolam' \u2192 RXCUI 6960, canonical: midazolam, match: exact\n[RxNorm] Ingredient: midazolam (RXCUI 6960)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): midazolam 2 MG/ML Injectable Solution; 2 ML midazolam 5 MG/ML Prefilled Syringe; 1 ML midazolam 5 MG/ML Prefilled Syringe; 2 ML midazolam 1 MG/ML Cartridge; 2 ML midazolam 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "Dose 4.0mg associated with midazolam \u2014 dose 4.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "Dose 50.0mcg associated with fentanyl \u2014 dose 50.0mcg not among known product strengths"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[RxNorm] 'fentanyl' \u2192 RXCUI 4337, canonical: fentanyl, match: exact\n[RxNorm] Ingredient: fentanyl (RXCUI 4337)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fentanyl 0.1 MG Sublingual Tablet; fentanyl 0.2 MG Sublingual Tablet; fentanyl 0.3 MG Sublingual Tablet; fentanyl 0.4 MG Sublingual Tablet; fentanyl 0.6 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "Dose 2.0mg associated with fentanyl \u2014 dose 2.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[RxNorm] 'midazolam' \u2192 RXCUI 6960, canonical: midazolam, match: exact\n[RxNorm] Ingredient: midazolam (RXCUI 6960)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): midazolam 2 MG/ML Injectable Solution; 2 ML midazolam 5 MG/ML Prefilled Syringe; 1 ML midazolam 5 MG/ML Prefilled Syringe; 2 ML midazolam 1 MG/ML Cartridge; 2 ML midazolam 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[RxNorm] 'erythromycin' \u2192 RXCUI 4053, canonical: erythromycin, match: exact\n[RxNorm] Ingredient: erythromycin (RXCUI 4053)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): erythromycin 20 MG/ML Topical Lotion; erythromycin 40 MG/ML / zinc acetate 12 MG/ML Topical Solution; erythromycin 0.02 MG/MG / isotretinoin 0.0005 MG/MG Topical Gel; erythromycin lactobionate 500 MG Injection; erythromycin 500 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "Dose 250.0mg associated with erythromycin"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[RxNorm] 'erythromycin' \u2192 RXCUI 4053, canonical: erythromycin, match: exact\n[RxNorm] Ingredient: erythromycin (RXCUI 4053)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): erythromycin 20 MG/ML Topical Lotion; erythromycin 40 MG/ML / zinc acetate 12 MG/ML Topical Solution; erythromycin 0.02 MG/MG / isotretinoin 0.0005 MG/MG Topical Gel; erythromycin lactobionate 500 MG Injection; erythromycin 500 MG Oral Tablet"
+  }
+]

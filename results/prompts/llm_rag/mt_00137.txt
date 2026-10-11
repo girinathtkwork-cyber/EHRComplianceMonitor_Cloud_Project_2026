@@ -1,0 +1,73 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM: , MRI of lumbar spine without contrast. Additional diagnosis noted: Major Depressive Disorder.,HISTORY:,  A 24-year-old female with chronic back pain.,TECHNIQUE: , Noncontrast axial and sagittal images were acquired through the lumbar spine in varying degrees of fat and water weighting.,FINDINGS: , The visualized cord is normal in signal intensity and morphology with conus terminating in proper position.  Visualized osseous structures are normal in marrow signal intensity and morphology without evidence for fracture/contusion, compression deformity, or marrow replacement process.  There are no paraspinal masses.,Disc heights, signal, and vertebral body heights are maintained throughout the lumbar spine.,L5-S1:  Central canal, neural foramina are patent.,L4-L5:  Central canal, neural foramina are patent.,L3-L4:  Central canal, neural foramen is patent.,L2-L3:  Central canal, neural foramina are patent.,L1-L2:  Central canal, neural foramina are patent.,The visualized abdominal aorta is normal in caliber.  Incidental note has been made of multiple left-sided ovarian, probable physiologic follicular cysts.,IMPRESSION: , No acute disease in the lumbar spine.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Major Depressive Disorder.,HISTORY:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "A 24-year-old female with chronic back pain.,TECHNIQUE:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Noncontrast axial and sagittal images were acquired through the lumbar spine in varying degrees of fat and water weighting.,FINDINGS:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "The visualized cord is normal in signal intensity and morphology with conus terminating in proper position.  Visualized osseous structures are normal in marrow signal intensity and morphology without evidence for fracture/contusion, compression deformity, or marrow replacement process.  There are no paraspinal masses.,Disc heights, signal, and vertebral body heights are maintained throughout the lumbar spine.,L5-S1:  Central canal, neural foramina are patent.,L4-L5:  Central canal, neural foramina are patent.,L3-L4:  Central canal, neural foramen is patent.,L2-L3:  Central canal, neural foramina are patent.,L1-L2:  Central canal, neural foramina are patent.,The visualized abdominal aorta is normal in caliber.  Incidental note has been made of multiple left-sided ovarian, probable physiologic follicular cysts.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "No acute disease in the lumbar spine"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] F339: Major depressive disorder, recurrent, unspecified (score: 0.5967)\n[ICD-10-CM 2027] F3340: Major depressive disorder, recurrent, in remission, unspecified (score: 0.5376)\n[ICD-10-CM 2027] F331: Major depressive disorder, recurrent, moderate (score: 0.5356)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] G8929: Other chronic pain (score: 0.5760)\n[ICD-10-CM 2027] G894: Chronic pain syndrome (score: 0.4848)\n[ICD-10-CM 2027] R52: Pain, unspecified (score: 0.4738)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Q7501: Sagittal craniosynostosis (score: 0.4222)\n[ICD-10-CM 2027] S335XXD: Sprain of ligaments of lumbar spine, subsequent encounter (score: 0.2823)\n[ICD-10-CM 2027] S335XXA: Sprain of ligaments of lumbar spine, initial encounter (score: 0.2809)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] M9933: Osseous stenosis of neural canal of lumbar region (score: 0.3107)\n[ICD-10-CM 2027] M9923: Subluxation stenosis of neural canal of lumbar region (score: 0.3043)\n[ICD-10-CM 2027] M9936: Osseous stenosis of neural canal of lower extremity (score: 0.3024)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] S335XXD: Sprain of ligaments of lumbar spine, subsequent encounter (score: 0.4058)\n[ICD-10-CM 2027] S335XXA: Sprain of ligaments of lumbar spine, initial encounter (score: 0.4037)\n[ICD-10-CM 2027] S335XXS: Sprain of ligaments of lumbar spine, sequela (score: 0.4036)"
+  }
+]

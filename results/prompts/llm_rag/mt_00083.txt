@@ -1,0 +1,153 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+HISTORY OF PRESENT ILLNESS:,  The patient is a 68-year-old man who returns for recheck.  He has a history of ischemic cardiac disease, he did see Dr. XYZ in February 2004 and had a thallium treadmill test.  He did walk for 8 minutes.  The scan showed some mild inferior wall scar and ejection fraction was well preserved.  He has not had difficulty with chest pain, palpitations, orthopnea, nocturnal dyspnea, or edema.,PAST MEDICAL HISTORY/SURGERIES/HOSPITALIZATIONS: , He had tonsillectomy at the age of 8.  He was hospitalized in 1996 with myocardial infarction and subsequently underwent cardiac catheterization and coronary artery bypass grafting procedure.  He did have LIMA to the LAD and had three saphenous vein grafts performed otherwise.,MEDICATIONS:,  Kerlone 10 mg 1/2 pill daily, gemfibrozil 600 mg twice daily, Crestor 80 mg 1/2 pill daily, aspirin 325 mg daily, vitamin E 400 units daily, and Citrucel one daily.,ALLERGIES: , None known.,FAMILY HISTORY:  ,Father died at the age of 84.  He had a prior history of cancer of the lung and ischemic cardiac disease.  Mother died in her 80s from congestive heart failure.  He has two brothers and six sisters living who remain in good health.,PERSONAL HISTORY:  ,Quit smoking in 1996.  He occasionally drinks alcoholic beverages.,REVIEW OF SYSTEMS:,Endocrine:  He has hypercholesterolemia treated with diet and medication.  He reports that he did lose 10 pounds this year.,Neurologic:  Denies any TIA symptoms.,Genitourinary:  He has occasional nocturia.  Denies any difficulty emptying his bladder.,Gastrointestinal:  He has a history of asymptomatic cholelithiasis.,PHYSICAL EXAMINATION:,Vital Signs:  Weight:  225 pounds.  Blood pressure:  130/82.  Pulse:  83.  Temperature:  96.4 degrees.,General Appearance:  He is a middle-aged man who is not in any acute distress.,HEENT:  Mouth:  The posterior pharynx is clear.,Neck:  Without adenopathy or thyromegaly.,Chest:  Lungs are resonant to percussion.  Auscultation reveals normal breath sounds.,Heart:  Normal S1, S2, without gallops or rubs.,Abdomen:  Without tenderness or masses.,Extremities:  Without edema.,IMPRESSION/PLAN:,1.  Ischemic cardiac disease.  This remains stable.  He will continue on the same medication.  He reports he has had some laboratory studies today.,2.  Hypercholesterolemia.  He will continue on the same medication.,3.  Facial tic.  We also discussed having difficulty with the facial tic at the left orbital region.  This occurs mainly when he is under stress.  He has apparently had numerous studies in the past and has seen several doctors in Wichita about this.  At one time was being considered for some type of operation.  His description, however, suggests that they were considering an operation for tic douloureux.  He does not have any pain with this tic and this is mainly a muscle spasm that causes his eye to close.  Repeat neurology evaluation was advised.  He will be scheduled to see Dr. XYZ in Newton on 09/15/2004.,4.  Immunization.  Addition of pneumococcal vaccination was discussed with him but had been decided by him at the end of the appointment.  We will have this discussed with him further when his laboratory results are back.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "thallium"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "gemfibrozil"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "600 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Crestor"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "80 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "aspirin"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "325 mg"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "vitamin E"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "400 units"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Citrucel"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "for tic douloureux.  He does not have any pain with this tic and this is mainly a muscle spasm that causes his eye to close.  Repeat neurology evaluation was advised.  He will be scheduled to see Dr. XYZ in Newton on 09/15/2004.,4.  Immunization.  Addition of pneumococcal vaccination was discussed with him but had been decided by him at the end of the appointment.  We will have this discussed with him further when his laboratory results are back"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'thallium' \u2192 RXCUI 1311633, canonical: thallium, match: exact\n[RxNorm] Ingredient: thallium (RXCUI 1311633)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "Dose 10.0mg associated with gemfibrozil \u2014 dose 10.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'gemfibrozil' \u2192 RXCUI 4719, canonical: gemfibrozil, match: exact\n[RxNorm] Ingredient: gemfibrozil (RXCUI 4719)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): gemfibrozil 600 MG Oral Tablet; gemfibrozil 300 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 600.0mg associated with gemfibrozil"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Crestor' \u2192 RXCUI 320864, canonical: Crestor, match: exact\n[RxNorm] Ingredient: rosuvastatin (RXCUI 301542)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): rosuvastatin 10 MG Oral Capsule; rosuvastatin 20 MG Oral Capsule; rosuvastatin 40 MG Oral Capsule; rosuvastatin 5 MG Oral Capsule; ezetimibe 10 MG / rosuvastatin 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 80.0mg associated with Crestor \u2014 dose 80.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "Dose 325.0mg associated with aspirin"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'vitamin E' \u2192 RXCUI 11256, canonical: vitamin E, match: exact\n[RxNorm] Ingredient: vitamin E (RXCUI 11256)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): vitamin E 100 MG/ML Oral Suspension; 24 HR ascorbic acid 500 MG / biotin 0.15 MG / copper sulfate 3 MG / dl-alpha tocopheryl acetate 30 UNT / docusate sodium 50 MG / folic acid 1 MG / iron carbonyl 150 MG / vitamin B12 0.06 MG Extended Release Oral Tablet; ubidecarenone 20 MG/ML / vitamin E 0.2 UNT/ML Oral Solution; ascorbic acid 60 MG / beta carotene 5000 UNT / copper sulfate 40 MG / dl-alpha tocopheryl acetate 30 UNT / sodium selenite 0.04 MG / zinc oxide 40 MG Oral Tablet; ubidecarenone 6 MG/ML / vitamin E 3 UNT/ML Oral Solution"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "Dose 400.0units associated with vitamin E \u2014 dose 400.0units not among known product strengths"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Citrucel' \u2192 RXCUI 92170, canonical: Citrucel, match: exact\n[RxNorm] Ingredient: methylcellulose (RXCUI 6873)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methylcellulose 2000 MG Powder for Oral Suspension; methylcellulose 500 MG Oral Tablet; methylcellulose 10 MG/ML Ophthalmic Solution"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'for tic douloureux.  He does not have any pain with this tic and this is mainly a muscle spasm that causes his eye to close.  Repeat neurology evaluation was advised.  He will be scheduled to see Dr. XYZ in Newton on 09/15/2004.,4.  Immunization.  Addition of pneumococcal vaccination was discussed with him but had been decided by him at the end of the appointment.  We will have this discussed with him further when his laboratory results are back' \u2014 extracted from header, not verified against any coding system"
+  }
+]

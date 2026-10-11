@@ -1,0 +1,92 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+SUBJECTIVE:,  Overall, she has been doing well. Additional diagnosis noted: Atrial Fibrillation.  Her blood sugars have usually been less than or equal to 135 by home glucose monitoring.  Her fasting blood sugar today is 120 by our Accu-Chek.  She is exercising three times per week.  Review of systems is otherwise unremarkable. ,OBJECTIVE:,  Her blood pressure is 110/60.  Other vitals are stable.  HEENT:  Unremarkable.  Neck:  Unremarkable.  Lungs:  Clear.  Heart:  Regular.  Abdomen:  Unchanged.  Extremities:  Unchanged.  Neurologic:  Unchanged. ,ASSESSMENT:,  ,1.  NIDDM with improved control. ,2.  Hypertension. ,3.  Coronary artery disease status post coronary artery bypass graft. ,4.  Degenerative arthritis. ,5.  Hyperlipidemia. ,6.  Hyperuricemia. ,7.  Renal azotemia. ,8.  Anemia. ,9.  Fibroglandular breasts. ,PLAN:,  We will get follow-up labs today.  We will continue with current medications and treatment.  We will arrange for a follow-up mammogram as recommended by the radiologist in six months, which will be approximately Month DD, YYYY.  The patient is advised to proceed with previous recommendations.  She is to follow-up with Ophthalmology and Podiatry for diabetic evaluation and to return for follow-up as directed.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Atrial Fibrillation.  Her blood sugars have usually been less than or equal to 135 by home glucose monitoring.  Her fasting blood sugar today is 120 by our Accu-Chek.  She is exercising three times per week.  Review of systems is otherwise unremarkable. ,OBJECTIVE:,  Her blood pressure is 110/"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "glucose"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Other vitals are stable.  HEENT:  Unremarkable.  Neck:  Unremarkable.  Lungs:  Clear.  Heart:  Regular.  Abdomen:  Unchanged.  Extremities:  Unchanged.  Neurologic:  Unchanged. ,ASSESSMENT:,  "
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "NIDDM with improved control. "
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Hypertension. "
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Coronary artery disease status post coronary artery bypass graft. "
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Degenerative arthritis. "
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Hyperlipidemia. "
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Hyperuricemia. "
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Renal azotemia. "
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Anemia. "
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Fibroglandular breasts. ,PLAN:,  We will get follow-up labs today.  We will continue with current medications and treatment.  We will arrange for a follow-up mammogram as recommended by the radiologist in six months, which will be approximately Month DD, YYYY.  The patient is advised to proceed with previous recommendations.  She is to follow-up with Ophthalmology and Podiatry for diabetic evaluation and to return for follow-up as directed"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "today"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

@@ -1,0 +1,283 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+OPERATIVE PROCEDURES: , Colonoscopy and biopsies, epinephrine sclerotherapy, hot biopsy cautery, and snare polypectomy.,PREOPERATIVE DIAGNOSES:,1.  Colon cancer screening.,2.  Family history of colon polyps.,POSTOPERATIVE DIAGNOSES:,1.  Multiple colon polyps (5).,2.  Diverticulosis, sigmoid colon.,3.  Internal hemorrhoids.,ENDOSCOPE USED: , EC3870LK.,BIOPSIES:  ,Biopsies taken from all polyps.  Hot biopsy got applied to one.  Epinephrine sclerotherapy and snare polypectomy applied to four polyps.,ANESTHESIA: , Sufenta 75 mcg, Versed 6 mg, and glucagon 1.5 units IV push in divided doses.  Also given epinephrine 1:20,000 total of 3 mL.,The patient tolerated the procedure well.,PROCEDURE:  ,The patient was placed in left lateral decubitus after appropriate sedation.  Digital rectal examination was done, which was normal.  Endoscope was introduced and passed through a rather spastic tortuous sigmoid colon with multiple diverticula seen all the way through transverse colon where about 1 cm x 1 cm sessile polyp was seen.  It was biopsied and then in piecemeal fashion removed using snare polypectomy after base was infiltrated with epinephrine.  Pedunculated polyp next to it was hard to see and there was a lot of peristalsis.  The scope then was advanced through rest of the transverse colon to ascending colon and cecum.  Terminal ileum was briefly reviewed, appeared normal and so did cecum after copious amount of fecal material was irrigated out.  Ascending colon was unremarkable.  At hepatic flexure may be proximal transverse colon, there was a sessile polyp about 1.2 cm x 1 cm that was removed in the same manner with a biopsy taken, base infiltrated with epinephrine and at least two passes of snare polypectomy and subsequent hot biopsy cautery removed to hold polypoid tissue, which could be seen.  In transverse colon on withdrawal and relaxation with epinephrine, an additional 1 mm to 2 mm sessile polyp was removed by hot biopsy.  Then in the transverse colon, additional larger polyp about 1.3 cm x 1.2 cm was removed in piecemeal fashion again with epinephrine, sclerotherapy, and snare polypectomy.  Subsequently pedunculated polyp in distal transverse colon near splenic flexure was removed with snare polypectomy.  The rest of the splenic flexure and descending colon were unremarkable.  Diverticulosis was again seen with almost constant spasm despite of glucagon.  Sigmoid colon did somewhat hinder the inspection of that area.  Rectum, retroflexion posterior anal canal showed internal hemorrhoids moderate to large.  Excess of air insufflated was removed.  The endoscope was withdrawn.,PLAN: , Await biopsy report.  Pending biopsy report, recommendation will be made when the next colonoscopy should be done at least three years perhaps sooner besides and due to multitude of the patient's polyps.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "Colonoscopy and biopsies, epinephrine sclerotherapy, hot biopsy cautery, and snare polypectomy.,PREOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Colon cancer screening"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Colon cancer screening"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Family history of colon polyps.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Family history of colon polyps.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Multiple colon polyps (5)"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Multiple colon polyps (5)"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Diverticulosis, sigmoid colon"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Diverticulosis, sigmoid colon"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Internal hemorrhoids.,ENDOSCOPE USED: , EC3870LK.,BIOPSIES:  ,Biopsies taken from all polyps.  Hot biopsy got applied to one.  Epinephrine sclerotherapy and snare polypectomy applied to four polyps.,ANESTHESIA: , Sufenta 75 mcg, Versed 6 mg, and glucagon 1.5 units IV push in divided doses.  Also given epinephrine 1:20,000 total of 3 mL.,The patient tolerated the procedure well.,PROCEDURE:  ,The patient was placed in left lateral decubitus after appropriate sedation.  Digital rectal examination was done, which was normal.  Endoscope was introduced and passed through a rather spastic tortuous sigmoid colon with multiple diverticula seen all the way through transverse colon where about 1 cm x 1 cm sessile polyp was seen.  It was biopsied and then in piecemeal fashion removed using snare polypectomy after base was infiltrated with epinephrine.  Pedunculated polyp next to it was hard to see and there was a lot of peristalsis.  The scope then was advanced through rest of the transverse colon to ascending colon and cecum.  Terminal ileum was briefly reviewed, appeared normal and so did cecum after copious amount of fecal material was irrigated out.  Ascending colon was unremarkable.  At hepatic flexure may be proximal transverse colon, there was a sessile polyp about 1.2 cm x 1 cm that was removed in the same manner with a biopsy taken, base infiltrated with epinephrine and at least two passes of snare polypectomy and subsequent hot biopsy cautery removed to hold polypoid tissue, which could be seen.  In transverse colon on withdrawal and relaxation with epinephrine, an additional 1 mm to 2 mm sessile polyp was removed by hot biopsy.  Then in the transverse colon, additional larger polyp about 1.3 cm x 1.2 cm was removed in piecemeal fashion again with epinephrine, sclerotherapy, and snare polypectomy.  Subsequently pedunculated polyp in distal transverse colon near splenic flexure was removed with snare polypectomy.  The rest of the splenic flexure and descending colon were unremarkable.  Diverticulosis was again seen with almost constant spasm despite of glucagon.  Sigmoid colon did somewhat hinder the inspection of that area.  Rectum, retroflexion posterior anal canal showed internal hemorrhoids moderate to large.  Excess of air insufflated was removed.  The endoscope was withdrawn.,PLAN: , Await biopsy report.  Pending biopsy report, recommendation will be made when the next colonoscopy should be done at least three years perhaps sooner besides and due to multitude of the patient's polyps"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Internal hemorrhoids.,ENDOSCOPE USED: , EC3870LK.,BIOPSIES:  ,Biopsies taken from all polyps.  Hot biopsy got applied to one.  Epinephrine sclerotherapy and snare polypectomy applied to four polyps.,ANESTHESIA: , Sufenta 75 mcg, Versed 6 mg, and glucagon 1.5 units IV push in divided doses.  Also given epinephrine 1:20,000 total of 3 mL.,The patient tolerated the procedure well.,PROCEDURE:  ,The patient was placed in left lateral decubitus after appropriate sedation.  Digital rectal examination was done, which was normal.  Endoscope was introduced and passed through a rather spastic tortuous sigmoid colon with multiple diverticula seen all the way through transverse colon where about 1 cm x 1 cm sessile polyp was seen.  It was biopsied and then in piecemeal fashion removed using snare polypectomy after base was infiltrated with epinephrine.  Pedunculated polyp next to it was hard to see and there was a lot of peristalsis.  The scope then was advanced through rest of the transverse colon to ascending colon and cecum.  Terminal ileum was briefly reviewed, appeared normal and so did cecum after copious amount of fecal material was irrigated out.  Ascending colon was unremarkable.  At hepatic flexure may be proximal transverse colon, there was a sessile polyp about 1.2 cm x 1 cm that was removed in the same manner with a biopsy taken, base infiltrated with epinephrine and at least two passes of snare polypectomy and subsequent hot biopsy cautery removed to hold polypoid tissue, which could be seen.  In transverse colon on withdrawal and relaxation with epinephrine, an additional 1 mm to 2 mm sessile polyp was removed by hot biopsy.  Then in the transverse colon, additional larger polyp about 1.3 cm x 1.2 cm was removed in piecemeal fashion again with epinephrine, sclerotherapy, and snare polypectomy.  Subsequently pedunculated polyp in distal transverse colon near splenic flexure was removed with snare polypectomy.  The rest of the splenic flexure and descending colon were unremarkable.  Diverticulosis was again seen with almost constant spasm despite of glucagon.  Sigmoid colon did somewhat hinder the inspection of that area.  Rectum, retroflexion posterior anal canal showed internal hemorrhoids moderate to large.  Excess of air insufflated was removed.  The endoscope was withdrawn.,PLAN: , Await biopsy report.  Pending biopsy report, recommendation will be made when the next colonoscopy should be done at least three years perhaps sooner besides and due to multitude of the patient's polyps"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Epinephrine"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "dosage",
+    "text": "75 mcg"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "6 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "glucagon"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "1.5 units"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "dosage",
+    "text": "3 mL"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "well.,PROCEDURE:  ,The patient was placed in left lateral decubitus after appropriate sedation.  Digital rectal examination was done, which was normal.  Endoscope was introduced and passed through a rather spastic tortuous sigmoid colon with multiple diverticula seen all the way through transverse colon where about 1 cm x 1 cm sessile polyp was seen.  It was biopsied and then in piecemeal fashion removed using snare polypectomy after base was infiltrated with epinephrine.  Pedunculated polyp next to it was hard to see and there was a lot of peristalsis.  The scope then was advanced through rest of the transverse colon to ascending colon and cecum.  Terminal ileum was briefly reviewed, appeared normal and so did cecum after copious amount of fecal material was irrigated out.  Ascending colon was unremarkable.  At hepatic flexure may be proximal transverse colon, there was a sessile polyp about 1.2 cm x 1 cm that was removed in the same manner with a biopsy taken, base infiltrated with epinephrine and at least two passes of snare polypectomy and subsequent hot biopsy cautery removed to hold polypoid tissue, which could be seen.  In transverse colon on withdrawal and relaxation with epinephrine, an additional 1 mm to 2 mm sessile polyp was removed by hot biopsy.  Then in the transverse colon, additional larger polyp about 1.3 cm x 1.2 cm was removed in piecemeal fashion again with epinephrine, sclerotherapy, and snare polypectomy.  Subsequently pedunculated polyp in distal transverse colon near splenic flexure was removed with snare polypectomy.  The rest of the splenic flexure and descending colon were unremarkable.  Diverticulosis was again seen with almost constant spasm despite of glucagon.  Sigmoid colon did somewhat hinder the inspection of that area.  Rectum, retroflexion posterior anal canal showed internal hemorrhoids moderate to large.  Excess of air insufflated was removed.  The endoscope was withdrawn.,PLAN:"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "medication",
+    "text": "glucagon"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "procedure",
+    "text": "Await biopsy report.  Pending biopsy report, recommendation will be made when the next colonoscopy should be done at least three years perhaps sooner besides and due to multitude of the patient's polyps"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'Colonoscopy and biopsies, epinephrine sclerotherapy, hot biopsy cautery, and snare polypectomy.,PREOPERATIVE DIAGNOSES:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Z1211: Encounter for screening for malignant neoplasm of colon (score: 0.5643)\n[ICD-10-CM 2027] Z139: Encounter for screening, unspecified (score: 0.4984)\n[ICD-10-CM 2027] Z1389: Encounter for screening for other disorder (score: 0.4304)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Colon cancer screening' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] Z83718: Family history of other colon polyps (score: 1.0000)\n[ICD-10-CM 2027] Z83719: Family history of colon polyps, unspecified (score: 1.0000)\n[ICD-10-CM 2027] Z83711: Family history of hyperplastic colon polyps (score: 0.7936)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Family history of colon polyps.,POSTOPERATIVE DIAGNOSES:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] K635: Polyp of colon (score: 0.9095)\n[ICD-10-CM 2027] K5140: Inflammatory polyps of colon without complications (score: 0.7318)\n[ICD-10-CM 2027] K51418: Inflammatory polyps of colon with other complication (score: 0.7318)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Multiple colon polyps (5)' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] S36503D: Unspecified injury of sigmoid colon, subsequent encounter (score: 0.7136)\n[ICD-10-CM 2027] S36593D: Other injury of sigmoid colon, subsequent encounter (score: 0.7136)\n[ICD-10-CM 2027] S36503A: Unspecified injury of sigmoid colon, initial encounter (score: 0.7099)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'Diverticulosis, sigmoid colon' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] K635: Polyp of colon (score: 0.5506)\n[ICD-10-CM 2027] K5140: Inflammatory polyps of colon without complications (score: 0.4430)\n[ICD-10-CM 2027] K51418: Inflammatory polyps of colon with other complication (score: 0.4430)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Internal hemorrhoids.,ENDOSCOPE USED: , EC3870LK.,BIOPSIES:  ,Biopsies taken from all polyps.  Hot biopsy got applied to one.  Epinephrine sclerotherapy and snare polypectomy applied to four polyps.,ANESTHESIA: , Sufenta 75 mcg, Versed 6 mg, and glucagon 1.5 units IV push in divided doses.  Also given epinephrine 1:20,000 total of 3 mL.,The patient tolerated the procedure well.,PROCEDURE:  ,The patient was placed in left lateral decubitus after appropriate sedation.  Digital rectal examination was done, which was normal.  Endoscope was introduced and passed through a rather spastic tortuous sigmoid colon with multiple diverticula seen all the way through transverse colon where about 1 cm x 1 cm sessile polyp was seen.  It was biopsied and then in piecemeal fashion removed using snare polypectomy after base was infiltrated with epinephrine.  Pedunculated polyp next to it was hard to see and there was a lot of peristalsis.  The scope then was advanced through rest of the transverse colon to ascending colon and cecum.  Terminal ileum was briefly reviewed, appeared normal and so did cecum after copious amount of fecal material was irrigated out.  Ascending colon was unremarkable.  At hepatic flexure may be proximal transverse colon, there was a sessile polyp about 1.2 cm x 1 cm that was removed in the same manner with a biopsy taken, base infiltrated with epinephrine and at least two passes of snare polypectomy and subsequent hot biopsy cautery removed to hold polypoid tissue, which could be seen.  In transverse colon on withdrawal and relaxation with epinephrine, an additional 1 mm to 2 mm sessile polyp was removed by hot biopsy.  Then in the transverse colon, additional larger polyp about 1.3 cm x 1.2 cm was removed in piecemeal fashion again with epinephrine, sclerotherapy, and snare polypectomy.  Subsequently pedunculated polyp in distal transverse colon near splenic flexure was removed with snare polypectomy.  The rest of the splenic flexure and descending colon were unremarkable.  Diverticulosis was again seen with almost constant spasm despite of glucagon.  Sigmoid colon did somewhat hinder the inspection of that area.  Rectum, retroflexion posterior anal canal showed internal hemorrhoids moderate to large.  Excess of air insufflated was removed.  The endoscope was withdrawn.,PLAN: , Await biopsy report.  Pending biopsy report, recommendation will be made when the next colonoscopy should be done at least three years perhaps sooner besides and due to multitude of the patient's polyps' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "Dose 75.0mcg associated with glucagon \u2014 dose 75.0mcg not among known product strengths"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 6.0mg associated with glucagon \u2014 dose 6.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'glucagon' \u2192 RXCUI 4832, canonical: glucagon, match: exact\n[RxNorm] Ingredient: glucagon (RXCUI 4832)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): glucagon 3 MG Nasal Powder; 0.1 ML glucagon 5 MG/ML Auto-Injector; 0.2 ML glucagon 5 MG/ML Auto-Injector; 0.1 ML glucagon 5 MG/ML Prefilled Syringe; 0.2 ML glucagon 5 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "Dose 1.5units associated with glucagon \u2014 dose 1.5units not among known product strengths"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "Dose 3.0ml associated with epinephrine \u2014 dose 3.0ml not among known product strengths"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Procedure] 'well.,PROCEDURE:  ,The patient was placed in left lateral decubitus after appropriate sedation.  Digital rectal examination was done, which was normal.  Endoscope was introduced and passed through a rather spastic tortuous sigmoid colon with multiple diverticula seen all the way through transverse colon where about 1 cm x 1 cm sessile polyp was seen.  It was biopsied and then in piecemeal fashion removed using snare polypectomy after base was infiltrated with epinephrine.  Pedunculated polyp next to it was hard to see and there was a lot of peristalsis.  The scope then was advanced through rest of the transverse colon to ascending colon and cecum.  Terminal ileum was briefly reviewed, appeared normal and so did cecum after copious amount of fecal material was irrigated out.  Ascending colon was unremarkable.  At hepatic flexure may be proximal transverse colon, there was a sessile polyp about 1.2 cm x 1 cm that was removed in the same manner with a biopsy taken, base infiltrated with epinephrine and at least two passes of snare polypectomy and subsequent hot biopsy cautery removed to hold polypoid tissue, which could be seen.  In transverse colon on withdrawal and relaxation with epinephrine, an additional 1 mm to 2 mm sessile polyp was removed by hot biopsy.  Then in the transverse colon, additional larger polyp about 1.3 cm x 1.2 cm was removed in piecemeal fashion again with epinephrine, sclerotherapy, and snare polypectomy.  Subsequently pedunculated polyp in distal transverse colon near splenic flexure was removed with snare polypectomy.  The rest of the splenic flexure and descending colon were unremarkable.  Diverticulosis was again seen with almost constant spasm despite of glucagon.  Sigmoid colon did somewhat hinder the inspection of that area.  Rectum, retroflexion posterior anal canal showed internal hemorrhoids moderate to large.  Excess of air insufflated was removed.  The endoscope was withdrawn.,PLAN:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[RxNorm] 'glucagon' \u2192 RXCUI 4832, canonical: glucagon, match: exact\n[RxNorm] Ingredient: glucagon (RXCUI 4832)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): glucagon 3 MG Nasal Powder; 0.1 ML glucagon 5 MG/ML Auto-Injector; 0.2 ML glucagon 5 MG/ML Auto-Injector; 0.1 ML glucagon 5 MG/ML Prefilled Syringe; 0.2 ML glucagon 5 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[Procedure] 'Await biopsy report.  Pending biopsy report, recommendation will be made when the next colonoscopy should be done at least three years perhaps sooner besides and due to multitude of the patient's polyps' \u2014 extracted from header, not verified against any coding system"
+  }
+]

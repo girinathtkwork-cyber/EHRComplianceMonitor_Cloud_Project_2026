@@ -1,0 +1,213 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:  ,Tracheal stenosis and metal stent complications.,POSTOPERATIVE DIAGNOSIS:  ,Tracheal stenosis and metal stent complications.,ANESTHESIA:  ,General endotracheal.,ENDOSCOPIC FINDINGS:,1.  Normal true vocal cords.,2.  Subglottic stenosis down to 5 mm with mature cicatrix.,3.  Tracheal granulation tissue growing through the stents at the midway point of the stents.,5.  Three metallic stents in place in the proximal trachea.,6.  Distance from the true vocal cords to the proximal stent, 2 cm.,7.  Distance from the proximal stent to the distal stent, 3.5 cm.,8.  Distance from the distal stent to the carina, 8 cm.,9.  Distal airway is clear.,PROCEDURES:,1.  Rigid bronchoscopy with dilation.,2.  Excision of granulation tissue tumor.,3.  Application of mitomycin-C.,4.  Endobronchial ultrasound.,TECHNIQUE IN DETAIL:  ,After informed consent was obtained from the patient and her husband, she was brought to the operating theater after sequence induction was done.  She had a Dedo laryngoscope placed.  Her airways were inspected thoroughly with findings as described above.  She was intermittently ventilated with an endotracheal tube placed through the Dedo scope.  Her granulation tissue was biopsied and then removed with a microdebrider.  Her proximal trachea was dilated with a combination of balloon, Bougie, and rigid scopes.  She tolerated the procedure well, was extubated, and brought to the PACU.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Tracheal stenosis and metal stent complications.,POSTOPERATIVE DIAGNOSIS:  ,Tracheal stenosis and metal stent complications.,ANESTHESIA:  ,General endotracheal.,ENDOSCOPIC FINDINGS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Tracheal stenosis and metal stent complications.,ANESTHESIA:  ,General endotracheal.,ENDOSCOPIC FINDINGS:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Normal true vocal cords"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Subglottic stenosis down to 5 mm with mature cicatrix"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Tracheal granulation tissue growing through the stents at the midway point of the stents"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Three metallic stents in place in the proximal trachea"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Distance from the true vocal cords to the proximal stent, 2 cm"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Distance from the proximal stent to the distal stent, 3.5 cm"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Distance from the distal stent to the carina, 8 cm"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Distal airway is clear.,PROCEDURES:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Rigid bronchoscopy with dilation"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Rigid bronchoscopy with dilation"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Excision of granulation tissue tumor"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Excision of granulation tissue tumor"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Application of mitomycin-C"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "Application of mitomycin-C"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Endobronchial ultrasound.,TECHNIQUE IN DETAIL:  ,After informed consent was obtained from the patient and her husband, she was brought to the operating theater after sequence induction was done.  She had a Dedo laryngoscope placed.  Her airways were inspected thoroughly with findings as described above.  She was intermittently ventilated with an endotracheal tube placed through the Dedo scope.  Her granulation tissue was biopsied and then removed with a microdebrider.  Her proximal trachea was dilated with a combination of balloon, Bougie, and rigid scopes.  She tolerated the procedure well, was extubated, and brought to the PACU"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "Endobronchial ultrasound.,TECHNIQUE IN DETAIL:  ,After informed consent was obtained from the patient and her husband, she was brought to the operating theater after sequence induction was done.  She had a Dedo laryngoscope placed.  Her airways were inspected thoroughly with findings as described above.  She was intermittently ventilated with an endotracheal tube placed through the Dedo scope.  Her granulation tissue was biopsied and then removed with a microdebrider.  Her proximal trachea was dilated with a combination of balloon, Bougie, and rigid scopes.  She tolerated the procedure well, was extubated, and brought to the PACU"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "well, was extubated, and brought to the PACU"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] T82855D: Stenosis of coronary artery stent, subsequent encounter (score: 0.4497)\n[ICD-10-CM 2027] T82855A: Stenosis of coronary artery stent, initial encounter (score: 0.4480)\n[ICD-10-CM 2027] T82855S: Stenosis of coronary artery stent, sequela (score: 0.4480)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] T8859XD: Other complications of anesthesia, subsequent encounter (score: 0.3571)\n[ICD-10-CM 2027] T8859XA: Other complications of anesthesia, initial encounter (score: 0.3540)\n[ICD-10-CM 2027] T8859XS: Other complications of anesthesia, sequela (score: 0.3538)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] S11039D: Unspecified open wound of vocal cord, subsequent encounter (score: 0.5053)\n[ICD-10-CM 2027] S11039A: Unspecified open wound of vocal cord, initial encounter (score: 0.5027)\n[ICD-10-CM 2027] J383: Other diseases of vocal cords (score: 0.5026)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] Q311: Congenital subglottic stenosis (score: 0.6330)\n[ICD-10-CM 2027] J955: Postprocedural subglottic stenosis (score: 0.6139)\n[ICD-10-CM 2027] Q909: Down syndrome, unspecified (score: 0.5092)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] T83123D: Displacement of other urinary stents, subsequent encounter (score: 0.4608)\n[ICD-10-CM 2027] T83123A: Displacement of other urinary stents, initial encounter (score: 0.4587)\n[ICD-10-CM 2027] T83123S: Displacement of other urinary stents, sequela (score: 0.4586)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] S11029D: Unspecified open wound of trachea, subsequent encounter (score: 0.3924)\n[ICD-10-CM 2027] S11029A: Unspecified open wound of trachea, initial encounter (score: 0.3890)\n[ICD-10-CM 2027] S11029S: Unspecified open wound of trachea, sequela (score: 0.3889)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] S11039D: Unspecified open wound of vocal cord, subsequent encounter (score: 0.4164)\n[ICD-10-CM 2027] S11039A: Unspecified open wound of vocal cord, initial encounter (score: 0.4142)\n[ICD-10-CM 2027] J383: Other diseases of vocal cords (score: 0.4142)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] T83123D: Displacement of other urinary stents, subsequent encounter (score: 0.5325)\n[ICD-10-CM 2027] T83123A: Displacement of other urinary stents, initial encounter (score: 0.5301)\n[ICD-10-CM 2027] T83123S: Displacement of other urinary stents, sequela (score: 0.5300)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] M2625: Anomalies of interarch distance (score: 0.4476)\n[ICD-10-CM 2027] T83123D: Displacement of other urinary stents, subsequent encounter (score: 0.3852)\n[ICD-10-CM 2027] T83123A: Displacement of other urinary stents, initial encounter (score: 0.3834)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] T8189XD: Other complications of procedures, not elsewhere classified, subsequent encounter (score: 0.3789)\n[ICD-10-CM 2027] T8189XA: Other complications of procedures, not elsewhere classified, initial encounter (score: 0.3772)\n[ICD-10-CM 2027] T8189XS: Other complications of procedures, not elsewhere classified, sequela (score: 0.3771)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] Q2544: Congenital dilation of aorta (score: 0.7659)\n[ICD-10-CM 2027] Q87410: Marfan syndrome with aortic dilation (score: 0.6343)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Rigid bronchoscopy with dilation' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] H95129: Granulation of postmastoidectomy cavity, unspecified ear (score: 0.5122)\n[ICD-10-CM 2027] H95122: Granulation of postmastoidectomy cavity, left ear (score: 0.5086)\n[ICD-10-CM 2027] H95121: Granulation of postmastoidectomy cavity, right ear (score: 0.5086)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'Excision of granulation tissue tumor' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] Y635: Inappropriate temperature in local application and packing (score: 0.4708)\n[ICD-10-CM 2027] O665: Attempted application of vacuum extractor and forceps (score: 0.4115)\n[ICD-10-CM 2027] S13111D: Dislocation of C0/C1 cervical vertebrae, subsequent encounter (score: 0.3734)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'Application of mitomycin-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] Y653: Endotracheal tube wrongly placed during anesthetic procedure (score: 0.3293)\n[ICD-10-CM 2027] Y36821D: Explosion of bomb placed during war operations but exploding after cessation of hostilities, civilian, subsequent encounter (score: 0.1856)\n[ICD-10-CM 2027] Y36821A: Explosion of bomb placed during war operations but exploding after cessation of hostilities, civilian, initial encounter (score: 0.1854)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Procedure] 'Endobronchial ultrasound.,TECHNIQUE IN DETAIL:  ,After informed consent was obtained from the patient and her husband, she was brought to the operating theater after sequence induction was done.  She had a Dedo laryngoscope placed.  Her airways were inspected thoroughly with findings as described above.  She was intermittently ventilated with an endotracheal tube placed through the Dedo scope.  Her granulation tissue was biopsied and then removed with a microdebrider.  Her proximal trachea was dilated with a combination of balloon, Bougie, and rigid scopes.  She tolerated the procedure well, was extubated, and brought to the PACU' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'well, was extubated, and brought to the PACU' \u2014 extracted from header, not verified against any coding system"
+  }
+]

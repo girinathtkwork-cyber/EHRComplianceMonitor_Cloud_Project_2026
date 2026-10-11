@@ -1,0 +1,153 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Hemarthrosis, left knee, status post total knee replacement, rule out infection.,POSTOPERATIVE DIAGNOSIS: , Hemarthrosis, left knee, status post total knee replacement, rule out infection.,OPERATIONS:,1.  Arthrotomy, left total knee.,2.  Irrigation and debridement, left knee.,3.  Polyethylene exchange, left knee.,COMPLICATION: , None.,TOURNIQUET TIME:  ,58 minutes.,ESTIMATED BLOOD LOSS: , Minimal.,ANESTHESIA:  ,General.,INDICATIONS:  ,This patient underwent an uncomplicated left total knee replacement.  Postoperatively, unfortunately did not follow up with PT/INR blood test and he was taking Coumadin.  His INR was seemed to elevated and developed hemarthrosis.  Initially, it did look very benign, although over the last 24 hours it did become irritable and inflamed, and he therefore was indicated with the above-noted procedure.,This procedure as well as alternatives was discussed in length with the patient and he understood them well.  Risks and benefits were also discussed.  Risks such as bleeding, infection, damage to blood vessels, damage to nerve roots, need for further surgeries, chronic pain with range of motion, risk of continued discomfort, risk of need for further reconstructive procedures, risk of need for total knee revision, risk of blood clots, pulmonary embolism, myocardial infarction, and risk of death were discussed.  He understood them well.  All questions were answered and he signed consent for the procedure as described.,DESCRIPTION OF PROCEDURE: , The patient was placed on operating table and general anesthesia was achieved.  The left lower extremity was then prepped and draped in the usual sterile manner.  The leg was elevated and the tourniquet was inflated to 325 mmHg.  A longitudinal incision was then made and carried down through subcutaneous tissues.  This was made through the prior incision site.  There were some fatty necrotic tissues through the incision region and all necrotic tissue was debrided sharply on both sides of the incision site.  Medial and lateral flaps were then made.  The prior suture was identified, the suture removed and then a medial parapatellar arthrotomy was then performed.  Effusion within the knee was noted.  All hematoma was evacuated.  I then did flex the knee and removed the polyethylene.  Once the polyethylene was removed I did irrigate the knee with total of 9 liters of antibiotic solution.  Further debridement was performed of all inflamed tissue and thickened synovial tissue.  A 6 x 16-mm Stryker polyethylene was then snapped back in position.  The knee has excellent stability in all planes and I did perform a light manipulation to improve the flexion of the knee.  Further irrigation was performed on the all soft tissue in the knee with additional 3 liters of normal saline.  The knee was placed in a flexed position and the extensor mechanism was reapproximated using #2 Ethibond suture in a figure-of-eight manner.  The subcutaneous tissue was reapproximated in layers using #1 and 2-0 Vicryl sutures, and the skin was reapproximated using staples.  Prior to closure a Hemovac drain was inserted through a superolateral approach into the knee joint.,No complications were encountered throughout the procedure, and the patient tolerated the procedure well.  The patient was taken to recovery room in stable condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Hemarthrosis, left knee, status post total knee replacement, rule out infection.,POSTOPERATIVE DIAGNOSIS: , Hemarthrosis, left knee, status post total knee replacement, rule out infection.,OPERATIONS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Hemarthrosis, left knee, status post total knee replacement, rule out infection.,OPERATIONS:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Arthrotomy, left total knee"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Arthrotomy, left total knee"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Irrigation and debridement, left knee"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Irrigation and debridement, left knee"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Polyethylene exchange, left knee.,COMPLICATION: , None.,TOURNIQUET TIME:  ,58 minutes.,ESTIMATED BLOOD LOSS: , Minimal.,ANESTHESIA:  ,General.,INDICATIONS:  ,This patient underwent an uncomplicated left total knee replacement.  Postoperatively, unfortunately did not follow up with PT/INR blood test and he was taking Coumadin.  His INR was seemed to elevated and developed hemarthrosis.  Initially, it did look very benign, although over the last 24 hours it did become irritable and inflamed, and he therefore was indicated with the above-noted procedure.,This procedure as well as alternatives was discussed in length with the patient and he understood them well.  Risks and benefits were also discussed.  Risks such as bleeding, infection, damage to blood vessels, damage to nerve roots, need for further surgeries, chronic pain with range of motion, risk of continued discomfort, risk of need for further reconstructive procedures, risk of need for total knee revision, risk of blood clots, pulmonary embolism, myocardial infarction, and risk of death were discussed.  He understood them well.  All questions were answered and he signed consent for the procedure as described.,DESCRIPTION OF PROCEDURE: , The patient was placed on operating table and general anesthesia was achieved.  The left lower extremity was then prepped and draped in the usual sterile manner.  The leg was elevated and the tourniquet was inflated to 325 mmHg.  A longitudinal incision was then made and carried down through subcutaneous tissues.  This was made through the prior incision site.  There were some fatty necrotic tissues through the incision region and all necrotic tissue was debrided sharply on both sides of the incision site.  Medial and lateral flaps were then made.  The prior suture was identified, the suture removed and then a medial parapatellar arthrotomy was then performed.  Effusion within the knee was noted.  All hematoma was evacuated.  I then did flex the knee and removed the polyethylene.  Once the polyethylene was removed I did irrigate the knee with total of 9 liters of antibiotic solution.  Further debridement was performed of all inflamed tissue and thickened synovial tissue.  A 6 x 16-mm Stryker polyethylene was then snapped back in position.  The knee has excellent stability in all planes and I did perform a light manipulation to improve the flexion of the knee.  Further irrigation was performed on the all soft tissue in the knee with additional 3 liters of normal saline.  The knee was placed in a flexed position and the extensor mechanism was reapproximated using #2 Ethibond suture in a figure-of-eight manner.  The subcutaneous tissue was reapproximated in layers using #1 and 2-0 Vicryl sutures, and the skin was reapproximated using staples.  Prior to closure a Hemovac drain was inserted through a superolateral approach into the knee joint.,No complications were encountered throughout the procedure, and the patient tolerated the procedure well.  The patient was taken to recovery room in stable condition"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Polyethylene exchange, left knee.,COMPLICATION: , None.,TOURNIQUET TIME:  ,58 minutes.,ESTIMATED BLOOD LOSS: , Minimal.,ANESTHESIA:  ,General.,INDICATIONS:  ,This patient underwent an uncomplicated left total knee replacement.  Postoperatively, unfortunately did not follow up with PT/INR blood test and he was taking Coumadin.  His INR was seemed to elevated and developed hemarthrosis.  Initially, it did look very benign, although over the last 24 hours it did become irritable and inflamed, and he therefore was indicated with the above-noted procedure.,This procedure as well as alternatives was discussed in length with the patient and he understood them well.  Risks and benefits were also discussed.  Risks such as bleeding, infection, damage to blood vessels, damage to nerve roots, need for further surgeries, chronic pain with range of motion, risk of continued discomfort, risk of need for further reconstructive procedures, risk of need for total knee revision, risk of blood clots, pulmonary embolism, myocardial infarction, and risk of death were discussed.  He understood them well.  All questions were answered and he signed consent for the procedure as described.,DESCRIPTION OF PROCEDURE: , The patient was placed on operating table and general anesthesia was achieved.  The left lower extremity was then prepped and draped in the usual sterile manner.  The leg was elevated and the tourniquet was inflated to 325 mmHg.  A longitudinal incision was then made and carried down through subcutaneous tissues.  This was made through the prior incision site.  There were some fatty necrotic tissues through the incision region and all necrotic tissue was debrided sharply on both sides of the incision site.  Medial and lateral flaps were then made.  The prior suture was identified, the suture removed and then a medial parapatellar arthrotomy was then performed.  Effusion within the knee was noted.  All hematoma was evacuated.  I then did flex the knee and removed the polyethylene.  Once the polyethylene was removed I did irrigate the knee with total of 9 liters of antibiotic solution.  Further debridement was performed of all inflamed tissue and thickened synovial tissue.  A 6 x 16-mm Stryker polyethylene was then snapped back in position.  The knee has excellent stability in all planes and I did perform a light manipulation to improve the flexion of the knee.  Further irrigation was performed on the all soft tissue in the knee with additional 3 liters of normal saline.  The knee was placed in a flexed position and the extensor mechanism was reapproximated using #2 Ethibond suture in a figure-of-eight manner.  The subcutaneous tissue was reapproximated in layers using #1 and 2-0 Vicryl sutures, and the skin was reapproximated using staples.  Prior to closure a Hemovac drain was inserted through a superolateral approach into the knee joint.,No complications were encountered throughout the procedure, and the patient tolerated the procedure well.  The patient was taken to recovery room in stable condition"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "as well as alternatives was discussed in length with the patient and he understood them well.  Risks and benefits were also discussed.  Risks such as bleeding, infection, damage to blood vessels, damage to nerve roots, need for further surgeries, chronic pain with range of motion, risk of continued discomfort, risk of need for further reconstructive procedures, risk of need for total knee revision, risk of blood clots, pulmonary embolism, myocardial infarction, and risk of death were discussed.  He understood them well.  All questions were answered and he signed consent for the procedure as described.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "risk of need for total knee revision, risk of blood clots, pulmonary embolism, myocardial infarction, and risk of death were discussed.  He understood them well.  All questions were answered and he signed consent for the procedure as described.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "The patient was placed on operating table and general anesthesia was achieved.  The left lower extremity was then prepped and draped in the usual sterile manner.  The leg was elevated and the tourniquet was inflated to 325 mmHg.  A longitudinal incision was then made and carried down through subcutaneous tissues.  This was made through the prior incision site.  There were some fatty necrotic tissues through the incision region and all necrotic tissue was debrided sharply on both sides of the incision site.  Medial and lateral flaps were then made.  The prior suture was identified, the suture removed and then a medial parapatellar arthrotomy was then performed.  Effusion within the knee was noted.  All hematoma was evacuated.  I then did flex the knee and removed the polyethylene.  Once the polyethylene was removed I did irrigate the knee with total of 9 liters of antibiotic solution.  Further debridement was performed of all inflamed tissue and thickened synovial tissue.  A 6 x 16-mm Stryker polyethylene was then snapped back in position.  The knee has excellent stability in all planes and I did perform a light manipulation to improve the flexion of the knee.  Further irrigation was performed on the all soft tissue in the knee with additional 3 liters of normal saline.  The knee was placed in a flexed position and the extensor mechanism was reapproximated using #2 Ethibond suture in a figure-of-eight manner.  The subcutaneous tissue was reapproximated in layers using #1 and 2-0 Vicryl sutures, and the skin was reapproximated using staples.  Prior to closure a Hemovac drain was inserted through a superolateral approach into the knee joint.,No complications were encountered throughout the procedure, and the patient tolerated the procedure well.  The patient was taken to recovery room in stable condition"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "perform"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M25062: Hemarthrosis, left knee (score: 0.5204)\n[ICD-10-CM 2027] M25069: Hemarthrosis, unspecified knee (score: 0.5146)\n[ICD-10-CM 2027] M25061: Hemarthrosis, right knee (score: 0.5055)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] M25062: Hemarthrosis, left knee (score: 0.5264)\n[ICD-10-CM 2027] M25069: Hemarthrosis, unspecified knee (score: 0.5205)\n[ICD-10-CM 2027] M25061: Hemarthrosis, right knee (score: 0.5113)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] H26132: Total traumatic cataract, left eye (score: 0.6187)\n[ICD-10-CM 2027] H26139: Total traumatic cataract, unspecified eye (score: 0.5982)\n[ICD-10-CM 2027] H26131: Total traumatic cataract, right eye (score: 0.5917)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Arthrotomy, left total knee' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] M7052: Other bursitis of knee, left knee (score: 0.7797)\n[ICD-10-CM 2027] M7050: Other bursitis of knee, unspecified knee (score: 0.7307)\n[ICD-10-CM 2027] M7051: Other bursitis of knee, right knee (score: 0.7216)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Irrigation and debridement, left knee' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] M7052: Other bursitis of knee, left knee (score: 0.2321)\n[ICD-10-CM 2027] M7050: Other bursitis of knee, unspecified knee (score: 0.2299)\n[ICD-10-CM 2027] M7051: Other bursitis of knee, right knee (score: 0.2271)\n[ICD-10-CM 2027] Match unresolved (top score 0.2321 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Polyethylene exchange, left knee.,COMPLICATION: , None.,TOURNIQUET TIME:  ,58 minutes.,ESTIMATED BLOOD LOSS: , Minimal.,ANESTHESIA:  ,General.,INDICATIONS:  ,This patient underwent an uncomplicated left total knee replacement.  Postoperatively, unfortunately did not follow up with PT/INR blood test and he was taking Coumadin.  His INR was seemed to elevated and developed hemarthrosis.  Initially, it did look very benign, although over the last 24 hours it did become irritable and inflamed, and he therefore was indicated with the above-noted procedure.,This procedure as well as alternatives was discussed in length with the patient and he understood them well.  Risks and benefits were also discussed.  Risks such as bleeding, infection, damage to blood vessels, damage to nerve roots, need for further surgeries, chronic pain with range of motion, risk of continued discomfort, risk of need for further reconstructive procedures, risk of need for total knee revision, risk of blood clots, pulmonary embolism, myocardial infarction, and risk of death were discussed.  He understood them well.  All questions were answered and he signed consent for the procedure as described.,DESCRIPTION OF PROCEDURE: , The patient was placed on operating table and general anesthesia was achieved.  The left lower extremity was then prepped and draped in the usual sterile manner.  The leg was elevated and the tourniquet was inflated to 325 mmHg.  A longitudinal incision was then made and carried down through subcutaneous tissues.  This was made through the prior incision site.  There were some fatty necrotic tissues through the incision region and all necrotic tissue was debrided sharply on both sides of the incision site.  Medial and lateral flaps were then made.  The prior suture was identified, the suture removed and then a medial parapatellar arthrotomy was then performed.  Effusion within the knee was noted.  All hematoma was evacuated.  I then did flex the knee and removed the polyethylene.  Once the polyethylene was removed I did irrigate the knee with total of 9 liters of antibiotic solution.  Further debridement was performed of all inflamed tissue and thickened synovial tissue.  A 6 x 16-mm Stryker polyethylene was then snapped back in position.  The knee has excellent stability in all planes and I did perform a light manipulation to improve the flexion of the knee.  Further irrigation was performed on the all soft tissue in the knee with additional 3 liters of normal saline.  The knee was placed in a flexed position and the extensor mechanism was reapproximated using #2 Ethibond suture in a figure-of-eight manner.  The subcutaneous tissue was reapproximated in layers using #1 and 2-0 Vicryl sutures, and the skin was reapproximated using staples.  Prior to closure a Hemovac drain was inserted through a superolateral approach into the knee joint.,No complications were encountered throughout the procedure, and the patient tolerated the procedure well.  The patient was taken to recovery room in stable condition' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'as well as alternatives was discussed in length with the patient and he understood them well.  Risks and benefits were also discussed.  Risks such as bleeding, infection, damage to blood vessels, damage to nerve roots, need for further surgeries, chronic pain with range of motion, risk of continued discomfort, risk of need for further reconstructive procedures, risk of need for total knee revision, risk of blood clots, pulmonary embolism, myocardial infarction, and risk of death were discussed.  He understood them well.  All questions were answered and he signed consent for the procedure as described.,DESCRIPTION OF PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'risk of need for total knee revision, risk of blood clots, pulmonary embolism, myocardial infarction, and risk of death were discussed.  He understood them well.  All questions were answered and he signed consent for the procedure as described.,DESCRIPTION OF PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'The patient was placed on operating table and general anesthesia was achieved.  The left lower extremity was then prepped and draped in the usual sterile manner.  The leg was elevated and the tourniquet was inflated to 325 mmHg.  A longitudinal incision was then made and carried down through subcutaneous tissues.  This was made through the prior incision site.  There were some fatty necrotic tissues through the incision region and all necrotic tissue was debrided sharply on both sides of the incision site.  Medial and lateral flaps were then made.  The prior suture was identified, the suture removed and then a medial parapatellar arthrotomy was then performed.  Effusion within the knee was noted.  All hematoma was evacuated.  I then did flex the knee and removed the polyethylene.  Once the polyethylene was removed I did irrigate the knee with total of 9 liters of antibiotic solution.  Further debridement was performed of all inflamed tissue and thickened synovial tissue.  A 6 x 16-mm Stryker polyethylene was then snapped back in position.  The knee has excellent stability in all planes and I did perform a light manipulation to improve the flexion of the knee.  Further irrigation was performed on the all soft tissue in the knee with additional 3 liters of normal saline.  The knee was placed in a flexed position and the extensor mechanism was reapproximated using #2 Ethibond suture in a figure-of-eight manner.  The subcutaneous tissue was reapproximated in layers using #1 and 2-0 Vicryl sutures, and the skin was reapproximated using staples.  Prior to closure a Hemovac drain was inserted through a superolateral approach into the knee joint.,No complications were encountered throughout the procedure, and the patient tolerated the procedure well.  The patient was taken to recovery room in stable condition' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'perform' \u2192 RXCUI 1043225, canonical: Perform, match: exact\n[RxNorm] Ingredient: menthol (RXCUI 6750)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): benzocaine 0.2 MG/MG / menthol 0.02 MG/MG Oral Gel; menthol 0.075 MG/MG Medicated Patch; capsaicin 0.25 MG/ML / lidocaine hydrochloride 25 MG/ML / menthol 100 MG/ML / methyl salicylate 250 MG/ML Topical Lotion; menthol 5 MG/ML Oral Cream; benzocaine 200 MG/ML / menthol 10 MG/ML Medicated Pad"
+  }
+]

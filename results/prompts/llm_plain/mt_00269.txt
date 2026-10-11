@@ -1,0 +1,77 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREPROCEDURE DIAGNOSIS: , Colon cancer screening.,POSTPROCEDURE DIAGNOSIS:  ,Colon polyps, diverticulosis, hemorrhoids.,PROCEDURE PERFORMED: , Colonoscopy, conscious sedation, and snare polypectomy.  ,INDICATIONS:  ,The patient is a 63-year-old male who has myelodysplastic syndrome, who was referred for colonoscopy.  He has had previous colonoscopy.  There is no family history of bleeding, no current problems with his bowels.  On examination, he has internal hemorrhoids.  His prostate is enlarged and increased somewhat in firmness.  He has scattered diverticular disease of a moderate degree and he has two polyps, one 1 cm in the mid ascending colon, and one in the left transverse colon, which is also 1 cm.  These were removed with snare polypectomy technique.  I would recommend that the patient have an increased fiber diet and repeat colonoscopy in 5 years or sooner if he develops bowel habit change or bleeding.,PROCEDURE: , After explaining the operative procedure, the risks and potential complications of bleeding and perforation, the patient was given 17mcg fentanyl, and 8 mg Versed intravenously for conscious sedation.  Blood pressure 115/60, pulse 98, respiration 18, and saturation 92%.  A rectal examination was done and then the colonoscope was inserted through the anorectum, rectosigmoid, descending, transverse, and ascending colon, to the ileocecal valve.  The scope was withdrawn to the mid ascending colon, where the polyp was encircled with a snare and removed with a mixture of cutting and coagulating current, then retrieved through the suction port.  The scope was withdrawn into the left transverse colon, where the second polyp was identified.  It was encircled with a snare and removed with a mixture of cutting and coagulating current, and then removed through the suction port as well.  The scope was then gradually withdrawn the remaining distance and removed.  The patient tolerated the procedure well.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Colon cancer screening.,POSTPROCEDURE DIAGNOSIS:  ,Colon polyps, diverticulosis, hemorrhoids.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Colon cancer screening.,POSTPROCEDURE DIAGNOSIS:  ,Colon polyps, diverticulosis, hemorrhoids.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Colonoscopy, conscious sedation, and snare polypectomy.  ,INDICATIONS:  ,The patient is a 63-year-old male who has myelodysplastic syndrome, who was referred for colonoscopy.  He has had previous colonoscopy.  There is no family history of bleeding, no current problems with his bowels.  On examination, he has internal hemorrhoids.  His prostate is enlarged and increased somewhat in firmness.  He has scattered diverticular disease of a moderate degree and he has two polyps, one 1 cm in the mid ascending colon, and one in the left transverse colon, which is also 1 cm.  These were removed with snare polypectomy technique.  I would recommend that the patient have an increased fiber diet and repeat colonoscopy in 5 years or sooner if he develops bowel habit change or bleeding.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Colonoscopy, conscious sedation, and snare polypectomy.  ,INDICATIONS:  ,The patient is a 63-year-old male who has myelodysplastic syndrome, who was referred for colonoscopy.  He has had previous colonoscopy.  There is no family history of bleeding, no current problems with his bowels.  On examination, he has internal hemorrhoids.  His prostate is enlarged and increased somewhat in firmness.  He has scattered diverticular disease of a moderate degree and he has two polyps, one 1 cm in the mid ascending colon, and one in the left transverse colon, which is also 1 cm.  These were removed with snare polypectomy technique.  I would recommend that the patient have an increased fiber diet and repeat colonoscopy in 5 years or sooner if he develops bowel habit change or bleeding.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "After explaining the operative procedure, the risks and potential complications of bleeding and perforation, the patient was given 17mcg fentanyl, and 8 mg Versed intravenously for conscious sedation.  Blood pressure 115/60, pulse 98, respiration 18, and saturation 92%.  A rectal examination was done and then the colonoscope was inserted through the anorectum, rectosigmoid, descending, transverse, and ascending colon, to the ileocecal valve.  The scope was withdrawn to the mid ascending colon, where the polyp was encircled with a snare and removed with a mixture of cutting and coagulating current, then retrieved through the suction port.  The scope was withdrawn into the left transverse colon, where the second polyp was identified.  It was encircled with a snare and removed with a mixture of cutting and coagulating current, and then removed through the suction port as well.  The scope was then gradually withdrawn the remaining distance and removed.  The patient tolerated the procedure well"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "After explaining the operative procedure, the risks and potential complications of bleeding and perforation, the patient was given 17mcg fentanyl, and 8 mg Versed intravenously for conscious sedation.  Blood pressure 115/60, pulse 98, respiration 18, and saturation 92%.  A rectal examination was done and then the colonoscope was inserted through the anorectum, rectosigmoid, descending, transverse, and ascending colon, to the ileocecal valve.  The scope was withdrawn to the mid ascending colon, where the polyp was encircled with a snare and removed with a mixture of cutting and coagulating current, then retrieved through the suction port.  The scope was withdrawn into the left transverse colon, where the second polyp was identified.  It was encircled with a snare and removed with a mixture of cutting and coagulating current, and then removed through the suction port as well.  The scope was then gradually withdrawn the remaining distance and removed.  The patient tolerated the procedure well"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "17mcg"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "fentanyl"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "8 mg"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "measurement",
+    "text": "92%"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

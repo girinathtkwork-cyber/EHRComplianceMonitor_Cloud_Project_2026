@@ -1,0 +1,243 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+HISTORY OF PRESENT ILLNESS:, The patient is known to me secondary to atrial fibrillation with slow ventricular response, partially due to medications, at least when I first saw him in the office on 01/11/06. He is now 77 years old. He is being seen on the Seventh Floor. The patient is in Room 7607. The patient has a history of recent adenocarcinoma of the duodenum that was found to be inoperable, since it engulfed the porta hepatis. The workup began with GI bleeding. He was seen in my office on 01/11/06 for preop evaluation due to leg edema. A nonocclusive DVT was diagnosed in the proximal left superficial femoral vein. Both legs were edematous, and bilateral venous insufficiency was also present. An echocardiogram demonstrated an ejection fraction of 50%. The patient was admitted to the hospital and treated with a Greenfield filter since anticoagulant was contraindicated. Additional information on the echocardiogram, where a grossly dilated left atrium, moderately severely dilated right atrium. The rhythm was, as stated before, atrial fibrillation with slow atrioventricular conduction and an intraventricular conduction delay on the monitor strip. There was mild to moderate tricuspid regurgitation, mild pulmonic insufficiency. The ejection fraction was considered low normal, since it was estimated 50 to 54%. The patient received blood while in the hospital due to anemia. The leg edema improved while lying down, suggesting that the significant element of venous insufficiency was indeed present. The patient, who was diabetic, received consultation by Dr. R. He was also a chronic hypertensive and was treated for that with ACE inhibitors. The atrial fibrillation was slow, and no digitalis or beta blockers were recommended at the same time. As a matter of fact, they were discontinued. Now, the patient denied any shortness of breath or chest pain throughout this hospitalization, and cardiac nuclear studies performed earlier demonstrated no reversible ischemia.,ALLERGIES:, THE PATIENT HAS NO KNOWN DRUG ALLERGIES.,His diabetes was suspected to be complicated with neuropathy due to tingling in both feet. He received his immunizations with flu in 2005 but did not receive Pneumovax.,SOCIAL HISTORY:, The patient is married. He had 1 child who died at the age of 26 months of unknown etiology. He quit smoking 6 years ago but dips (smokeless) tobacco.,FAMILY HISTORY:, Mother had cancer, died at 70. Father died of unknown cause, and brother died of unknown cause.,FUNCTIONAL CAPACITY:, The patient is wheelchair bound at the time of his initial hospitalization. He is currently walking in the corridor with assistance. Nocturia twice to 3 times per night.,REVIEW OF SYSTEMS:,OPHTHALMOLOGIC: Uses glasses.,ENT: Complains of occasional sinusitis.,CARDIOVASCULAR: Hypertension and atrial fibrillation.,RESPIRATORY: Normal.,GI: Colon bleeding. The patient believes he had ulcers.,GENITOURINARY: Normal.,MUSCULOSKELETAL: Complains of arthritis and gout.,INTEGUMENTARY: Edema of ankles and joints.,NEUROLOGICAL: Tingling as per above. Denies any psychiatric problems.,ENDOCRINE: Diabetes, NIDDM.,HEMATOLOGIC AND LYMPHATIC: The patient does not use any aspirin or anticoagulants and is not of anemia.,LABORATORY:, Current EKG demonstrates atrial fibrillation with incomplete left bundle branch block pattern. Q waves are noticed in the inferior leads. Nonprogression of the R-wave from V1 to V4 with small R-waves in V5 and V6 are suggestive of an old anterior and inferior infarcts. Left ventilator hypertrophy and strain is suspected.,PHYSICAL EXAMINATION:,GENERAL: On exam, the patient is alert, oriented and cooperative. He is mildly pale. He is an elderly gentleman who is currently without diaphoresis, pallor, jaundice, plethora, or icterus.,VITAL SIGNS: Blood pressure is 159/69 with a respiratory rate of 20, pulse is 67 and irregularly irregular. Pulse oximetry is 100.,NECK: Without JVD, bruit, or thyromegaly. The neck is supple.,CHEST: Symmetric. There is no heave or retraction.,HEART: The heart sounds are irregular and no significant murmurs could be auscultated.,LUNGS: Clear to auscultation.,ABDOMEN: Exam was deferred.,LEGS: Without edema. Pulses: Dorsalis pedis pulse was palpated bilaterally.,MEDICATIONS:, Current medications include enalapril, low dose enoxaparin, Fentanyl patches. He is no longer on fluconazole. He is on a sliding scale as per Dr. Holden. He is on lansoprazole (Prevacid), Toradol, piperacillin/tazobactam, hydralazine p.r.n., Zofran, Dilaudid, Benadryl, and Lopressor p.r.n.,ASSESSMENT AND PLAN:, The patient is a very pleasant elderly gentleman with intractable/inoperable malignancy. His cardiac issues are chronic and most likely secondary to long term hypertension and diabetes. He has chronic atrial fibrillation. I do not envision a scenario whereby he will become a candidate for management of this arrhythmia beyond weight control. He is also not a candidate for anticoagulation, which is, in essence, a part and parcel of the weight control. Reason being is high likelihood for GI bleeding, especially given the diagnosis of invasive malignancy with involvement of multiple organs and lymph nodes. At this point, I agree with the notion of hospice care. If his atrioventricular conduction becomes excessive, occasional nondihydropyridine calcium channel blocker such as diltiazem or beta blockers would be appropriate; otherwise, I would keep him off those medications due to evidence of slow conduction in the presence of digitalis and beta blockers.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "preop"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "measurement",
+    "text": "50%"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "measurement",
+    "text": "54%"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "aspirin"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "enalapril"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "enoxaparin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Fentanyl"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "fluconazole"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "lansoprazole"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Prevacid"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "piperacillin"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "tazobactam"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "hydralazine"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Dilaudid"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "Benadryl"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Lopressor"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "AND PLAN:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "The patient is a very pleasant elderly gentleman with intractable/inoperable malignancy. His cardiac issues are chronic and most likely secondary to long term hypertension and diabetes. He has chronic atrial fibrillation. I do not envision a scenario whereby he will become a candidate for management of this arrhythmia beyond weight control. He is also not a candidate for anticoagulation, which is, in essence, a part and parcel of the weight control. Reason being is high likelihood for GI bleeding, especially given the diagnosis of invasive malignancy with involvement of multiple organs and lymph nodes. At this point"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "of invasive malignancy with involvement of multiple organs and lymph nodes. At this point"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "I agree with the notion of hospice care. If his atrioventricular conduction becomes excessive, occasional nondihydropyridine calcium channel blocker such as diltiazem or beta blockers would be appropriate; otherwise"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "diltiazem"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "I would keep him off those medications due to evidence of slow conduction in the presence of digitalis and beta blockers"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'preop' \u2192 RXCUI 2530802, canonical: Preop, match: exact\n[RxNorm] Ingredient: hydrogen peroxide (RXCUI 5499)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): hydrogen peroxide 5 MG/ML Topical Solution; hydrogen peroxide 15 MG/ML Topical Cream; hydrogen peroxide 0.017 MG/MG Oral Gel; hydrogen peroxide 40 MG/ML Topical Solution; dodecylbenzenesulfonic acid 5 MG/ML / hydrogen peroxide 5 MG/ML / lactic acid 17 MG/ML Topical Solution"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Measurement] 50.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Measurement] 54.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'enalapril' \u2192 RXCUI 3827, canonical: enalapril, match: exact\n[RxNorm] Ingredient: enalapril (RXCUI 3827)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): enalapril maleate 1 MG/ML Oral Solution; enalapril maleate 2.5 MG Oral Tablet; enalapril maleate 20 MG Oral Tablet; enalapril maleate 5 MG Oral Tablet; enalapril maleate 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'enoxaparin' \u2192 RXCUI 67108, canonical: enoxaparin, match: exact\n[RxNorm] Ingredient: enoxaparin (RXCUI 67108)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 0.3 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.4 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.6 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.8 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.8 ML enoxaparin sodium 150 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Fentanyl' \u2192 RXCUI 4337, canonical: fentanyl, match: exact\n[RxNorm] Ingredient: fentanyl (RXCUI 4337)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fentanyl 0.1 MG Sublingual Tablet; fentanyl 0.2 MG Sublingual Tablet; fentanyl 0.3 MG Sublingual Tablet; fentanyl 0.4 MG Sublingual Tablet; fentanyl 0.6 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'fluconazole' \u2192 RXCUI 4450, canonical: fluconazole, match: exact\n[RxNorm] Ingredient: fluconazole (RXCUI 4450)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 50 ML fluconazole 2 MG/ML Injection; 200 ML fluconazole 2 MG/ML Injection; 100 ML fluconazole 2 MG/ML Injection; fluconazole 100 MG Oral Tablet; fluconazole 150 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'lansoprazole' \u2192 RXCUI 17128, canonical: lansoprazole, match: exact\n[RxNorm] Ingredient: lansoprazole (RXCUI 17128)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lansoprazole 30 MG Delayed Release Oral Capsule; lansoprazole 30 MG Disintegrating Oral Tablet; lansoprazole 15 MG Disintegrating Oral Tablet; lansoprazole 6 MG/ML Injectable Solution; lansoprazole 15 MG Delayed Release Oral Capsule"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Prevacid' \u2192 RXCUI 83156, canonical: Prevacid, match: exact\n[RxNorm] Ingredient: lansoprazole (RXCUI 17128)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lansoprazole 30 MG Delayed Release Oral Capsule; lansoprazole 30 MG Disintegrating Oral Tablet; lansoprazole 15 MG Disintegrating Oral Tablet; lansoprazole 6 MG/ML Injectable Solution; lansoprazole 15 MG Delayed Release Oral Capsule"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'piperacillin' \u2192 RXCUI 8339, canonical: piperacillin, match: exact\n[RxNorm] Ingredient: piperacillin (RXCUI 8339)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): piperacillin 2000 MG / tazobactam 250 MG Injection; piperacillin 3000 MG / tazobactam 375 MG Injection; piperacillin 4000 MG / tazobactam 500 MG Injection; piperacillin 200 MG/ML Injectable Solution; piperacillin 400 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'tazobactam' \u2192 RXCUI 37617, canonical: tazobactam, match: exact\n[RxNorm] Ingredient: tazobactam (RXCUI 37617)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): ceftolozane 1000 MG / tazobactam 500 MG Injection; piperacillin 2000 MG / tazobactam 250 MG Injection; piperacillin 3000 MG / tazobactam 375 MG Injection; piperacillin 4000 MG / tazobactam 500 MG Injection; piperacillin 200 MG/ML / tazobactam 25 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'hydralazine' \u2192 RXCUI 5470, canonical: hydralazine, match: exact\n[RxNorm] Ingredient: hydralazine (RXCUI 5470)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): hydralazine hydrochloride 10 MG Oral Tablet; hydralazine hydrochloride 100 MG / hydrochlorothiazide 50 MG Oral Capsule; hydralazine hydrochloride 25 MG / hydrochlorothiazide 25 MG Oral Capsule; hydralazine hydrochloride 50 MG / hydrochlorothiazide 50 MG Oral Capsule; hydralazine hydrochloride 100 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Dilaudid' \u2192 RXCUI 224913, canonical: Dilaudid, match: exact\n[RxNorm] Ingredient: hydromorphone (RXCUI 3423)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR hydromorphone hydrochloride 32 MG Extended Release Oral Tablet; 0.5 ML hydromorphone hydrochloride 1 MG/ML Prefilled Syringe; 1 ML hydromorphone hydrochloride 2 MG/ML Injection; 1 ML hydromorphone hydrochloride 10 MG/ML Injection; 5 ML hydromorphone hydrochloride 10 MG/ML Injection"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'Benadryl' \u2192 RXCUI 203457, canonical: Benadryl, match: exact\n[RxNorm] Ingredient: diphenhydramine (RXCUI 3498)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): diphenhydramine hydrochloride 50 MG Oral Capsule; acetaminophen 325 MG / diphenhydramine hydrochloride 25 MG / phenylephrine hydrochloride 5 MG Oral Tablet; benzethonium chloride 0.0015 MG/MG / diphenhydramine hydrochloride 0.02 MG/MG / zinc acetate 0.00215 MG/MG Topical Gel; 1 ML diphenhydramine hydrochloride 50 MG/ML Prefilled Syringe; diphenhydramine hydrochloride 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Lopressor' \u2192 RXCUI 203344, canonical: Lopressor, match: exact\n[RxNorm] Ingredient: metoprolol (RXCUI 6918)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR hydrochlorothiazide 25 MG / metoprolol tartrate 200 MG Extended Release Oral Tablet; metoprolol tartrate 37.5 MG Oral Tablet; metoprolol tartrate 75 MG Oral Tablet; 5 ML metoprolol tartrate 1 MG/ML Cartridge; 24 HR metoprolol succinate 100 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] No matches found for 'AND PLAN:' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] O24419: Gestational diabetes mellitus in pregnancy, unspecified control (score: 0.2633)\n[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.2620)\n[ICD-10-CM 2027] O24439: Gestational diabetes mellitus in the puerperium, unspecified control (score: 0.2497)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] B440: Invasive pulmonary aspergillosis (score: 0.3603)\n[ICD-10-CM 2027] I4721: Torsades de pointes (score: 0.3114)\n[ICD-10-CM 2027] C778: Secondary and unspecified malignant neoplasm of lymph nodes of multiple regions (score: 0.2895)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] T461X6D: Underdosing of calcium-channel blockers, subsequent encounter (score: 0.5758)\n[ICD-10-CM 2027] T461X6A: Underdosing of calcium-channel blockers, initial encounter (score: 0.5741)\n[ICD-10-CM 2027] T461X6S: Underdosing of calcium-channel blockers, sequela (score: 0.5740)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'diltiazem' \u2192 RXCUI 3443, canonical: diltiazem, match: exact\n[RxNorm] Ingredient: diltiazem (RXCUI 3443)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 5 ML diltiazem hydrochloride 5 MG/ML Injection; 10 ML diltiazem hydrochloride 5 MG/ML Injection; 25 ML diltiazem hydrochloride 5 MG/ML Injection; diltiazem hydrochloride 100 MG Injection; 250 ML diltiazem hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] I4589: Other specified conduction disorders (score: 0.4056)\n[ICD-10-CM 2027] I459: Conduction disorder, unspecified (score: 0.4056)\n[ICD-10-CM 2027] P922: Slow feeding of newborn (score: 0.2996)"
+  }
+]

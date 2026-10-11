@@ -1,0 +1,173 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+DELIVERY NOTE:,  This G1, P0 with EDC 12/23/08 presented with SROM about 7. Additional diagnosis noted: Chronic Kidney Disease, Stage 3.30 this morning.  Her prenatal care complicated by GBS screen positive and a transfer of care at 34 weeks from Idaho.  Exam upon arrival 2 to 3 cm, 100% effaced, -1 station and by report pool of fluid was positive for Nitrazine and positive ferning.,She required augmentation with Pitocin to achieve a good active phase.  She achieved complete cervical dilation at 1900  At this time, a bulging bag was noted, which ruptured and thick meconium was present.  At 1937 hours, she delivered a viable male infant, left occiput, anterior.  Mouth and nares suctioned well with a DeLee on the perineum.  No nuchal cord present.  Shoulders and body followed easily.  Infant re-suctioned with the bulb and cord clamped x2 and cut and was taken to the warmer where the RN and RT were in attendance.  Apgars 9 and 9.  Pitocin 15 units infused via pump protocol.  Placenta followed complete and intact with fundal massage and general traction on the cord.  Three vessels are noted.  She sustained a bilateral periurethral lax on the left side, this extended down to the labia minora, became a second degree in the inferior portion and did have some significant bleeding in this area.  Therefore, this was repaired with #3-0 Vicryl after 1% lidocaine infiltrated approximately 5 mL.  The remainder of the lacerations was not at all bleeding and no other lacerations present.  Fundus required bimanual massage in a couple of occasions for recurrent atony with several larger clots; however, as the Pitocin infused and massage continued, this improved significantly.  EBL was about 500 mL.  Bleeding appears much better; however, Cytotec 400 mcg was placed per rectum apparently prophylactically.  Mom and baby currently doing very well.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Chronic Kidney Disease"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Stage 3.30 this morning.  Her prenatal care complicated by GBS screen positive and a transfer of care at 34 weeks from Idaho.  Exam upon arrival 2 to 3 cm"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "100% effaced, -1 station and by report pool of fluid was positive for Nitrazine and positive ferning.,She required augmentation with Pitocin to achieve a good active phase.  She achieved complete cervical dilation at 1900  At this time, a bulging bag was noted, which ruptured and thick meconium was present.  At 1937 hours, she delivered a viable male infant, left occiput, anterior.  Mouth and nares suctioned well with a DeLee on the perineum.  No nuchal cord present.  Shoulders and body followed easily.  Infant re-suctioned with the bulb and cord clamped x2 and cut and was taken to the warmer where the RN and RT were in attendance.  Apgars 9 and 9.  Pitocin 15 units infused via pump protocol.  Placenta followed complete and intact with fundal massage and general traction on the cord.  Three vessels are noted.  She sustained a bilateral periurethral lax on the left side, this extended down to the labia minora, became a second degree in the inferior portion and did have some significant bleeding in this area.  Therefore, this was repaired with #3-0 Vicryl after 1% lidocaine infiltrated approximately 5 mL.  The remainder of the lacerations was not at all bleeding and no other lacerations present.  Fundus required bimanual massage in a couple of occasions for recurrent atony with several larger clots; however, as the Pitocin infused and massage continued, this improved significantly.  EBL was about 500 mL.  Bleeding appears much better; however"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Pitocin"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Pitocin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "15 units"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "5 mL"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Pitocin"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "measurement",
+    "text": "500 mL"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Cytotec 400 mcg was placed per rectum apparently prophylactically.  Mom and baby currently doing very well"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Cytotec"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "400 mcg"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] N189: Chronic kidney disease, unspecified (score: 0.6375)\n[ICD-10-CM 2027] I129: Hypertensive chronic kidney disease with stage 1 through stage 4 chronic kidney disease, or unspecified chronic kidney disease (score: 0.5533)\n[ICD-10-CM 2027] N181: Chronic kidney disease, stage 1 (score: 0.5402)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] P0082: Newborn affected by (positive) maternal group B streptococcus (GBS) colonization (score: 0.2909)\n[ICD-10-CM 2027] Z0284: Encounter for child welfare exam (score: 0.2841)\n[ICD-10-CM 2027] H2620: Unspecified complicated cataract (score: 0.1854)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Q7113: Congenital absence of upper arm and forearm with hand present, bilateral (score: 0.2133)\n[ICD-10-CM 2027] Q7213: Congenital absence of thigh and lower leg with foot present, bilateral (score: 0.2116)\n[ICD-10-CM 2027] Q7112: Congenital absence of left upper arm and forearm with hand present (score: 0.2111)\n[ICD-10-CM 2027] Match unresolved (top score 0.2133 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Measurement] 100.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Pitocin' \u2192 RXCUI 227199, canonical: Pitocin, match: exact\n[RxNorm] Ingredient: oxytocin (RXCUI 7824)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML oxytocin 10 UNT/ML Injection; oxytocin 10 UNT/ML Injectable Solution; oxytocin 5 UNT/ML Injectable Solution; ergonovine 0.5 MG/ML / oxytocin 5 UNT/ML Injectable Solution; oxytocin 20 UNT/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Pitocin' \u2192 RXCUI 227199, canonical: Pitocin, match: exact\n[RxNorm] Ingredient: oxytocin (RXCUI 7824)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML oxytocin 10 UNT/ML Injection; oxytocin 10 UNT/ML Injectable Solution; oxytocin 5 UNT/ML Injectable Solution; ergonovine 0.5 MG/ML / oxytocin 5 UNT/ML Injectable Solution; oxytocin 20 UNT/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 15.0units associated with Pitocin \u2014 dose 15.0units not among known product strengths"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "Dose 1.0% associated with lidocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "Dose 5.0ml associated with lidocaine"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Pitocin' \u2192 RXCUI 227199, canonical: Pitocin, match: exact\n[RxNorm] Ingredient: oxytocin (RXCUI 7824)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML oxytocin 10 UNT/ML Injection; oxytocin 10 UNT/ML Injectable Solution; oxytocin 5 UNT/ML Injectable Solution; ergonovine 0.5 MG/ML / oxytocin 5 UNT/ML Injectable Solution; oxytocin 20 UNT/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Measurement] 500.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.3466)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.3451)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.3451)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Cytotec' \u2192 RXCUI 151578, canonical: Cytotec, match: exact\n[RxNorm] Ingredient: misoprostol (RXCUI 42331)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): diclofenac sodium 75 MG / misoprostol 0.2 MG Delayed Release Oral Tablet; misoprostol 0.1 MG Oral Tablet; misoprostol 0.2 MG Oral Tablet; diclofenac sodium 50 MG / misoprostol 0.2 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 400.0mcg associated with Cytotec \u2014 dose 400.0mcg not among known product strengths"
+  }
+]

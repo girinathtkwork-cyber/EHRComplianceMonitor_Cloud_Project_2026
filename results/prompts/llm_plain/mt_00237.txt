@@ -1,0 +1,152 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+CHIEF COMPLAINT:, Bright red blood per rectum ,HISTORY OF PRESENT ILLNESS: ,This 73-year-old woman had a recent medical history significant for renal and bladder cancer, deep venous thrombosis of the right lower extremity, and anticoagulation therapy complicated by lower gastrointestinal bleeding. Colonoscopy during that admission showed internal hemorrhoids and diverticulosis, but a bleeding site was not identified. Five days after discharge to a nursing home, she again experienced bloody bowel movements and returned to the emergency department for evaluation. ,REVIEW OF SYMPTOMS: ,No chest pain, palpitations, abdominal pain or cramping, nausea, vomiting, or lightheadedness. Positive for generalized weakness and diarrhea the day of admission. ,PRIOR MEDICAL HISTORY:, Long-standing hypertension, intermittent atrial fibrillation, and hypercholesterolemia. Renal cell carcinoma and transitional cell bladder cancer status post left nephrectomy, radical cystectomy, and ileal loop diversion 6 weeks prior to presentation, postoperative course complicated by pneumonia, urinary tract infection, and retroperitoneal bleed. Deep venous thrombosis 2 weeks prior to presentation, management complicated by lower gastrointestinal bleeding, status post inferior vena cava filter placement. ,MEDICATIONS: ,Diltiazem 30 mg tid, pantoprazole 40 mg qd, epoetin alfa 40,000 units weekly, iron 325 mg bid, cholestyramine. Warfarin discontinued approximately 10 days earlier. ,ALLERGIES: ,Celecoxib (rash).,SOCIAL HISTORY:, Resided at nursing home. Denied alcohol, tobacco, and drug use. ,FAMILY HISTORY:, Non-contributory.,PHYSICAL EXAM: ,Temp = 38.3C BP =146/52 HR= 113 RR = 18 SaO2 = 98% room air ,General: Pale, ill-appearing elderly female. ,HEENT: Pale conjunctivae, oral mucous membranes moist. ,CVS: Irregularly irregular, tachycardia. ,Lungs: Decreased breath sounds at the bases. ,Abdomen: Positive bowel sounds, soft, nontender, nondistended, gross blood on rectal exam. ,Extremities: No cyanosis, clubbing, or edema. ,Skin: Warm, normal turgor. ,Neuro: Alert and oriented. Nonfocal. ,LABS: ,CBC: ,WBC count: 6,500 per mL ,Hemoglobin: 10.3 g/dL ,Hematocrit:31.8% ,Platelet count: 248 per mL ,Mean corpuscular volume: 86.5 fL ,RDW: 18% ,CHEM 7: ,Sodium: 131 mmol/L ,Potassium: 3.5 mmol/L ,Chloride: 98 mmol/L ,Bicarbonate: 23 mmol/L ,BUN: 11 mg/dL ,Creatinine: 1.1 mg/dL ,Glucose: 105 mg/dL ,COAGULATION STUDIES: ,PT 15.7 sec ,INR 1.6 ,PTT 29.5 sec ,HOSPITAL COURSE: ,The patient received 1 liter normal saline and diltiazem (a total of 20 mg intravenously and 30 mg orally) in the emergency department. Emergency department personnel made several attempts to place a nasogastric tube for gastric lavage, but were unsuccessful. During her evaluation, the patient was noted to desaturate to 80% on room air, with an increase in her respiratory rate to 34 breaths per minute. She was administered 50% oxygen by nonrebreadier mask, with improvement in her oxygen saturation to 89%. Computed tomographic angiography was negative for pulmonary embolism. 
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Diltiazem"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "dosage",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "pantoprazole"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "epoetin alfa"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "000 units"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "325 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Warfarin"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Celecoxib"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "measurement",
+    "text": "98%"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "measurement",
+    "text": "10.3 g"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "measurement",
+    "text": "31.8%"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "18%"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Sodium"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "Potassium"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "dosage",
+    "text": "11 mg"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "Creatinine"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "dosage",
+    "text": "1.1 mg"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "Glucose"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "dosage",
+    "text": "105 mg"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "diltiazem"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "dosage",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "measurement",
+    "text": "80%"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "measurement",
+    "text": "50%"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "measurement",
+    "text": "89%"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

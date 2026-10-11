@@ -1,0 +1,93 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM:,  Noncontrast CT scan of the lumbar spine,REASON FOR EXAM: , Left lower extremity muscle spasm. Additional diagnosis noted: Type 2 Diabetes Mellitus.,COMPARISONS: , None.,FINDINGS: , Transaxial thin slice CT images of the lumbar spine were obtained with sagittal and coronal reconstructions on emergency basis, as requested.,No abnormal paraspinal masses are identified.,There are sclerotic changes with anterior effusion of the sacroiliac joints bilaterally.,There is marked intervertebral disk space narrowing at the L5-S1 level with intervertebral disk vacuum phenomenon and advanced endplate degenerative changes.  Posterior disk osteophyte complex is present, most marked in the left paracentral to lateral region extending into the lateral recess on the left.  This most likely will affect the S1 nerve root on the left.  There are posterior hypertrophic changes extending into the neural foramina bilaterally inferiorly.  There is mild neural foraminal stenosis present.  Small amount of extruded disk vacuum phenomenon is present on the left in the region of the exiting nerve root.  There is facet sclerosis bilaterally.  Mild lateral recess stenosis just on the right, there is prominent anterior spondylosis.,At the L4-5 level, mild bilateral facet arthrosis is present.  There is broad based posterior annular disk bulging or protrusion, which mildly effaces the anterior aspect of the thecal sac and extends into the inferior aspect of the neural foramina bilaterally.  No moderate or high-grade central canal or neural foraminal stenosis is identified.,At the L3-4 level anterior spondylosis is present.  There are endplate degenerative changes with mild posterior annular disk bulging, but no evidence of moderate or high-grade central canal or neural foraminal stenosis.,At the L2-3 level, there is mild bilateral ligamentum flavum hypertrophy.  Mild posterior annular disk bulging is present without evidence of moderate or high-grade central canal or neural foraminal stenosis.,At the T12-L1 and L1-2 levels, there is no evidence of herniated disk protrusion, central canal, or neural foraminal stenosis.,There is arteriosclerotic vascular calcification of the abdominal aorta and iliac arteries without evidence of aneurysm or dilatation.  No bony destructive changes or acute fractures are identified.,CONCLUSIONS:,1. Advanced degenerative disk disease at the L5-S1 level.,2. Probable chronic asymmetric herniated disk protrusion with peripheral calcification at the L5-S1 level, laterally in the left paracentral region extending into the lateral recess causing lateral recess stenosis.,3. Mild bilateral neural foraminal stenosis at the L5-S1 level.,4. Posterior disk bulging at the L2-3, L3-4, and L4-5 levels without evidence of moderate or high-grade central canal stenosis.,5. Facet arthrosis to the lower lumbar spine.,6. Arteriosclerotic vascular disease.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.,COMPARISONS: , None.,FINDINGS: , Transaxial thin slice CT images of the lumbar spine were obtained with sagittal and coronal reconstructions on emergency basis, as requested.,No abnormal paraspinal masses are identified.,There are sclerotic changes with anterior effusion of the sacroiliac joints bilaterally.,There is marked intervertebral disk space narrowing at the L5-S1 level with intervertebral disk vacuum phenomenon and advanced endplate degenerative changes.  Posterior disk osteophyte complex is present, most marked in the left paracentral to lateral region extending into the lateral recess on the left.  This most likely will affect the S1 nerve root on the left.  There are posterior hypertrophic changes extending into the neural foramina bilaterally inferiorly.  There is mild neural foraminal stenosis present.  Small amount of extruded disk vacuum phenomenon is present on the left in the region of the exiting nerve root.  There is facet sclerosis bilaterally.  Mild lateral recess stenosis just on the right, there is prominent anterior spondylosis.,At the L4-5 level, mild bilateral facet arthrosis is present.  There is broad based posterior annular disk bulging or protrusion, which mildly effaces the anterior aspect of the thecal sac and extends into the inferior aspect of the neural foramina bilaterally.  No moderate or high-grade central canal or neural foraminal stenosis is identified.,At the L3-4 level anterior spondylosis is present.  There are endplate degenerative changes with mild posterior annular disk bulging, but no evidence of moderate or high-grade central canal or neural foraminal stenosis.,At the L2-3 level, there is mild bilateral ligamentum flavum hypertrophy.  Mild posterior annular disk bulging is present without evidence of moderate or high-grade central canal or neural foraminal stenosis.,At the T12-L1 and L1-2 levels, there is no evidence of herniated disk protrusion, central canal, or neural foraminal stenosis.,There is arteriosclerotic vascular calcification of the abdominal aorta and iliac arteries without evidence of aneurysm or dilatation.  No bony destructive changes or acute fractures are identified.,CONCLUSIONS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Advanced degenerative disk disease at the L5-S1 level"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Probable chronic asymmetric herniated disk protrusion with peripheral calcification at the L5-S1 level, laterally in the left paracentral region extending into the lateral recess causing lateral recess stenosis"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Mild bilateral neural foraminal stenosis at the L5-S1 level"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Posterior disk bulging at the L2-3, L3-4, and L4-5 levels without evidence of moderate or high-grade central canal stenosis"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Facet arthrosis to the lower lumbar spine"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Arteriosclerotic vascular disease"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M9923: Subluxation stenosis of neural canal of lumbar region (score: 0.3486)\n[ICD-10-CM 2027] M9921: Subluxation stenosis of neural canal of cervical region (score: 0.3430)\n[ICD-10-CM 2027] M9920: Subluxation stenosis of neural canal of head region (score: 0.3421)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] G319: Degenerative disease of nervous system, unspecified (score: 0.5028)\n[ICD-10-CM 2027] H93099: Unspecified degenerative and vascular disorders of unspecified ear (score: 0.3794)\n[ICD-10-CM 2027] H93092: Unspecified degenerative and vascular disorders of left ear (score: 0.3751)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Y936A: Activity, physical games generally associated with school recess, summer camp and children (score: 0.2793)\n[ICD-10-CM 2027] S83262D: Peripheral tear of lateral meniscus, current injury, left knee, subsequent encounter (score: 0.2044)\n[ICD-10-CM 2027] S83262A: Peripheral tear of lateral meniscus, current injury, left knee, initial encounter (score: 0.2037)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] M9926: Subluxation stenosis of neural canal of lower extremity (score: 0.5156)\n[ICD-10-CM 2027] M9921: Subluxation stenosis of neural canal of cervical region (score: 0.5115)\n[ICD-10-CM 2027] M9927: Subluxation stenosis of neural canal of upper extremity (score: 0.5114)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] H95819: Postprocedural stenosis of unspecified external ear canal (score: 0.3475)\n[ICD-10-CM 2027] H61302: Acquired stenosis of left external ear canal, unspecified (score: 0.3473)\n[ICD-10-CM 2027] H61392: Other acquired stenosis of left external ear canal (score: 0.3473)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] S335XXD: Sprain of ligaments of lumbar spine, subsequent encounter (score: 0.6988)\n[ICD-10-CM 2027] S335XXA: Sprain of ligaments of lumbar spine, initial encounter (score: 0.6952)\n[ICD-10-CM 2027] S335XXS: Sprain of ligaments of lumbar spine, sequela (score: 0.6950)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] I739: Peripheral vascular disease, unspecified (score: 0.7658)\n[ICD-10-CM 2027] K558: Other vascular disorders of intestine (score: 0.5161)\n[ICD-10-CM 2027] K559: Vascular disorder of intestine, unspecified (score: 0.5161)"
+  }
+]

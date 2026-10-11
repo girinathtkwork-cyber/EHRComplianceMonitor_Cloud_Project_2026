@@ -1,0 +1,263 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CLINICAL INDICATION:  ,Normal stress test.,PROCEDURES PERFORMED:,1.  Left heart cath.,2.  Selective coronary angiography.,3.  LV gram.,4.  Right femoral arteriogram.,5.  Mynx closure device.,PROCEDURE IN DETAIL: , The patient was explained about all the risks, benefits, and alternatives of this procedure.  The patient agreed to proceed and informed consent was signed.,Both groins were prepped and draped in the usual sterile fashion.  After local anesthesia with 2% lidocaine, a 6-French sheath was inserted in the right femoral artery.  Left and right coronary angiography was performed using 6-French JL4 and 6-French 3DRC catheters.  Then, LV gram was performed using 6-French pigtail catheter.  Post LV gram, LV-to-aortic gradient was obtained.  Then, the right femoral arteriogram was performed.  Then, the Mynx closure device was used for hemostasis.  There were no complications.,HEMODYNAMICS: , LVEDP was 9.  There was no LV-to-aortic gradient.,CORONARY ANGIOGRAPHY:,1.  Left main is normal.  It bifurcates into LAD and left circumflex.,2.  Proximal LAD at the origin of big diagonal, there is 50% to 60% calcified lesion present.  Rest of the LAD free of disease.,3.  Left circumflex is a large vessel and with minor plaque.,4.  Right coronary is dominant and also has proximal 40% stenosis.,SUMMARY:,1.  Nonobstructive coronary artery disease, LAD proximal at the origin of big diagonal has 50% to 60% stenosis, which is calcified.,2.  RCA has 40% proximal stenosis.,3.  Normal LV systolic function with LV ejection fraction of 60%.,PLAN: , We will treat with medical therapy.  If the patient becomes symptomatic, we will repeat stress test.  If there is ischemic event, the patient will need surgery for the LAD lesion.  For the time being, we will continue with the medical therapy.,
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "Left heart cath"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Selective coronary angiography"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "LV gram"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Right femoral arteriogram"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Mynx closure device.,PROCEDURE IN DETAIL: , The patient was explained about all the risks, benefits, and alternatives of this procedure.  The patient agreed to proceed and informed consent was signed.,Both groins were prepped and draped in the usual sterile fashion.  After local anesthesia with 2% lidocaine, a 6-French sheath was inserted in the right femoral artery.  Left and right coronary angiography was performed using 6-French JL4 and 6-French 3DRC catheters.  Then, LV gram was performed using 6-French pigtail catheter.  Post LV gram, LV-to-aortic gradient was obtained.  Then, the right femoral arteriogram was performed.  Then, the Mynx closure device was used for hemostasis.  There were no complications.,HEMODYNAMICS: , LVEDP was"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "IN DETAIL: , The patient was explained about all the risks, benefits, and alternatives of this procedure.  The patient agreed to proceed and informed consent was signed.,Both groins were prepped and draped in the usual sterile fashion.  After local anesthesia with 2% lidocaine, a 6-French sheath was inserted in the right femoral artery.  Left and right coronary angiography was performed using 6-French JL4 and 6-French 3DRC catheters.  Then, LV gram was performed using 6-French pigtail catheter.  Post LV gram, LV-to-aortic gradient was obtained.  Then, the right femoral arteriogram was performed.  Then, the Mynx closure device was used for hemostasis.  There were no complications.,HEMODYNAMICS: , LVEDP was"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "2%"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "There was no LV-to-aortic gradient.,CORONARY ANGIOGRAPHY:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Left main is normal.  It bifurcates into LAD and left circumflex"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Proximal LAD at the origin of big diagonal, there is 50% to 60% calcified lesion present.  Rest of the LAD free of disease"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "measurement",
+    "text": "50%"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "measurement",
+    "text": "60%"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "Left circumflex is a large vessel and with minor plaque"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "Right coronary is dominant and also has proximal 40% stenosis.,SUMMARY:"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "measurement",
+    "text": "40%"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "Nonobstructive coronary artery disease, LAD proximal at the origin of big diagonal has 50% to 60% stenosis, which is calcified"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "measurement",
+    "text": "50%"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "measurement",
+    "text": "60%"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "procedure",
+    "text": "RCA has 40% proximal stenosis"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "measurement",
+    "text": "40%"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "procedure",
+    "text": "Normal LV systolic function with LV ejection fraction of 60%.,PLAN: , We will treat with medical therapy.  If the patient becomes symptomatic, we will repeat stress test.  If there is ischemic event, the patient will need surgery for the LAD lesion.  For the time being, we will continue with the medical therapy"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "measurement",
+    "text": "60%"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'Left heart cath' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'Selective coronary angiography' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'LV gram' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Right femoral arteriogram' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Mynx closure device.,PROCEDURE IN DETAIL: , The patient was explained about all the risks, benefits, and alternatives of this procedure.  The patient agreed to proceed and informed consent was signed.,Both groins were prepped and draped in the usual sterile fashion.  After local anesthesia with 2% lidocaine, a 6-French sheath was inserted in the right femoral artery.  Left and right coronary angiography was performed using 6-French JL4 and 6-French 3DRC catheters.  Then, LV gram was performed using 6-French pigtail catheter.  Post LV gram, LV-to-aortic gradient was obtained.  Then, the right femoral arteriogram was performed.  Then, the Mynx closure device was used for hemostasis.  There were no complications.,HEMODYNAMICS: , LVEDP was' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'IN DETAIL: , The patient was explained about all the risks, benefits, and alternatives of this procedure.  The patient agreed to proceed and informed consent was signed.,Both groins were prepped and draped in the usual sterile fashion.  After local anesthesia with 2% lidocaine, a 6-French sheath was inserted in the right femoral artery.  Left and right coronary angiography was performed using 6-French JL4 and 6-French 3DRC catheters.  Then, LV gram was performed using 6-French pigtail catheter.  Post LV gram, LV-to-aortic gradient was obtained.  Then, the right femoral arteriogram was performed.  Then, the Mynx closure device was used for hemostasis.  There were no complications.,HEMODYNAMICS: , LVEDP was' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "Dose 2.0% associated with lidocaine \u2014 dose 2.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'There was no LV-to-aortic gradient.,CORONARY ANGIOGRAPHY:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Left main is normal.  It bifurcates into LAD and left circumflex' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Proximal LAD at the origin of big diagonal, there is 50% to 60% calcified lesion present.  Rest of the LAD free of disease' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Measurement] 50.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Measurement] 60.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'Left circumflex is a large vessel and with minor plaque' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'Right coronary is dominant and also has proximal 40% stenosis.,SUMMARY:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Measurement] 40.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Procedure] 'Nonobstructive coronary artery disease, LAD proximal at the origin of big diagonal has 50% to 60% stenosis, which is calcified' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Measurement] 50.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Measurement] 60.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[Procedure] 'RCA has 40% proximal stenosis' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[Measurement] 40.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[Procedure] 'Normal LV systolic function with LV ejection fraction of 60%.,PLAN: , We will treat with medical therapy.  If the patient becomes symptomatic, we will repeat stress test.  If there is ischemic event, the patient will need surgery for the LAD lesion.  For the time being, we will continue with the medical therapy' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[Measurement] 60.0% \u2014 not associated with any medication"
+  }
+]

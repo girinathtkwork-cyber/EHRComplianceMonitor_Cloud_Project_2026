@@ -1,0 +1,63 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM:,  Ultrasound-guided paracentesis,HISTORY: , Ascites.,TECHNIQUE AND FINDINGS:  ,Informed consent was obtained from the patient after the risks and benefits of the procedure were thoroughly explained.  Ultrasound demonstrates free fluid in the abdomen.  The area of interest was localized with ultrasonography.  The region was sterilely prepped and draped in the usual manner.  Local anesthetic was administered.  A 5-French Yueh catheter needle combination was taken.  Upon crossing into the peritoneal space and aspiration of fluid, the catheter was advanced out over the needle.  A total of approximately 5500 mL of serous fluid was obtained.  The catheter was then removed.  The patient tolerated the procedure well with no immediate postprocedure complications.,IMPRESSION: , Ultrasound-guided paracentesis as above.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "were thoroughly explained.  Ultrasound demonstrates free fluid in the abdomen.  The area of interest was localized with ultrasonography.  The region was sterilely prepped and draped in the usual manner.  Local anesthetic was administered.  A 5-French Yueh catheter needle combination was taken.  Upon crossing into the peritoneal space and aspiration of fluid, the catheter was advanced out over the needle.  A total of approximately 5500 mL of serous fluid was obtained.  The catheter was then removed.  The patient tolerated the procedure well with no immediate postprocedure complications.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "measurement",
+    "text": "5500 mL"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Ultrasound-guided paracentesis as above"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Ultrasound-guided paracentesis as above"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'were thoroughly explained.  Ultrasound demonstrates free fluid in the abdomen.  The area of interest was localized with ultrasonography.  The region was sterilely prepped and draped in the usual manner.  Local anesthetic was administered.  A 5-French Yueh catheter needle combination was taken.  Upon crossing into the peritoneal space and aspiration of fluid, the catheter was advanced out over the needle.  A total of approximately 5500 mL of serous fluid was obtained.  The catheter was then removed.  The patient tolerated the procedure well with no immediate postprocedure complications.,IMPRESSION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Measurement] 5500.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Z89619: Acquired absence of unspecified leg above knee (score: 0.4971)\n[ICD-10-CM 2027] Z89612: Acquired absence of left leg above knee (score: 0.4934)\n[ICD-10-CM 2027] Z89611: Acquired absence of right leg above knee (score: 0.4934)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Ultrasound-guided paracentesis as above' \u2014 extracted from header, not verified against any coding system"
+  }
+]

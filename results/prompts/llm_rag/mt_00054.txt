@@ -1,0 +1,113 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:,  Airway obstruction secondary to laryngeal subglottic stenosis. Additional diagnosis noted: Hyperlipidemia.,POSTOPERATIVE DIAGNOSIS:  ,Airway obstruction secondary to laryngeal subglottic stenosis and tracheal stenosis.,OPERATION PERFORMED: , Suspension microlaryngoscopy, rigid bronchoscopy, dilation of tracheal stenosis.,INDICATIONS FOR SURGERY:  ,The patient is a 56-year-old white female with a history of relapsing polychondritis, which resulted in saddle nose deformity in glottic and subglottic stenosis for which she has undergone number of procedures in the past to the upper airway.  She currently is trach dependent for her airway because of glottic and subglottic stenosis, but she is having no significant problems breathing and talking around her trach tube and came for further evaluation.  Endoscopic reevaluation of her tube and nature of the proposed procedure done.  Risk and complications of bleeding, infection, alteration of with speech or swallowing, failure to improve her airway, and loss of voice.  Cardiorespiratory anesthetic results were discussed in length.  The patient states she understood and wished to proceed.,DESCRIPTION OF OPERATION:,  The patient was taken to the operating room and placed in the supine position.  Under adequate general endotracheal anesthesia, the patient's #5 metal tracheostomy tube was removed and a #5 laser-safe endotracheal tube was inserted.  The patient was then prepared for endoscopy.  The Kantor laryngoscope was then inserted.  Oral cavity, hypopharynx, larynx, and nasal cavity showed good dentition with good tongue, buccal cavity, and mucosa without lesions.  Larynx was then ***** short epiglottis.  Larynx was suspended with significant scarring beginning in the supraglottic area with loss of laryngeal contour beginning in the supraglottis with extensive scar tissue at the level of the false cord obliteration of ventricles and true cords.  This appeared to be stable, and airway was patent at the supraglottic and glottic level with some narrowing at the subglottic level with mild-to-moderate subglottic stenosis, otherwise this appeared to be stable.  However, distally, the level of the trach site examined with the microscope and 0 and 30-degree telescopes.  The patient noted to have marked narrowing with dense scarring posterolaterally on the left securing good visualization of the trach tube.  The laryngoscope was removed, and a 5 x 30 pediatric rigid bronchoscope was then passed.  The LP contact tip laser was utilized to vaporize the scar tissue and release the scar banding following which the scope was passed and further dilation carried out.  Mid and distal trachea were widely patent.  Trachea and mainstem bronchi were patent without obvious disease.  The patient did not appear to have any relapsing polychondritis with progressive scar tissue at the level of the trach site and the posterior trachea wall was significant.  This was further dilated and following which was removed and a new #5 metal tracheostomy tube inserted.  The patient tolerated the procedure well without complications and was taken to recovery room in satisfactory condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Airway obstruction secondary to laryngeal subglottic stenosis. Additional diagnosis noted: Hyperlipidemia.,POSTOPERATIVE DIAGNOSIS:  ,Airway obstruction secondary to laryngeal subglottic stenosis and tracheal stenosis.,OPERATION PERFORMED:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Airway obstruction secondary to laryngeal subglottic stenosis and tracheal stenosis.,OPERATION PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Suspension microlaryngoscopy, rigid bronchoscopy, dilation of tracheal stenosis.,INDICATIONS FOR SURGERY:  ,The patient is a 56-year-old white female with a history of relapsing polychondritis, which resulted in saddle nose deformity in glottic and subglottic stenosis for which she has undergone number of procedures in the past to the upper airway.  She currently is trach dependent for her airway because of glottic and subglottic stenosis, but she is having no significant problems breathing and talking around her trach tube and came for further evaluation.  Endoscopic reevaluation of her tube and nature of the proposed procedure done.  Risk and complications of bleeding, infection, alteration of with speech or swallowing, failure to improve her airway, and loss of voice.  Cardiorespiratory anesthetic results were discussed in length.  The patient states she understood and wished to proceed.,DESCRIPTION OF OPERATION:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Suspension microlaryngoscopy, rigid bronchoscopy, dilation of tracheal stenosis.,INDICATIONS FOR SURGERY:  ,The patient is a 56-year-old white female with a history of relapsing polychondritis, which resulted in saddle nose deformity in glottic and subglottic stenosis for which she has undergone number of procedures in the past to the upper airway.  She currently is trach dependent for her airway because of glottic and subglottic stenosis, but she is having no significant problems breathing and talking around her trach tube and came for further evaluation.  Endoscopic reevaluation of her tube and nature of the proposed procedure done.  Risk and complications of bleeding, infection, alteration of with speech or swallowing, failure to improve her airway, and loss of voice.  Cardiorespiratory anesthetic results were discussed in length.  The patient states she understood and wished to proceed.,DESCRIPTION OF OPERATION:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "in the past to the upper airway.  She currently is trach dependent for her airway because of glottic and subglottic stenosis, but she is having no significant problems breathing and talking around her trach tube and came for further evaluation.  Endoscopic reevaluation of her tube and nature of the proposed procedure done.  Risk and complications of bleeding, infection, alteration of with speech or swallowing, failure to improve her airway, and loss of voice.  Cardiorespiratory anesthetic results were discussed in length.  The patient states she understood and wished to proceed.,DESCRIPTION OF OPERATION:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "done.  Risk and complications of bleeding, infection, alteration of with speech or swallowing, failure to improve her airway, and loss of voice.  Cardiorespiratory anesthetic results were discussed in length.  The patient states she understood and wished to proceed.,DESCRIPTION OF OPERATION:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "The patient was taken to the operating room and placed in the supine position.  Under adequate general endotracheal anesthesia, the patient's #5 metal tracheostomy tube was removed and a #5 laser-safe endotracheal tube was inserted.  The patient was then prepared for endoscopy.  The Kantor laryngoscope was then inserted.  Oral cavity, hypopharynx, larynx, and nasal cavity showed good dentition with good tongue, buccal cavity, and mucosa without lesions.  Larynx was then ***** short epiglottis.  Larynx was suspended with significant scarring beginning in the supraglottic area with loss of laryngeal contour beginning in the supraglottis with extensive scar tissue at the level of the false cord obliteration of ventricles and true cords.  This appeared to be stable, and airway was patent at the supraglottic and glottic level with some narrowing at the subglottic level with mild-to-moderate subglottic stenosis, otherwise this appeared to be stable.  However, distally, the level of the trach site examined with the microscope and 0 and 30-degree telescopes.  The patient noted to have marked narrowing with dense scarring posterolaterally on the left securing good visualization of the trach tube.  The laryngoscope was removed, and a 5 x 30 pediatric rigid bronchoscope was then passed.  The LP contact tip laser was utilized to vaporize the scar tissue and release the scar banding following which the scope was passed and further dilation carried out.  Mid and distal trachea were widely patent.  Trachea and mainstem bronchi were patent without obvious disease.  The patient did not appear to have any relapsing polychondritis with progressive scar tissue at the level of the trach site and the posterior trachea wall was significant.  This was further dilated and following which was removed and a new #5 metal tracheostomy tube inserted.  The patient tolerated the procedure well without complications and was taken to recovery room in satisfactory condition"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "The patient was taken to the operating room and placed in the supine position.  Under adequate general endotracheal anesthesia, the patient's #5 metal tracheostomy tube was removed and a #5 laser-safe endotracheal tube was inserted.  The patient was then prepared for endoscopy.  The Kantor laryngoscope was then inserted.  Oral cavity, hypopharynx, larynx, and nasal cavity showed good dentition with good tongue, buccal cavity, and mucosa without lesions.  Larynx was then ***** short epiglottis.  Larynx was suspended with significant scarring beginning in the supraglottic area with loss of laryngeal contour beginning in the supraglottis with extensive scar tissue at the level of the false cord obliteration of ventricles and true cords.  This appeared to be stable, and airway was patent at the supraglottic and glottic level with some narrowing at the subglottic level with mild-to-moderate subglottic stenosis, otherwise this appeared to be stable.  However, distally, the level of the trach site examined with the microscope and 0 and 30-degree telescopes.  The patient noted to have marked narrowing with dense scarring posterolaterally on the left securing good visualization of the trach tube.  The laryngoscope was removed, and a 5 x 30 pediatric rigid bronchoscope was then passed.  The LP contact tip laser was utilized to vaporize the scar tissue and release the scar banding following which the scope was passed and further dilation carried out.  Mid and distal trachea were widely patent.  Trachea and mainstem bronchi were patent without obvious disease.  The patient did not appear to have any relapsing polychondritis with progressive scar tissue at the level of the trach site and the posterior trachea wall was significant.  This was further dilated and following which was removed and a new #5 metal tracheostomy tube inserted.  The patient tolerated the procedure well without complications and was taken to recovery room in satisfactory condition"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] Q311: Congenital subglottic stenosis (score: 0.5123)\n[ICD-10-CM 2027] J955: Postprocedural subglottic stenosis (score: 0.4968)\n[ICD-10-CM 2027] J385: Laryngeal spasm (score: 0.3195)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] Q311: Congenital subglottic stenosis (score: 0.6129)\n[ICD-10-CM 2027] J955: Postprocedural subglottic stenosis (score: 0.5944)\n[ICD-10-CM 2027] J385: Laryngeal spasm (score: 0.3465)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] Q311: Congenital subglottic stenosis (score: 0.3514)\n[ICD-10-CM 2027] J955: Postprocedural subglottic stenosis (score: 0.3408)\n[ICD-10-CM 2027] M941: Relapsing polychondritis (score: 0.2090)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Suspension microlaryngoscopy, rigid bronchoscopy, dilation of tracheal stenosis.,INDICATIONS FOR SURGERY:  ,The patient is a 56-year-old white female with a history of relapsing polychondritis, which resulted in saddle nose deformity in glottic and subglottic stenosis for which she has undergone number of procedures in the past to the upper airway.  She currently is trach dependent for her airway because of glottic and subglottic stenosis, but she is having no significant problems breathing and talking around her trach tube and came for further evaluation.  Endoscopic reevaluation of her tube and nature of the proposed procedure done.  Risk and complications of bleeding, infection, alteration of with speech or swallowing, failure to improve her airway, and loss of voice.  Cardiorespiratory anesthetic results were discussed in length.  The patient states she understood and wished to proceed.,DESCRIPTION OF OPERATION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'in the past to the upper airway.  She currently is trach dependent for her airway because of glottic and subglottic stenosis, but she is having no significant problems breathing and talking around her trach tube and came for further evaluation.  Endoscopic reevaluation of her tube and nature of the proposed procedure done.  Risk and complications of bleeding, infection, alteration of with speech or swallowing, failure to improve her airway, and loss of voice.  Cardiorespiratory anesthetic results were discussed in length.  The patient states she understood and wished to proceed.,DESCRIPTION OF OPERATION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'done.  Risk and complications of bleeding, infection, alteration of with speech or swallowing, failure to improve her airway, and loss of voice.  Cardiorespiratory anesthetic results were discussed in length.  The patient states she understood and wished to proceed.,DESCRIPTION OF OPERATION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] T270XXD: Burn of larynx and trachea, subsequent encounter (score: 0.2066)\n[ICD-10-CM 2027] T274XXD: Corrosion of larynx and trachea, subsequent encounter (score: 0.2061)\n[ICD-10-CM 2027] T270XXA: Burn of larynx and trachea, initial encounter (score: 0.2055)\n[ICD-10-CM 2027] Match unresolved (top score 0.2066 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'The patient was taken to the operating room and placed in the supine position.  Under adequate general endotracheal anesthesia, the patient's #5 metal tracheostomy tube was removed and a #5 laser-safe endotracheal tube was inserted.  The patient was then prepared for endoscopy.  The Kantor laryngoscope was then inserted.  Oral cavity, hypopharynx, larynx, and nasal cavity showed good dentition with good tongue, buccal cavity, and mucosa without lesions.  Larynx was then ***** short epiglottis.  Larynx was suspended with significant scarring beginning in the supraglottic area with loss of laryngeal contour beginning in the supraglottis with extensive scar tissue at the level of the false cord obliteration of ventricles and true cords.  This appeared to be stable, and airway was patent at the supraglottic and glottic level with some narrowing at the subglottic level with mild-to-moderate subglottic stenosis, otherwise this appeared to be stable.  However, distally, the level of the trach site examined with the microscope and 0 and 30-degree telescopes.  The patient noted to have marked narrowing with dense scarring posterolaterally on the left securing good visualization of the trach tube.  The laryngoscope was removed, and a 5 x 30 pediatric rigid bronchoscope was then passed.  The LP contact tip laser was utilized to vaporize the scar tissue and release the scar banding following which the scope was passed and further dilation carried out.  Mid and distal trachea were widely patent.  Trachea and mainstem bronchi were patent without obvious disease.  The patient did not appear to have any relapsing polychondritis with progressive scar tissue at the level of the trach site and the posterior trachea wall was significant.  This was further dilated and following which was removed and a new #5 metal tracheostomy tube inserted.  The patient tolerated the procedure well without complications and was taken to recovery room in satisfactory condition' \u2014 extracted from header, not verified against any coding system"
+  }
+]

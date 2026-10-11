@@ -1,0 +1,63 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+COMPARISON STUDIES:, None.,MEDICATION: ,  Lopressor 5 mg IV.,HEART RATE AFTER MEDICATION:, 64bpm,EXAM:,TECHNIQUE: Tomographic images were obtained of the heart and chest with a 64 detector row scanner using slice thicknesses of less than 1 mm. 80cc’s of Isovue 370 was injected in the right arm.,TECHNICAL QUALITY:,Examination is limited secondary to extensive artifact from defibrillator wires.,There is good demonstration of the coronary arteries and there is good bolus timing.,FINDINGS:,LEFT MAIN CORONARY ARTERY:,The left main coronary artery is a moderate-sized vessel with a normal ostium. There is no calcific or non-calcific plaque. The vessel bifurcates into a left anterior descending artery and a left circumflex artery.,LEFT ANTERIOR DESCENDING ARTERY:,The left anterior descending artery is a moderate-sized vessel, with a small first diagonal branch and a large second diagonal branch. The vessel continues as a small vessel, tapering at the apex of the left ventricle. There is calcific plaque within the mid vessel, with dense calcific plaque at the bifurcation of the second diagonal branch. This limits evaluation of the vessel lumen, and although a flow-limiting lesion cannot be excluded, there is no evidence of a high-grade stenosis. There is ostial calcification within the second diagonal branch as well. The LAD distal to the second diagonal branch is small relative to the more proximal vessel, and this is worrisome for a proximal flow-limiting lesion.,In addition, there is marked tapering of the D2 branch distal to the proximal and ostial calcific plaque. This is worrisome for either occlusion or a high-grade stenosis. There is only minimal contrast that is identified in the distal vessel.,LEFT CIRCUMFLEX ARTERY:,The left circumflex artery is a moderate-sized vessel with a patent ostium. There is calcific plaque within the proximal vessel. There is dense calcific plaque at the bifurcation of the OM1, and the AV groove branch. The AV groove branch tapers as a small vessel at the base of the heart. The dense calcific plaque within the bifurcation of the OM1 and the AV groove branch limits evaluation of the vessel lumen. There is no demonstrated high-grade stenosis, but a flow-limiting lesion cannot be excluded here.,RIGHT CORONARY ARTERY:,The right coronary artery is a moderate-sized vessel with a patent ostium. There is proximal mixed calcific and non-calcific plaque, but there is no flow-limiting lesion. The vessel continues as a moderate-sized vessel to the crux of the heart, supplying a small posterior descending artery and moderate to large posterolateral ventricular branches.,There is scattered calcific plaque within the mid vessel and there is also calcific plaque within the distal vessel at the origin of the posterior descending artery. There is no flow-limited lesion demonstrated.,The right coronary artery is dominant.,NONCORONARY CARDIAC STRUCTURE:,CARDIAC CHAMBERS:, There is diffuse myocardial thinning within the left ventricle, particularly within the apex where there is subendocardial calcification, consistent with chronic infarction. There is ventricular enlargement. There is no demonstrated aneurysm or pseudoaneurysm.,CARDIAC VALVES: ,There is calcification within the left aortic valve cusp. The aortic valve is tri-leaflet. Normal mitral valve.,PERICARDIUM:, Normal.,GREAT VESSELS: ,There are atherosclerotic changes within the aorta.,VISUALIZED LUNG PARENCHYMA, MEDIASTINUM AND CHEST WALL: ,Normal.,IMPRESSION:,Limited examination secondary to extensive artifact from the pacemaker wires.,There is extensive calcific plaque within the left anterior descending artery as well as within the proximal second diagonal branch. There is marked tapering of the LAD distal to the bifurcation of the D1 and this is worrisome for a flow-limiting lesion, but there is no evidence of occlusion.,There is marked tapering of the D1 branch distal to the calcific plaque and occlusion cannot be excluded.,There is dense calcific plaque within the left circumflex artery, and although a flow-limiting lesion cannot be excluded here, there is no evidence of an occlusion or high-grade stenosis.,There is mixed soft and calcific plaque within the proximal RCA, but there is no flow limiting lesion demonstrated.,There is diffuse thinning of the left ventricular wall, most focal at the apex where there is also dense calcification, consistent with chronic infarction. There is no demonstrated aneurysm or pseudoaneurysm.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Lopressor"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "dosage",
+    "text": "5 mg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "measurement",
+    "text": "80cc"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Limited examination secondary to extensive artifact from the pacemaker wires.,There is extensive calcific plaque within the left anterior descending artery as well as within the proximal second diagonal branch. There is marked tapering of the LAD distal to the bifurcation of the D1 and this is worrisome for a flow-limiting lesion, but there is no evidence of occlusion.,There is marked tapering of the D1 branch distal to the calcific plaque and occlusion cannot be excluded.,There is dense calcific plaque within the left circumflex artery, and although a flow-limiting lesion cannot be excluded here, there is no evidence of an occlusion or high-grade stenosis.,There is mixed soft and calcific plaque within the proximal RCA, but there is no flow limiting lesion demonstrated.,There is diffuse thinning of the left ventricular wall, most focal at the apex where there is also dense calcification, consistent with chronic infarction. There is no demonstrated aneurysm or pseudoaneurysm"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Lopressor' \u2192 RXCUI 203344, canonical: Lopressor, match: exact\n[RxNorm] Ingredient: metoprolol (RXCUI 6918)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR hydrochlorothiazide 25 MG / metoprolol tartrate 200 MG Extended Release Oral Tablet; metoprolol tartrate 37.5 MG Oral Tablet; metoprolol tartrate 75 MG Oral Tablet; 5 ML metoprolol tartrate 1 MG/ML Cartridge; 24 HR metoprolol succinate 100 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "Dose 5.0mg associated with Lopressor \u2014 dose 5.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Measurement] 80.0cc \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] K0510: Chronic gingivitis, plaque induced (score: 0.2327)\n[ICD-10-CM 2027] M65242: Calcific tendinitis, left hand (score: 0.2325)\n[ICD-10-CM 2027] M7532: Calcific tendinitis of left shoulder (score: 0.2293)\n[ICD-10-CM 2027] Match unresolved (top score 0.2327 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  }
+]

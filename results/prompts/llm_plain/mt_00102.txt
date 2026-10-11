@@ -1,0 +1,137 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES,1.  Herniated nucleus pulposus, C5-C6.,2.  Herniated nucleus pulposus, C6-C7.,POSTOPERATIVE DIAGNOSES,1.  Herniated nucleus pulposus, C5-C6.,2.  Herniated nucleus pulposus, C6-C7.,PROCEDURE PERFORMED,1.  Anterior cervical decompression, C5-C6.,2.  Anterior cervical decompression, C6-C7.,3.  Anterior spine instrumentation.,4.  Anterior cervical spine fusion, C5-C6.,5.  Anterior cervical spine fusion, C6-C7.,6.  Application of machined allograft at C5-C6.,7.  Application of machined allograft at C6-C7.,8.  Allograft, structural at C5-C6.,9.  Allograft, structural at C6-C7.,ANESTHESIA: , General.,PREOPERATIVE NOTE:  ,This patient is a 47-year-old male with chief complaint of severe neck pain and left upper extremity numbness and weakness.  Preoperative MRI scan showed evidence of herniated nucleus pulposus at C5-C6 and C6-C7 on the left.  The patient has failed epidural steroid injections.  Risks and benefits of the above procedure were discussed with the patient including bleeding, infection, muscle loss, nerve damage, paralysis, and death.,OPERATIVE REPORT: , The patient was taken to the OR and placed in the supine position.  After general endotracheal anesthesia was obtained, the patient's neck was sterilely prepped and draped in the usual fashion.  A horizontal incision was made on the left side of the neck at the level of the C6 vertebral body.  It was taken down through the subcutaneous tissues exposing the platysmus muscle.  The platysmus muscle was incised along the skin incision and the deep cervical fascia was bluntly dissected down to the anterior cervical spine.  An #18 gauge needle was placed in the C5-C6 interspace and the intraoperative x-ray confirmed that this was the appropriate level.  Next, the longus colli muscles were resected laterally on both the right and left side, and then a complete anterior cervical discectomy was performed.  The disk was very degenerated and brown in color.  There was an acute disk herniation through posterior longitudinal ligament.  The posterior longitudinal ligament was removed and a bilateral foraminotomy was performed.  Approximately, 5 mm of the nerve root on both the right and left side was visualized.  A ball-ended probe could be passed up the foramen.  Bleeding was controlled with bipolar electrocautery and Surgiflo.  The end plates of C5 and C6 were prepared using a high-speed burr and a 6-mm lordotic machined allograft was malleted into place.  There was good bony apposition both proximally and distally.  Next, attention was placed at the C6-C7 level.  Again, the longus colli muscles were resected laterally and a complete anterior cervical discectomy at C6-C7 was performed.  The disk was degenerated and there was acute disk herniation in the posterior longitudinal ligament on the left.  The posterior longitudinal ligament was removed.  A bilateral foraminotomy was performed.  Approximately, 5 mm of the C7 nerve root was visualized on both sides.  A micro nerve hook was able to be passed up the foramen easily.  Bleeding was controlled with bipolar electrocautery and Surgiflo.  The end plates at C6-C7 were then prepared using a high-speed burr and then a 7-mm machined lordotic allograft was malleted into place.  There was good bony apposition, both proximally and distally.  Next, a 44-mm Blackstone low-profile anterior cervical plate was applied to the anterior cervical spine with six 14 mm screws.  Intraoperative x-ray confirmed appropriate positioning of the plate and the graft.  The wound was then copiously irrigated with normal saline and bacitracin.  There was no active bleeding upon closure of the wound.  A small drain was placed deep.  The platysmal muscle was closed with 3-0 Vicryl.  The skin was closed with #4-0 Monocryl.  Mastisol and Steri-Strips were applied.  The patient was monitored throughout the procedure with free-running EMGs and SSEPs and there were no untoward events.  The patient was awoken and taken to the recovery room in satisfactory condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Herniated nucleus pulposus, C6-C7.,POSTOPERATIVE DIAGNOSES"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Herniated nucleus pulposus, C5-C6"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Herniated nucleus pulposus, C6-C7.,PROCEDURE PERFORMED"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "PERFORMED"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical decompression, C5-C6"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Anterior cervical decompression, C5-C6"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical decompression, C6-C7"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Anterior cervical decompression, C6-C7"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Anterior spine instrumentation"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Anterior spine instrumentation"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical spine fusion, C5-C6"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Anterior cervical spine fusion, C5-C6"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical spine fusion, C6-C7"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Anterior cervical spine fusion, C6-C7"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Application of machined allograft at C5-C6"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "Application of machined allograft at C5-C6"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Application of machined allograft at C6-C7"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "Application of machined allograft at C6-C7"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Allograft, structural at C5-C6"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "Allograft, structural at C5-C6"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "Allograft, structural at C6-C7.,ANESTHESIA: , General.,PREOPERATIVE NOTE:  ,This patient is a 47-year-old male with chief complaint of severe neck pain and left upper extremity numbness and weakness.  Preoperative MRI scan showed evidence of herniated nucleus pulposus at C5-C6 and C6-C7 on the left.  The patient has failed epidural steroid injections.  Risks and benefits of the above procedure were discussed with the patient including bleeding, infection, muscle loss, nerve damage, paralysis, and death.,OPERATIVE REPORT: , The patient was taken to the OR and placed in the supine position.  After general endotracheal anesthesia was obtained, the patient's neck was sterilely prepped and draped in the usual fashion.  A horizontal incision was made on the left side of the neck at the level of the C6 vertebral body.  It was taken down through the subcutaneous tissues exposing the platysmus muscle.  The platysmus muscle was incised along the skin incision and the deep cervical fascia was bluntly dissected down to the anterior cervical spine.  An #18 gauge needle was placed in the C5-C6 interspace and the intraoperative x-ray confirmed that this was the appropriate level.  Next, the longus colli muscles were resected laterally on both the right and left side, and then a complete anterior cervical discectomy was performed.  The disk was very degenerated and brown in color.  There was an acute disk herniation through posterior longitudinal ligament.  The posterior longitudinal ligament was removed and a bilateral foraminotomy was performed.  Approximately, 5 mm of the nerve root on both the right and left side was visualized.  A ball-ended probe could be passed up the foramen.  Bleeding was controlled with bipolar electrocautery and Surgiflo.  The end plates of C5 and C6 were prepared using a high-speed burr and a 6-mm lordotic machined allograft was malleted into place.  There was good bony apposition both proximally and distally.  Next, attention was placed at the C6-C7 level.  Again, the longus colli muscles were resected laterally and a complete anterior cervical discectomy at C6-C7 was performed.  The disk was degenerated and there was acute disk herniation in the posterior longitudinal ligament on the left.  The posterior longitudinal ligament was removed.  A bilateral foraminotomy was performed.  Approximately, 5 mm of the C7 nerve root was visualized on both sides.  A micro nerve hook was able to be passed up the foramen easily.  Bleeding was controlled with bipolar electrocautery and Surgiflo.  The end plates at C6-C7 were then prepared using a high-speed burr and then a 7-mm machined lordotic allograft was malleted into place.  There was good bony apposition, both proximally and distally.  Next, a 44-mm Blackstone low-profile anterior cervical plate was applied to the anterior cervical spine with six 14 mm screws.  Intraoperative x-ray confirmed appropriate positioning of the plate and the graft.  The wound was then copiously irrigated with normal saline and bacitracin.  There was no active bleeding upon closure of the wound.  A small drain was placed deep.  The platysmal muscle was closed with 3-0 Vicryl.  The skin was closed with #4-0 Monocryl.  Mastisol and Steri-Strips were applied.  The patient was monitored throughout the procedure with free-running EMGs and SSEPs and there were no untoward events.  The patient was awoken and taken to the recovery room in satisfactory condition"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "procedure",
+    "text": "Allograft, structural at C6-C7.,ANESTHESIA: , General.,PREOPERATIVE NOTE:  ,This patient is a 47-year-old male with chief complaint of severe neck pain and left upper extremity numbness and weakness.  Preoperative MRI scan showed evidence of herniated nucleus pulposus at C5-C6 and C6-C7 on the left.  The patient has failed epidural steroid injections.  Risks and benefits of the above procedure were discussed with the patient including bleeding, infection, muscle loss, nerve damage, paralysis, and death.,OPERATIVE REPORT: , The patient was taken to the OR and placed in the supine position.  After general endotracheal anesthesia was obtained, the patient's neck was sterilely prepped and draped in the usual fashion.  A horizontal incision was made on the left side of the neck at the level of the C6 vertebral body.  It was taken down through the subcutaneous tissues exposing the platysmus muscle.  The platysmus muscle was incised along the skin incision and the deep cervical fascia was bluntly dissected down to the anterior cervical spine.  An #18 gauge needle was placed in the C5-C6 interspace and the intraoperative x-ray confirmed that this was the appropriate level.  Next, the longus colli muscles were resected laterally on both the right and left side, and then a complete anterior cervical discectomy was performed.  The disk was very degenerated and brown in color.  There was an acute disk herniation through posterior longitudinal ligament.  The posterior longitudinal ligament was removed and a bilateral foraminotomy was performed.  Approximately, 5 mm of the nerve root on both the right and left side was visualized.  A ball-ended probe could be passed up the foramen.  Bleeding was controlled with bipolar electrocautery and Surgiflo.  The end plates of C5 and C6 were prepared using a high-speed burr and a 6-mm lordotic machined allograft was malleted into place.  There was good bony apposition both proximally and distally.  Next, attention was placed at the C6-C7 level.  Again, the longus colli muscles were resected laterally and a complete anterior cervical discectomy at C6-C7 was performed.  The disk was degenerated and there was acute disk herniation in the posterior longitudinal ligament on the left.  The posterior longitudinal ligament was removed.  A bilateral foraminotomy was performed.  Approximately, 5 mm of the C7 nerve root was visualized on both sides.  A micro nerve hook was able to be passed up the foramen easily.  Bleeding was controlled with bipolar electrocautery and Surgiflo.  The end plates at C6-C7 were then prepared using a high-speed burr and then a 7-mm machined lordotic allograft was malleted into place.  There was good bony apposition, both proximally and distally.  Next, a 44-mm Blackstone low-profile anterior cervical plate was applied to the anterior cervical spine with six 14 mm screws.  Intraoperative x-ray confirmed appropriate positioning of the plate and the graft.  The wound was then copiously irrigated with normal saline and bacitracin.  There was no active bleeding upon closure of the wound.  A small drain was placed deep.  The platysmal muscle was closed with 3-0 Vicryl.  The skin was closed with #4-0 Monocryl.  Mastisol and Steri-Strips were applied.  The patient was monitored throughout the procedure with free-running EMGs and SSEPs and there were no untoward events.  The patient was awoken and taken to the recovery room in satisfactory condition"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "medication",
+    "text": "bacitracin"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

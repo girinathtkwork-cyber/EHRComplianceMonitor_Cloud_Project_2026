@@ -1,0 +1,83 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM:,  Lexiscan Nuclear Myocardial Perfusion Scan.,INDICATION:,  Chest pain.,TYPE OF TEST:  ,Lexiscan, unable to walk on a treadmill.,INTERPRETATION: , Resting heart rate of 96, blood pressure of 141/76.  EKG, normal sinus rhythm, nonspecific ST-T changes, left bundle branch block.  Post Lexiscan 0.4 mg injected intravenously by standard protocol.  Peak heart rate was 105, blood pressure of 135/72.  EKG remains the same.  No symptoms are noted.,SUMMARY:,1.  Nondiagnostic Lexiscan.,2.  Nuclear interpretation as below.,NUCLEAR MYOCARDIAL PERFUSION SCAN WITH STANDARD PROTOCOL:,  Resting and stress images were obtained with 10.4, 32.5 mCi of tetrofosmin injected intravenously by standard protocol.  Myocardial perfusion scan demonstrates homogeneous and uniform distribution of the tracer uptake.  There is no evidence of reversible or fixed defect.  Gated SPECT revealed mild global hypokinesis, more pronounced in the septal wall possibly secondary to prior surgery.  Ejection fraction calculated at 41%.  End-diastolic volume of 115, end-systolic volume of 68.,IMPRESSION:,1.  Normal nuclear myocardial perfusion scan.,2.  Ejection fraction 41% by gated SPECT.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "measurement",
+    "text": "0.4 mg"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "tetrofosmin"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "measurement",
+    "text": "41%"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Normal nuclear myocardial perfusion scan"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Ejection fraction 41% by gated SPECT"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "measurement",
+    "text": "41%"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Measurement] 0.4mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'tetrofosmin' \u2192 RXCUI 1311569, canonical: tetrofosmin, match: exact\n[RxNorm] Ingredient: tetrofosmin (RXCUI 1311569)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Measurement] 41.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] R9402: Abnormal brain scan (score: 0.4404)\n[ICD-10-CM 2027] I21A1: Myocardial infarction type 2 (score: 0.2944)\n[ICD-10-CM 2027] I21A9: Other myocardial infarction type (score: 0.2944)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] No matches found for 'Ejection fraction 41% by gated SPECT' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Measurement] 41.0% \u2014 not associated with any medication"
+  }
+]

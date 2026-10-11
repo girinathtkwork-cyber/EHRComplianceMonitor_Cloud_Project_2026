@@ -1,0 +1,263 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+HISTORY OF PRESENT ILLNESS: , The patient is a 61-year-old female who was treated with CyberKnife therapy to a right upper lobe stage IA non-small cell lung cancer.  CyberKnife treatment was completed one month ago.  She is now being seen for her first post-CyberKnife treatment visit.,Since undergoing CyberKnife treatment, she has had low-level nausea without vomiting.  She continues to have pain with deep inspiration and resolving dysphagia.  She has no heartburn, cough, hemoptysis, rash, or palpable rib pain.,MEDICATIONS: , Dilantin 100 mg four times a day, phenobarbital 30 mg three times per day, levothyroxine 0.025 mg p.o. q. day, Tylenol with Codeine b.i.d., prednisone 5 mg p.r.n., citalopram 10 mg p.o. q. day, Spiriva q. day, Combivent inhaler p.r.n., omeprazole 20 mg p.o. q. day, Lidoderm patch every 12 hours, Naprosyn 375 mg p.o. b.i.d., oxaprozin 600 mg p.o. b.i.d., Megace 40 mg p.o. b.i.d., and Asacol p.r.n.,PHYSICAL EXAMINATION: , BP:  122/86.  Temp:  96.8.  HR:  79.  RR:  26.  RAS:  100%.,HEENT:  Normocephalic.  Pupils are equal and reactive to light and accommodation.  EOMs intact.,NECK:  Supple without masses or lymphadenopathy.,LUNGS:  Clear to auscultation bilaterally,CARDIAC:  Regular rate and rhythm without rubs, murmurs, or gallops.,EXTREMITIES:  No cyanosis, clubbing or edema.,ASSESSMENT: , The patient has done well with CyberKnife treatment of a stage IA non-small cell lung cancer, right upper lobe, one month ago.,PLAN: , She is to return to clinic in three months with a PET CT.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Dilantin"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "dosage",
+    "text": "100 mg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "phenobarbital"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "levothyroxine"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "0.025 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Tylenol with Codeine"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "prednisone"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "5 mg"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "citalopram"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Spiriva"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Combivent"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "omeprazole"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Lidoderm"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "Naprosyn"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "dosage",
+    "text": "375 mg"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "oxaprozin"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "dosage",
+    "text": "600 mg"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "measurement",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "The patient has done well with CyberKnife treatment of a stage IA non-small cell lung cancer, right upper lobe, one month ago.,PLAN:"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "She is to return to clinic in three months with a PET CT"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Dilantin' \u2192 RXCUI 202740, canonical: Dilantin, match: exact\n[RxNorm] Ingredient: phenytoin (RXCUI 8183)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pentobarbital sodium 390 MG/ML / phenytoin sodium 50 MG/ML Injectable Solution; phenytoin 25 MG/ML Oral Suspension; phenytoin 50 MG Chewable Tablet; phenytoin 6 MG/ML Oral Suspension; phenytoin 18 MG/ML Oral Suspension"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "Dose 100.0mg associated with Dilantin"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'phenobarbital' \u2192 RXCUI 8134, canonical: phenobarbital, match: exact\n[RxNorm] Ingredient: phenobarbital (RXCUI 8134)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): atropine sulfate 0.00388 MG/ML / hyoscyamine sulfate 0.0207 MG/ML / phenobarbital 3.24 MG/ML / scopolamine hydrobromide 0.0013 MG/ML Oral Solution; atropine sulfate 0.0194 MG / hyoscyamine sulfate 0.1037 MG / phenobarbital 16.2 MG / scopolamine hydrobromide 0.0065 MG Oral Tablet; atropine sulfate 0.0582 MG / hyoscyamine sulfate 0.311 MG / phenobarbital 48.6 MG / scopolamine hydrobromide 0.0195 MG Extended Release Oral Tablet; belladonna alkaloids 0.2 MG / ergotamine tartrate 0.6 MG / phenobarbital 40 MG Oral Tablet; phenobarbital 100 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 30.0mg associated with phenobarbital"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'levothyroxine' \u2192 RXCUI 10582, canonical: levothyroxine, match: exact\n[RxNorm] Ingredient: levothyroxine (RXCUI 10582)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): levothyroxine sodium 0.1 MG Injection; levothyroxine sodium 0.2 MG Injection; levothyroxine sodium 0.0022 MG/MG Oral Powder; levothyroxine sodium 0.175 MG Oral Capsule; levothyroxine sodium 0.2 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 0.025mg associated with levothyroxine"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Tylenol with Codeine' \u2192 RXCUI 220586, canonical: Tylenol with Codeine, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'prednisone' \u2192 RXCUI 8640, canonical: prednisone, match: exact\n[RxNorm] Ingredient: prednisone (RXCUI 8640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): prednisone 1 MG Delayed Release Oral Tablet; prednisone 2 MG Delayed Release Oral Tablet; prednisone 5 MG Delayed Release Oral Tablet; prednisone 1 MG Oral Tablet; prednisone 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "Dose 5.0mg associated with prednisone"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'citalopram' \u2192 RXCUI 2556, canonical: citalopram, match: exact\n[RxNorm] Ingredient: citalopram (RXCUI 2556)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): citalopram 20 MG Oral Tablet; citalopram 30 MG Oral Capsule; citalopram 10 MG Oral Tablet; citalopram 2 MG/ML Oral Solution; citalopram 40 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "Dose 10.0mg associated with citalopram"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Spiriva' \u2192 RXCUI 274535, canonical: Spiriva, match: exact\n[RxNorm] Ingredient: tiotropium (RXCUI 69120)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 60 ACTUAT tiotropium 0.0025 MG/ACTUAT Inhalation Spray; 28 ACTUAT tiotropium 0.0025 MG/ACTUAT Inhalation Spray; 28 ACTUAT olodaterol 0.0025 MG/ACTUAT / tiotropium 0.0025 MG/ACTUAT Inhalation Spray; 60 ACTUAT olodaterol 0.0025 MG/ACTUAT / tiotropium 0.0025 MG/ACTUAT Inhalation Spray; 60 ACTUAT tiotropium 0.00125 MG/ACTUAT Inhalation Spray"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Combivent' \u2192 RXCUI 151539, canonical: Combivent, match: exact\n[RxNorm] Ingredient: albuterol (RXCUI 435)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): albuterol 0.4 MG Inhalation Powder; 120 ACTUAT albuterol 0.1 MG/ACTUAT / ipratropium bromide 0.02 MG/ACTUAT Inhalation Spray; albuterol 1 MG/ML / ipratropium bromide 0.2 MG/ML Inhalation Solution; albuterol 0.833 MG/ML / ipratropium bromide 0.167 MG/ML Inhalation Solution; albuterol 4 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'omeprazole' \u2192 RXCUI 7646, canonical: omeprazole, match: exact\n[RxNorm] Ingredient: omeprazole (RXCUI 7646)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 81 MG / omeprazole 40 MG Delayed Release Oral Tablet; aspirin 325 MG / omeprazole 40 MG Delayed Release Oral Tablet; omeprazole 20 MG Delayed Release Oral Capsule; omeprazole 10 MG Delayed Release Oral Capsule; omeprazole 40 MG Delayed Release Oral Capsule"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 20.0mg associated with omeprazole"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Lidoderm' \u2192 RXCUI 261555, canonical: Lidoderm, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'Naprosyn' \u2192 RXCUI 203012, canonical: Naprosyn, match: exact\n[RxNorm] Ingredient: naproxen (RXCUI 7258)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): naproxen 250 MG Delayed Release Oral Tablet; naproxen sodium 220 MG Oral Capsule; 24 HR naproxen 375 MG Extended Release Oral Tablet; 24 HR naproxen 500 MG Extended Release Oral Tablet; 24 HR naproxen 750 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "Dose 375.0mg associated with Naprosyn"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'oxaprozin' \u2192 RXCUI 32613, canonical: oxaprozin, match: exact\n[RxNorm] Ingredient: oxaprozin (RXCUI 32613)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): oxaprozin 300 MG Oral Capsule; oxaprozin 600 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "Dose 600.0mg associated with oxaprozin"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[Measurement] 40.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[Measurement] 100.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] C3411: Malignant neoplasm of upper lobe, right bronchus or lung (score: 0.2955)\n[ICD-10-CM 2027] C3410: Malignant neoplasm of upper lobe, unspecified bronchus or lung (score: 0.2904)\n[ICD-10-CM 2027] Q331: Accessory lobe of lung (score: 0.2888)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] Z59812: Housing instability, housed, homelessness in past 12 months (score: 0.3758)\n[ICD-10-CM 2027] V321XXD: Passenger in three-wheeled motor vehicle injured in collision with two- or three-wheeled motor vehicle in nontraffic accident, subsequent encounter (score: 0.1708)\n[ICD-10-CM 2027] V326XXD: Passenger in three-wheeled motor vehicle injured in collision with two- or three-wheeled motor vehicle in traffic accident, subsequent encounter (score: 0.1708)"
+  }
+]

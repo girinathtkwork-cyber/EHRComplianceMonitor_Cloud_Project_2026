@@ -1,0 +1,21 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CLINICAL HISTORY:,  Gravida 1, para 0 at 33 weeks 5 days by early dating.  The patient is developing gestational diabetes.,Transabdominal ultrasound examination demonstrated a single fetus and uterus in vertex presentation.  The placenta was posterior in position.  There was normal fetal breathing movement, gross body movement, and fetal tone, and the qualitative amniotic fluid volume was normal with an amniotic fluid index of 18.2 cm.,The following measurements were obtained:  Biparietal diameter 8.54 cm, head circumference 30.96 cm, abdominal circumference 29.17 cm, and femoral length 6.58 cm.  These values predict a fetal weight of 4 pounds 15 ounces plus or minus 12 ounces or at the 42nd percentile based on gestation.,CONCLUSION:,  Normal biophysical profile (BPP) with a score of 8 out of possible 8.  The fetus is size appropriate for gestation. Patient also underwent upper endoscopy during this visit.
+
+Entities:
+[]
+
+Retrieved facts:
+[]

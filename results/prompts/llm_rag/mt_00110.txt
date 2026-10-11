@@ -1,0 +1,33 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM:,MRI-UP EXT JOINT LEFT SHOULDER,CLINICAL:,Left shoulder pain. Evaluate for rotator cuff tear.,FINDINGS:,  Multiple T1 and gradient echo axial images were obtained, as well as T1 and fat suppressed T2-weighted coronal images.,The rotator cuff appears intact and unremarkable. There is no significant effusion seen. Osseous structures are unremarkable. There is no significant downward spurring at the acromioclavicular joint. The glenoid labrum is intact and unremarkable.,IMPRESSION:,  Unremarkable MRI of the left shoulder.,
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Unremarkable MRI of the left shoulder"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M7582: Other shoulder lesions, left shoulder (score: 0.7885)\n[ICD-10-CM 2027] M7592: Shoulder lesion, unspecified, left shoulder (score: 0.7885)\n[ICD-10-CM 2027] M7580: Other shoulder lesions, unspecified shoulder (score: 0.7283)"
+  }
+]

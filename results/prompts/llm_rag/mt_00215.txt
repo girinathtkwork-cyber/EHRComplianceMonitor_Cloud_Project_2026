@@ -1,0 +1,43 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+SUBJECTIVE:,  This 3-year-old male is brought by his mother with concerns about his eating.  He has become a very particular eater, and not eating very much in general.  However, her primary concern was he was vomiting sometimes after particular foods.  They had noted that when he would eat raw carrots, within 5 to 10 minutes he would complain that his stomach hurt and then vomit.  After this occurred several times, they stopped giving him carrots.  Last week, he ate some celery and the same thing happened.  They had not given him any of that since.  He eats other foods without any apparent pain or vomiting.  Bowel movements are normal.  He does have a history of reactive airway disease, intermittently.  He is not diagnosed with intrinsic asthma at this time and takes no medication regularly.,CURRENT MEDICATIONS:,  He is on no medications.,ALLERGIES: , He has no known medicine allergies.,OBJECTIVE:,Vital Signs:  Weight:  31.5 pounds, which is an increase of 2.5 pounds since May.  Temperature is 97.1.  He certainly appears in no distress.  He is quite interested in looking at his books.,Neck:  Supple without adenopathy.,Lungs:  Clear.,Cardiac:  Regular rate and rhythm without murmurs.,Abdomen:  Soft without organomegaly, masses, or tenderness.,ASSESSMENT:,  Report of vomiting and abdominal pain after eating raw carrots and celery.  Etiology of this is unknown.,PLAN:,  I talked with mother about this.  Certainly, it does not suggest any kind of an allergic reaction, nor obstruction.  At this time, they will simply avoid those foods.  In the future, they may certainly try those again and see how he tolerates those.  I did encourage a wide variety of fruits and vegetables in his diet as a general principle.  If worsening symptoms, she is welcome to contact me again for reevaluation. Patient also underwent cardiac catheterization during this visit.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Report of vomiting and abdominal pain after eating raw carrots and celery.  Etiology of this is unknown.,PLAN:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "I talked with mother about this.  Certainly, it does not suggest any kind of an allergic reaction, nor obstruction.  At this time, they will simply avoid those foods.  In the future, they may certainly try those again and see how he tolerates those.  I did encourage a wide variety of fruits and vegetables in his diet as a general principle.  If worsening symptoms, she is welcome to contact me again for reevaluation. Patient also underwent cardiac catheterization during this visit"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] G3184: Mild cognitive impairment of uncertain or unknown etiology (score: 0.4463)\n[ICD-10-CM 2027] R1110: Vomiting, unspecified (score: 0.4182)\n[ICD-10-CM 2027] F5089: Other specified eating disorder (score: 0.3802)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] T7804XD: Anaphylactic reaction due to fruits and vegetables, subsequent encounter (score: 0.3605)\n[ICD-10-CM 2027] T7804XA: Anaphylactic reaction due to fruits and vegetables, initial encounter (score: 0.3598)\n[ICD-10-CM 2027] T7804XS: Anaphylactic reaction due to fruits and vegetables, sequela (score: 0.3597)"
+  }
+]

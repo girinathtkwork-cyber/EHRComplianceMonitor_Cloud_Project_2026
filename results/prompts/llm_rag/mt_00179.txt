@@ -1,0 +1,43 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+INTERPRETATION: , MRI of the cervical spine without contrast showed normal vertebral body height and alignment with normal cervical cord signal.  At C4-C5, there were minimal uncovertebral osteophytes with mild associated right foraminal compromise.  At C5-C6, there were minimal diffuse disc bulge and uncovertebral osteophytes with indentation of the anterior thecal sac, but no cord deformity or foraminal compromise.  At C6-C7, there was a central disc herniation resulting in mild deformity of the anterior aspect of the cord with patent neuroforamina.  MRI of the thoracic spine showed normal vertebral body height and alignment.  There was evidence of disc generation, especially anteriorly at the T5-T6 level.  There was no significant central canal or foraminal compromise.  Thoracic cord normal in signal morphology.  MRI of the lumbar spine showed normal vertebral body height and alignment.  There is disc desiccation at L4-L5 and L5-S1 with no significant central canal or foraminal stenosis at L1-L2, L2-L3, and L3-L4.  There was a right paracentral disc protrusion at L4-L5 narrowing of the right lateral recess.  The transversing nerve root on the right was impinged at that level.  The right foramen was mildly compromised.  There was also a central disc protrusion seen at the L5-S1 level resulting in indentation of the anterior thecal sac and minimal bilateral foraminal compromise.,IMPRESSION: , Overall impression was mild degenerative changes present in the cervical, thoracic, and lumbar spine without high-grade central canal or foraminal narrowing.  There was narrowing of the right lateral recess at L4-L5 level and associated impingement of the transversing nerve root at that level by a disc protrusion.  This was also seen on a prior study., Patient also underwent cardiac catheterization during this visit.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Overall impression was mild degenerative changes present in the cervical, thoracic, and lumbar spine without high-grade central canal or foraminal narrowing.  There was narrowing of the right lateral recess at L4-L5 level and associated impingement of the transversing nerve root at that level by a disc protrusion.  This was also seen on a prior study"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Patient also underwent cardiac catheterization during this visit"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] S3421XD: Injury of nerve root of lumbar spine, subsequent encounter (score: 0.3418)\n[ICD-10-CM 2027] S3421XA: Injury of nerve root of lumbar spine, initial encounter (score: 0.3406)\n[ICD-10-CM 2027] S3421XS: Injury of nerve root of lumbar spine, sequela (score: 0.3405)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] I97710: Intraoperative cardiac arrest during cardiac surgery (score: 0.3620)\n[ICD-10-CM 2027] Y840: Cardiac catheterization as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.3556)\n[ICD-10-CM 2027] O29199: Other cardiac complications of anesthesia during pregnancy, unspecified trimester (score: 0.3342)"
+  }
+]

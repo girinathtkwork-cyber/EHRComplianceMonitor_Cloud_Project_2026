@@ -1,0 +1,21 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PROBLEM:  ,Chronic abdominal pain, nausea, vomiting, abnormal liver function tests., ,HISTORY: , The patient is a 23-year-old female referred for evaluation due to a chronic history of abdominal pain and extensive work-up for abnormal liver function tests and this chronic nausea and vomiting referred here for further evaluation due to the patient's recent move from Eugene to Portland.  The patient is not a great historian.  Most of the history is obtained through the old history and chart that the patient has with her.  According to what we can make out, she began experiencing nausea, vomiting, recurrent epigastric and right upper quadrant pain in 2001.  She was initially seen by Dr. A back in September 2001 for abdominal pain, nausea and vomiting.  During those times, it was suspected that part of her symptoms may be secondary to biliary disease and underwent a cholecystectomy performed in Oregon by Dr.  A in August 2001.  It was assumed that this was caused by biliary dyskinesia.  Previous to that, an upper endoscopy was performed by Dr. B in July 2001 that showed to be mild gastritis secondary to anti-inflammatory use.  Postoperatively she continued to have nausea and vomiting, right upper quadrant abdominal pain and epigastric pain similar to her gallbladder pain in the past.
+
+Entities:
+[]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

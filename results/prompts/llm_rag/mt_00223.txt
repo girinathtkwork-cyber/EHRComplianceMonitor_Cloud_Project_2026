@@ -1,0 +1,83 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT: , Burn, right arm.,HISTORY OF PRESENT ILLNESS: , This is a Workers' Compensation injury.  This patient, a 41 year-old male, was at a coffee shop, where he works as a cook, and hot oil splashed onto his arm, burning from the elbow to the wrist on the medial aspect.  He has had it cooled, and presents with his friend to the Emergency Department for care.,PAST MEDICAL HISTORY:  ,Noncontributory.,MEDICATIONS:  ,None.,ALLERGIES:  ,None.,PHYSICAL EXAMINATION: , GENERAL:  Well-developed, well-nourished 21-year-old male adult who is appropriate and cooperative.  His only injury is to the right upper extremity.  There are first and second degree burns on the right forearm, ranging from the elbow to the wrist.  Second degree areas with blistering are scattered through the medial aspect of the forearm.  There is no circumferential burn, and I see no areas of deeper burn.  The patient moves his hands well.  Pulses are good.  Circulation to the hand is fine.,FINAL DIAGNOSIS:,1.  First-degree and second-degree burns, right arm secondary to hot oil spill.,2.  Workers' Compensation industrial injury.,TREATMENT: , The wound is cooled and cleansed with soaking in antiseptic solution.  The patient was ordered Demerol 50 mg IM for pain, but he refused and did not want pain medication.  A burn dressing is applied with Neosporin ointment.  The patient is given Tylenol No. 3, tabs #4, to take home with him and take one or two every four hours p.r.n. for pain.  He is to return tomorrow for a dressing change.  Tetanus immunization is up to date.  Preprinted instructions are given.  Workers' Compensation first report and work status report are completed.,DISPOSITION: , Home.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "First-degree and second-degree burns, right arm secondary to hot oil spill"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Workers' Compensation industrial injury.,TREATMENT: , The wound is cooled and cleansed with soaking in antiseptic solution.  The patient was ordered Demerol 50 mg IM for pain, but he refused and did not want pain medication.  A burn dressing is applied with Neosporin ointment.  The patient is given Tylenol No. 3, tabs #4, to take home with him and take one or two every four hours p.r.n. for pain.  He is to return tomorrow for a dressing change.  Tetanus immunization is up to date.  Preprinted instructions are given.  Workers' Compensation first report and work status report are completed.,DISPOSITION: , Home"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Demerol"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "50 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Tylenol"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "tomorrow"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] T22231D: Burn of second degree of right upper arm, subsequent encounter (score: 0.5248)\n[ICD-10-CM 2027] T22131D: Burn of first degree of right upper arm, subsequent encounter (score: 0.5238)\n[ICD-10-CM 2027] T22231A: Burn of second degree of right upper arm, initial encounter (score: 0.5205)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] Z4801: Encounter for change or removal of surgical wound dressing (score: 0.2643)\n[ICD-10-CM 2027] R52: Pain, unspecified (score: 0.2614)\n[ICD-10-CM 2027] Z4800: Encounter for change or removal of nonsurgical wound dressing (score: 0.2476)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Demerol' \u2192 RXCUI 282381, canonical: Demerol, match: exact\n[RxNorm] Ingredient: meperidine (RXCUI 6754)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML meperidine hydrochloride 100 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 25 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 75 MG/ML Cartridge"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 50.0mg associated with Demerol"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Tylenol' \u2192 RXCUI 202433, canonical: Tylenol, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'tomorrow' \u2192 RXCUI 96797, canonical: Tomorrow, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  }
+]

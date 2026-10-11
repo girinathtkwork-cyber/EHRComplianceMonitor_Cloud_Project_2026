@@ -1,0 +1,173 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT: , Left knee pain and stiffness.,HISTORY OF PRESENT ILLNESS: , The patient is a 57-year-old with severe bilateral knee DJD, left greater than right, with significant pain and limitations because of both.  He is able to walk approximately a 1/2-mile a day but is limited because of his knees.  Stairs are negotiated 1 at a time.  His problems with bilateral knee DJD have been well documented.  He had arthroscopy in the 1991/199two time frame for both of these.  He has been on long-standing conservative course for these including nonsteroidals, narcotics, injections.  At this point because of his progressive and persistent limitations he has opted for total joint surgery on the left side.  He does have other arthritic complaints including multiple back surgeries for spinal stenosis including decompression and epidural steroids.  Significant pain is handled by narcotic medication.  His attending physician is Dr. X.,PAST MEDICAL HISTORY: , Hypertension.,PRIOR SURGERIES:,1.  Inguinal hernia on the left.,2.  Baker's cyst.,3.  Colon cancer removal.,4.  Bilateral knee scopes.,5.  Right groin hernia.,6.  Low back surgery for spinal stenosis.,7.  Status post colon cancer second surgery.,MEDICATIONS:,1.  Ambien 12.5 mg nightly.,2.  Methadone 10 mg b.i.d.,3.  Lisinopril 10 mg daily.,IV MEDICATIONS FOR PAIN:  ,Demerol appears to work the best.,ALLERGIES: , Levaquin and Cipro cause rashes; ibuprofen causes his throat to swell, Fortaz causes an unknown reaction.,REVIEW OF SYSTEMS:  ,He does have paresthesias down into his thighs secondary to spinal stenosis.,SOCIAL HISTORY: , Married.  He is retired, being a Pepsi-Cola driver secondary to his back and knees.,HABITS: , No tobacco or alcohol.  Chewed until 2003.,RECREATIONAL PURSUITS:  ,Golfs, gardens, woodworks.,FAMILY HISTORY:,1.  Cancer.,2.  Coronary artery disease.,PHYSICAL EXAMINATION:,GENERAL APPEARANCE:  A pleasant, cooperative 57-year-old white male.,VITAL SIGNS:  Height 5' 9", weight 167.  Blood pressure 148/86.  Pulse 78 per minute and regular.,HEENT:  Unremarkable.  Extraocular movements are full.  Cranial nerves II-XII intact.,NECK:  Supple.,CHEST:  Clear.,CARDIOVASCULAR:  Regular rhythm.  Normal S1 and 2.,ABDOMEN:  No organomegaly.  No tenderness.  Normal bowel sounds.,NEUROLOGIC:  Intact.,MUSCULOSKELETAL:  Left knee reveals a range of -10 degrees extension, 126 flexion.  His extensor mechanism is intact.  There is mild varus.  He has good stability at 30 degrees of flexion.  Lachman's and posterior drawer are negative.  He has good muscle turgor.  Dorsalis pedis pulse 2+.,DIAGNOSTICS:  ,X-rays revealed severe bilateral knee DJD with joint space narrowing medially as well as the patellofemoral joint with large osteophytes, left greater than right.,IMPRESSION:,1.  Bilateral knee degenerative joint disease.,2.  Significant back pain, status post lumbar stenosis surgery with pain being controlled on methadone 10 mg b.i.d.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Ambien"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "dosage",
+    "text": "12.5 mg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Methadone"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Lisinopril"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Demerol"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Levaquin"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Cipro"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "ibuprofen"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Fortaz"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Bilateral knee degenerative joint disease"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Significant back pain, status post lumbar stenosis surgery with pain being controlled on methadone 10 mg b.i.d"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "methadone"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Ambien' \u2192 RXCUI 131725, canonical: Ambien, match: exact\n[RxNorm] Ingredient: zolpidem (RXCUI 39993)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): zolpidem tartrate 1.75 MG Sublingual Tablet; zolpidem tartrate 3.5 MG Sublingual Tablet; zolpidem tartrate 7.5 MG Oral Capsule; zolpidem tartrate 10 MG Sublingual Tablet; zolpidem tartrate 5 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "Dose 12.5mg associated with Ambien"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Methadone' \u2192 RXCUI 6813, canonical: methadone, match: exact\n[RxNorm] Ingredient: methadone (RXCUI 6813)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methadone hydrochloride 10 MG Oral Tablet; methadone hydrochloride 10 MG/ML Injectable Solution; methadone hydrochloride 5 MG Oral Tablet; methadone hydrochloride 1 MG/ML Oral Solution; methadone hydrochloride 2 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 10.0mg associated with Methadone"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Lisinopril' \u2192 RXCUI 29046, canonical: lisinopril, match: exact\n[RxNorm] Ingredient: lisinopril (RXCUI 29046)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lisinopril 1 MG/ML Oral Solution; lisinopril 40 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 10 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 20 MG Oral Tablet; hydrochlorothiazide 25 MG / lisinopril 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 10.0mg associated with Lisinopril"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Demerol' \u2192 RXCUI 282381, canonical: Demerol, match: exact\n[RxNorm] Ingredient: meperidine (RXCUI 6754)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML meperidine hydrochloride 100 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 25 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 75 MG/ML Cartridge"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Levaquin' \u2192 RXCUI 217992, canonical: Levaquin, match: exact\n[RxNorm] Ingredient: levofloxacin (RXCUI 82122)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 50 ML levofloxacin 5 MG/ML Injection; 100 ML levofloxacin 5 MG/ML Injection; 150 ML levofloxacin 5 MG/ML Injection; 20 ML levofloxacin 25 MG/ML Injection; 30 ML levofloxacin 25 MG/ML Injection"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Cipro' \u2192 RXCUI 203563, canonical: Cipro, match: exact\n[RxNorm] Ingredient: ciprofloxacin (RXCUI 2551)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 100 ML ciprofloxacin 2 MG/ML Injection; 200 ML ciprofloxacin 2 MG/ML Injection; 40 ML ciprofloxacin 10 MG/ML Injection; ciprofloxacin 3 MG/ML / fluocinolone acetonide 0.25 MG/ML Otic Solution; ciprofloxacin 250 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'ibuprofen' \u2192 RXCUI 5640, canonical: ibuprofen, match: exact\n[RxNorm] Ingredient: ibuprofen (RXCUI 5640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): ibuprofen 400 MG / oxycodone hydrochloride 5 MG Oral Tablet; famotidine 26.6 MG / ibuprofen 800 MG Oral Tablet; chlorpheniramine maleate 2 MG / ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Tablet; ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Capsule; ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Fortaz' \u2192 RXCUI 203421, canonical: Fortaz, match: exact\n[RxNorm] Ingredient: ceftazidime (RXCUI 2191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): avibactam 500 MG / ceftazidime 2000 MG Injection; ceftazidime 500 MG Injection; ceftazidime 1000 MG Injection; ceftazidime 2000 MG Injection; ceftazidime 250 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] G319: Degenerative disease of nervous system, unspecified (score: 0.5756)\n[ICD-10-CM 2027] H4423: Degenerative myopia, bilateral (score: 0.5579)\n[ICD-10-CM 2027] H93093: Unspecified degenerative and vascular disorders of ear, bilateral (score: 0.5401)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] R52: Pain, unspecified (score: 0.4207)\n[ICD-10-CM 2027] M79646: Pain in unspecified finger(s) (score: 0.3700)\n[ICD-10-CM 2027] M79643: Pain in unspecified hand (score: 0.3684)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'methadone' \u2192 RXCUI 6813, canonical: methadone, match: exact\n[RxNorm] Ingredient: methadone (RXCUI 6813)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methadone hydrochloride 10 MG Oral Tablet; methadone hydrochloride 10 MG/ML Injectable Solution; methadone hydrochloride 5 MG Oral Tablet; methadone hydrochloride 1 MG/ML Oral Solution; methadone hydrochloride 2 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 10.0mg associated with methadone"
+  }
+]

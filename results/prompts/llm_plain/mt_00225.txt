@@ -1,0 +1,87 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Umbilical hernia.,POSTOPERATIVE DIAGNOSIS: , Umbilical hernia.,PROCEDURE PERFORMED: , Repair of umbilical hernia.,ANESTHESIA: , General.,COMPLICATIONS: , None.,ESTIMATED BLOOD LOSS: , Minimal.,PROCEDURE IN DETAIL:  ,The patient was prepped and draped in the sterile fashion.  An infraumbilical incision was formed and taken down to the fascia.  The umbilical hernia carefully reduced back into the cavity, and the fascia was closed with interrupted vertical mattress sutures to approximate the fascia, and then the wounds were infiltrated with 0.25% Marcaine.  The skin was reattached to the fascia with 2-0 Vicryls.  The skin was approximated with 2-0 Vicryl subcutaneous and then 4-0 Monocryl subcuticular stitches, dressed with Steri-Strips and 4 x 4's.  Patient was extubated and taken to the recovery area in stable condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Umbilical hernia.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Umbilical hernia.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Repair of umbilical hernia.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Repair of umbilical hernia.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "General.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "General.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "None.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "None.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Minimal.,PROCEDURE IN DETAIL:  ,The patient was prepped and draped in the sterile fashion.  An infraumbilical incision was formed and taken down to the fascia.  The umbilical hernia carefully reduced back into the cavity, and the fascia was closed with interrupted vertical mattress sutures to approximate the fascia, and then the wounds were infiltrated with 0.25% Marcaine.  The skin was reattached to the fascia with 2-0 Vicryls.  The skin was approximated with 2-0 Vicryl subcutaneous and then 4-0 Monocryl subcuticular stitches, dressed with Steri-Strips and 4 x 4's.  Patient was extubated and taken to the recovery area in stable condition"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Minimal.,PROCEDURE IN DETAIL:  ,The patient was prepped and draped in the sterile fashion.  An infraumbilical incision was formed and taken down to the fascia.  The umbilical hernia carefully reduced back into the cavity, and the fascia was closed with interrupted vertical mattress sutures to approximate the fascia, and then the wounds were infiltrated with 0.25% Marcaine.  The skin was reattached to the fascia with 2-0 Vicryls.  The skin was approximated with 2-0 Vicryl subcutaneous and then 4-0 Monocryl subcuticular stitches, dressed with Steri-Strips and 4 x 4's.  Patient was extubated and taken to the recovery area in stable condition"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "dosage",
+    "text": "0.25%"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Marcaine"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

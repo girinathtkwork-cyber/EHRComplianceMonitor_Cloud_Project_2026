@@ -1,0 +1,107 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+REASON FOR CONSULTATION:,  Coronary artery disease (CAD), prior bypass surgery.,HISTORY OF PRESENT ILLNESS: , The patient is a 70-year-old gentleman who was admitted for management of fever.  The patient has history of elevated PSA and BPH.  He had a prior prostate biopsy and he recently had some procedure done, subsequently developed urinary tract infection, and presently on antibiotic.  From cardiac standpoint, the patient denies any significant symptom except for fatigue and tiredness.  No symptoms of chest pain or shortness of breath.,His history from cardiac standpoint as mentioned below.,CORONARY RISK FACTORS: , History of hypertension, history of diabetes mellitus, nonsmoker.  Cholesterol elevated.  History of established coronary artery disease in the family and family history positive.,FAMILY HISTORY: , Positive for coronary artery disease.,SURGICAL HISTORY: , Coronary artery bypass surgery and a prior angioplasty and prostate biopsies.,MEDICATIONS:,1.  Metformin.,2.  Prilosec.,3.  Folic acid.,4.  Flomax.,5.  Metoprolol.,6.  Crestor.,7.  Claritin.,ALLERGIES:,  DEMEROL, SULFA.,PERSONAL HISTORY: , He is married, nonsmoker, does not consume alcohol, and no history of recreational drug use.,PAST MEDICAL HISTORY:,  Significant for multiple knee surgeries, back surgery, and coronary artery bypass surgery with angioplasty, hypertension, hyperlipidemia, elevated PSA level, BPH with questionable cancer.  Symptoms of shortness of breath, fatigue, and tiredness.,REVIEW OF SYSTEMS:,CONSTITUTIONAL:  No history of fever, rigors, or chills except for recent fever and rigors.,HEENT:  No history of cataract or glaucoma.,CARDIOVASCULAR:  As above.,RESPIRATORY:  Shortness of breath.  No pneumonia or valley fever.,GASTROINTESTINAL:  Nausea and vomiting.  No hematemesis or melena.,UROLOGICAL:  Frequency, urgency.,MUSCULOSKELETAL:  No muscle weakness.,SKIN:  None significant.,NEUROLOGICAL:  No TIA or CVA.  No seizure disorder.,PSYCHOLOGICAL:  No anxiety or depression.,ENDOCRINE:  As above.,HEMATOLOGICAL:  None significant.,PHYSICAL EXAMINATION:,VITAL SIGNS:  Pulse of 75, blood pressure 130/68, afebrile, and respiratory rate 16 per minute.,HEENT:  Atraumatic, normocephalic.,NECK:  Veins flat.  No significant carotid bruits.,LUNGS:  Air entry bilaterally fair.,HEART:  PMI displaced.  S1 and S2 regular.,ABDOMEN:  Soft, nontender.  Bowel sounds present.,EXTREMITIES:  No edema.  Pulses are palpable.  No clubbing or cyanosis.,CNS:  Benign.,EKG:  Patient also underwent upper endoscopy during this visit.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "done, subsequently developed urinary tract infection, and presently on antibiotic.  From cardiac standpoint, the patient denies any significant symptom except for fatigue and tiredness.  No symptoms of chest pain or shortness of breath.,His history from cardiac standpoint as mentioned below.,CORONARY RISK FACTORS: , History of hypertension, history of diabetes mellitus, nonsmoker.  Cholesterol elevated.  History of established coronary artery disease in the family and family history positive.,FAMILY HISTORY: , Positive for coronary artery disease.,SURGICAL HISTORY: , Coronary artery bypass surgery and a prior angioplasty and prostate biopsies.,MEDICATIONS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Cholesterol"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Metformin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Metformin"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Prilosec"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Prilosec"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Folic acid"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Folic acid"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Flomax"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Flomax"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Metoprolol"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Metoprolol"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Crestor"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Crestor"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "Claritin.,ALLERGIES:,  DEMEROL, SULFA.,PERSONAL HISTORY: , He is married, nonsmoker, does not consume alcohol, and no history of recreational drug use.,PAST MEDICAL HISTORY:,  Significant for multiple knee surgeries, back surgery, and coronary artery bypass surgery with angioplasty, hypertension, hyperlipidemia, elevated PSA level, BPH with questionable cancer.  Symptoms of shortness of breath, fatigue, and tiredness.,REVIEW OF SYSTEMS:,CONSTITUTIONAL:  No history of fever, rigors, or chills except for recent fever and rigors.,HEENT:  No history of cataract or glaucoma.,CARDIOVASCULAR:  As above.,RESPIRATORY:  Shortness of breath.  No pneumonia or valley fever.,GASTROINTESTINAL:  Nausea and vomiting.  No hematemesis or melena.,UROLOGICAL:  Frequency, urgency.,MUSCULOSKELETAL:  No muscle weakness.,SKIN:  None significant.,NEUROLOGICAL:  No TIA or CVA.  No seizure disorder.,PSYCHOLOGICAL:  No anxiety or depression.,ENDOCRINE:  As above.,HEMATOLOGICAL:  None significant.,PHYSICAL EXAMINATION:,VITAL SIGNS:  Pulse of 75, blood pressure 130/68, afebrile, and respiratory rate 16 per minute.,HEENT:  Atraumatic, normocephalic.,NECK:  Veins flat.  No significant carotid bruits.,LUNGS:  Air entry bilaterally fair.,HEART:  PMI displaced.  S1 and S2 regular.,ABDOMEN:  Soft, nontender.  Bowel sounds present.,EXTREMITIES:  No edema.  Pulses are palpable.  No clubbing or cyanosis.,CNS:  Benign.,EKG:  Patient also underwent upper endoscopy during this visit"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Claritin"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "DEMEROL"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

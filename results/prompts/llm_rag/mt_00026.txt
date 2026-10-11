@@ -1,0 +1,123 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PROCEDURE PERFORMED: , Tonsillectomy and adenoidectomy. Additional diagnosis noted: Atrial Fibrillation.,ANESTHESIA:,  General endotracheal.,DESCRIPTION OF PROCEDURE: , The patient was taken to the operating room and prepped and draped in the usual fashion after induction of general endotracheal anesthesia.  The McIvor mouth gag was placed in the oral cavity, and a tongue depressor applied.  Two #12-French red rubber Robinson catheters were placed, 1 in each nasal passage, and brought out through the oral cavity and clamped over a dental gauze roll placed on the upper lip to provide soft palate retraction.,The nasopharynx was inspected with a laryngeal mirror.  The adenoid tissue was fulgurated with the suction Bovie set at 35.  The catheters and the dental gauze roll were then removed.  The anterior tonsillar pillars were infiltrated with 0.5% Marcaine and epinephrine.  Using the radiofrequency wand, the tonsils were ablated bilaterally.  If bleeding occurred, it was treated with the wand on coag mode using a coag mode of 3 and an ablation mode of 9.  The tonsillectomy was completed.,The nasopharynx and nasal passages were suctioned free of debris, and the procedure was terminated.,The patient tolerated the procedure well and left the operating room in good condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "PERFORMED: , Tonsillectomy and adenoidectomy. Additional diagnosis noted: Atrial Fibrillation.,ANESTHESIA:,  General endotracheal.,DESCRIPTION OF PROCEDURE: , The patient was taken to the operating room and prepped and draped in the usual fashion after induction of general endotracheal anesthesia.  The McIvor mouth gag was placed in the oral cavity, and a tongue depressor applied.  Two #12-French red rubber Robinson catheters were placed, 1 in each nasal passage, and brought out through the oral cavity and clamped over a dental gauze roll placed on the upper lip to provide soft palate retraction.,The nasopharynx was inspected with a laryngeal mirror.  The adenoid tissue was fulgurated with the suction Bovie set at"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "Tonsillectomy and adenoidectomy. Additional diagnosis noted: Atrial Fibrillation.,ANESTHESIA:,  General endotracheal.,DESCRIPTION OF PROCEDURE: , The patient was taken to the operating room and prepped and draped in the usual fashion after induction of general endotracheal anesthesia.  The McIvor mouth gag was placed in the oral cavity, and a tongue depressor applied.  Two #12-French red rubber Robinson catheters were placed, 1 in each nasal passage, and brought out through the oral cavity and clamped over a dental gauze roll placed on the upper lip to provide soft palate retraction.,The nasopharynx was inspected with a laryngeal mirror.  The adenoid tissue was fulgurated with the suction Bovie set at"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "noted: Atrial Fibrillation.,ANESTHESIA:,  General endotracheal.,DESCRIPTION OF PROCEDURE: , The patient was taken to the operating room and prepped and draped in the usual fashion after induction of general endotracheal anesthesia.  The McIvor mouth gag was placed in the oral cavity, and a tongue depressor applied.  Two #12-French red rubber Robinson catheters were placed, 1 in each nasal passage, and brought out through the oral cavity and clamped over a dental gauze roll placed on the upper lip to provide soft palate retraction.,The nasopharynx was inspected with a laryngeal mirror.  The adenoid tissue was fulgurated with the suction Bovie set at"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "The catheters and the dental gauze roll were then removed.  The anterior tonsillar pillars were infiltrated with 0.5% Marcaine and epinephrine.  Using the radiofrequency wand, the tonsils were ablated bilaterally.  If bleeding occurred, it was treated with the wand on coag mode using a coag mode of 3 and an ablation mode of"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "The catheters and the dental gauze roll were then removed.  The anterior tonsillar pillars were infiltrated with 0.5% Marcaine and epinephrine.  Using the radiofrequency wand, the tonsils were ablated bilaterally.  If bleeding occurred, it was treated with the wand on coag mode using a coag mode of 3 and an ablation mode of"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "0.5%"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Marcaine"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "The tonsillectomy was completed.,The nasopharynx and nasal passages were suctioned free of debris, and the procedure was terminated.,The patient tolerated the procedure well and left the operating room in good condition"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "The tonsillectomy was completed.,The nasopharynx and nasal passages were suctioned free of debris, and the procedure was terminated.,The patient tolerated the procedure well and left the operating room in good condition"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'PERFORMED: , Tonsillectomy and adenoidectomy. Additional diagnosis noted: Atrial Fibrillation.,ANESTHESIA:,  General endotracheal.,DESCRIPTION OF PROCEDURE: , The patient was taken to the operating room and prepped and draped in the usual fashion after induction of general endotracheal anesthesia.  The McIvor mouth gag was placed in the oral cavity, and a tongue depressor applied.  Two #12-French red rubber Robinson catheters were placed, 1 in each nasal passage, and brought out through the oral cavity and clamped over a dental gauze roll placed on the upper lip to provide soft palate retraction.,The nasopharynx was inspected with a laryngeal mirror.  The adenoid tissue was fulgurated with the suction Bovie set at' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'Tonsillectomy and adenoidectomy. Additional diagnosis noted: Atrial Fibrillation.,ANESTHESIA:,  General endotracheal.,DESCRIPTION OF PROCEDURE: , The patient was taken to the operating room and prepped and draped in the usual fashion after induction of general endotracheal anesthesia.  The McIvor mouth gag was placed in the oral cavity, and a tongue depressor applied.  Two #12-French red rubber Robinson catheters were placed, 1 in each nasal passage, and brought out through the oral cavity and clamped over a dental gauze roll placed on the upper lip to provide soft palate retraction.,The nasopharynx was inspected with a laryngeal mirror.  The adenoid tissue was fulgurated with the suction Bovie set at' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Y653: Endotracheal tube wrongly placed during anesthetic procedure (score: 0.3722)\n[ICD-10-CM 2027] S01502D: Unspecified open wound of oral cavity, subsequent encounter (score: 0.2188)\n[ICD-10-CM 2027] S00532D: Contusion of oral cavity, subsequent encounter (score: 0.2180)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] C091: Malignant neoplasm of tonsillar pillar (anterior) (posterior) (score: 0.3256)\n[ICD-10-CM 2027] Z113: Encounter for screening for infections with a predominantly sexual mode of transmission (score: 0.3120)\n[ICD-10-CM 2027] Z224: Carrier of infections with a predominantly sexual mode of transmission (score: 0.3058)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'The catheters and the dental gauze roll were then removed.  The anterior tonsillar pillars were infiltrated with 0.5% Marcaine and epinephrine.  Using the radiofrequency wand, the tonsils were ablated bilaterally.  If bleeding occurred, it was treated with the wand on coag mode using a coag mode of 3 and an ablation mode of' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 0.5% associated with Marcaine \u2014 dose 0.5% not among known product strengths"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Marcaine' \u2192 RXCUI 1012397, canonical: Marcaine, match: exact\n[RxNorm] Ingredient: bupivacaine (RXCUI 1815)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bupivacaine hydrochloride 3.75 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; bupivacaine hydrochloride 2.5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; bupivacaine hydrochloride 5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; 30 ML bupivacaine hydrochloride 7.5 MG/ML / epinephrine 0.005 MG/ML Injection; bupivacaine hydrochloride 2.5 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] Y92234: Operating room of hospital as the place of occurrence of the external cause (score: 0.3542)\n[ICD-10-CM 2027] T819XXD: Unspecified complication of procedure, subsequent encounter (score: 0.2821)\n[ICD-10-CM 2027] T819XXA: Unspecified complication of procedure, initial encounter (score: 0.2790)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'The tonsillectomy was completed.,The nasopharynx and nasal passages were suctioned free of debris, and the procedure was terminated.,The patient tolerated the procedure well and left the operating room in good condition' \u2014 extracted from header, not verified against any coding system"
+  }
+]

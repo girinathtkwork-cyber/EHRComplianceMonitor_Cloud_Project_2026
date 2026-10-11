@@ -1,0 +1,143 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES,1.  Herniated disc, C5-C6.,2.  Cervical spondylosis, C5-C6.,POSTOPERATIVE DIAGNOSES,1.  Herniated disc, C5-C6.,2.  Cervical spondylosis, C5-C6.,PROCEDURES,1.  Anterior cervical discectomy with decompression, C5-C6.,2.  Anterior cervical fusion, C5-C6.,3.  Anterior cervical instrumentation, C5-C6.,4.  Allograft C5-C6.,ANESTHESIA:  ,General endotracheal.,COMPLICATIONS:,  None.,PATIENT STATUS: , Taken to recovery room in stable condition.,INDICATIONS: , The patient is a 36-year-old female who has had severe, recalcitrant right upper extremity pain, numbness, tingling, shoulder pain, axial neck pain, and headaches for many months.  Nonoperative measures failed to relieve her symptoms and surgical intervention was requested.  We discussed reasonable risks, benefits, and alternatives of various treatment options.  Continuation of nonoperative care versus the risks associated with surgery were discussed.  She understood the risks including bleeding, nerve vessel damage, infection, hoarseness, dysphagia, adjacent segment degeneration, continued worsening pain, failed fusion, and potential need for further surgery.  Despite these risks, she felt that current symptoms will be best managed operatively.,SUMMARY OF SURGERY IN DETAIL: , Following informed consent and preoperative administration of antibiotics, the patient was brought to the operating suite.  General anesthetic was administered.  The patient was placed in the supine position.  All prominences and neurovascular structures were well accommodated.  The patient was noted to have pulse in this position.  Preoperative x-rays revealed appropriate levels for skin incision.  Ten pound inline traction was placed via Gardner-Wells tongs and shoulder roll was placed.  The patient was then prepped and draped in sterile fashion.  Standard oblique incision was made over the C6 vertebral body in the proximal nuchal skin crease.  Subcutaneous tissue was dissected down to the level of the omohyoid which was transected.  Blunt dissection was carried out with the trachea and the esophagus in the midline and the carotid sheath in its vital structures laterally.  This was taken down to the prevertebral fascia which was bluntly split.  Intraoperative x-ray was taken to ensure proper levels.  Longus colli was identified and reflected proximally 3 to 4 mm off the midline bilaterally so that the anterior cervical Trimline retractor could be placed underneath the longus colli, thus placing no new traction on the surrounding vital structures.  Inferior spondylosis was removed with high-speed bur.  A scalpel and curette was used to remove the disc.  Decompression was carried posterior to the posterior longitudinal ligament down to the uncovertebral joints bilaterally.  Disc herniation was removed from the right posterolateral aspect of the interspace.  High-speed bur was used to prepare the endplate down to good bleeding bone and preparation for fusion.  Curette and ball tip dissector was then passed out the foramen and along the ventral aspect of the dura.  No further evidence of compression was identified.  Hemostasis was achieved with thrombin-soaked Gelfoam.  Interspace was then distracted with Caspar pin distractions set gently.  Interspace was then gently retracted with the Caspar pin distraction set.  An 8-mm allograft was deemed in appropriate fit.  This was press fit with demineralized bone matrix and tamped firmly into position achieving excellent interference fit.  The graft was stable to pull-out forces.  Distraction and traction was then removed and anterior cervical instrumentation was completed using a DePuy Trimline anterior cervical plate with 14-mm self-drilling screws.  Plate and screws were then locked to the plate.  Final x-rays revealed proper positioning of the plate, excellent distraction in the disc space, and apposition of the endplates and allograft.  Wounds were copiously irrigated with normal saline.  Omohyoid was approximated with 3-0 Vicryl.  Running 3-0 Vicryl was used to close the platysma.  Subcuticular Monocryl and Steri-Strips were used to close the skin.  A deep drain was placed prior to wound closure.  The patient was then allowed to awake from general anesthetic and was taken to the recovery room in stable condition.  There were no intraoperative complications.  All needle and sponge counts were correct.  Intraoperative neurologic monitoring was used throughout the entirety of the case and was normal.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Cervical spondylosis, C5-C6.,POSTOPERATIVE DIAGNOSES"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Herniated disc, C5-C6"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Cervical spondylosis, C5-C6.,PROCEDURES"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical discectomy with decompression, C5-C6"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Anterior cervical discectomy with decompression, C5-C6"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical fusion, C5-C6"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Anterior cervical fusion, C5-C6"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical instrumentation, C5-C6"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Anterior cervical instrumentation, C5-C6"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Allograft C5-C6.,ANESTHESIA:  ,General endotracheal.,COMPLICATIONS:,  None.,PATIENT STATUS: , Taken to recovery room in stable condition.,INDICATIONS: , The patient is a 36-year-old female who has had severe, recalcitrant right upper extremity pain, numbness, tingling, shoulder pain, axial neck pain, and headaches for many months.  Nonoperative measures failed to relieve her symptoms and surgical intervention was requested.  We discussed reasonable risks, benefits, and alternatives of various treatment options.  Continuation of nonoperative care versus the risks associated with surgery were discussed.  She understood the risks including bleeding, nerve vessel damage, infection, hoarseness, dysphagia, adjacent segment degeneration, continued worsening pain, failed fusion, and potential need for further surgery.  Despite these risks, she felt that current symptoms will be best managed operatively.,SUMMARY OF SURGERY IN DETAIL: , Following informed consent and preoperative administration of antibiotics, the patient was brought to the operating suite.  General anesthetic was administered.  The patient was placed in the supine position.  All prominences and neurovascular structures were well accommodated.  The patient was noted to have pulse in this position.  Preoperative x-rays revealed appropriate levels for skin incision.  Ten pound inline traction was placed via Gardner-Wells tongs and shoulder roll was placed.  The patient was then prepped and draped in sterile fashion.  Standard oblique incision was made over the C6 vertebral body in the proximal nuchal skin crease.  Subcutaneous tissue was dissected down to the level of the omohyoid which was transected.  Blunt dissection was carried out with the trachea and the esophagus in the midline and the carotid sheath in its vital structures laterally.  This was taken down to the prevertebral fascia which was bluntly split.  Intraoperative x-ray was taken to ensure proper levels.  Longus colli was identified and reflected proximally 3 to 4 mm off the midline bilaterally so that the anterior cervical Trimline retractor could be placed underneath the longus colli, thus placing no new traction on the surrounding vital structures.  Inferior spondylosis was removed with high-speed bur.  A scalpel and curette was used to remove the disc.  Decompression was carried posterior to the posterior longitudinal ligament down to the uncovertebral joints bilaterally.  Disc herniation was removed from the right posterolateral aspect of the interspace.  High-speed bur was used to prepare the endplate down to good bleeding bone and preparation for fusion.  Curette and ball tip dissector was then passed out the foramen and along the ventral aspect of the dura.  No further evidence of compression was identified.  Hemostasis was achieved with thrombin-soaked Gelfoam.  Interspace was then distracted with Caspar pin distractions set gently.  Interspace was then gently retracted with the Caspar pin distraction set.  An 8-mm allograft was deemed in appropriate fit.  This was press fit with demineralized bone matrix and tamped firmly into position achieving excellent interference fit.  The graft was stable to pull-out forces.  Distraction and traction was then removed and anterior cervical instrumentation was completed using a DePuy Trimline anterior cervical plate with 14-mm self-drilling screws.  Plate and screws were then locked to the plate.  Final x-rays revealed proper positioning of the plate, excellent distraction in the disc space, and apposition of the endplates and allograft.  Wounds were copiously irrigated with normal saline.  Omohyoid was approximated with 3-0 Vicryl.  Running 3-0 Vicryl was used to close the platysma.  Subcuticular Monocryl and Steri-Strips were used to close the skin.  A deep drain was placed prior to wound closure.  The patient was then allowed to awake from general anesthetic and was taken to the recovery room in stable condition.  There were no intraoperative complications.  All needle and sponge counts were correct.  Intraoperative neurologic monitoring was used throughout the entirety of the case and was normal"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Allograft C5-C6.,ANESTHESIA:  ,General endotracheal.,COMPLICATIONS:,  None.,PATIENT STATUS: , Taken to recovery room in stable condition.,INDICATIONS: , The patient is a 36-year-old female who has had severe, recalcitrant right upper extremity pain, numbness, tingling, shoulder pain, axial neck pain, and headaches for many months.  Nonoperative measures failed to relieve her symptoms and surgical intervention was requested.  We discussed reasonable risks, benefits, and alternatives of various treatment options.  Continuation of nonoperative care versus the risks associated with surgery were discussed.  She understood the risks including bleeding, nerve vessel damage, infection, hoarseness, dysphagia, adjacent segment degeneration, continued worsening pain, failed fusion, and potential need for further surgery.  Despite these risks, she felt that current symptoms will be best managed operatively.,SUMMARY OF SURGERY IN DETAIL: , Following informed consent and preoperative administration of antibiotics, the patient was brought to the operating suite.  General anesthetic was administered.  The patient was placed in the supine position.  All prominences and neurovascular structures were well accommodated.  The patient was noted to have pulse in this position.  Preoperative x-rays revealed appropriate levels for skin incision.  Ten pound inline traction was placed via Gardner-Wells tongs and shoulder roll was placed.  The patient was then prepped and draped in sterile fashion.  Standard oblique incision was made over the C6 vertebral body in the proximal nuchal skin crease.  Subcutaneous tissue was dissected down to the level of the omohyoid which was transected.  Blunt dissection was carried out with the trachea and the esophagus in the midline and the carotid sheath in its vital structures laterally.  This was taken down to the prevertebral fascia which was bluntly split.  Intraoperative x-ray was taken to ensure proper levels.  Longus colli was identified and reflected proximally 3 to 4 mm off the midline bilaterally so that the anterior cervical Trimline retractor could be placed underneath the longus colli, thus placing no new traction on the surrounding vital structures.  Inferior spondylosis was removed with high-speed bur.  A scalpel and curette was used to remove the disc.  Decompression was carried posterior to the posterior longitudinal ligament down to the uncovertebral joints bilaterally.  Disc herniation was removed from the right posterolateral aspect of the interspace.  High-speed bur was used to prepare the endplate down to good bleeding bone and preparation for fusion.  Curette and ball tip dissector was then passed out the foramen and along the ventral aspect of the dura.  No further evidence of compression was identified.  Hemostasis was achieved with thrombin-soaked Gelfoam.  Interspace was then distracted with Caspar pin distractions set gently.  Interspace was then gently retracted with the Caspar pin distraction set.  An 8-mm allograft was deemed in appropriate fit.  This was press fit with demineralized bone matrix and tamped firmly into position achieving excellent interference fit.  The graft was stable to pull-out forces.  Distraction and traction was then removed and anterior cervical instrumentation was completed using a DePuy Trimline anterior cervical plate with 14-mm self-drilling screws.  Plate and screws were then locked to the plate.  Final x-rays revealed proper positioning of the plate, excellent distraction in the disc space, and apposition of the endplates and allograft.  Wounds were copiously irrigated with normal saline.  Omohyoid was approximated with 3-0 Vicryl.  Running 3-0 Vicryl was used to close the platysma.  Subcuticular Monocryl and Steri-Strips were used to close the skin.  A deep drain was placed prior to wound closure.  The patient was then allowed to awake from general anesthetic and was taken to the recovery room in stable condition.  There were no intraoperative complications.  All needle and sponge counts were correct.  Intraoperative neurologic monitoring was used throughout the entirety of the case and was normal"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "matrix"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M47892: Other spondylosis, cervical region (score: 0.8902)\n[ICD-10-CM 2027] M479: Spondylosis, unspecified (score: 0.8585)\n[ICD-10-CM 2027] M47899: Other spondylosis, site unspecified (score: 0.7377)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] H47399: Other disorders of optic disc, unspecified eye (score: 0.5952)\n[ICD-10-CM 2027] H47392: Other disorders of optic disc, left eye (score: 0.5878)\n[ICD-10-CM 2027] H47391: Other disorders of optic disc, right eye (score: 0.5877)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] M47892: Other spondylosis, cervical region (score: 0.6443)\n[ICD-10-CM 2027] M479: Spondylosis, unspecified (score: 0.6214)\n[ICD-10-CM 2027] M47899: Other spondylosis, site unspecified (score: 0.5339)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] T703XXD: Caisson disease [decompression sickness], subsequent encounter (score: 0.4805)\n[ICD-10-CM 2027] T703XXA: Caisson disease [decompression sickness], initial encounter (score: 0.4796)\n[ICD-10-CM 2027] T703XXS: Caisson disease [decompression sickness], sequela (score: 0.4795)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Anterior cervical discectomy with decompression, C5-C6' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] M4322: Fusion of spine, cervical region (score: 0.7079)\n[ICD-10-CM 2027] M4320: Fusion of spine, site unspecified (score: 0.5958)\n[ICD-10-CM 2027] M4324: Fusion of spine, thoracic region (score: 0.5506)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Anterior cervical fusion, C5-C6' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] M5080: Other cervical disc disorders, unspecified cervical region (score: 0.4893)\n[ICD-10-CM 2027] M5090: Cervical disc disorder, unspecified, unspecified cervical region (score: 0.4893)\n[ICD-10-CM 2027] M47012: Anterior spinal artery compression syndromes, cervical region (score: 0.4766)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Anterior cervical instrumentation, C5-C6' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.1994)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.1988)\n[ICD-10-CM 2027] W880XXS: Exposure to X-rays, sequela (score: 0.1987)\n[ICD-10-CM 2027] Match unresolved (top score 0.1994 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Allograft C5-C6.,ANESTHESIA:  ,General endotracheal.,COMPLICATIONS:,  None.,PATIENT STATUS: , Taken to recovery room in stable condition.,INDICATIONS: , The patient is a 36-year-old female who has had severe, recalcitrant right upper extremity pain, numbness, tingling, shoulder pain, axial neck pain, and headaches for many months.  Nonoperative measures failed to relieve her symptoms and surgical intervention was requested.  We discussed reasonable risks, benefits, and alternatives of various treatment options.  Continuation of nonoperative care versus the risks associated with surgery were discussed.  She understood the risks including bleeding, nerve vessel damage, infection, hoarseness, dysphagia, adjacent segment degeneration, continued worsening pain, failed fusion, and potential need for further surgery.  Despite these risks, she felt that current symptoms will be best managed operatively.,SUMMARY OF SURGERY IN DETAIL: , Following informed consent and preoperative administration of antibiotics, the patient was brought to the operating suite.  General anesthetic was administered.  The patient was placed in the supine position.  All prominences and neurovascular structures were well accommodated.  The patient was noted to have pulse in this position.  Preoperative x-rays revealed appropriate levels for skin incision.  Ten pound inline traction was placed via Gardner-Wells tongs and shoulder roll was placed.  The patient was then prepped and draped in sterile fashion.  Standard oblique incision was made over the C6 vertebral body in the proximal nuchal skin crease.  Subcutaneous tissue was dissected down to the level of the omohyoid which was transected.  Blunt dissection was carried out with the trachea and the esophagus in the midline and the carotid sheath in its vital structures laterally.  This was taken down to the prevertebral fascia which was bluntly split.  Intraoperative x-ray was taken to ensure proper levels.  Longus colli was identified and reflected proximally 3 to 4 mm off the midline bilaterally so that the anterior cervical Trimline retractor could be placed underneath the longus colli, thus placing no new traction on the surrounding vital structures.  Inferior spondylosis was removed with high-speed bur.  A scalpel and curette was used to remove the disc.  Decompression was carried posterior to the posterior longitudinal ligament down to the uncovertebral joints bilaterally.  Disc herniation was removed from the right posterolateral aspect of the interspace.  High-speed bur was used to prepare the endplate down to good bleeding bone and preparation for fusion.  Curette and ball tip dissector was then passed out the foramen and along the ventral aspect of the dura.  No further evidence of compression was identified.  Hemostasis was achieved with thrombin-soaked Gelfoam.  Interspace was then distracted with Caspar pin distractions set gently.  Interspace was then gently retracted with the Caspar pin distraction set.  An 8-mm allograft was deemed in appropriate fit.  This was press fit with demineralized bone matrix and tamped firmly into position achieving excellent interference fit.  The graft was stable to pull-out forces.  Distraction and traction was then removed and anterior cervical instrumentation was completed using a DePuy Trimline anterior cervical plate with 14-mm self-drilling screws.  Plate and screws were then locked to the plate.  Final x-rays revealed proper positioning of the plate, excellent distraction in the disc space, and apposition of the endplates and allograft.  Wounds were copiously irrigated with normal saline.  Omohyoid was approximated with 3-0 Vicryl.  Running 3-0 Vicryl was used to close the platysma.  Subcuticular Monocryl and Steri-Strips were used to close the skin.  A deep drain was placed prior to wound closure.  The patient was then allowed to awake from general anesthetic and was taken to the recovery room in stable condition.  There were no intraoperative complications.  All needle and sponge counts were correct.  Intraoperative neurologic monitoring was used throughout the entirety of the case and was normal' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'matrix' \u2192 RXCUI 1667643, canonical: Matrix, match: exact\n[RxNorm] Ingredient: altrenogest (RXCUI 1314612)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): altrenogest 2.2 MG/ML Oral Solution"
+  }
+]

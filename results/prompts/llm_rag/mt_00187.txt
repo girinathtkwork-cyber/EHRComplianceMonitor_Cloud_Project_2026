@@ -1,0 +1,213 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+REASON FOR CONSULTATION: , Syncope. Additional diagnosis noted: Type 2 Diabetes Mellitus.,HISTORY OF PRESENT ILLNESS:  ,The patient is a 69-year-old gentleman, a good historian, who relates that he was brought in the Emergency Room following an episode of syncope.  The patient relates that he may have had a seizure activity prior to that.  Prior to the episode, he denies having any symptoms of chest pain or shortness of breath.  No palpitation.  Presently, he is comfortable, lying in the bed.  As per the patient, no prior cardiac history.,CORONARY RISK FACTORS: , History of hypertension.  No history of diabetes mellitus.  Nonsmoker.  Cholesterol status is borderline elevated.  No history of established coronary artery disease.  Family history noncontributory.,PAST MEDICAL HISTORY:  ,Hypertension, hyperlipidemia, recently diagnosed with Parkinson's, as a Parkinson's tremor, admitted for syncopal evaluation.,PAST SURGICAL HISTORY: ,Back surgery, shoulder surgery, and appendicectomy.,FAMILY HISTORY: , Nonsignificant.,MEDICATIONS:,1.  Pain medications.,2.  Thyroid supplementation.,3.  Lovastatin 20 mg daily.,4.  Propranolol 20 b.i.d.,5.  Protonix.,6.  Flomax.,ALLERGIES:,  None.,PERSONAL HISTORY:,  He is married.  Nonsmoker.  Does not consume alcohol.  No history of recreational drug use.,REVIEW OF SYSTEMS,CONSTITUTIONAL:  No weakness, fatigue, or tiredness.,HEENT:  No history of cataract or glaucoma.,CARDIOVASCULAR:  No congestive heart failure.  No arrhythmias.,RESPIRATORY:  No history of pneumonia or valley fever.,GASTROINTESTINAL:  No nausea, vomiting, hematemesis, or melena.,UROLOGICAL:  No frequency or urgency.,MUSCULOSKELETAL:  Arthritis and muscle weakness.,SKIN:  Nonsignificant.,NEUROLOGIC:  No TIA or CVA.  No seizure disorder.,ENDOCRINE/HEMATOLOGIC:  Nonsignificant.,PHYSICAL EXAMINATION,VITAL SIGNS:  Pulse of 93, blood pressure of 158/93, afebrile, and respiratory rate 16 per minute.,HEENT:  Atraumatic and normocephalic.,NECK:  Neck veins are flat.  No significant carotid bruits.,LUNGS:  Air entry is bilaterally decreased.,HEART:  PMI is displaced.  S1 and S2 are regular.,ABDOMEN:  Soft and nontender.  Bowel sounds are present.,EXTREMITIES:  No edema.  Pulses are palpable.  No clubbing or cyanosis.  The patient is moving all extremities; however, the patient has tremors.,RADIOLOGICAL DATA: , EKG reveals normal sinus rhythm with underlying nonspecific ST-T changes secondary to tremors.,LABORATORY DATA: , H&H stable.  White count of 14.  BUN and creatinine are within normal limits.  Cardiac enzyme profile is negative.  Ammonia level is elevated at 69.  CT angiogram of the chest, no evidence of pulmonary embolism.  Chest x-ray is negative for acute changes.  CT of the head, unremarkable, chronic skin changes.  Liver enzymes are within normal limits.,IMPRESSION:,1.  The patient is a 69-year-old gentleman, admitted with syncopal episode and possible seizure disorder.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.,HISTORY OF PRESENT ILLNESS:  ,The patient is a 69-year-old gentleman, a good historian, who relates that he was brought in the Emergency Room following an episode of syncope.  The patient relates that he may have had a seizure activity prior to that.  Prior to the episode, he denies having any symptoms of chest pain or shortness of breath.  No palpitation.  Presently, he is comfortable, lying in the bed.  As per the patient, no prior cardiac history.,CORONARY RISK FACTORS: , History of hypertension.  No history of diabetes mellitus.  Nonsmoker.  Cholesterol status is borderline elevated.  No history of established coronary artery disease.  Family history noncontributory.,PAST MEDICAL HISTORY:  ,Hypertension, hyperlipidemia, recently diagnosed with Parkinson's, as a Parkinson's tremor, admitted for syncopal evaluation.,PAST SURGICAL HISTORY: ,Back surgery, shoulder surgery, and appendicectomy.,FAMILY HISTORY: , Nonsignificant.,MEDICATIONS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Cholesterol"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Pain medications"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Thyroid supplementation"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Lovastatin 20 mg daily"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Lovastatin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Propranolol 20 b.i.d"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Propranolol"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Protonix"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Protonix"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Flomax.,ALLERGIES:,  None.,PERSONAL HISTORY:,  He is married.  Nonsmoker.  Does not consume alcohol.  No history of recreational drug use.,REVIEW OF SYSTEMS,CONSTITUTIONAL:  No weakness, fatigue, or tiredness.,HEENT:  No history of cataract or glaucoma.,CARDIOVASCULAR:  No congestive heart failure.  No arrhythmias.,RESPIRATORY:  No history of pneumonia or valley fever.,GASTROINTESTINAL:  No nausea, vomiting, hematemesis, or melena.,UROLOGICAL:  No frequency or urgency.,MUSCULOSKELETAL:  Arthritis and muscle weakness.,SKIN:  Nonsignificant.,NEUROLOGIC:  No TIA or CVA.  No seizure disorder.,ENDOCRINE/HEMATOLOGIC:  Nonsignificant.,PHYSICAL EXAMINATION,VITAL SIGNS:  Pulse of 93, blood pressure of 158/93, afebrile, and respiratory rate 16 per minute.,HEENT:  Atraumatic and normocephalic.,NECK:  Neck veins are flat.  No significant carotid bruits.,LUNGS:  Air entry is bilaterally decreased.,HEART:  PMI is displaced.  S1 and S2 are regular.,ABDOMEN:  Soft and nontender.  Bowel sounds are present.,EXTREMITIES:  No edema.  Pulses are palpable.  No clubbing or cyanosis.  The patient is moving all extremities; however, the patient has tremors.,RADIOLOGICAL DATA: , EKG reveals normal sinus rhythm with underlying nonspecific ST-T changes secondary to tremors.,LABORATORY DATA: , H&H stable.  White count of"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Flomax"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "BUN and creatinine are within normal limits.  Cardiac enzyme profile is negative.  Ammonia level is elevated at"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Ammonia"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "CT angiogram of the chest, no evidence of pulmonary embolism.  Chest x-ray is negative for acute changes.  CT of the head, unremarkable, chronic skin changes.  Liver enzymes are within normal limits.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "1.  The patient is a 69-year-old gentleman, admitted with syncopal episode and possible seizure disorder"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "The patient is a 69-year-old gentleman, admitted with syncopal episode and possible seizure disorder"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] Z833: Family history of diabetes mellitus (score: 0.4263)\n[ICD-10-CM 2027] Z8261: Family history of arthritis (score: 0.3746)\n[ICD-10-CM 2027] Z83518: Family history of other specified eye disorder (score: 0.3692)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Cholesterol' \u2192 RXCUI 2438, canonical: cholesterol, match: exact\n[RxNorm] Ingredient: cholesterol (RXCUI 2438)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] R52: Pain, unspecified (score: 0.5677)\n[ICD-10-CM 2027] P0418: Newborn affected by other maternal medication (score: 0.5397)\n[ICD-10-CM 2027] M79646: Pain in unspecified finger(s) (score: 0.4992)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] E0789: Other specified disorders of thyroid (score: 0.8753)\n[ICD-10-CM 2027] E079: Disorder of thyroid, unspecified (score: 0.8753)\n[ICD-10-CM 2027] S135XXD: Sprain of thyroid region, subsequent encounter (score: 0.7242)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] G4452: New daily persistent headache (NDPH) (score: 0.3972)\n[ICD-10-CM 2027] Y901: Blood alcohol level of 20-39 mg/100 ml (score: 0.3680)\n[ICD-10-CM 2027] Y902: Blood alcohol level of 40-59 mg/100 ml (score: 0.3680)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Lovastatin' \u2192 RXCUI 6472, canonical: lovastatin, match: exact\n[RxNorm] Ingredient: lovastatin (RXCUI 6472)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lovastatin 10 MG Oral Tablet; lovastatin 20 MG Oral Tablet; lovastatin 40 MG Oral Tablet; 24 HR lovastatin 40 MG Extended Release Oral Tablet; 24 HR lovastatin 60 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 20.0mg associated with Lovastatin"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] E559: Vitamin D deficiency, unspecified (score: 0.4540)\n[ICD-10-CM 2027] E673: Hypervitaminosis D (score: 0.4275)\n[ICD-10-CM 2027] E75243: Niemann-Pick disease type D (score: 0.4003)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Propranolol' \u2192 RXCUI 8787, canonical: propranolol, match: exact\n[RxNorm] Ingredient: propranolol (RXCUI 8787)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): propranolol hydrochloride 4.28 MG/ML Oral Solution; hydrochlorothiazide 25 MG / propranolol hydrochloride 40 MG Oral Tablet; hydrochlorothiazide 25 MG / propranolol hydrochloride 80 MG Oral Tablet; 1 ML propranolol hydrochloride 1 MG/ML Injection; propranolol hydrochloride 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Protonix' \u2192 RXCUI 261624, canonical: Protonix, match: exact\n[RxNorm] Ingredient: pantoprazole (RXCUI 40790)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pantoprazole 20 MG Delayed Release Oral Tablet; 100 ML pantoprazole 0.4 MG/ML Injection; 50 ML pantoprazole 0.8 MG/ML Injection; 100 ML pantoprazole 0.8 MG/ML Injection; pantoprazole 40 MG Injection"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] No matches found for 'Protonix' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.3175)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.3079)\n[ICD-10-CM 2027] Z8709: Personal history of other diseases of the respiratory system (score: 0.1239)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Flomax' \u2192 RXCUI 190283, canonical: Flomax, match: exact\n[RxNorm] Ingredient: tamsulosin (RXCUI 77492)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): tamsulosin hydrochloride 0.4 MG Oral Capsule; tamsulosin hydrochloride 0.4 MG Extended Release Oral Tablet; dutasteride 0.5 MG / tamsulosin hydrochloride 0.4 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] R791: Abnormal coagulation profile (score: 0.3129)\n[ICD-10-CM 2027] E7841: Elevated Lipoprotein(a) (score: 0.2217)\n[ICD-10-CM 2027] Z73811: Behavioral insomnia of childhood, limit setting type (score: 0.2192)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Ammonia' \u2192 RXCUI 1299884, canonical: ammonia, match: exact\n[RxNorm] Ingredient: ammonia (RXCUI 1299884)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): ammonia 150 MG/ML Nasal Inhalant; ammonia 45 MG/ML Nasal Inhalant; ammonia 20 MG/ML Nasal Inhalant; ammonia 15 MG/ML Topical Lotion; ammonia 23 MG/ML / camphor 31 MG/ML / menthol 60 MG/ML Topical Solution"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] R238: Other skin changes (score: 0.4150)\n[ICD-10-CM 2027] R239: Unspecified skin changes (score: 0.4150)\n[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.3140)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] F3160: Bipolar disorder, current episode mixed, unspecified (score: 0.3997)\n[ICD-10-CM 2027] F309: Manic episode, unspecified (score: 0.3994)\n[ICD-10-CM 2027] F329: Major depressive disorder, single episode, unspecified (score: 0.3879)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] F3160: Bipolar disorder, current episode mixed, unspecified (score: 0.3997)\n[ICD-10-CM 2027] F309: Manic episode, unspecified (score: 0.3994)\n[ICD-10-CM 2027] F329: Major depressive disorder, single episode, unspecified (score: 0.3879)"
+  }
+]

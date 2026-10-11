@@ -1,0 +1,233 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+REASON FOR CONSULTATION:, Please evaluate stomatitis, possibly methotrexate related. Additional diagnosis noted: Type 2 Diabetes Mellitus.,HISTORY OF PRESENT ILLNESS:, The patient is a very pleasant 57-year old white female, a native of Cuba, being seen for evaluation and treatment of sores in her mouth that she has had for the last 10-12 days.  The patient has a long history of severe and debilitating rheumatoid arthritis for which she has had numerous treatments, but over the past ten years she has been treated with methotrexate quite successfully.  Her dosage has varied somewhere between 20 and 25 mg per week.  About the beginning of this year, her dosage was decreased from 25 mg to 20 mg, but because of the flare of the rheumatoid arthritis, it was increased to 22.5 mg per week.  She has had no problems with methotrexate as far as she knows.  She also took an NSAID about a month ago that was recently continued because of the ulcerations in her mouth.  About two weeks ago, just about the time the stomatitis began she was placed on an antibiotic for suspected upper respiratory infection.  She does not remember the name of the antibiotic.  Although she claims she remembers taking this type of medication in the past without any problems.  She was on that medication three pills a day for three to four days.  She notes no other problems with her skin.  She remembers no allergic reactions to medication.  She has no previous history of fever blisters.  ,PHYSICAL EXAMINATION:, Reveals superficial erosions along the lips particularly the lower lips.  The posterior buccal mucosa along the sides of the tongue and also some superficial erosions along the upper and lower gingiva.  Her posterior pharynx was difficult to visualize, but I saw no erosions on the areas today.  There did however appear to be one small erosion on the soft palate.  Examination of the rest of her skin revealed no areas of dermatitis or blistering.  There were some macular hyperpigmentation on the right arm where she has had a previous burn, plus the deformities from her rheumatoid arthritis on her hands and feet as well as scars on her knees from total joint replacement surgeries.  ,IMPRESSION: , Erosive stomatitis probably secondary to methotrexate even though the medication has been used for ten years without any problems.  Methotrexate may produce an erosive stomatitis and enteritis after such a use. The patient also may have an enteritis that at this point may have become more quiescent as she notes that she did have some diarrhea about the time her mouth problem developed. She has had no diarrhea today, however. She has noted no blood in her stools and has had no episodes of nausea or vomiting.  ,I am not as familiar with the NSAID causing an erosive stomatitis.  I understand that it can cause gastrointestinal upset, but given the choice between the two, I would think the methotrexate is the most likely etiology for the stomatitis.  ,RECOMMENDED THERAPY: ,I agree with your therapeutic regimen regarding this condition with the use of prednisone and folic acid.  I also agree that the methotrexate must be discontinued in order to produce a resolution of this patients’ skin problem. However, in my experience, this stomatitis may take a number of weeks to go away completely if a patient been on methotrexate, for an extended period of time, because the medication is stored within the liver and in fatty tissue.  Topically I have prescribed Lidex gel, which I find works extremely well in stomatitis conditions.  It can be applied t.i.d.  ,Thank you very much for allowing me to share in the care of this pleasant patient.  I will follow her with you as needed.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "methotrexate"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.,HISTORY OF PRESENT ILLNESS:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "The patient is a very pleasant 57-year old white female, a native of Cuba, being seen for evaluation and treatment of sores in her mouth that she has had for the last 10-12 days.  The patient has a long history of severe and debilitating rheumatoid arthritis for which she has had numerous treatments, but over the past ten years she has been treated with methotrexate quite successfully.  Her dosage has varied somewhere between 20 and 25 mg per week.  About the beginning of this year, her dosage was decreased from 25 mg to 20 mg, but because of the flare of the rheumatoid arthritis, it was increased to 22.5 mg per week.  She has had no problems with methotrexate as far as she knows.  She also took an NSAID about a month ago that was recently continued because of the ulcerations in her mouth.  About two weeks ago, just about the time the stomatitis began she was placed on an antibiotic for suspected upper respiratory infection.  She does not remember the name of the antibiotic.  Although she claims she remembers taking this type of medication in the past without any problems.  She was on that medication three pills a day for three to four days.  She notes no other problems with her skin.  She remembers no allergic reactions to medication.  She has no previous history of fever blisters.  ,PHYSICAL EXAMINATION:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "methotrexate"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "measurement",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "measurement",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "measurement",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "measurement",
+    "text": "22.5 mg"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "methotrexate"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Reveals superficial erosions along the lips particularly the lower lips.  The posterior buccal mucosa along the sides of the tongue and also some superficial erosions along the upper and lower gingiva.  Her posterior pharynx was difficult to visualize, but I saw no erosions on the areas today.  There did however appear to be one small erosion on the soft palate.  Examination of the rest of her skin revealed no areas of dermatitis or blistering.  There were some macular hyperpigmentation on the right arm where she has had a previous burn, plus the deformities from her rheumatoid arthritis on her hands and feet as well as scars on her knees from total joint replacement surgeries.  ,IMPRESSION:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Erosive stomatitis probably secondary to methotrexate even though the medication has been used for ten years without any problems.  Methotrexate may produce an erosive stomatitis and enteritis after such a use. The patient also may have an enteritis that at this point may have become more quiescent as she notes that she did have some diarrhea about the time her mouth problem developed. She has had no diarrhea today, however. She has noted no blood in her stools and has had no episodes of nausea or vomiting.  ,I am not as familiar with the NSAID causing an erosive stomatitis.  I understand that it can cause gastrointestinal upset, but given the choice between the two"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "methotrexate"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Methotrexate"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "I would think the methotrexate is the most likely etiology for the stomatitis.  ,RECOMMENDED THERAPY: ,I agree with your therapeutic regimen regarding this condition with the use of prednisone and folic acid.  I also agree that the methotrexate must be discontinued in order to produce a resolution of this patients\u2019 skin problem. However, in my experience, this stomatitis may take a number of weeks to go away completely if a patient been on methotrexate, for an extended period of time, because the medication is stored within the liver and in fatty tissue.  Topically I have prescribed Lidex gel, which I find works extremely well in stomatitis conditions.  It can be applied t.i.d.  ,Thank you very much for allowing me to share in the care of this pleasant patient.  I will follow her with you as needed"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "methotrexate"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "prednisone"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "folic acid"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "methotrexate"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "methotrexate"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'methotrexate' \u2192 RXCUI 6851, canonical: methotrexate, match: exact\n[RxNorm] Ingredient: methotrexate (RXCUI 6851)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methotrexate 2.5 MG Oral Tablet; methotrexate 10 MG Oral Tablet; methotrexate 100 MG/ML Injectable Solution; 0.4 ML methotrexate 25 MG/ML Auto-Injector; 0.4 ML methotrexate 37.5 MG/ML Auto-Injector"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] R69: Illness, unspecified (score: 0.4834)\n[ICD-10-CM 2027] Z833: Family history of diabetes mellitus (score: 0.3844)\n[ICD-10-CM 2027] E1069: Type 1 diabetes mellitus with other specified complication (score: 0.3409)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] H5311: Day blindness (score: 0.2160)\n[ICD-10-CM 2027] Z00111: Health examination for newborn 8 to 28 days old (score: 0.2107)\n[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.2097)\n[ICD-10-CM 2027] Match unresolved (top score 0.2160 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'methotrexate' \u2192 RXCUI 6851, canonical: methotrexate, match: exact\n[RxNorm] Ingredient: methotrexate (RXCUI 6851)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methotrexate 2.5 MG Oral Tablet; methotrexate 10 MG Oral Tablet; methotrexate 100 MG/ML Injectable Solution; 0.4 ML methotrexate 25 MG/ML Auto-Injector; 0.4 ML methotrexate 37.5 MG/ML Auto-Injector"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Measurement] 25.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Measurement] 25.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Measurement] 20.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Measurement] 22.5mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'methotrexate' \u2192 RXCUI 6851, canonical: methotrexate, match: exact\n[RxNorm] Ingredient: methotrexate (RXCUI 6851)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methotrexate 2.5 MG Oral Tablet; methotrexate 10 MG Oral Tablet; methotrexate 100 MG/ML Injectable Solution; 0.4 ML methotrexate 25 MG/ML Auto-Injector; 0.4 ML methotrexate 37.5 MG/ML Auto-Injector"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] K032: Erosion of teeth (score: 0.3636)\n[ICD-10-CM 2027] T8324XD: Erosion of graft of urinary organ, subsequent encounter (score: 0.3141)\n[ICD-10-CM 2027] T8324XA: Erosion of graft of urinary organ, initial encounter (score: 0.3129)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] K121: Other forms of stomatitis (score: 0.3014)\n[ICD-10-CM 2027] M154: Erosive (osteo)arthritis (score: 0.3005)\n[ICD-10-CM 2027] B370: Candidal stomatitis (score: 0.2721)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'methotrexate' \u2192 RXCUI 6851, canonical: methotrexate, match: exact\n[RxNorm] Ingredient: methotrexate (RXCUI 6851)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methotrexate 2.5 MG Oral Tablet; methotrexate 10 MG Oral Tablet; methotrexate 100 MG/ML Injectable Solution; 0.4 ML methotrexate 25 MG/ML Auto-Injector; 0.4 ML methotrexate 37.5 MG/ML Auto-Injector"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Methotrexate' \u2192 RXCUI 6851, canonical: methotrexate, match: exact\n[RxNorm] Ingredient: methotrexate (RXCUI 6851)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methotrexate 2.5 MG Oral Tablet; methotrexate 10 MG Oral Tablet; methotrexate 100 MG/ML Injectable Solution; 0.4 ML methotrexate 25 MG/ML Auto-Injector; 0.4 ML methotrexate 37.5 MG/ML Auto-Injector"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] K121: Other forms of stomatitis (score: 0.3428)\n[ICD-10-CM 2027] B370: Candidal stomatitis (score: 0.3094)\n[ICD-10-CM 2027] A690: Necrotizing ulcerative stomatitis (score: 0.2771)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'methotrexate' \u2192 RXCUI 6851, canonical: methotrexate, match: exact\n[RxNorm] Ingredient: methotrexate (RXCUI 6851)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methotrexate 2.5 MG Oral Tablet; methotrexate 10 MG Oral Tablet; methotrexate 100 MG/ML Injectable Solution; 0.4 ML methotrexate 25 MG/ML Auto-Injector; 0.4 ML methotrexate 37.5 MG/ML Auto-Injector"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'prednisone' \u2192 RXCUI 8640, canonical: prednisone, match: exact\n[RxNorm] Ingredient: prednisone (RXCUI 8640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): prednisone 1 MG Delayed Release Oral Tablet; prednisone 2 MG Delayed Release Oral Tablet; prednisone 5 MG Delayed Release Oral Tablet; prednisone 1 MG Oral Tablet; prednisone 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'folic acid' \u2192 RXCUI 4511, canonical: folic acid, match: exact\n[RxNorm] Ingredient: folic acid (RXCUI 4511)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alpha tocopherol 30 UNT / ascorbic acid 28 MG / cholecalciferol 400 UNT / docosahexaenoic acid 300 MG / docusate sodium 55 MG / ferrous fumarate 27 MG / folic acid 1.25 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; ferrous sulfate 150 MG / folic acid 0.5 MG Extended Release Oral Capsule; ferrous fumarate 305 MG / folic acid 0.35 MG Oral Capsule; ascorbic acid 10 MG / ferrous gluconate 250 MG / folic acid 5 MG Oral Tablet; folic acid 0.08 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'methotrexate' \u2192 RXCUI 6851, canonical: methotrexate, match: exact\n[RxNorm] Ingredient: methotrexate (RXCUI 6851)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methotrexate 2.5 MG Oral Tablet; methotrexate 10 MG Oral Tablet; methotrexate 100 MG/ML Injectable Solution; 0.4 ML methotrexate 25 MG/ML Auto-Injector; 0.4 ML methotrexate 37.5 MG/ML Auto-Injector"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'methotrexate' \u2192 RXCUI 6851, canonical: methotrexate, match: exact\n[RxNorm] Ingredient: methotrexate (RXCUI 6851)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methotrexate 2.5 MG Oral Tablet; methotrexate 10 MG Oral Tablet; methotrexate 100 MG/ML Injectable Solution; 0.4 ML methotrexate 25 MG/ML Auto-Injector; 0.4 ML methotrexate 37.5 MG/ML Auto-Injector"
+  }
+]

@@ -1,0 +1,103 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+ADMISSION DIAGNOSIS: , Bilateral l5 spondylolysis with pars defects and spinal instability with radiculopathy. Additional diagnosis noted: Atrial Fibrillation.,SECONDARY DIAGNOSIS:,  Chronic pain syndrome.,PRINCIPAL PROCEDURE: , L5 Gill procedure with interbody and posterolateral (360 degrees circumferential) arthrodesis using cages, bone graft, recombinant bone morphogenic protein, and pedicle fixation.  This was performed by Dr. X on 01/08/08.,BRIEF HISTORY OF HOSPITAL COURSE: , The patient is a man with a history of longstanding back, buttock, and bilateral leg pain.  He was evaluated and found to have bilateral pars defects at L5-S1 with spondylolysis and instability.  He was admitted and underwent an uncomplicated surgical procedure as noted above.  In the postoperative period, he was up and ambulatory.  He was taking p.o. fluids and diet well.  He was afebrile.  His wounds were healing well.  Subsequently, the patient was discharged home.,DISCHARGE MEDICATIONS: , Discharge medications included his usual preoperative pain medication as well as other medications.,FOLLOWUP:  ,At this time, the patient will follow up with me in the office in six weeks' time.  The patient understands discharge plans and is in agreement with the discharge plan.  He will follow up as noted
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Bilateral l5 spondylolysis with pars defects and spinal instability with radiculopathy. Additional diagnosis noted: Atrial Fibrillation.,SECONDARY DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Chronic pain syndrome.,PRINCIPAL PROCEDURE:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "L5 Gill procedure with interbody and posterolateral (360 degrees circumferential) arthrodesis using cages, bone graft, recombinant bone morphogenic protein, and pedicle fixation.  This was performed by Dr. X on 01/08/08.,BRIEF HISTORY OF HOSPITAL COURSE:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "L5 Gill procedure with interbody and posterolateral (360 degrees circumferential) arthrodesis using cages, bone graft, recombinant bone morphogenic protein, and pedicle fixation.  This was performed by Dr. X on 01/08/08.,BRIEF HISTORY OF HOSPITAL COURSE:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "The patient is a man with a history of longstanding back, buttock, and bilateral leg pain.  He was evaluated and found to have bilateral pars defects at L5-S1 with spondylolysis and instability.  He was admitted and underwent an uncomplicated surgical procedure as noted above.  In the postoperative period, he was up and ambulatory.  He was taking p.o. fluids and diet well.  He was afebrile.  His wounds were healing well.  Subsequently, the patient was discharged home.,DISCHARGE MEDICATIONS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "The patient is a man with a history of longstanding back, buttock, and bilateral leg pain.  He was evaluated and found to have bilateral pars defects at L5-S1 with spondylolysis and instability.  He was admitted and underwent an uncomplicated surgical procedure as noted above.  In the postoperative period, he was up and ambulatory.  He was taking p.o. fluids and diet well.  He was afebrile.  His wounds were healing well.  Subsequently, the patient was discharged home.,DISCHARGE MEDICATIONS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Discharge medications included his usual preoperative pain medication as well as other medications.,FOLLOWUP:  ,At this time, the patient will follow up with me in the office in six weeks' time.  The patient understands discharge plans and is in agreement with the discharge plan.  He will follow up as noted"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Discharge medications included his usual preoperative pain medication as well as other medications.,FOLLOWUP:  ,At this time, the patient will follow up with me in the office in six weeks' time.  The patient understands discharge plans and is in agreement with the discharge plan.  He will follow up as noted"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.3764)\n[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.3572)\n[ICD-10-CM 2027] R030: Elevated blood-pressure reading, without diagnosis of hypertension (score: 0.3429)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] G894: Chronic pain syndrome (score: 0.8391)\n[ICD-10-CM 2027] G8929: Other chronic pain (score: 0.7062)\n[ICD-10-CM 2027] G890: Central pain syndrome (score: 0.5873)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] F23: Brief psychotic disorder (score: 0.3113)\n[ICD-10-CM 2027] Z981: Arthrodesis status (score: 0.3093)\n[ICD-10-CM 2027] Y93A5: Activity, obstacle course (score: 0.2447)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'L5 Gill procedure with interbody and posterolateral (360 degrees circumferential) arthrodesis using cages, bone graft, recombinant bone morphogenic protein, and pedicle fixation.  This was performed by Dr. X on 01/08/08.,BRIEF HISTORY OF HOSPITAL COURSE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.3373)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.3360)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.3359)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'The patient is a man with a history of longstanding back, buttock, and bilateral leg pain.  He was evaluated and found to have bilateral pars defects at L5-S1 with spondylolysis and instability.  He was admitted and underwent an uncomplicated surgical procedure as noted above.  In the postoperative period, he was up and ambulatory.  He was taking p.o. fluids and diet well.  He was afebrile.  His wounds were healing well.  Subsequently, the patient was discharged home.,DISCHARGE MEDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] Z91128: Patient's intentional underdosing of medication regimen for other reason (score: 0.3785)\n[ICD-10-CM 2027] Z91138: Patient's unintentional underdosing of medication regimen for other reason (score: 0.3777)\n[ICD-10-CM 2027] Z91A3: Caregiver's unintentional underdosing of patient's medication regimen (score: 0.3695)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Discharge medications included his usual preoperative pain medication as well as other medications.,FOLLOWUP:  ,At this time, the patient will follow up with me in the office in six weeks' time.  The patient understands discharge plans and is in agreement with the discharge plan.  He will follow up as noted' \u2014 extracted from header, not verified against any coding system"
+  }
+]
