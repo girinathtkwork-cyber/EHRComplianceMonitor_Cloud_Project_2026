@@ -17,7 +17,16 @@ import urllib.error
 from pathlib import Path
 
 _THIS_DIR = Path(__file__).resolve().parent
-_PROJECT_ROOT = _THIS_DIR.parent.parent.parent
+
+def _find_project_root() -> Path:
+    d = _THIS_DIR
+    for _ in range(5):
+        d = d.parent
+        if (d / "dataset").is_dir():
+            return d
+    return _THIS_DIR.parent.parent.parent
+
+_PROJECT_ROOT = _find_project_root()
 _CACHE_PATH = _PROJECT_ROOT / "dataset" / "cache" / "rxnorm_cache.json"
 
 RXNORM_BASE = "https://rxnav.nlm.nih.gov/REST"
@@ -34,11 +43,31 @@ _TIMEOUT = 15  # seconds
 # Disk cache
 # ===========================================================================
 
+import os
+import tempfile
+
+def _is_lambda_env() -> bool:
+    return bool(
+        os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
+        or os.environ.get("LAMBDA_TASK_ROOT")
+    )
+
+
 class DiskCache:
-    """Simple JSON-backed disk cache for API responses."""
+    """Simple JSON-backed disk cache for API responses.
+    
+    When running in AWS Lambda, writes automatically route to /tmp
+    and read-only filesystem errors are gracefully tolerated.
+    """
 
     def __init__(self, path: Path | None = None):
-        self.path = path or _CACHE_PATH
+        if path:
+            self.path = Path(path)
+        elif _is_lambda_env():
+            self.path = Path("/tmp") / "rxnorm_cache.json"
+        else:
+            self.path = _CACHE_PATH
+
         self._cache: dict = {}
         self._dirty = False
         self._hits = 0
@@ -46,12 +75,29 @@ class DiskCache:
         self._load()
 
     def _load(self):
+        # 1. Try to load from self.path if it exists
         if self.path.exists():
             try:
                 with open(self.path, encoding="utf-8") as f:
                     self._cache = json.load(f)
+                    return
             except (json.JSONDecodeError, OSError):
                 self._cache = {}
+
+        # 2. If self.path does not exist (or empty in /tmp), try packaged cache locations
+        candidates = [
+            _CACHE_PATH,
+            Path("dataset/cache/rxnorm_cache.json"),
+            _THIS_DIR.parent.parent.parent / "dataset" / "cache" / "rxnorm_cache.json",
+        ]
+        for c in candidates:
+            if c.exists():
+                try:
+                    with open(c, encoding="utf-8") as f:
+                        self._cache = json.load(f)
+                        return
+                except (json.JSONDecodeError, OSError):
+                    continue
 
     def get(self, key: str):
         if key in self._cache:
@@ -65,11 +111,29 @@ class DiskCache:
         self._dirty = True
 
     def save(self):
-        if self._dirty:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.path, "w", encoding="utf-8") as f:
+        if not self._dirty:
+            return
+
+        target_path = self.path
+        if _is_lambda_env():
+            target_path = Path("/tmp") / "rxnorm_cache.json"
+
+        try:
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(target_path, "w", encoding="utf-8") as f:
                 json.dump(self._cache, f, separators=(",", ":"))
             self._dirty = False
+        except (OSError, PermissionError):
+            # Tolerates read-only filesystem: fallback to tempfile
+            try:
+                fallback_path = Path(tempfile.gettempdir()) / "rxnorm_cache.json"
+                fallback_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(fallback_path, "w", encoding="utf-8") as f:
+                    json.dump(self._cache, f, separators=(",", ":"))
+                self._dirty = False
+            except (OSError, PermissionError):
+                # Silently tolerate read-only environment; cache remains in-memory
+                pass
 
     @property
     def hit_rate(self) -> float:

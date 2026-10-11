@@ -13,10 +13,17 @@ STOPWORDS = {
 class ICD10Searcher:
     def __init__(self, index_path=None):
         if index_path is None:
-            # Find project root by walking up from this file
+            # Find project root by walking up from this file (handles dev and Lambda layouts)
             current_dir = Path(__file__).resolve().parent
-            project_root = current_dir.parent.parent.parent
-            index_path = project_root / 'dataset' / 'reference' / 'icd10cm_index.json'
+            found = None
+            d = current_dir
+            for _ in range(5):
+                candidate = d / 'dataset' / 'reference' / 'icd10cm_index.json'
+                if candidate.exists():
+                    found = candidate
+                    break
+                d = d.parent
+            index_path = found or (current_dir.parent.parent.parent / 'dataset' / 'reference' / 'icd10cm_index.json')
             
         with open(index_path, 'r', encoding='utf-8') as f:
             data = json.load(f)

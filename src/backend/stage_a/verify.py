@@ -195,7 +195,7 @@ def verify_diagnosis_entity(entity: dict) -> dict:
     top_score = candidates[0]["score"] if candidates else 0.0
     confident = top_score >= ICD10_CONFIDENCE_THRESHOLD
 
-    routing = "verified_needs_context_check" if confident else "invalid"
+    routing = "verified_needs_context_check" if confident else "unresolved"
 
     # Build evidence_text
     evidence_parts = []
@@ -205,9 +205,14 @@ def verify_diagnosis_entity(entity: dict) -> dict:
                 f"[ICD-10-CM 2027] {c['code']}: {c['description']} "
                 f"(score: {c['score']:.4f})"
             )
+        if not confident:
+            evidence_parts.append(
+                f"[ICD-10-CM 2027] Match unresolved (top score {top_score:.4f} < {ICD10_CONFIDENCE_THRESHOLD}); "
+                f"forwarded to Stage B with top-{len(candidates)} candidates for context evaluation."
+            )
     else:
         evidence_parts.append(
-            f"[ICD-10-CM 2027] No matches found for '{diagnosis_text}'"
+            f"[ICD-10-CM 2027] No matches found for '{diagnosis_text}' (unresolved; forwarded to Stage B)"
         )
 
     flags = []
@@ -217,7 +222,7 @@ def verify_diagnosis_entity(entity: dict) -> dict:
             "severity_hint": "warning",
             "detail": (
                 f"Top ICD-10 score {top_score:.4f} < "
-                f"threshold {ICD10_CONFIDENCE_THRESHOLD}"
+                f"threshold {ICD10_CONFIDENCE_THRESHOLD} (unresolved; forwarded to Stage B)"
             ),
         })
 

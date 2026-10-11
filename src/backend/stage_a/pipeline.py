@@ -50,7 +50,7 @@ def run_stage_a(record: dict) -> dict:
         n_invalid = sum(1 for e in verified_entities if e.get("routing") == "invalid")
         n_forwarded = sum(
             1 for e in verified_entities
-            if e.get("routing") == "verified_needs_context_check"
+            if e.get("routing") in ("verified_needs_context_check", "unresolved")
         )
 
         # Step 4: Build output — keep all existing fields

@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 VALID_ENTITY_TYPES = {"medication", "dosage", "measurement", "diagnosis", "procedure"}
-VALID_ROUTINGS = {"invalid", "verified_needs_context_check"}
+VALID_ROUTINGS = {"invalid", "verified_needs_context_check", "unresolved"}
 VALID_VERIFICATION_STATUSES = {"completed", "partial", "error"}
 
 

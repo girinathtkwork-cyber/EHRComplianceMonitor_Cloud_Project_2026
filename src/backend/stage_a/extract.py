@@ -20,10 +20,22 @@ from collections import Counter
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Paths
+# Paths — works in both dev layout (src/backend/stage_a/) and Lambda zip
+# (backend/stage_a/).
 # ---------------------------------------------------------------------------
 _THIS_DIR = Path(__file__).resolve().parent
-_PROJECT_ROOT = _THIS_DIR.parent.parent.parent
+
+def _find_project_root() -> Path:
+    """Walk up from this file to find the directory containing dataset/reference/."""
+    d = _THIS_DIR
+    for _ in range(5):
+        d = d.parent
+        if (d / "dataset" / "reference").is_dir():
+            return d
+    # fallback: assume dev layout
+    return _THIS_DIR.parent.parent.parent
+
+_PROJECT_ROOT = _find_project_root()
 _LEXICON_PATH = _PROJECT_ROOT / "dataset" / "reference" / "rxnorm_lexicon.json"
 
 # ---------------------------------------------------------------------------

@@ -73,8 +73,8 @@
           },
           "routing": {
             "type": "string",
-            "enum": ["invalid", "verified_needs_context_check"],
-            "description": "Routing decision. 'invalid' = failed existence check. 'verified_needs_context_check' = exists, must go to Stage B."
+            "enum": ["invalid", "verified_needs_context_check", "unresolved"],
+            "description": "Routing decision. 'invalid' = failed existence check (not in RxNorm). 'verified_needs_context_check' = verified match, goes to Stage B. 'unresolved' = low-confidence ICD match, forwarded to Stage B with top candidates."
           },
           "retrieval_context": {
             "type": "object",
