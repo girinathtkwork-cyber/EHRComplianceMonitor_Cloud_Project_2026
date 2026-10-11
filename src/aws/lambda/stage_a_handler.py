@@ -14,6 +14,7 @@ from pathlib import Path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from backend.stage_a.pipeline import run_stage_a
+from backend.stage_b.stage_b import run_stage_b
 from backend.stage_a import rxnorm_client
 
 def _create_s3_client():
@@ -64,7 +65,8 @@ def lambda_handler(event, context):
                         break
                         
                 # Process
-                processed = run_stage_a(item)
+                mode = os.environ.get("STAGE_B_MODE", "llm_rag" if os.environ.get("GEMINI_API_KEY") else "stage_a_only")
+                processed = run_stage_b(run_stage_a(item), mode=mode)
                 processed_records.append(processed)
                 
             # Save cache after processing
@@ -72,7 +74,7 @@ def lambda_handler(event, context):
             
             # Write output
             basename = os.path.basename(key).replace('.json', '')
-            output_key = f"output/stage_a/{basename}.stage_a.json"
+            output_key = f"output/stage_b/{basename}.audited.json"
             
             output_data = processed_records
             if truncated:

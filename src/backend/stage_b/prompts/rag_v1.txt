@@ -1,0 +1,1 @@
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.

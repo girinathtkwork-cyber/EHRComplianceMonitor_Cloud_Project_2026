@@ -1,0 +1,92 @@
+"""Prompt construction for plain and RAG Stage B runs."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import Path
+
+GROUND_TRUTH_KEYS = {"ground_truth_label", "is_error", "error_type", "injected_entity", "correct_value"}
+
+BASE_INSTRUCTIONS = """You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+"""
+
+PLAIN_LINE = "Evidence rule: use your own medical knowledge."
+RAG_LINE = "Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing."
+
+
+def _clean_record(record: dict) -> dict:
+    return {k: v for k, v in record.items() if k not in GROUND_TRUTH_KEYS}
+
+
+def _entity_id(index: int, entity: dict) -> str:
+    return entity.get("entity_id") or f"E{index + 1}"
+
+
+def build_prompt(record: dict, *, mode: str) -> tuple[str, list[dict], set[str]]:
+    if mode not in {"llm_plain", "llm_rag"}:
+        raise ValueError(f"prompt mode not supported: {mode}")
+
+    safe_record = _clean_record(record)
+    transcript = safe_record.get("transcription", "")
+    entities = []
+    facts = []
+    fact_ids = set()
+
+    for idx, entity in enumerate(safe_record.get("entities", [])):
+        if entity.get("routing") == "invalid":
+            continue
+        entity_id = _entity_id(idx, entity)
+        entities.append({
+            "entity_id": entity_id,
+            "entity_type": entity.get("entity_type"),
+            "text": entity.get("text"),
+        })
+        if mode == "llm_rag":
+            evidence = (entity.get("retrieval_context") or {}).get("evidence_text", "")
+            if evidence:
+                fid = f"F{len(facts) + 1}"
+                fact_ids.add(fid)
+                facts.append({"fact_id": fid, "entity_id": entity_id, "text": evidence})
+
+    evidence_block = "No retrieved facts are provided in this mode."
+    if mode == "llm_rag":
+        evidence_block = json.dumps(facts, ensure_ascii=True, indent=2)
+
+    prompt = "\n\n".join([
+        BASE_INSTRUCTIONS.strip(),
+        PLAIN_LINE if mode == "llm_plain" else RAG_LINE,
+        "Candidate transcript:\n" + transcript,
+        "Entities:\n" + json.dumps(entities, ensure_ascii=True, indent=2),
+        "Retrieved facts:\n" + evidence_block,
+    ])
+    assert_no_ground_truth_leak(prompt)
+    return prompt, entities, fact_ids
+
+
+def assert_no_ground_truth_leak(prompt: str) -> None:
+    lowered = prompt.lower()
+    leaked = [key for key in GROUND_TRUTH_KEYS if key.lower() in lowered]
+    if leaked:
+        raise ValueError(f"prompt contains ground-truth key(s): {', '.join(leaked)}")
+
+
+def prompt_hash(prompt: str, model: str = "") -> str:
+    return hashlib.sha256((model + "\n" + prompt).encode("utf-8")).hexdigest()
+
+
+def save_prompt(prompt: str, *, mode: str, transcript_id: str, root: Path) -> Path:
+    out_dir = root / "results" / "prompts" / mode
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"{transcript_id}.txt"
+    path.write_text(prompt, encoding="utf-8")
+    return path

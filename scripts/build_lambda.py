@@ -39,8 +39,9 @@ def build_lambda_zip():
         else:
             print(f"  WARNING: {handler_path} not found!")
 
-        # 2. backend/stage_a/ package (from src/backend/stage_a/)
+        # 2. backend/stage_a/ and backend/stage_b/ packages
         stage_a_dir = project_root / "src" / "backend" / "stage_a"
+        stage_b_dir = project_root / "src" / "backend" / "stage_b"
         backend_init = project_root / "src" / "backend" / "__init__.py"
 
         # Add backend/__init__.py
@@ -53,6 +54,16 @@ def build_lambda_zip():
             for py_file in stage_a_dir.rglob("*.py"):
                 arcname = "backend/stage_a/" + py_file.relative_to(stage_a_dir).as_posix()
                 zf.write(py_file, arcname)
+                print(f"  + {arcname}")
+
+        if stage_b_dir.exists():
+            for py_file in stage_b_dir.rglob("*.py"):
+                arcname = "backend/stage_b/" + py_file.relative_to(stage_b_dir).as_posix()
+                zf.write(py_file, arcname)
+                print(f"  + {arcname}")
+            for txt_file in stage_b_dir.rglob("*.txt"):
+                arcname = "backend/stage_b/" + txt_file.relative_to(stage_b_dir).as_posix()
+                zf.write(txt_file, arcname)
                 print(f"  + {arcname}")
 
         # 3. Reference JSON files
