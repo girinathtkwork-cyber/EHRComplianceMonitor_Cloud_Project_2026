@@ -55,6 +55,7 @@ docs/                Methodology, evaluation, and compliance documentation
 ```
 
 See `docs/STAGE_B_AND_AWS_HANDOFF.md` for the final pipeline and AWS handoff notes.
+See `docs/AWS_DEPLOYMENT_README.md` for the step-by-step AWS Console deployment guide.
 
 ## Completion log
 
