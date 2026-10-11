@@ -1,0 +1,134 @@
+{
+  "record_level": {
+    "strict": {
+      "TP": 31,
+      "FP": 47,
+      "FN": 59,
+      "TN": 133,
+      "precision": 0.3974,
+      "recall": 0.3444,
+      "f1": 0.369,
+      "fpr": 0.2611,
+      "recall_95ci": [
+        0.2545,
+        0.4472
+      ],
+      "fpr_95ci": [
+        0.2024,
+        0.3298
+      ]
+    },
+    "soft": {
+      "TP": 51,
+      "FP": 80,
+      "FN": 39,
+      "TN": 100,
+      "precision": 0.3893,
+      "recall": 0.5667,
+      "f1": 0.4615,
+      "fpr": 0.4444,
+      "recall_95ci": [
+        0.4636,
+        0.6642
+      ],
+      "fpr_95ci": [
+        0.3738,
+        0.5174
+      ]
+    }
+  },
+  "per_error_type": {
+    "wrong_dosage": {
+      "n": 18,
+      "detected_stage_a": 3,
+      "detection_recall": 0.16666666666666666,
+      "funnel_coverage": 18,
+      "funnel_coverage_rate": 1.0
+    },
+    "fabricated_diagnosis": {
+      "n": 38,
+      "detected_stage_a": 3,
+      "detection_recall": 0.07894736842105263,
+      "funnel_coverage": 34,
+      "funnel_coverage_rate": 0.8947368421052632
+    },
+    "fabricated_procedure": {
+      "n": 23,
+      "detected_stage_a": 6,
+      "detection_recall": 0.2608695652173913,
+      "funnel_coverage": 20,
+      "funnel_coverage_rate": 0.8695652173913043
+    },
+    "wrong_medication": {
+      "n": 11,
+      "detected_stage_a": 0,
+      "detection_recall": 0.0,
+      "funnel_coverage": 10,
+      "funnel_coverage_rate": 0.9090909090909091
+    }
+  },
+  "cost_proxy": {
+    "total_entities": 3625,
+    "forwarded_entities": 3503,
+    "forwarded_ratio": 0.9663,
+    "zero_forwarded_transcripts": 12,
+    "zero_forwarded_ratio": 0.0444
+  },
+  "audit": {
+    "total_misses": 8,
+    "misses": [
+      {
+        "transcript_id": "mt_00014",
+        "error_type": "fabricated_diagnosis",
+        "injected_entity": "Chronic Kidney Disease, Stage 3",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00029",
+        "error_type": "fabricated_diagnosis",
+        "injected_entity": "Chronic Kidney Disease, Stage 3",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00053",
+        "error_type": "wrong_medication",
+        "injected_entity": "Navane",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00091",
+        "error_type": "fabricated_diagnosis",
+        "injected_entity": "Chronic Kidney Disease, Stage 3",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00143",
+        "error_type": "fabricated_procedure",
+        "injected_entity": "upper endoscopy",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00209",
+        "error_type": "fabricated_procedure",
+        "injected_entity": "diagnostic laparoscopy",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00210",
+        "error_type": "fabricated_diagnosis",
+        "injected_entity": "Chronic Kidney Disease, Stage 3",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00216",
+        "error_type": "fabricated_procedure",
+        "injected_entity": "cardiac catheterization",
+        "reason": "not_extracted"
+      }
+    ],
+    "wrong_dosage_breakdown": {
+      "drug_associated": [],
+      "non_drug": []
+    }
+  }
+}
