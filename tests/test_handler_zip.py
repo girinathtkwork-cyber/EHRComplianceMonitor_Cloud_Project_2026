@@ -22,10 +22,9 @@ _ZIP_PATH = _PROJECT_ROOT / "build" / "stage_a_lambda.zip"
 
 def test_lambda_zip_isolated_execution():
     """Verify build/stage_a_lambda.zip runs in total isolation."""
-    # Ensure zip exists
-    if not _ZIP_PATH.exists():
-        from scripts.build_lambda import build_lambda_zip
-        build_lambda_zip()
+    # Ensure zip reflects current source files
+    from scripts.build_lambda import build_lambda_zip
+    build_lambda_zip()
 
     assert _ZIP_PATH.exists(), f"Lambda zip missing at {_ZIP_PATH}"
 
@@ -39,6 +38,8 @@ def test_lambda_zip_isolated_execution():
         # Verify key extracted artifacts
         assert (tmp_dir / "stage_a_handler.py").exists()
         assert (tmp_dir / "backend" / "stage_a" / "pipeline.py").exists()
+        assert (tmp_dir / "backend" / "stage_b" / "audit.py").exists()
+        assert (tmp_dir / "backend" / "stage_b" / "stage_b.py").exists()
         assert (tmp_dir / "dataset" / "reference" / "rxnorm_lexicon.json").exists()
         assert (tmp_dir / "dataset" / "reference" / "icd10cm_codes.json").exists()
         assert (tmp_dir / "dataset" / "reference" / "icd10cm_index.json").exists()
@@ -60,7 +61,7 @@ os.chdir(zip_root)
 
 # Create input directory and test record
 os.makedirs("input", exist_ok=True)
-os.makedirs("output/stage_a", exist_ok=True)
+os.makedirs("output/stage_b", exist_ok=True)
 
 test_record = {
     "transcript_id": "iso_test_01",
@@ -116,7 +117,7 @@ response = stage_a_handler.lambda_handler(event, StubContext())
 assert response["statusCode"] == 200, f"Handler failed: {response}"
 
 # Verify output
-out_key = "output/stage_a/test_record.stage_a.json"
+out_key = "output/stage_b/test_record.audited.json"
 assert os.path.exists(out_key), f"Expected output missing: {out_key}"
 
 with open(out_key, "r", encoding="utf-8") as f:
@@ -128,6 +129,9 @@ assert rec["transcript_id"] == "iso_test_01"
 assert rec["verification_status"] == "completed"
 assert "entities" in rec
 assert rec["stage_a_summary"]["n_entities"] >= 2
+assert rec["stage_b_status"] == "completed"
+assert rec["stage_b"]["mode"] == "stage_a_only"
+assert "stage_b_findings" in rec
 print("ISOLATED_TEST_SUCCESS")
 """, encoding="utf-8")
 
