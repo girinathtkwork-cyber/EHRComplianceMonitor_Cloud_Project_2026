@@ -172,6 +172,49 @@ def test_gemini_http_error_includes_provider_message_without_api_key(tmp_path, m
         raise AssertionError("Gemini HTTP 400 must remain an error.")
 
 
+def test_gemini_json_request_uses_valid_response_format_enum(tmp_path, monkeypatch):
+    request_payloads = []
+
+    class _Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            return False
+
+        def read(self):
+            return json.dumps({
+                "candidates": [{
+                    "content": {
+                        "parts": [{
+                            "text": json.dumps({
+                                "entity_verdicts": [],
+                                "additional_concerns": [],
+                            }),
+                        }],
+                    },
+                }],
+            }).encode()
+
+    def accept_request(request, timeout):
+        request_payloads.append(json.loads(request.data.decode("utf-8")))
+        return _Response()
+
+    monkeypatch.setattr("backend.stage_b.llm_client.urllib.request.urlopen", accept_request)
+    client = GeminiClient(
+        api_key="synthetic-api-key",
+        cache=JsonlCache(tmp_path / "cache.jsonl"),
+        rpm=1000,
+    )
+    result = client.generate_json("Synthetic prompt")
+
+    assert result["json"] == {"entity_verdicts": [], "additional_concerns": []}
+    assert len(request_payloads) == 1
+    generation_config = request_payloads[0]["generationConfig"]
+    assert generation_config["responseFormat"]["text"]["mimeType"] == "APPLICATION_JSON"
+    assert generation_config["responseMimeType"] == "application/json"
+
+
 def test_plain_and_rag_prompts_differ_only_by_evidence_rule_and_facts():
     plain, _, _ = build_prompt(_record(), mode="llm_plain")
     rag, _, _ = build_prompt(_record(), mode="llm_rag")

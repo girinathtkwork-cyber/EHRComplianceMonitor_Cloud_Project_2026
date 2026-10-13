@@ -114,7 +114,7 @@ class GeminiClient:
             "generationConfig": {
                 "temperature": 0,
                 "responseMimeType": "application/json",
-                "responseFormat": {"text": {"mimeType": "application/json", "schema": OUTPUT_SCHEMA}},
+                "responseFormat": {"text": {"mimeType": "APPLICATION_JSON", "schema": OUTPUT_SCHEMA}},
             },
         }
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
