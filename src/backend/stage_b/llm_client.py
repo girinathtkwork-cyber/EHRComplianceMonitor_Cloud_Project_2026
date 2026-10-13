@@ -16,6 +16,19 @@ from .schema import OUTPUT_SCHEMA
 DEFAULT_MODEL = "gemini-3.8-flash"
 
 
+def _generate_content_output_text(response: dict) -> str:
+    parts = (
+        response.get("candidates", [{}])[0]
+        .get("content", {})
+        .get("parts", [])
+    )
+    text_parts = [p.get("text", "") for p in parts if isinstance(p, dict)]
+    text = "".join(text_parts).strip()
+    if not text:
+        raise ValueError("Gemini generateContent response contains no model output text")
+    return text
+
+
 def _is_lambda_env() -> bool:
     return bool(os.environ.get("AWS_LAMBDA_FUNCTION_NAME") or os.environ.get("LAMBDA_TASK_ROOT"))
 
@@ -110,12 +123,12 @@ class GeminiClient:
             "generationConfig": {
                 "temperature": 0,
                 "responseMimeType": "application/json",
-                "responseFormat": {"text": {"mimeType": "application/json", "schema": OUTPUT_SCHEMA}},
+                "responseSchema": OUTPUT_SCHEMA,
             },
         }
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
         raw = self._post_json(url, body)
-        text = raw["candidates"][0]["content"]["parts"][0]["text"]
+        text = _generate_content_output_text(raw)
         parsed = json.loads(text)
         usage = raw.get("usageMetadata", {})
         value = {
@@ -153,7 +166,8 @@ class GeminiClient:
             except urllib.error.HTTPError as exc:
                 last_error = exc
                 if exc.code not in {429, 500, 502, 503, 504}:
-                    raise
+                    detail = exc.read().decode("utf-8", errors="replace")
+                    raise RuntimeError(f"Gemini API HTTP {exc.code}: {detail or exc.reason}") from exc
             except (urllib.error.URLError, TimeoutError, OSError) as exc:
                 last_error = exc
             time.sleep(2 ** attempt)

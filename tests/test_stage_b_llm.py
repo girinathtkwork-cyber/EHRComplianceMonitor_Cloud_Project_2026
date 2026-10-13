@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from backend.stage_b.llm_client import JsonlCache
+from backend.stage_b.llm_client import GeminiClient, JsonlCache
 from backend.stage_b.prompts import build_prompt
 from backend.stage_b.schema import validate_response
 from backend.stage_b.stage_b import run_stage_b
@@ -78,7 +78,19 @@ def test_run_stage_b_with_fake_client_writes_llm_metadata(tmp_path):
     assert out["stage_b"]["llm_status"] == "ok"
     assert out["stage_b_summary"]["n_findings"] == 1
     assert (tmp_path / "results" / "prompts" / "llm_rag" / "case-llm.txt").exists()
+    assert out["stage_b"]["prompt_path"] == str(Path("results") / "prompts" / "llm_rag" / "case-llm.txt")
 
+
+def test_run_stage_b_saves_prompt_under_lambda_temp_dir(tmp_path, monkeypatch):
+    monkeypatch.setenv("AWS_LAMBDA_FUNCTION_NAME", "test-function")
+    monkeypatch.setattr("backend.stage_b.prompts.tempfile.gettempdir", lambda: str(tmp_path))
+
+    out = run_stage_b(_record(), mode="llm_rag", client=FakeClient(), project_root=tmp_path / "readonly")
+
+    expected_path = tmp_path / "results" / "prompts" / "llm_rag" / "case-llm.txt"
+    assert out["stage_b"]["llm_status"] == "ok"
+    assert expected_path.exists()
+    assert out["stage_b"]["prompt_path"] == str(expected_path)
 
 def test_invalid_json_failure_falls_back():
     out = run_stage_b(_record(), mode="llm_plain", client=FakeClient(payload=[]))
@@ -98,6 +110,32 @@ def test_jsonl_cache_hit(tmp_path):
     cache.set("abc", {"json": {"ok": True}})
     cache2 = JsonlCache(tmp_path / "cache.jsonl")
     assert cache2.get("abc") == {"json": {"ok": True}}
+
+
+def test_gemini_generate_json_uses_generate_content_api(tmp_path, monkeypatch):
+    client = GeminiClient(api_key="test-key", cache=JsonlCache(tmp_path / "cache.jsonl"))
+    captured = {}
+
+    def fake_post_json(url, body):
+        captured["url"] = url
+        captured["body"] = body
+        return {
+            "candidates": [{
+                "content": {
+                    "parts": [{"text": '{"entity_verdicts":[],"additional_concerns":[]}'}]
+                }
+            }],
+            "usageMetadata": {"promptTokenCount": 12, "candidatesTokenCount": 4},
+        }
+
+    monkeypatch.setattr(client, "_post_json", fake_post_json)
+    result = client.generate_json("test prompt")
+
+    assert captured["url"] == f"https://generativelanguage.googleapis.com/v1beta/models/{client.model}:generateContent"
+    assert captured["body"]["contents"][0]["parts"][0]["text"] == "test prompt"
+    assert captured["body"]["generationConfig"]["responseMimeType"] == "application/json"
+    assert captured["body"]["generationConfig"]["responseSchema"]["required"] == ["entity_verdicts", "additional_concerns"]
+    assert result["usage"] == {"prompt_tokens": 12, "output_tokens": 4}
 
 
 def test_plain_and_rag_prompts_differ_only_by_evidence_rule_and_facts():

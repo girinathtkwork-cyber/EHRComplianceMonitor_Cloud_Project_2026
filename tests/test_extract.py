@@ -20,6 +20,7 @@ MINI_LEXICON = {
     "acetaminophen": {"rxcui": "161", "tty": "IN"},
     "atenolol": {"rxcui": "1202", "tty": "IN"},
     "hydroxyzine": {"rxcui": "5553", "tty": "IN"},
+    "today": {"rxcui": "896747", "tty": "BN"},
 }
 
 import sys
@@ -70,6 +71,10 @@ class TestMedicationExtraction:
         assert "water" not in names
         assert "ice" not in names
         assert "iron" not in names
+
+    def test_today_is_not_medication(self):
+        meds = extract_medications("She presents today with foot pain.", lexicon=MINI_LEXICON)
+        assert [m["text"].lower() for m in meds] == []
 
     def test_has_span_offsets(self):
         meds = extract_medications("Give Aspirin now.", lexicon=MINI_LEXICON)
@@ -142,6 +147,20 @@ class TestDiagnosisExtraction:
         dx = extract_diagnoses(text)
         assert len(dx) >= 3
 
+    def test_comma_delimited_headers_do_not_swallow_document(self):
+        text = (
+            "POSTOPERATIVE DIAGNOSES:,1. Severe tracheobronchitis.,"
+            "2. Mild venous engorgement.,"
+            "3. Right upper lobe hemorrhage status post biopsy.,"
+            "PROCEDURE PERFORMED: , Flexible fiberoptic bronchoscopy with lavage.,"
+            "SAMPLES: , Bronchoalveolar lavage for cytology.,"
+            "INDICATIONS: , Persistent hemoptysis."
+        )
+        dx = extract_diagnoses(text)
+        assert len(dx) == 3
+        assert all("PROCEDURE PERFORMED" not in d["text"] for d in dx)
+        assert all(len(d["text"]) < 100 for d in dx)
+
 
 class TestProcedureExtraction:
     def test_simple_procedure(self):
@@ -154,6 +173,13 @@ class TestProcedureExtraction:
         text = "OPERATION: Total knee replacement.\n\nINDICATIONS:"
         procs = extract_procedures(text)
         assert len(procs) >= 1
+
+    def test_procedure_performed_not_extracted_as_performed_fragment(self):
+        text = "PROCEDURE PERFORMED: Flexible fiberoptic bronchoscopy.\n\nANESTHESIA:"
+        procs = extract_procedures(text)
+        texts = [p["text"] for p in procs]
+        assert "PERFORMED:" not in texts
+        assert any("bronchoscopy" in p.lower() for p in texts)
 
 
 class TestExtractEntities:

@@ -53,6 +53,9 @@ MEDICATION_STOPLIST: set[str] = {
     "bone", "skin", "fat", "fiber", "salt", "sugar", "starch",
     "normal", "solution", "compound", "complex", "factor",
     "general", "single", "double", "triple",
+    # Temporal/common dictation words that collide with brand names
+    "today", "yesterday", "tomorrow", "daily", "nightly", "weekly",
+    "morning", "evening", "present", "current",
     # Body-related terms that are also supplement/drug names
     "calcium", "zinc", "copper", "selenium", "chromium", "manganese",
     "biotin", "niacin", "thiamine", "riboflavin",
@@ -109,6 +112,32 @@ PROCEDURE_HEADERS = [
     "NAME OF PROCEDURE",
     "NAME OF OPERATION",
 ]
+
+SECTION_HEADERS = sorted(set(
+    DIAGNOSIS_HEADERS
+    + PROCEDURE_HEADERS
+    + [
+        "ANESTHESIA",
+        "BLOOD LOSS",
+        "COMPLICATIONS",
+        "DESCRIPTION",
+        "FINDINGS",
+        "HISTORY",
+        "INDICATION",
+        "INDICATIONS",
+        "MEDICATIONS",
+        "PLAN",
+        "SAMPLES",
+        "SPECIMENS",
+        "TECHNIQUE",
+    ]
+), key=len, reverse=True)
+
+_NEXT_SECTION_PATTERN = "|".join(re.escape(h) for h in SECTION_HEADERS)
+_NEXT_SECTION_LOOKAHEAD = (
+    rf"(?=(?:\n|,)\s*(?:{_NEXT_SECTION_PATTERN})\s*[:,]|"
+    rf"\n\s*\n|$)"
+)
 
 
 # ===========================================================================
@@ -352,7 +381,7 @@ def extract_diagnoses(text: str) -> list[dict]:
     for header in sorted_headers:
         # Match header followed by colon/comma and content up to next header or double newline
         pattern = re.compile(
-            re.escape(header) + r"[:,\s]+(.+?)(?=\n\s*\n|\n[A-Z][A-Z\s]{3,}:|$)",
+            re.escape(header) + r"\s*[:,]\s*(.+?)" + _NEXT_SECTION_LOOKAHEAD,
             re.IGNORECASE | re.DOTALL,
         )
         for match in pattern.finditer(text):
@@ -405,7 +434,7 @@ def extract_procedures(text: str) -> list[dict]:
 
     for header in sorted_headers:
         pattern = re.compile(
-            re.escape(header) + r"[:,\s]+(.+?)(?=\n\s*\n|\n[A-Z][A-Z\s]{3,}:|$)",
+            re.escape(header) + r"\s*[:,]\s*(.+?)" + _NEXT_SECTION_LOOKAHEAD,
             re.IGNORECASE | re.DOTALL,
         )
         for match in pattern.finditer(text):
