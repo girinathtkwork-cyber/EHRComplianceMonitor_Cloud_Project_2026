@@ -46,6 +46,7 @@ class FakeClient:
                 {"entity_id": "E2", "verdict": "suspicious", "reason": "not supported", "evidence_used": ["F2"], "severity": "high"}
             ],
             "additional_concerns": [],
+            "source_discrepancies": [],
         }
         self.fail = fail
         self.calls_made = 0
@@ -62,6 +63,8 @@ def test_ground_truth_not_in_prompt():
     assert "ground_truth_label" not in prompt
     assert "injected_entity" not in prompt
     assert "correct_value" not in prompt
+    assert "Trusted source transcript:" in prompt
+    assert "[Not provided]" in prompt
 
 
 def test_rag_uncited_suspicious_is_downgraded():
@@ -70,6 +73,7 @@ def test_rag_uncited_suspicious_is_downgraded():
             {"entity_id": "E1", "verdict": "suspicious", "reason": "guess", "evidence_used": [], "severity": "high"}
         ],
         "additional_concerns": [],
+        "source_discrepancies": [],
     }, mode="llm_rag", valid_fact_ids={"F1"})
     assert data["entity_verdicts"][0]["verdict"] == "insufficient_evidence"
     assert data["entity_verdicts"][0]["severity"] == "none"
@@ -81,6 +85,67 @@ def test_run_stage_b_with_fake_client_writes_llm_metadata(tmp_path):
     assert out["stage_b"]["llm_status"] == "ok"
     assert out["stage_b_summary"]["n_findings"] == 1
     assert (tmp_path / "results" / "prompts" / "llm_rag" / "case-llm.txt").exists()
+
+
+def test_stage_b_compares_trusted_source_and_reports_exact_quotes(tmp_path):
+    record = _record()
+    record["source_transcript"] = "Diagnosis: otitis media. Medication: amoxicillin 75mg."
+    discrepancy = {
+        "type": "contradiction",
+        "candidate_excerpt": "amoxicillin 750mg",
+        "source_excerpt": "amoxicillin 75mg",
+        "reason": "The candidate and trusted source specify different medication strengths.",
+    }
+    client = FakeClient(payload={
+        "entity_verdicts": [],
+        "additional_concerns": [],
+        "source_discrepancies": [discrepancy],
+    })
+
+    out = run_stage_b(record, mode="llm_rag", client=client, project_root=tmp_path)
+
+    assert out["stage_b_summary"]["source_comparison"] is True
+    assert out["stage_b"]["source_comparison"] == {
+        "status": "compared",
+        "discrepancies": [discrepancy],
+    }
+
+
+def test_source_discrepancy_quotes_must_match_both_transcripts():
+    data = {
+        "entity_verdicts": [],
+        "additional_concerns": [],
+        "source_discrepancies": [{
+            "type": "contradiction",
+            "candidate_excerpt": "invented dose",
+            "source_excerpt": "amoxicillin 75mg",
+            "reason": "The dose differs.",
+        }],
+    }
+
+    try:
+        validate_response(
+            data,
+            mode="llm_rag",
+            valid_fact_ids=set(),
+            candidate_transcript="Medication: amoxicillin 750mg.",
+            source_transcript="Medication: amoxicillin 75mg.",
+        )
+    except ValueError as exc:
+        assert "quotes must match" in str(exc)
+    else:
+        raise AssertionError("Fabricated comparison excerpts must be rejected.")
+
+
+def test_stage_b_fallback_does_not_claim_source_comparison(tmp_path):
+    record = _record()
+    record["source_transcript"] = "Diagnosis: otitis media."
+
+    out = run_stage_b(record, mode="llm_rag", client=FakeClient(fail=True), project_root=tmp_path)
+
+    assert out["stage_b"]["llm_status"] == "fallback"
+    assert out["stage_b"]["source_comparison"]["status"] == "not_performed"
+    assert out["stage_b_summary"]["source_comparison"] is False
 
 
 def test_lambda_rag_uses_tmp_when_deployment_root_is_read_only(tmp_path, monkeypatch):
@@ -190,6 +255,7 @@ def test_gemini_json_request_uses_valid_response_format_enum(tmp_path, monkeypat
                             "text": json.dumps({
                                 "entity_verdicts": [],
                                 "additional_concerns": [],
+                                "source_discrepancies": [],
                             }),
                         }],
                     },
@@ -208,7 +274,11 @@ def test_gemini_json_request_uses_valid_response_format_enum(tmp_path, monkeypat
     )
     result = client.generate_json("Synthetic prompt")
 
-    assert result["json"] == {"entity_verdicts": [], "additional_concerns": []}
+    assert result["json"] == {
+        "entity_verdicts": [],
+        "additional_concerns": [],
+        "source_discrepancies": [],
+    }
     assert len(request_payloads) == 1
     generation_config = request_payloads[0]["generationConfig"]
     assert generation_config["responseFormat"]["text"]["mimeType"] == "APPLICATION_JSON"

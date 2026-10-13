@@ -35,11 +35,11 @@ flowchart LR
 
 ### Component responsibilities
 
-- **Dashboard** ([src/frontend/](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/frontend/>)): processes only text entered by the user or a JSON/TXT file they select; it does not preload bundled demo transcripts. It displays progress, findings, severity, evidence, Stage A routing, and Stage B fallback status. `config.js` centralises the API base URL.
+- **Dashboard** ([src/frontend/](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/frontend/>)): processes only text entered by the user or a JSON/TXT file they select; it does not preload bundled demo transcripts. It displays progress, findings, severity, evidence, Stage A routing, source-comparison excerpts, and Stage B fallback status. `config.js` centralises the API base URL.
 - **Local web server** ([server.js](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/backend/server.js>)): serves the existing static UI on loopback only, proxies requests to the same Python pipeline, and keeps local upload results in memory. A local upload is **not** sent to AWS or S3.
 - **API adapter** ([web_api.py](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/backend/web_api.py>)): validates transcript input, invokes Stage A and Stage B, and returns a stable result without echoing transcript text in direct API responses.
 - **Stage A** ([stage_a/](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/backend/stage_a/>)): extracts clinical entities and retrieves RxNorm/ICD-10-CM evidence. Reference files are packaged with the Lambda; RxNorm lookup can call the public RxNorm API if a local cache does not satisfy it.
-- **Stage B** ([stage_b/](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/backend/stage_b/>)): runs the deterministic audit and, when configured, Gemini in `llm_plain` or `llm_rag` mode. Existing deterministic fallback is surfaced as `stage_b.llm_status = "fallback"`.
+- **Stage B** ([stage_b/](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/backend/stage_b/>)): when configured, sends the candidate transcript and extracted entities to Gemini in `llm_plain` or `llm_rag` mode. `llm_rag` includes retrieved RxNorm/ICD-10-CM evidence in the prompt (retrieval-augmented prompting, not vector search). If a trusted source transcript is provided, Gemini also compares both texts for material omissions, additions, and contradictions. Returned excerpts are validated against their respective inputs before display. Deterministic-only and fallback runs explicitly report source comparison as not performed. Existing deterministic fallback is surfaced as `stage_b.llm_status = "fallback"`.
 - **Lambda handler** ([stage_a_handler.py](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/aws/lambda/stage_a_handler.py>)): the owner reports an existing `ehr-compliance-stage-b` Lambda in `ap-south-1`, Python 3.12, handler `stage_a_handler.lambda_handler`. Source supports S3 events and API Gateway routes. Deployed package/version and environment remain uninspected. The separate local [medical-transcript-processor.js](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/aws/lambda/medical-transcript-processor.js>) is a legacy handler that throws instead of processing; its deployed function role/configuration is not known.
 - **Deployment package** ([build_lambda.py](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/scripts/build_lambda.py>)): builds `build/stage_a_lambda.zip` with the Lambda handler, backend modules, prompts, and reference data. Application imports use Python standard library plus runtime-provided `boto3`; deployed SDK support for conditional S3 writes must be checked before deployment.
 - **S3**: the owner reports bucket `ehr-compliance-monitor-yogiri-2026` with an all-object-create notification filtered to `input/` and `.json`, targeting `ehr-compliance-stage-b`. Source writes uploads under `input/` and results/status under `output/stage_b/`. Bucket security settings and deployed role permissions remain unverified. S3 is the job store; no DynamoDB or queue is introduced.
@@ -91,6 +91,7 @@ The project owner reports API Gateway displays **“Create an API to begin”** 
 - The paste field accepts plain text or one JSON object with `transcript`/`transcription` and an optional `sourceTranscript`/`source_transcript`; invalid JSON and JSON arrays are rejected with a useful message.
 - **File workflow:** select one `.txt` or `.json` file, then `POST /api/upload`. In local development it runs locally and reports that it did not use S3. In AWS the Lambda writes a normalised JSON object to the configured bucket’s `input/` prefix and returns a job ID. The S3 notification invokes the Lambda; the browser polls `GET /api/jobs/{jobId}` until the corresponding result/status object exists.
 - **Supported JSON file:** one object with `transcription` or `transcript` string and optional `source_transcript` or `sourceTranscript` string. A `.txt` file is treated as the candidate transcript. Maximum upload size in the UI: 800 KB.
+- **Source comparison:** a non-empty trusted source is compared only when an LLM Stage B request succeeds. The response includes `stage_b.source_comparison.status` and a `discrepancies` array with exact, validated source/candidate excerpts. `stage_b_summary.source_comparison` is true only when that comparison completed. The comparison is for textual fidelity, not clinical correctness; the trusted source itself may also contain errors. No source, deterministic-only mode, or LLM fallback means no comparison was completed.
 - **Direct API request:**
 
   ```json
@@ -108,8 +109,19 @@ The project owner reports API Gateway displays **“Create an API to begin”** 
     "stage_a_summary": {"n_entities": 2, "n_invalid": 0, "n_forwarded_to_stage_b": 2},
     "entities": [],
     "stage_b_status": "completed",
-    "stage_b": {"mode": "stage_a_only", "llm_status": "skipped"},
-    "stage_b_summary": {"n_findings": 0, "critical": 0, "high": 0, "medium": 0, "low": 0},
+    "stage_b": {
+      "mode": "stage_a_only",
+      "llm_status": "skipped",
+      "source_comparison": {"status": "not_provided", "discrepancies": []}
+    },
+    "stage_b_summary": {
+      "n_findings": 0,
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "source_comparison": false
+    },
     "stage_b_findings": []
   }
   ```

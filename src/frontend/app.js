@@ -3,6 +3,7 @@ const source = document.querySelector("#source");
 const status = document.querySelector("#status");
 const results = document.querySelector("#results");
 const API_BASE_URL = String(window.EHR_API_BASE_URL || "").replace(/\/+$/, "");
+const SYNTHETIC_EXAMPLE = "ALLERGIES: penicillin (rash). MEDICATIONS: amoxicillin 500 mg three times daily.";
 
 async function apiRequest(path, options) {
   const controller = new AbortController();
@@ -23,7 +24,14 @@ async function apiRequest(path, options) {
 }
 
 function escapeHtml(value) { return String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[c]); }
-function severityClass(value) { return String(value || "low").toLowerCase(); }
+function severityClass(value) {
+  const severity = String(value || "").toLowerCase();
+  return ["critical", "high", "medium", "low"].includes(severity) ? severity : "low";
+}
+
+function updateCharacterCount(field, output) {
+  document.querySelector(output).textContent = `${field.value.length.toLocaleString()} / 100,000`;
+}
 
 function directRequestBody() {
   const text = candidate.value.trim();
@@ -47,20 +55,81 @@ function directRequestBody() {
 function render(result) {
   const findings = result.stage_b_findings || [];
   const summary = result.stage_b_summary || {};
+  const stageB = result.stage_b || {};
+  const llmStatus = stageB.llm_status || result.stage_b_status || "unknown";
+  const stageMode = stageB.mode || "unknown";
+  const sourceCompared = summary.source_comparison === true;
+  const sourceComparison = stageB.source_comparison || {};
+  const sourceComparisonStatus = sourceComparison.status || (sourceCompared ? "compared" : "not_performed");
+  const discrepancies = Array.isArray(sourceComparison.discrepancies) ? sourceComparison.discrepancies : [];
   results.hidden = false;
-  document.querySelector("#result-title").textContent = findings.length ? `${findings.length} safety finding${findings.length === 1 ? "" : "s"}` : "No review signals found";
-  document.querySelector("#mode").textContent = `Stage B: ${result.stage_b?.mode || "unknown"} (${result.stage_b?.llm_status || result.stage_b_status || "unknown"})`;
-  document.querySelector("#summary").innerHTML = ["critical", "high", "medium", "low"].map((severity) => `<div class="count ${severity}"><b>${Number(summary[severity] || 0)}</b><span>${severity}</span></div>`).join("");
-  document.querySelector("#findings").innerHTML = findings.length ? findings.map((item) => `<article class="finding ${severityClass(item.severity)}"><div class="finding-title"><span class="badge">${escapeHtml(item.severity)}</span><strong>${escapeHtml(item.category)}</strong></div><h3>${escapeHtml(item.phrase)}</h3><p>${escapeHtml(item.reason)}</p><dl><dt>Evidence</dt><dd>${escapeHtml(item.evidence || "No supporting reference evidence returned.")}</dd>${item.stage_a_routing ? `<dt>Stage A verification</dt><dd>${escapeHtml(item.stage_a_routing)}</dd>` : ""}</dl></article>`).join("") : `<div class="empty">No signals met the prototype rules. A clinician must still review the record.</div>`;
+  document.querySelector("#result-title").textContent = findings.length
+    ? `${findings.length} review signal${findings.length === 1 ? "" : "s"}`
+    : "No review signals returned";
+  const badge = document.querySelector("#stage-b-badge");
+  badge.textContent = llmStatus === "fallback"
+    ? "Deterministic fallback"
+    : `${stageMode === "llm_rag" ? "Gemini · RAG" : stageMode} · ${llmStatus}`;
+  badge.classList.toggle("fallback", llmStatus === "fallback");
+  document.querySelector("#finding-count").textContent = `${findings.length} total`;
+  document.querySelector("#summary").innerHTML = ["critical", "high", "medium", "low"]
+    .map((severity) => `<div class="count ${severity}"><b>${Number(summary[severity] || 0)}</b><span>${severity}</span></div>`)
+    .join("");
+  const latency = Number(stageB.latency_ms);
+  document.querySelector("#review-meta").innerHTML = [
+    ["Entities reviewed", Number(result.stage_a_summary?.n_entities || 0)],
+    ["Stage B model", stageB.model || (stageMode === "stage_a_only" ? "Deterministic" : "Not reported")],
+    ["Trusted-source comparison", sourceCompared ? "Compared" : sourceComparisonStatus === "not_provided" ? "Not provided" : "Not performed"]
+  ].map(([label, value]) => `<div class="meta-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+  if (latency > 0) {
+    document.querySelector("#review-meta").insertAdjacentHTML("beforeend",
+      `<div class="meta-item"><span>Stage B response time</span><strong>${escapeHtml((latency / 1000).toFixed(1))} sec</strong></div>`);
+  }
+  const comparisonNote = document.querySelector("#comparison-note");
+  comparisonNote.hidden = sourceCompared;
+  comparisonNote.textContent = sourceComparisonStatus === "not_provided"
+    ? "No trusted source transcript was provided; source comparison was not run."
+    : "A trusted source transcript was provided, but comparison was not completed for this result. Check Stage B status.";
+  const comparisonPanel = document.querySelector("#source-comparison-panel");
+  comparisonPanel.hidden = !sourceCompared;
+  document.querySelector("#source-discrepancy-count").textContent = `${discrepancies.length} discrepancy${discrepancies.length === 1 ? "" : "ies"}`;
+  document.querySelector("#source-discrepancies").innerHTML = discrepancies.length
+    ? discrepancies.map((item) => `<article class="source-diff"><h4>${escapeHtml(item.type)} detected</h4><p>${escapeHtml(item.reason)}</p>${item.source_excerpt ? `<p class="quote-label">Trusted source</p><blockquote>${escapeHtml(item.source_excerpt)}</blockquote>` : ""}${item.candidate_excerpt ? `<p class="quote-label">Candidate transcription</p><blockquote>${escapeHtml(item.candidate_excerpt)}</blockquote>` : ""}</article>`).join("")
+    : `<p class="empty-state">No material textual differences were returned. A reviewer should still verify the source and context.</p>`;
+  document.querySelector("#findings").innerHTML = findings.length ? findings.map((item) => `<article class="finding ${severityClass(item.severity)}"><div class="finding-title"><span class="badge">${escapeHtml(item.severity)}</span><strong>${escapeHtml(item.category)}</strong></div><h4>${escapeHtml(item.phrase)}</h4><p>${escapeHtml(item.reason)}</p><dl><dt>Evidence</dt><dd>${escapeHtml(item.evidence || "No supporting reference evidence returned.")}</dd>${item.stage_a_routing ? `<dt>Stage A verification</dt><dd>${escapeHtml(item.stage_a_routing)}</dd>` : ""}</dl></article>`).join("") : `<div class="empty-state">No signals were returned for this transcript. This does not confirm that the transcript is complete or clinically correct; clinician review is still required.</div>`;
   document.querySelector("#entities").textContent = JSON.stringify({
     verificationStatus: result.verification_status,
     stageAVersion: result.stage_a_version,
     stageASummary: result.stage_a_summary,
     entities: result.entities,
-    stageB: result.stage_b,
+    stageB,
     stageBSummary: result.stage_b_summary
   }, null, 2);
 }
+
+candidate.addEventListener("input", () => updateCharacterCount(candidate, "#candidate-count"));
+source.addEventListener("input", () => updateCharacterCount(source, "#source-count"));
+
+document.querySelector("#load-example").addEventListener("click", () => {
+  candidate.value = SYNTHETIC_EXAMPLE;
+  source.value = "";
+  updateCharacterCount(candidate, "#candidate-count");
+  updateCharacterCount(source, "#source-count");
+  status.textContent = "Synthetic example loaded. Results can vary between model runs.";
+  candidate.focus();
+});
+
+document.querySelector("#clear-inputs").addEventListener("click", () => {
+  candidate.value = "";
+  source.value = "";
+  document.querySelector("#transcript-file").value = "";
+  document.querySelector("#upload-status").textContent = "";
+  results.hidden = true;
+  updateCharacterCount(candidate, "#candidate-count");
+  updateCharacterCount(source, "#source-count");
+  status.textContent = "Inputs cleared. Add a transcript to begin.";
+  candidate.focus();
+});
 
 document.querySelector("#analyse").addEventListener("click", async () => {
   if (!candidate.value.trim()) {
@@ -70,6 +139,7 @@ document.querySelector("#analyse").addEventListener("click", async () => {
   }
   status.textContent = "Running clinical entity extraction, terminology retrieval, and contextual verification…";
   const button = document.querySelector("#analyse");
+  results.hidden = true;
   button.disabled = true;
   try {
     const payload = directRequestBody();
@@ -82,7 +152,7 @@ document.querySelector("#analyse").addEventListener("click", async () => {
     const llmStatus = result.stage_b?.llm_status;
     status.textContent = llmStatus === "fallback"
       ? `Review completed using deterministic fallback. ${result.stage_b?.fallback_reason || "Gemini was unavailable."}`
-      : `Review completed: ${result.stage_b_findings?.length || 0} finding(s); Stage B status: ${llmStatus || result.stage_b_status}.`;
+      : `Review complete. ${result.stage_b_findings?.length || 0} review signal(s) returned.`;
   } catch (error) {
     status.textContent = error.message;
   } finally {
@@ -103,6 +173,7 @@ document.querySelector("#upload-transcript").addEventListener("click", async () 
     return;
   }
   button.disabled = true;
+  results.hidden = true;
   uploadStatus.textContent = "Uploading transcript…";
   try {
     const content = await file.text();
@@ -132,7 +203,7 @@ document.querySelector("#upload-transcript").addEventListener("click", async () 
       : completed.status === "partial"
         ? "S3 upload completed with a partial result; check the processed-record count in the result details."
         : "S3 upload verified successfully; the result was retrieved from the output object.";
-    status.textContent = `Stage B status: ${completed.result.stage_b?.llm_status || completed.result.stage_b_status}.`;
+    status.textContent = `Review complete. ${completed.result.stage_b_findings?.length || 0} review signal(s) returned.`;
   } catch (error) {
     uploadStatus.textContent = error.message;
   } finally {

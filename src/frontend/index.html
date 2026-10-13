@@ -3,36 +3,136 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#183247">
   <title>EHR Transcription Safety Gate</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="topbar">
-    <div><span class="eyebrow">Clinical safety prototype</span><h1>EHR Transcription Safety Gate</h1></div>
-    <span class="environment">Review before finalisation</span>
+    <a class="brand" href="#" aria-label="EHR Safety Gate home">EHR Transcription Safety Gate</a>
+    <span class="prototype-badge">Research prototype · clinician review required</span>
   </header>
+
   <main>
-    <section class="intro">
-      <div><h2>Flag unsupported facts before they reach the EHR.</h2><p>Compare an AI-generated transcription with its trusted source. Findings are review signals—not diagnoses—and require clinician confirmation.</p></div>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Clinical documentation quality assurance</p>
+        <h1 id="page-title">Review AI-generated clinical text before it enters the record.</h1>
+        <p class="hero-description">The prototype extracts clinical entities, retrieves terminology evidence, and returns contextual review signals for a human to assess.</p>
+      </div>
+      <p class="prototype-note"><strong>Prototype limitation</strong><br>Not for clinical use. Findings are not diagnoses or treatment recommendations, and the tool does not update an EHR.</p>
     </section>
-    <section class="workspace">
-      <article class="input-panel"><label for="candidate">Candidate AI transcription <span>Required</span></label><textarea id="candidate" maxlength="100000" placeholder="Paste the AI-generated medical transcription here..."></textarea></article>
-      <article class="input-panel"><label for="source">Trusted source transcript <span>Recommended</span></label><textarea id="source" maxlength="100000" placeholder="Paste the original transcribed or clinician-confirmed source here..."></textarea></article>
+
+    <section class="research-context" aria-labelledby="research-title">
+      <div class="research-heading">
+        <p class="eyebrow">Research context · external study</p>
+        <h2 id="research-title">Automated auditing of emergency department documentation</h2>
+        <p class="research-authors">Dietrich N, Stubbert B · <em>The American Journal of Emergency Medicine</em>, 2026</p>
+      </div>
+      <div class="research-finding">
+        <strong>93.2–94.2%</strong>
+        <span>reported accuracy across four evaluated LLMs</span>
+      </div>
+      <div class="research-detail">
+        <p>The study evaluated 600 ED discharge notes: 500 with one injected documentation error and 100 error-free controls. Its results are from that study and are <strong>not</strong> measurements of this prototype.</p>
+        <a href="https://doi.org/10.1016/j.ajem.2026.03.007" target="_blank" rel="noreferrer">Read the paper <span aria-hidden="true">↗</span></a>
+      </div>
     </section>
-    <article class="input-panel upload-panel">
-      <div><label for="transcript-file">Or upload one transcript file <span>.txt or .json; up to 800 KB</span></label><input id="transcript-file" type="file" accept=".txt,.json,text/plain,application/json"><p>JSON files must contain one object with a <code>transcription</code> (or <code>transcript</code>) string and an optional <code>source_transcript</code>.</p></div>
-      <button id="upload-transcript" class="secondary">Upload and verify</button>
-      <p id="upload-status" aria-live="polite"></p>
-    </article>
-    <div class="action-row"><button id="analyse" class="primary">Run safety review</button><p id="status" aria-live="polite">Source-comparison mode provides the strongest evidence.</p></div>
-    <section id="results" hidden>
-      <div class="section-heading"><div><span class="eyebrow">Review results</span><h2 id="result-title">Safety findings</h2></div><p id="mode"></p></div>
-      <div id="summary" class="summary"></div>
-      <div id="findings" class="findings"></div>
-      <details><summary>Detected entities and reference provenance</summary><pre id="entities"></pre></details>
+
+    <section class="input-section" aria-labelledby="input-title">
+      <div class="section-intro">
+        <div>
+          <p class="eyebrow">Prototype workspace</p>
+          <h2 id="input-title">Review a transcript</h2>
+          <p>Enter the candidate transcription. If supplied, the trusted source is compared during a successful Gemini review.</p>
+        </div>
+        <div class="quick-actions">
+          <button id="load-example" class="text-button" type="button">Load synthetic example</button>
+          <button id="clear-inputs" class="text-button subdued" type="button">Clear</button>
+        </div>
+      </div>
+
+      <div class="workspace">
+        <article class="transcript-card">
+          <div class="field-heading">
+            <label for="candidate"><span class="field-index">A</span>Candidate AI transcription <span class="required-tag">Required</span></label>
+            <span id="candidate-count" class="character-count">0 / 100,000</span>
+          </div>
+          <textarea id="candidate" maxlength="100000" aria-describedby="candidate-help" placeholder="Paste the AI-generated transcription here…"></textarea>
+          <p id="candidate-help" class="field-help">This is the text Stage A extracts entities from and Stage B reviews.</p>
+        </article>
+
+        <article class="transcript-card source-card">
+          <div class="field-heading">
+            <label for="source"><span class="field-index">B</span>Trusted source transcript <span class="optional-tag">Optional</span></label>
+            <span id="source-count" class="character-count">0 / 100,000</span>
+          </div>
+          <textarea id="source" maxlength="100000" aria-describedby="source-help" placeholder="Paste a trusted source transcript if available…"></textarea>
+          <p id="source-help" class="field-help limitation-note">Compared during a successful LLM review. Comparison is unavailable in deterministic-only or fallback runs.</p>
+        </article>
+      </div>
+
+      <div class="upload-card">
+        <div class="upload-copy">
+          <div>
+            <label for="transcript-file">Prefer to upload a file?</label>
+            <p>Choose one .txt or .json file, up to 800 KB. JSON must contain a <code>transcription</code> or <code>transcript</code> string.</p>
+          </div>
+        </div>
+        <input id="transcript-file" type="file" accept=".txt,.json,text/plain,application/json" aria-label="Choose transcript file">
+        <button id="upload-transcript" class="button button-secondary" type="button">Upload and verify</button>
+        <p id="upload-status" class="inline-status" aria-live="polite"></p>
+      </div>
+
+      <div class="submit-row">
+        <div class="submit-copy">
+          <button id="analyse" class="button button-primary" type="button">Run safety review</button>
+          <p>Only submit synthetic or appropriately authorised data.</p>
+        </div>
+        <p id="status" class="live-status" role="status" aria-live="polite">Ready when you are. Add a transcript to begin.</p>
+      </div>
+    </section>
+
+    <section id="results" class="results-section" aria-labelledby="result-title" aria-live="polite" hidden>
+      <div class="results-header">
+        <div>
+          <p class="eyebrow">Review output</p>
+          <h2 id="result-title">Safety review</h2>
+        </div>
+        <span id="stage-b-badge" class="result-status"></span>
+      </div>
+      <div id="summary" class="summary-grid"></div>
+      <div id="review-meta" class="review-meta"></div>
+      <div id="comparison-note" class="comparison-note" hidden></div>
+      <section id="source-comparison-panel" class="source-comparison-panel" aria-labelledby="source-comparison-title" hidden>
+        <div class="findings-heading"><h3 id="source-comparison-title">Candidate vs trusted source</h3><span id="source-discrepancy-count"></span></div>
+        <div id="source-discrepancies" class="source-discrepancies"></div>
+      </section>
+      <div class="findings-heading"><h3>Findings for clinician review</h3><span id="finding-count"></span></div>
+      <div id="findings" class="findings-list"></div>
+      <details class="technical-details">
+        <summary>View extracted entities and evidence details</summary>
+        <p>Reference results help explain how the system reached its review signals. They are not a substitute for clinical judgement.</p>
+        <pre id="entities"></pre>
+      </details>
+    </section>
+
+    <section class="how-it-works" aria-labelledby="how-title">
+      <div class="section-intro">
+        <div><p class="eyebrow">System overview</p><h2 id="how-title">How the review works</h2></div>
+      </div>
+      <div class="explanation-grid">
+        <article><h3>1. Extract</h3><p>Stage A identifies candidate diagnoses, medications, and dosage mentions.</p></article>
+        <article><h3>2. Retrieve</h3><p>Medication lookups use RxNorm; diagnosis candidates use a local ICD-10-CM text index. Retrieved evidence is attached to relevant entities.</p></article>
+        <article><h3>3. Contextual review</h3><p>In <code>llm_rag</code> mode, Gemini receives the candidate transcript, extracted entities, and retrieved evidence. This is retrieval-augmented prompting—not embedding or vector-database search.</p></article>
+      </div>
+      <p class="scope-note"><strong>Evaluation status:</strong> the research result above belongs to its authors. This prototype has not been clinically validated or benchmarked to that study.</p>
     </section>
   </main>
-  <footer>Prototype scope: terminology-assisted and provenance-based transcription review. It does not provide clinical advice or automatically update an EHR.</footer>
+
+  <footer>
+    <p><strong>EHR Transcription Safety Gate</strong> · Research prototype. Findings require qualified human review. Use only synthetic or properly authorised data.</p>
+  </footer>
   <script src="config.js"></script>
   <script src="app.js"></script>
 </body>

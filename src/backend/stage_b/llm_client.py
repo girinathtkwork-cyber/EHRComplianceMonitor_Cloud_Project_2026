@@ -99,7 +99,11 @@ class GeminiClient:
             return {**cached, "cache_hit": True}
         if dry_run:
             return {
-                "json": {"entity_verdicts": [], "additional_concerns": []},
+                "json": {
+                    "entity_verdicts": [],
+                    "additional_concerns": [],
+                    "source_discrepancies": [],
+                },
                 "raw": "",
                 "usage": {"prompt_tokens": len(prompt.split()), "output_tokens": 0},
                 "latency_ms": 0,
