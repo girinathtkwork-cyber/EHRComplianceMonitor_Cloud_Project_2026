@@ -37,6 +37,7 @@ def test_lambda_zip_isolated_execution():
 
         # Verify key extracted artifacts
         assert (tmp_dir / "stage_a_handler.py").exists()
+        assert (tmp_dir / "backend" / "web_api.py").exists()
         assert (tmp_dir / "backend" / "stage_a" / "pipeline.py").exists()
         assert (tmp_dir / "backend" / "stage_b" / "audit.py").exists()
         assert (tmp_dir / "backend" / "stage_b" / "stage_b.py").exists()
@@ -50,6 +51,7 @@ def test_lambda_zip_isolated_execution():
 import sys
 import os
 import json
+import hashlib
 
 # Ensure ONLY the temp directory (zip root) and stdlib are on sys.path
 zip_root = os.path.abspath(os.path.dirname(__file__))
@@ -76,21 +78,39 @@ with open("input/test_record.json", "w", encoding="utf-8") as f:
 
 # Stub S3 client
 class StubS3Client:
+    class PreconditionFailed(Exception):
+        response = {"Error": {"Code": "PreconditionFailed"}, "ResponseMetadata": {"HTTPStatusCode": 412}}
+
+    @staticmethod
+    def _etag(data):
+        return '"' + hashlib.md5(data).hexdigest() + '"'
+
     def get_object(self, Bucket, Key):
-        with open(Key, "rb") as f:
-            data = f.read()
+        try:
+            with open(Key, "rb") as f:
+                data = f.read()
+        except FileNotFoundError as exc:
+            exc.response = {"Error": {"Code": "NoSuchKey"}}
+            raise
         class Body:
             def __init__(self, d): self.d = d
             def read(self): return self.d
-        return {"Body": Body(data)}
+        return {"Body": Body(data), "ETag": self._etag(data)}
 
-    def put_object(self, Bucket, Key, Body, ContentType=None):
+    def put_object(self, Bucket, Key, Body, ContentType=None, IfNoneMatch=None, IfMatch=None):
         os.makedirs(os.path.dirname(Key), exist_ok=True)
+        data = Body if isinstance(Body, bytes) else Body.encode("utf-8")
+        if IfNoneMatch == "*" and os.path.exists(Key):
+            raise self.PreconditionFailed()
+        if IfMatch is not None:
+            if not os.path.exists(Key):
+                raise self.PreconditionFailed()
+            with open(Key, "rb") as current:
+                if self._etag(current.read()) != IfMatch:
+                    raise self.PreconditionFailed()
         with open(Key, "w", encoding="utf-8") as f:
-            if isinstance(Body, bytes):
-                f.write(Body.decode("utf-8"))
-            else:
-                f.write(Body)
+            f.write(data.decode("utf-8"))
+        return {"ETag": self._etag(data)}
 
 class StubContext:
     def get_remaining_time_in_millis(self):
@@ -113,6 +133,8 @@ event = {
 
 # Run handler in simulated Lambda environment
 os.environ["AWS_LAMBDA_FUNCTION_NAME"] = "isolated-test-func"
+os.environ["STAGE_B_MODE"] = "stage_a_only"
+os.environ["TRANSCRIPTS_BUCKET"] = "isolated-test-bucket"
 response = stage_a_handler.lambda_handler(event, StubContext())
 assert response["statusCode"] == 200, f"Handler failed: {response}"
 
@@ -132,6 +154,108 @@ assert rec["stage_a_summary"]["n_entities"] >= 2
 assert rec["stage_b_status"] == "completed"
 assert rec["stage_b"]["mode"] == "stage_a_only"
 assert "stage_b_findings" in rec
+
+# Verify the packaged API direct-review route.
+api_response = stage_a_handler.lambda_handler({
+    "httpMethod": "POST",
+    "path": "/api/analyse",
+    "body": json.dumps({"transcript": "Patient reports feeling well."}),
+}, StubContext())
+assert api_response["statusCode"] == 200
+api_result = json.loads(api_response["body"])
+assert api_result["verification_status"] == "completed"
+assert "transcription" not in api_result
+unknown_http_response = stage_a_handler.lambda_handler({
+    "requestContext": {"http": {"method": "GET"}},
+    "rawPath": "/not-a-route",
+    "Records": [],
+}, StubContext())
+assert unknown_http_response["statusCode"] == 404, "HTTP events must not fall through to the S3 event handler."
+
+lock_acquired, lock_etag = stage_a_handler._acquire_s3_job_lock(
+    StubS3Client(), "isolated-test-bucket", "lock-concurrency-test"
+)
+assert lock_acquired and lock_etag
+duplicate_lock, _ = stage_a_handler._acquire_s3_job_lock(
+    StubS3Client(), "isolated-test-bucket", "lock-concurrency-test"
+)
+assert not duplicate_lock, "Only one concurrent S3 event may own the job lock."
+stage_a_handler._set_s3_job_lock_status(
+    StubS3Client(), "isolated-test-bucket", "lock-concurrency-test", lock_etag, "failed"
+)
+retry_lock, _ = stage_a_handler._acquire_s3_job_lock(
+    StubS3Client(), "isolated-test-bucket", "lock-concurrency-test"
+)
+assert retry_lock, "A failed job lock must be reclaimable for an S3 event retry."
+
+# Verify dashboard file upload -> S3 event -> status/result polling.
+upload_response = stage_a_handler.lambda_handler({
+    "httpMethod": "POST",
+    "path": "/api/upload",
+    "body": json.dumps({
+        "fileName": "dashboard.txt",
+        "content": "Patient reports feeling well."
+    }),
+}, StubContext())
+assert upload_response["statusCode"] == 202
+job_id = json.loads(upload_response["body"])["jobId"]
+pending = stage_a_handler.lambda_handler({
+    "httpMethod": "GET",
+    "path": f"/api/jobs/{job_id}",
+}, StubContext())
+assert pending["statusCode"] == 202
+
+stage_a_handler.lambda_handler({
+    "Records": [{
+        "s3": {
+            "bucket": {"name": "isolated-test-bucket"},
+            "object": {"key": f"input/{job_id}.json"}
+        }
+    }]
+}, StubContext())
+stage_a_calls = []
+original_run_stage_a = stage_a_handler.run_stage_a
+def count_stage_a_calls(record):
+    stage_a_calls.append(record)
+    return original_run_stage_a(record)
+stage_a_handler.run_stage_a = count_stage_a_calls
+stage_a_handler.lambda_handler({
+    "Records": [{
+        "s3": {
+            "bucket": {"name": "isolated-test-bucket"},
+            "object": {"key": f"input/{job_id}.json"}
+        }
+    }]
+}, StubContext())
+assert not stage_a_calls, "A duplicate completed S3 event must not rerun the pipeline."
+job_response = stage_a_handler.lambda_handler({
+    "httpMethod": "GET",
+    "path": f"/api/jobs/{job_id}",
+}, StubContext())
+assert job_response["statusCode"] == 200
+job = json.loads(job_response["body"])
+assert job["status"] == "completed"
+assert job["result"]["stage_b"]["mode"] == "stage_a_only"
+
+failed_job_id = "00000000-0000-0000-0000-000000000001"
+stub_s3 = StubS3Client()
+stub_s3.put_object(
+    Bucket="isolated-test-bucket",
+    Key=f"output/stage_b/{failed_job_id}.status.json",
+    Body=json.dumps({"status": "failed"}),
+)
+stub_s3.put_object(
+    Bucket="isolated-test-bucket",
+    Key=f"output/stage_b/{failed_job_id}.audited.json",
+    Body=json.dumps([rec]),
+)
+failed_job_response = stage_a_handler.lambda_handler({
+    "httpMethod": "GET",
+    "path": f"/api/jobs/{failed_job_id}",
+}, StubContext())
+assert failed_job_response["statusCode"] == 200
+assert json.loads(failed_job_response["body"])["status"] == "failed", \
+    "A failed status must not be overridden by an existing result object."
 print("ISOLATED_TEST_SUCCESS")
 """, encoding="utf-8")
 

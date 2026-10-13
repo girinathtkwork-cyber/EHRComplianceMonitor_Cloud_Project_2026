@@ -14,15 +14,17 @@
   <main>
     <section class="intro">
       <div><h2>Flag unsupported facts before they reach the EHR.</h2><p>Compare an AI-generated transcription with its trusted source. Findings are review signals—not diagnoses—and require clinician confirmation.</p></div>
-      <button id="load-demo" class="secondary">Load MTSamples demo case</button>
     </section>
     <section class="workspace">
-      <article class="input-panel"><label for="candidate">Candidate AI transcription <span>Required</span></label><textarea id="candidate" placeholder="Paste the AI-generated medical transcription here..."></textarea></article>
-      <article class="input-panel"><label for="source">Trusted source transcript <span>Recommended</span></label><textarea id="source" placeholder="Paste the original transcribed or clinician-confirmed source here..."></textarea></article>
+      <article class="input-panel"><label for="candidate">Candidate AI transcription <span>Required</span></label><textarea id="candidate" maxlength="100000" placeholder="Paste the AI-generated medical transcription here..."></textarea></article>
+      <article class="input-panel"><label for="source">Trusted source transcript <span>Recommended</span></label><textarea id="source" maxlength="100000" placeholder="Paste the original transcribed or clinician-confirmed source here..."></textarea></article>
     </section>
+    <article class="input-panel upload-panel">
+      <div><label for="transcript-file">Or upload one transcript file <span>.txt or .json; up to 800 KB</span></label><input id="transcript-file" type="file" accept=".txt,.json,text/plain,application/json"><p>JSON files must contain one object with a <code>transcription</code> (or <code>transcript</code>) string and an optional <code>source_transcript</code>.</p></div>
+      <button id="upload-transcript" class="secondary">Upload and verify</button>
+      <p id="upload-status" aria-live="polite"></p>
+    </article>
     <div class="action-row"><button id="analyse" class="primary">Run safety review</button><p id="status" aria-live="polite">Source-comparison mode provides the strongest evidence.</p></div>
-    <section class="evaluation"><div><span class="eyebrow">Dataset evaluation</span><h2>Measure results from labelled records</h2><p>Calculates recall from the existing error-injection ground truth. No metric is stored or manually entered.</p></div><button id="evaluate" class="secondary">Calculate dataset results</button></section>
-    <div id="evaluation-results" class="evaluation-results" hidden></div>
     <section id="results" hidden>
       <div class="section-heading"><div><span class="eyebrow">Review results</span><h2 id="result-title">Safety findings</h2></div><p id="mode"></p></div>
       <div id="summary" class="summary"></div>
@@ -31,6 +33,7 @@
     </section>
   </main>
   <footer>Prototype scope: terminology-assisted and provenance-based transcription review. It does not provide clinical advice or automatically update an EHR.</footer>
+  <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

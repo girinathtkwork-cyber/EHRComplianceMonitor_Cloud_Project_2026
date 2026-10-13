@@ -43,11 +43,15 @@ def build_lambda_zip():
         stage_a_dir = project_root / "src" / "backend" / "stage_a"
         stage_b_dir = project_root / "src" / "backend" / "stage_b"
         backend_init = project_root / "src" / "backend" / "__init__.py"
+        web_api_module = project_root / "src" / "backend" / "web_api.py"
 
         # Add backend/__init__.py
         if backend_init.exists():
             zf.write(backend_init, "backend/__init__.py")
             print(f"  + backend/__init__.py")
+        if web_api_module.exists():
+            zf.write(web_api_module, "backend/web_api.py")
+            print("  + backend/web_api.py")
 
         # Add backend/stage_a/**/*.py
         if stage_a_dir.exists():

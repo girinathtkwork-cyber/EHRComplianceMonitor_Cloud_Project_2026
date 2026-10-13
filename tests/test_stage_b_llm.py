@@ -86,6 +86,13 @@ def test_invalid_json_failure_falls_back():
     assert "LLM response" in out["stage_b"]["fallback_reason"]
 
 
+def test_gemini_request_failure_returns_deterministic_fallback():
+    out = run_stage_b(_record(), mode="llm_rag", client=FakeClient(fail=True))
+    assert out["stage_b"]["llm_status"] == "fallback"
+    assert out["stage_b"]["fallback_reason"] == "boom"
+    assert out["stage_b_status"] == "completed"
+
+
 def test_dry_run_makes_zero_calls(tmp_path):
     client = FakeClient()
     out = run_stage_b(_record(), mode="llm_plain", client=client, dry_run=True, project_root=tmp_path)
