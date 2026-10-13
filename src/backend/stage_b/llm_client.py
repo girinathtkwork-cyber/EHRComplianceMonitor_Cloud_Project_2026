@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
+import re
 import time
 import urllib.error
 import urllib.request
@@ -14,6 +16,7 @@ from threading import Lock
 from .schema import OUTPUT_SCHEMA
 
 DEFAULT_MODEL = "gemini-3.8-flash"
+_LOGGER = logging.getLogger(__name__)
 
 
 def _is_lambda_env() -> bool:
@@ -44,8 +47,9 @@ class JsonlCache:
                 if line.strip():
                     item = json.loads(line)
                     self._items[item["key"]] = item["value"]
-        except (OSError, json.JSONDecodeError, KeyError):
+        except (OSError, json.JSONDecodeError, KeyError) as exc:
             self._items = {}
+            _LOGGER.warning("llm_cache_load_failed error_type=%s", type(exc).__name__)
 
     def get(self, key: str):
         return self._items.get(key)
@@ -58,8 +62,8 @@ class JsonlCache:
             self.path.parent.mkdir(parents=True, exist_ok=True)
             with self.path.open("a", encoding="utf-8") as f:
                 f.write(json.dumps({"key": key, "value": value}, separators=(",", ":")) + "\n")
-        except OSError:
-            pass
+        except OSError as exc:
+            _LOGGER.warning("llm_cache_persist_failed error_type=%s", type(exc).__name__)
 
 
 class RateLimiter:
@@ -151,10 +155,31 @@ class GeminiClient:
                     out["_latency_ms"] = int((time.monotonic() - start) * 1000)
                     return out
             except urllib.error.HTTPError as exc:
-                last_error = exc
+                message = _gemini_http_error_message(exc, self.api_key)
+                last_error = RuntimeError(f"HTTP {exc.code}: {message}")
                 if exc.code not in {429, 500, 502, 503, 504}:
-                    raise
+                    raise RuntimeError(
+                        f"Gemini rejected the request (HTTP {exc.code}): {message}"
+                    ) from exc
             except (urllib.error.URLError, TimeoutError, OSError) as exc:
                 last_error = exc
             time.sleep(2 ** attempt)
         raise RuntimeError(f"Gemini request failed after retries: {last_error}")
+
+
+def _gemini_http_error_message(exc: urllib.error.HTTPError, api_key: str | None) -> str:
+    try:
+        response = json.loads(exc.read().decode("utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return "The provider did not return a readable error detail."
+
+    error = response.get("error") if isinstance(response, dict) else None
+    message = error.get("message") if isinstance(error, dict) else None
+    if not isinstance(message, str) or not message.strip():
+        return "The provider did not return an error message."
+
+    message = " ".join(message.split())
+    if api_key:
+        message = message.replace(api_key, "[REDACTED]")
+    message = re.sub(r"[\x00-\x1f\x7f]", " ", message)
+    return message[:400]

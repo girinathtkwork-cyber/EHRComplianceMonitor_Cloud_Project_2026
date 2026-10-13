@@ -19,6 +19,7 @@ This document describes how to deploy the repository Lambda package to the exist
 - Dependencies: Python standard library plus `boto3` for S3. The package builder intentionally does not bundle boto3/botocore; Lambda's runtime provides its SDK. No Lambda requirements file is present.
 - The bundled application source imports no third-party package other than `boto3`. Other repository dependencies such as `pandas`, `requests`, and `pytest` are not imported by the Lambda package.
 - The S3 lock implementation requires an SDK model that accepts conditional `PutObject` parameters `IfNoneMatch="*"` and `IfMatch=<ETag>`. Verify this with the deployed runtime SDK before enabling the update. The isolated test uses a conditional-write S3 stub, not AWS.
+- Lambda prompt artifacts and optional Stage A/Stage B caches use `/tmp`, never `/var/task`. `/tmp` is temporary and scoped to a Lambda execution environment: contents may survive warm invocations but are not guaranteed to survive cold starts, be shared, or serve as durable audit records. S3 remains the durable job/result store.
 
 ### Exact Windows PowerShell package and deployment commands
 

@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
+import os
+import tempfile
 from pathlib import Path
 
 GROUND_TRUTH_KEYS = {"ground_truth_label", "is_error", "error_type", "injected_entity", "correct_value"}
@@ -22,6 +25,12 @@ Rules:
 
 PLAIN_LINE = "Evidence rule: use your own medical knowledge."
 RAG_LINE = "Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing."
+
+_LOGGER = logging.getLogger(__name__)
+
+
+def _is_lambda_env() -> bool:
+    return bool(os.environ.get("AWS_LAMBDA_FUNCTION_NAME") or os.environ.get("LAMBDA_TASK_ROOT"))
 
 
 def _clean_record(record: dict) -> dict:
@@ -85,8 +94,17 @@ def prompt_hash(prompt: str, model: str = "") -> str:
 
 
 def save_prompt(prompt: str, *, mode: str, transcript_id: str, root: Path) -> Path:
-    out_dir = root / "results" / "prompts" / mode
-    out_dir.mkdir(parents=True, exist_ok=True)
+    if _is_lambda_env():
+        prompt_root = Path(tempfile.gettempdir()) / "ehr-compliance-monitor"
+    else:
+        prompt_root = root
+    out_dir = prompt_root / "results" / "prompts" / mode
     path = out_dir / f"{transcript_id}.txt"
-    path.write_text(prompt, encoding="utf-8")
+    try:
+        out_dir.mkdir(parents=True, exist_ok=True)
+        path.write_text(prompt, encoding="utf-8")
+    except OSError as exc:
+        if not _is_lambda_env():
+            raise
+        _LOGGER.warning("lambda_prompt_persistence_failed error_type=%s", type(exc).__name__)
     return path

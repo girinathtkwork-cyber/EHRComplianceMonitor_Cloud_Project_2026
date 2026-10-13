@@ -1,3 +1,4 @@
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -20,11 +21,29 @@ class _Body:
 
 
 class _MemoryS3:
+    class _PreconditionFailed(Exception):
+        response = {
+            "Error": {"Code": "PreconditionFailed"},
+            "ResponseMetadata": {"HTTPStatusCode": 412},
+        }
+
     def __init__(self):
         self.objects = {}
 
-    def put_object(self, *, Bucket, Key, Body, ContentType):
-        self.objects[(Bucket, Key)] = Body.encode("utf-8") if isinstance(Body, str) else Body
+    @staticmethod
+    def _etag(value):
+        return '"' + hashlib.md5(value).hexdigest() + '"'
+
+    def put_object(self, *, Bucket, Key, Body, ContentType, IfNoneMatch=None, IfMatch=None):
+        object_key = (Bucket, Key)
+        value = Body.encode("utf-8") if isinstance(Body, str) else Body
+        existing = self.objects.get(object_key)
+        if IfNoneMatch == "*" and existing is not None:
+            raise self._PreconditionFailed()
+        if IfMatch is not None and (existing is None or self._etag(existing) != IfMatch):
+            raise self._PreconditionFailed()
+        self.objects[object_key] = value
+        return {"ETag": self._etag(value)}
 
     def get_object(self, *, Bucket, Key):
         try:
@@ -32,7 +51,7 @@ class _MemoryS3:
         except KeyError as exc:
             exc.response = {"Error": {"Code": "NoSuchKey"}}
             raise
-        return {"Body": _Body(value)}
+        return {"Body": _Body(value), "ETag": self._etag(value)}
 
 
 def test_process_transcript_runs_both_stages_and_omits_transcript(monkeypatch):

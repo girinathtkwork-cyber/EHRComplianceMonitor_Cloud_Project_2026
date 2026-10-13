@@ -10,6 +10,7 @@ RxClass API: https://lhncbc.nlm.nih.gov/RxNav/APIs/RxClassAPIs.html
 """
 
 import json
+import logging
 import time
 import urllib.request
 import urllib.parse
@@ -17,6 +18,7 @@ import urllib.error
 from pathlib import Path
 
 _THIS_DIR = Path(__file__).resolve().parent
+_LOGGER = logging.getLogger(__name__)
 
 def _find_project_root() -> Path:
     d = _THIS_DIR
@@ -131,9 +133,11 @@ class DiskCache:
                 with open(fallback_path, "w", encoding="utf-8") as f:
                     json.dump(self._cache, f, separators=(",", ":"))
                 self._dirty = False
-            except (OSError, PermissionError):
-                # Silently tolerate read-only environment; cache remains in-memory
-                pass
+            except (OSError, PermissionError) as fallback_exc:
+                _LOGGER.warning(
+                    "rxnorm_cache_persist_failed error_type=%s",
+                    type(fallback_exc).__name__,
+                )
 
     @property
     def hit_rate(self) -> float:

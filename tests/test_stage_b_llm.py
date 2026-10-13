@@ -1,10 +1,13 @@
+import io
 import json
 import sys
+import tempfile
+import urllib.error
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from backend.stage_b.llm_client import JsonlCache
+from backend.stage_b.llm_client import GeminiClient, JsonlCache
 from backend.stage_b.prompts import build_prompt
 from backend.stage_b.schema import validate_response
 from backend.stage_b.stage_b import run_stage_b
@@ -80,14 +83,44 @@ def test_run_stage_b_with_fake_client_writes_llm_metadata(tmp_path):
     assert (tmp_path / "results" / "prompts" / "llm_rag" / "case-llm.txt").exists()
 
 
-def test_invalid_json_failure_falls_back():
-    out = run_stage_b(_record(), mode="llm_plain", client=FakeClient(payload=[]))
+def test_lambda_rag_uses_tmp_when_deployment_root_is_read_only(tmp_path, monkeypatch):
+    deployment_root = tmp_path / "var" / "task"
+    deployment_root.mkdir(parents=True)
+    lambda_tmp = tmp_path / "lambda-tmp"
+    monkeypatch.setenv("AWS_LAMBDA_FUNCTION_NAME", "synthetic-test")
+    monkeypatch.setattr(tempfile, "gettempdir", lambda: str(lambda_tmp))
+
+    original_mkdir = Path.mkdir
+
+    def deny_deployment_writes(path, *args, **kwargs):
+        try:
+            path.relative_to(deployment_root)
+        except ValueError:
+            return original_mkdir(path, *args, **kwargs)
+        raise PermissionError("simulated read-only Lambda deployment directory")
+
+    monkeypatch.setattr(Path, "mkdir", deny_deployment_writes)
+    output = run_stage_b(
+        _record(),
+        mode="llm_rag",
+        client=FakeClient(),
+        project_root=deployment_root,
+    )
+
+    assert output["stage_b"]["llm_status"] == "ok"
+    assert output["stage_b"]["mode"] == "llm_rag"
+    assert (lambda_tmp / "ehr-compliance-monitor" / "results" / "prompts" / "llm_rag" / "case-llm.txt").exists()
+    assert not (deployment_root / "results").exists()
+
+
+def test_invalid_json_failure_falls_back(tmp_path):
+    out = run_stage_b(_record(), mode="llm_plain", client=FakeClient(payload=[]), project_root=tmp_path)
     assert out["stage_b"]["llm_status"] == "fallback"
     assert "LLM response" in out["stage_b"]["fallback_reason"]
 
 
-def test_gemini_request_failure_returns_deterministic_fallback():
-    out = run_stage_b(_record(), mode="llm_rag", client=FakeClient(fail=True))
+def test_gemini_request_failure_returns_deterministic_fallback(tmp_path):
+    out = run_stage_b(_record(), mode="llm_rag", client=FakeClient(fail=True), project_root=tmp_path)
     assert out["stage_b"]["llm_status"] == "fallback"
     assert out["stage_b"]["fallback_reason"] == "boom"
     assert out["stage_b_status"] == "completed"
@@ -105,6 +138,38 @@ def test_jsonl_cache_hit(tmp_path):
     cache.set("abc", {"json": {"ok": True}})
     cache2 = JsonlCache(tmp_path / "cache.jsonl")
     assert cache2.get("abc") == {"json": {"ok": True}}
+
+
+def test_gemini_http_error_includes_provider_message_without_api_key(tmp_path, monkeypatch):
+    api_key = "synthetic-api-key"
+    error_body = json.dumps({
+        "error": {
+            "message": f"Invalid model request; do not echo {api_key}",
+            "status": "INVALID_ARGUMENT",
+        },
+    }).encode()
+
+    def reject_request(*args, **kwargs):
+        raise urllib.error.HTTPError(
+            "https://generativelanguage.googleapis.com/test",
+            400,
+            "Bad Request",
+            {},
+            io.BytesIO(error_body),
+        )
+
+    monkeypatch.setattr("backend.stage_b.llm_client.urllib.request.urlopen", reject_request)
+    client = GeminiClient(api_key=api_key, cache=JsonlCache(tmp_path / "cache.jsonl"), rpm=1000)
+
+    try:
+        client._post_json("https://generativelanguage.googleapis.com/test", {})
+    except RuntimeError as exc:
+        assert "HTTP 400" in str(exc)
+        assert "Invalid model request" in str(exc)
+        assert api_key not in str(exc)
+        assert "[REDACTED]" in str(exc)
+    else:
+        raise AssertionError("Gemini HTTP 400 must remain an error.")
 
 
 def test_plain_and_rag_prompts_differ_only_by_evidence_rule_and_facts():
