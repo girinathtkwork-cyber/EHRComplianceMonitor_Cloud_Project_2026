@@ -1,0 +1,513 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+ADMITTING DIAGNOSIS: , Intractable migraine with aura.,DISCHARGE DIAGNOSIS:,  Migraine with aura.,SECONDARY DIAGNOSES:,1.  Bipolar disorder.,2.  Iron deficiency anemia.,3.  Anxiety disorder.,4.  History of tubal ligation.,PROCEDURES DURING THIS HOSPITALIZATION:,1.  CT of the head with and without contrast, which was negative.,2.  An MRA of the head and neck with and without contrast also negative.,3.  The CTA of the neck also read as negative.,4.  The patient also underwent a lumbar puncture in the Emergency Department, which was grossly unremarkable though an opening pressure was not obtained.,HOME MEDICATIONS:,1.  Vicodin 5/500 p.r.n.,2.  Celexa 40 mg daily.,3.  Phenergan 25 mg p.o. p.r.n.,4.  Abilify 10 mg p.o. daily.,5.  Klonopin 0.5 mg p.o. b.i.d.,6.  Tramadol 30 mg p.r.n.,7.  Ranitidine 150 mg p.o. b.i.d.,ALLERGIES:,  SULFA drugs.,HISTORY OF PRESENT ILLNESS: , The patient is a 25-year-old right-handed Caucasian female who presented to the emergency department with sudden onset of headache occurring at approximately 11 a.m. on the morning of the July 31, 2008.  She described the headache as worse in her life and it was also accompanied by blurry vision and scotoma.  The patient also perceived some swelling in her face.  Once in the Emergency Department, the patient underwent a very thorough evaluation and examination.  She was given the migraine cocktail.  Also was given morphine a total of 8 mg while in the Emergency Department.  For full details on the history of present illness, please see the previous history and physical.,BRIEF SUMMARY OF HOSPITAL COURSE:  ,The patient was admitted to the neurological service after her headache felt to be removed with the headache cocktail.  The patient was brought up to 4 or more early in the a.m. on the August 1, 2008 and was given the dihydroergotamine IV, which did allow some minimal resolution in her headache immediately.  At the time of examination this morning, the patient was feeling better and desired going home.  She states the headache had for the most part resolved though she continues to have some diffuse trigger point pain.,PHYSICAL EXAMINATION AT THE TIME OF DISCHARGE: , General physical exam was unremarkable.  HEENT:  Pupils were equal and respond to light and accommodation bilaterally.  Extraocular movements were intact.  Visual fields were intact to confrontation.  Funduscopic exam revealed no disc pallor or edema.  Retinal vasculature appeared normal.  Face is symmetric.  Facial sensation and strength are intact.  Auditory acuities were grossly normal.  Palate and uvula elevated symmetrically.  Sternocleidomastoid and trapezius muscles are full strength bilaterally.  Tongue protrudes in midline.  Mental status exam: revealed the patient alert and oriented x 4.  Speech was clear and language is normal.  Fund of knowledge, memory, and attention are grossly intact.  Neurologic exam:  Vasomotor system revealed full power throughout.  Normal muscle tone and bulk.  No pronator drift was appreciated.  Coordination was intact to finger-to-nose, heel-to-shin and rapid alternating movement.  No tremor or dysmetria.  Excellent sensory.  Sensation is intact in all modalities throughout. The patient does have notable trigger points diffusely including the occiput, trapezius bilaterally, lumbar, back, and sacrum.  Gait was assessed, the patient's routine and tandem gait were normal.  The patient is able to balance on heels and toes.  Romberg is negative.  Reflexes are 2+ and symmetric throughout.  Babinski reflexes are plantar.,DISPOSITION:,  The patient is discharged home.,INSTRUCTIONS FOR FOLLOWUP:  ,The patient is to followup with her primary care physician as needed.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Intractable migraine with aura.,DISCHARGE DIAGNOSIS:,  Migraine with aura.,SECONDARY DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Migraine with aura.,SECONDARY DIAGNOSES:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Bipolar disorder"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Iron deficiency anemia"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Anxiety disorder"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "History of tubal ligation.,PROCEDURES DURING THIS HOSPITALIZATION:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "DURING THIS HOSPITALIZATION:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "CT of the head with and without contrast, which was negative"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "CT of the head with and without contrast, which was negative"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "An MRA of the head and neck with and without contrast also negative"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "An MRA of the head and neck with and without contrast also negative"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "The CTA of the neck also read as negative"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "The CTA of the neck also read as negative"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "The patient also underwent a lumbar puncture in the Emergency Department, which was grossly unremarkable though an opening pressure was not obtained.,HOME MEDICATIONS:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "The patient also underwent a lumbar puncture in the Emergency Department, which was grossly unremarkable though an opening pressure was not obtained.,HOME MEDICATIONS:"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Vicodin 5/500 p.r.n"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Vicodin 5/500 p.r.n"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Celexa 40 mg daily"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "Celexa 40 mg daily"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "Celexa"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "Phenergan 25 mg p.o. p.r.n"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "procedure",
+    "text": "Phenergan 25 mg p.o. p.r.n"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "medication",
+    "text": "Phenergan"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "dosage",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "diagnosis",
+    "text": "Abilify 10 mg p.o. daily"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "procedure",
+    "text": "Abilify 10 mg p.o. daily"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "medication",
+    "text": "Abilify"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "diagnosis",
+    "text": "Klonopin 0.5 mg p.o. b.i.d"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "procedure",
+    "text": "Klonopin 0.5 mg p.o. b.i.d"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "medication",
+    "text": "Klonopin"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "dosage",
+    "text": "0.5 mg"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "diagnosis",
+    "text": "Tramadol 30 mg p.r.n"
+  },
+  {
+    "entity_id": "E35",
+    "entity_type": "procedure",
+    "text": "Tramadol 30 mg p.r.n"
+  },
+  {
+    "entity_id": "E36",
+    "entity_type": "medication",
+    "text": "Tramadol"
+  },
+  {
+    "entity_id": "E37",
+    "entity_type": "dosage",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E38",
+    "entity_type": "diagnosis",
+    "text": "Ranitidine 150 mg p.o. b.i.d.,ALLERGIES:,  SULFA drugs.,HISTORY OF PRESENT ILLNESS: , The patient is a 25-year-old right-handed Caucasian female who presented to the emergency department with sudden onset of headache occurring at approximately 11 a.m. on the morning of the July 31"
+  },
+  {
+    "entity_id": "E39",
+    "entity_type": "procedure",
+    "text": "Ranitidine 150 mg p.o. b.i.d.,ALLERGIES:,  SULFA drugs.,HISTORY OF PRESENT ILLNESS: , The patient is a 25-year-old right-handed Caucasian female who presented to the emergency department with sudden onset of headache occurring at approximately 11 a.m. on the morning of the July 31"
+  },
+  {
+    "entity_id": "E40",
+    "entity_type": "medication",
+    "text": "Ranitidine"
+  },
+  {
+    "entity_id": "E41",
+    "entity_type": "dosage",
+    "text": "150 mg"
+  },
+  {
+    "entity_id": "E42",
+    "entity_type": "diagnosis",
+    "text": "She described the headache as worse in her life and it was also accompanied by blurry vision and scotoma.  The patient also perceived some swelling in her face.  Once in the Emergency Department, the patient underwent a very thorough evaluation and examination.  She was given the migraine cocktail.  Also was given morphine a total of 8 mg while in the Emergency Department.  For full details on the history of present illness, please see the previous history and physical.,BRIEF SUMMARY OF HOSPITAL COURSE:  ,The patient was admitted to the neurological service after her headache felt to be removed with the headache cocktail.  The patient was brought up to 4 or more early in the a.m. on the August 1, 2008 and was given the dihydroergotamine IV, which did allow some minimal resolution in her headache immediately.  At the time of examination this morning, the patient was feeling better and desired going home.  She states the headache had for the most part resolved though she continues to have some diffuse trigger point pain.,PHYSICAL EXAMINATION AT THE TIME OF DISCHARGE: , General physical exam was unremarkable.  HEENT:  Pupils were equal and respond to light and accommodation bilaterally.  Extraocular movements were intact.  Visual fields were intact to confrontation.  Funduscopic exam revealed no disc pallor or edema.  Retinal vasculature appeared normal.  Face is symmetric.  Facial sensation and strength are intact.  Auditory acuities were grossly normal.  Palate and uvula elevated symmetrically.  Sternocleidomastoid and trapezius muscles are full strength bilaterally.  Tongue protrudes in midline.  Mental status exam: revealed the patient alert and oriented x"
+  },
+  {
+    "entity_id": "E43",
+    "entity_type": "procedure",
+    "text": "She described the headache as worse in her life and it was also accompanied by blurry vision and scotoma.  The patient also perceived some swelling in her face.  Once in the Emergency Department, the patient underwent a very thorough evaluation and examination.  She was given the migraine cocktail.  Also was given morphine a total of 8 mg while in the Emergency Department.  For full details on the history of present illness, please see the previous history and physical.,BRIEF SUMMARY OF HOSPITAL COURSE:  ,The patient was admitted to the neurological service after her headache felt to be removed with the headache cocktail.  The patient was brought up to 4 or more early in the a.m. on the August 1, 2008 and was given the dihydroergotamine IV, which did allow some minimal resolution in her headache immediately.  At the time of examination this morning, the patient was feeling better and desired going home.  She states the headache had for the most part resolved though she continues to have some diffuse trigger point pain.,PHYSICAL EXAMINATION AT THE TIME OF DISCHARGE: , General physical exam was unremarkable.  HEENT:  Pupils were equal and respond to light and accommodation bilaterally.  Extraocular movements were intact.  Visual fields were intact to confrontation.  Funduscopic exam revealed no disc pallor or edema.  Retinal vasculature appeared normal.  Face is symmetric.  Facial sensation and strength are intact.  Auditory acuities were grossly normal.  Palate and uvula elevated symmetrically.  Sternocleidomastoid and trapezius muscles are full strength bilaterally.  Tongue protrudes in midline.  Mental status exam: revealed the patient alert and oriented x"
+  },
+  {
+    "entity_id": "E44",
+    "entity_type": "medication",
+    "text": "morphine"
+  },
+  {
+    "entity_id": "E45",
+    "entity_type": "dosage",
+    "text": "8 mg"
+  },
+  {
+    "entity_id": "E46",
+    "entity_type": "medication",
+    "text": "dihydroergotamine"
+  },
+  {
+    "entity_id": "E47",
+    "entity_type": "diagnosis",
+    "text": "Speech was clear and language is normal.  Fund of knowledge, memory, and attention are grossly intact.  Neurologic exam:  Vasomotor system revealed full power throughout.  Normal muscle tone and bulk.  No pronator drift was appreciated.  Coordination was intact to finger-to-nose, heel-to-shin and rapid alternating movement.  No tremor or dysmetria.  Excellent sensory.  Sensation is intact in all modalities throughout. The patient does have notable trigger points diffusely including the occiput, trapezius bilaterally, lumbar, back, and sacrum.  Gait was assessed, the patient's routine and tandem gait were normal.  The patient is able to balance on heels and toes.  Romberg is negative.  Reflexes are 2+ and symmetric throughout.  Babinski reflexes are plantar.,DISPOSITION:,  The patient is discharged home.,INSTRUCTIONS FOR FOLLOWUP:  ,The patient is to followup with her primary care physician as needed"
+  },
+  {
+    "entity_id": "E48",
+    "entity_type": "procedure",
+    "text": "Speech was clear and language is normal.  Fund of knowledge, memory, and attention are grossly intact.  Neurologic exam:  Vasomotor system revealed full power throughout.  Normal muscle tone and bulk.  No pronator drift was appreciated.  Coordination was intact to finger-to-nose, heel-to-shin and rapid alternating movement.  No tremor or dysmetria.  Excellent sensory.  Sensation is intact in all modalities throughout. The patient does have notable trigger points diffusely including the occiput, trapezius bilaterally, lumbar, back, and sacrum.  Gait was assessed, the patient's routine and tandem gait were normal.  The patient is able to balance on heels and toes.  Romberg is negative.  Reflexes are 2+ and symmetric throughout.  Babinski reflexes are plantar.,DISPOSITION:,  The patient is discharged home.,INSTRUCTIONS FOR FOLLOWUP:  ,The patient is to followup with her primary care physician as needed"
+  },
+  {
+    "entity_id": "E49",
+    "entity_type": "medication",
+    "text": "tandem"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] G43001: Migraine without aura, not intractable, with status migrainosus (score: 0.6720)\n[ICD-10-CM 2027] G43009: Migraine without aura, not intractable, without status migrainosus (score: 0.6720)\n[ICD-10-CM 2027] G43011: Migraine without aura, intractable, with status migrainosus (score: 0.6720)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] G43001: Migraine without aura, not intractable, with status migrainosus (score: 0.6255)\n[ICD-10-CM 2027] G43009: Migraine without aura, not intractable, without status migrainosus (score: 0.6255)\n[ICD-10-CM 2027] G43011: Migraine without aura, intractable, with status migrainosus (score: 0.6255)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] F3189: Other bipolar disorder (score: 1.0000)\n[ICD-10-CM 2027] F319: Bipolar disorder, unspecified (score: 1.0000)\n[ICD-10-CM 2027] F3181: Bipolar II disorder (score: 0.9375)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] D508: Other iron deficiency anemias (score: 1.0000)\n[ICD-10-CM 2027] D509: Iron deficiency anemia, unspecified (score: 1.0000)\n[ICD-10-CM 2027] E611: Iron deficiency (score: 0.8411)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] F418: Other specified anxiety disorders (score: 1.0000)\n[ICD-10-CM 2027] F419: Anxiety disorder, unspecified (score: 1.0000)\n[ICD-10-CM 2027] F413: Other mixed anxiety disorders (score: 0.7690)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Z9851: Tubal ligation status (score: 0.7222)\n[ICD-10-CM 2027] T8189XD: Other complications of procedures, not elsewhere classified, subsequent encounter (score: 0.3359)\n[ICD-10-CM 2027] T8189XA: Other complications of procedures, not elsewhere classified, initial encounter (score: 0.3344)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'DURING THIS HOSPITALIZATION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] N1411: Contrast-induced nephropathy (score: 0.5800)\n[ICD-10-CM 2027] H5372: Impaired contrast sensitivity (score: 0.4605)\n[ICD-10-CM 2027] Z6711: Type A blood, Rh negative (score: 0.3680)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'CT of the head with and without contrast, which was negative' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] N1411: Contrast-induced nephropathy (score: 0.5541)\n[ICD-10-CM 2027] H5372: Impaired contrast sensitivity (score: 0.4399)\n[ICD-10-CM 2027] S72099S: Other fracture of head and neck of unspecified femur, sequela (score: 0.3704)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'An MRA of the head and neck with and without contrast also negative' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] Z6711: Type A blood, Rh negative (score: 0.5754)\n[ICD-10-CM 2027] Z6791: Unspecified blood type, Rh negative (score: 0.5754)\n[ICD-10-CM 2027] A4150: Gram-negative sepsis, unspecified (score: 0.5133)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'The CTA of the neck also read as negative' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] R402122: Coma scale, eyes open, to pain, at arrival to emergency department (score: 0.3204)\n[ICD-10-CM 2027] R402142: Coma scale, eyes open, spontaneous, at arrival to emergency department (score: 0.3201)\n[ICD-10-CM 2027] Z91128: Patient's intentional underdosing of medication regimen for other reason (score: 0.3188)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'The patient also underwent a lumbar puncture in the Emergency Department, which was grossly unremarkable though an opening pressure was not obtained.,HOME MEDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] D68023: Von Willebrand disease, type 2N (score: 0.3942)\n[ICD-10-CM 2027] E8882: Obesity due to disruption of MC4R pathway (score: 0.3287)\n[ICD-10-CM 2027] Q6650: Congenital pes planus, unspecified foot (score: 0.3176)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'Vicodin 5/500 p.r.n' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] G4452: New daily persistent headache (NDPH) (score: 0.3972)\n[ICD-10-CM 2027] Y901: Blood alcohol level of 20-39 mg/100 ml (score: 0.3680)\n[ICD-10-CM 2027] Y902: Blood alcohol level of 40-59 mg/100 ml (score: 0.3680)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'Celexa 40 mg daily' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'Celexa' \u2192 RXCUI 215928, canonical: Celexa, match: exact\n[RxNorm] Ingredient: citalopram (RXCUI 2556)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): citalopram 20 MG Oral Tablet; citalopram 30 MG Oral Capsule; citalopram 10 MG Oral Tablet; citalopram 2 MG/ML Oral Solution; citalopram 40 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "Dose 40.0mg associated with Celexa"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] Q6650: Congenital pes planus, unspecified foot (score: 0.4352)\n[ICD-10-CM 2027] Q6652: Congenital pes planus, left foot (score: 0.4320)\n[ICD-10-CM 2027] Q6651: Congenital pes planus, right foot (score: 0.4319)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[Procedure] 'Phenergan 25 mg p.o. p.r.n' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[RxNorm] 'Phenergan' \u2192 RXCUI 152218, canonical: Phenergan, match: exact\n[RxNorm] Ingredient: promethazine (RXCUI 8745)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): phenylephrine hydrochloride 1 MG/ML / promethazine hydrochloride 1.25 MG/ML Oral Solution; meperidine hydrochloride 50 MG / promethazine hydrochloride 25 MG Oral Capsule; codeine phosphate 2 MG/ML / promethazine hydrochloride 1.25 MG/ML Oral Solution; dextromethorphan hydrobromide 3 MG/ML / promethazine hydrochloride 1.25 MG/ML Oral Solution; promethazine hydrochloride 1.25 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "Dose 25.0mg associated with Phenergan"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[ICD-10-CM 2027] Q6650: Congenital pes planus, unspecified foot (score: 0.3144)\n[ICD-10-CM 2027] Q6652: Congenital pes planus, left foot (score: 0.3122)\n[ICD-10-CM 2027] Q6651: Congenital pes planus, right foot (score: 0.3121)"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[Procedure] 'Abilify 10 mg p.o. daily' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[RxNorm] 'Abilify' \u2192 RXCUI 352393, canonical: Abilify, match: exact\n[RxNorm] Ingredient: aripiprazole (RXCUI 89013)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1.5 ML aripiprazole 200 MG/ML Prefilled Syringe; 2 ML aripiprazole 200 MG/ML Prefilled Syringe; aripiprazole 400 MG Injection; aripiprazole 300 MG Injection; Sensor aripiprazole 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "Dose 10.0mg associated with Abilify"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[ICD-10-CM 2027] Q6650: Congenital pes planus, unspecified foot (score: 0.3200)\n[ICD-10-CM 2027] Q6652: Congenital pes planus, left foot (score: 0.3176)\n[ICD-10-CM 2027] Q6651: Congenital pes planus, right foot (score: 0.3176)"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[Procedure] 'Klonopin 0.5 mg p.o. b.i.d' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[RxNorm] 'Klonopin' \u2192 RXCUI 202585, canonical: Klonopin, match: exact\n[RxNorm] Ingredient: clonazepam (RXCUI 2598)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): clonazepam 0.5 MG Oral Tablet; clonazepam 1 MG Oral Tablet; clonazepam 2 MG Oral Tablet; clonazepam 0.25 MG Oral Tablet; clonazepam 0.125 MG Disintegrating Oral Tablet"
+  },
+  {
+    "fact_id": "F33",
+    "entity_id": "E33",
+    "text": "Dose 0.5mg associated with Klonopin"
+  },
+  {
+    "fact_id": "F34",
+    "entity_id": "E34",
+    "text": "[ICD-10-CM 2027] D68023: Von Willebrand disease, type 2N (score: 0.3271)\n[ICD-10-CM 2027] T40426D: Underdosing of tramadol, subsequent encounter (score: 0.3223)\n[ICD-10-CM 2027] T40426A: Underdosing of tramadol, initial encounter (score: 0.3203)"
+  },
+  {
+    "fact_id": "F35",
+    "entity_id": "E35",
+    "text": "[Procedure] 'Tramadol 30 mg p.r.n' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F36",
+    "entity_id": "E36",
+    "text": "[RxNorm] 'Tramadol' \u2192 RXCUI 10689, canonical: tramadol, match: exact\n[RxNorm] Ingredient: tramadol (RXCUI 10689)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR tramadol hydrochloride 100 MG Extended Release Oral Capsule; 24 HR tramadol hydrochloride 200 MG Extended Release Oral Capsule; 24 HR tramadol hydrochloride 300 MG Extended Release Oral Capsule; 24 HR tramadol hydrochloride 150 MG Extended Release Oral Capsule; Matrix Delivery 24 HR tramadol hydrochloride 300 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F37",
+    "entity_id": "E37",
+    "text": "Dose 30.0mg associated with Tramadol \u2014 dose 30.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F38",
+    "entity_id": "E38",
+    "text": "[ICD-10-CM 2027] R69: Illness, unspecified (score: 0.2631)\n[ICD-10-CM 2027] T7840XD: Allergy, unspecified, subsequent encounter (score: 0.2162)\n[ICD-10-CM 2027] T7849XD: Other allergy, subsequent encounter (score: 0.2162)"
+  },
+  {
+    "fact_id": "F39",
+    "entity_id": "E39",
+    "text": "[Procedure] 'Ranitidine 150 mg p.o. b.i.d.,ALLERGIES:,  SULFA drugs.,HISTORY OF PRESENT ILLNESS: , The patient is a 25-year-old right-handed Caucasian female who presented to the emergency department with sudden onset of headache occurring at approximately 11 a.m. on the morning of the July 31' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F40",
+    "entity_id": "E40",
+    "text": "[RxNorm] 'Ranitidine' \u2192 RXCUI 9143, canonical: ranitidine, match: exact\n[RxNorm] Ingredient: ranitidine (RXCUI 9143)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): ranitidine 150 MG Effervescent Oral Tablet; ranitidine 75 MG Effervescent Oral Tablet; ranitidine 300 MG Effervescent Oral Tablet; 2 ML ranitidine 25 MG/ML Injection; ranitidine 150 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F41",
+    "entity_id": "E41",
+    "text": "Dose 150.0mg associated with Ranitidine"
+  },
+  {
+    "fact_id": "F42",
+    "entity_id": "E42",
+    "text": "[ICD-10-CM 2027] R519: Headache, unspecified (score: 0.3060)\n[ICD-10-CM 2027] G4489: Other headache syndrome (score: 0.2596)\n[ICD-10-CM 2027] G4459: Other complicated headache syndrome (score: 0.2050)"
+  },
+  {
+    "fact_id": "F43",
+    "entity_id": "E43",
+    "text": "[Procedure] 'She described the headache as worse in her life and it was also accompanied by blurry vision and scotoma.  The patient also perceived some swelling in her face.  Once in the Emergency Department, the patient underwent a very thorough evaluation and examination.  She was given the migraine cocktail.  Also was given morphine a total of 8 mg while in the Emergency Department.  For full details on the history of present illness, please see the previous history and physical.,BRIEF SUMMARY OF HOSPITAL COURSE:  ,The patient was admitted to the neurological service after her headache felt to be removed with the headache cocktail.  The patient was brought up to 4 or more early in the a.m. on the August 1, 2008 and was given the dihydroergotamine IV, which did allow some minimal resolution in her headache immediately.  At the time of examination this morning, the patient was feeling better and desired going home.  She states the headache had for the most part resolved though she continues to have some diffuse trigger point pain.,PHYSICAL EXAMINATION AT THE TIME OF DISCHARGE: , General physical exam was unremarkable.  HEENT:  Pupils were equal and respond to light and accommodation bilaterally.  Extraocular movements were intact.  Visual fields were intact to confrontation.  Funduscopic exam revealed no disc pallor or edema.  Retinal vasculature appeared normal.  Face is symmetric.  Facial sensation and strength are intact.  Auditory acuities were grossly normal.  Palate and uvula elevated symmetrically.  Sternocleidomastoid and trapezius muscles are full strength bilaterally.  Tongue protrudes in midline.  Mental status exam: revealed the patient alert and oriented x' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F44",
+    "entity_id": "E44",
+    "text": "[RxNorm] 'morphine' \u2192 RXCUI 7052, canonical: morphine, match: exact\n[RxNorm] Ingredient: morphine (RXCUI 7052)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): morphine sulfate 40 MG Extended Release Oral Capsule; 1 ML morphine sulfate 5 MG/ML Prefilled Syringe; 10 ML morphine sulfate 0.5 MG/ML Injection; 2 ML morphine sulfate 0.5 MG/ML Injection; 10 ML morphine sulfate 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F45",
+    "entity_id": "E45",
+    "text": "Dose 8.0mg associated with morphine"
+  },
+  {
+    "fact_id": "F46",
+    "entity_id": "E46",
+    "text": "[RxNorm] 'dihydroergotamine' \u2192 RXCUI 3418, canonical: dihydroergotamine, match: exact\n[RxNorm] Ingredient: dihydroergotamine (RXCUI 3418)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): dihydroergotamine mesylate 0.5 MG Sublingual Tablet; dihydroergotamine mesylate 1 MG Oral Tablet; dihydroergotamine mesylate 1 MG Sublingual Tablet; dihydroergotamine mesylate 0.725 MG/ACTUAT Metered Dose Nasal Spray; dihydroergotamine 5.2 MG Nasal Powder"
+  },
+  {
+    "fact_id": "F47",
+    "entity_id": "E47",
+    "text": "[ICD-10-CM 2027] R292: Abnormal reflex (score: 0.2125)\n[ICD-10-CM 2027] W44C2XD: Intact glass entering into or through a natural orifice, subsequent encounter (score: 0.1917)\n[ICD-10-CM 2027] W44C2XA: Intact glass entering into or through a natural orifice, initial encounter (score: 0.1914)\n[ICD-10-CM 2027] Match unresolved (top score 0.2125 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F48",
+    "entity_id": "E48",
+    "text": "[Procedure] 'Speech was clear and language is normal.  Fund of knowledge, memory, and attention are grossly intact.  Neurologic exam:  Vasomotor system revealed full power throughout.  Normal muscle tone and bulk.  No pronator drift was appreciated.  Coordination was intact to finger-to-nose, heel-to-shin and rapid alternating movement.  No tremor or dysmetria.  Excellent sensory.  Sensation is intact in all modalities throughout. The patient does have notable trigger points diffusely including the occiput, trapezius bilaterally, lumbar, back, and sacrum.  Gait was assessed, the patient's routine and tandem gait were normal.  The patient is able to balance on heels and toes.  Romberg is negative.  Reflexes are 2+ and symmetric throughout.  Babinski reflexes are plantar.,DISPOSITION:,  The patient is discharged home.,INSTRUCTIONS FOR FOLLOWUP:  ,The patient is to followup with her primary care physician as needed' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F49",
+    "entity_id": "E49",
+    "text": "[RxNorm] 'tandem' \u2192 RXCUI 37565, canonical: TANDEM, match: exact\n[RxNorm] Ingredient: polysaccharide iron complex (RXCUI 105669)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): calcium ascorbate 60 MG / calcium threonate 0.8 MG / ferrous asparto glycinate 50 MG / folic acid 1 MG / polysaccharide iron complex 100 MG / succinic acid 50 MG / vitamin B12 0.025 MG Oral Capsule; ascorbic acid 40 MG / ferrous fumarate 62.5 MG / folic acid 1 MG / niacin 3 MG / polysaccharide iron complex 62.5 MG Oral Capsule; ascorbic acid 30 MG / cholecalciferol 1000 UNT / cuprous oxide 2 MG / folic acid 1 MG / magnesium oxide 20 MG / niacin 15 MG / polysaccharide iron complex 29 MG / potassium iodide 0.15 MG / pyridoxine hydrochloride 2.5 MG / riboflavin 1.8 MG / thiamine mononitrate 1.6 MG / vitamin A 1100 UNT / vitamin B12 0.012 MG / vitamin E 20 UNT / zinc oxide 25 MG Oral Capsule; polysaccharide iron complex 30 MG/ML Oral Solution; polysaccharide iron complex 15 MG/ML Oral Solution"
+  }
+]

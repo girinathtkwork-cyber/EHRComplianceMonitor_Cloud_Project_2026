@@ -1,0 +1,97 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:,  Volar laceration to right ring finger with possible digital nerve injury with possible flexor tendon injury.,POSTOPERATIVE DIAGNOSES:,1.  Laceration to right ring finger with partial laceration to the ulnar slip of the FDS which is the flexor digitorum superficialis.,2.  25% laceration to the flexor digitorum profundus of the right ring finger and laceration 100% of the ulnar digital nerve to the right ring finger.,PROCEDURE PERFORMED:,1.  Repair of nerve and tendon, right ring finger.,2.  Exploration of digital laceration.,ANESTHESIA: , General.,ESTIMATED BLOOD LOSS: , Less than 10 cc.,TOTAL TOURNIQUET TIME:  ,57 minutes.,COMPLICATIONS: , None.,DISPOSITION:  ,To PACU in stable condition.,BRIEF HISTORY OF PRESENT ILLNESS: , This is a 13-year-old male who had sustained a laceration from glass and had described numbness and tingling in his right ring finger.,GROSS OPERATIVE FINDINGS: , After wound exploration, it was found there was a 100% laceration to the ulnar digital neurovascular bundle.  The FDS had a partial ulnar slip laceration and the FDP had a 25% transverse laceration as well.  The radial neurovascular bundle was found to be completely intact.,OPERATIVE PROCEDURE:  ,The patient was taken to the operating room and placed in the supine position.  All bony prominences were adequately padded.  Tourniquet was placed on the right upper extremity after being packed with Webril, but not inflated at this time.  The right upper extremity was prepped and draped in the usual sterile fashion.  The hand was inspected.  Palmar surface revealed approximally 0.5 cm laceration at the base of the right ring finger at the base of proximal phalanx, which was approximated with nylon suture.  The sutures were removed and the wound was explored.  It was found that the ulnar digital neurovascular bundle was 100% transected.  The radial neurovascular bundle on the right ring finger was found to be completely intact.  We explored the flexor tendon and found that there was a partial laceration of the ulnar slip of the FDS and a 25% laceration in a transverse fashion to the FDP.  We copiously irrigated the wound.  Repair was undertaken of the FDS with #3-0 undyed Ethibond suture.  The laceration of the FDP was not felt that it need to repair due to majority of the substance in the FDP was still intact.  Attention during our repair at the flexor tendon, the A1 pulley was incised for better visualization as well as better tendon excursion after repair.  Attention was then drawn to the ulnar digital bundle which has been transected prior during the injury.  The digital nerve was dissected proximally and distally to likely visualize the nerve.  The nerve was then approximated using microvascular technique with #8-0 nylon suture.  The hands were well approximated.  The nerve was not under undue tension.  The wound was then copiously irrigated and the skin was closed with #4-0 nylon interrupted horizontal mattress alternating with simple suture.  Sterile dressing was placed and a dorsal extension Box splint was placed.  The patient was transferred off of the bed and placed back on a gurney and taken to PACU in stable condition.  Overall prognosis is good.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Volar laceration to right ring finger with possible digital nerve injury with possible flexor tendon injury.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Laceration to right ring finger with partial laceration to the ulnar slip of the FDS which is the flexor digitorum superficialis"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "25% laceration to the flexor digitorum profundus of the right ring finger and laceration 100% of the ulnar digital nerve to the right ring finger.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "measurement",
+    "text": "25%"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Repair of nerve and tendon, right ring finger"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Repair of nerve and tendon, right ring finger"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Exploration of digital laceration.,ANESTHESIA: , General.,ESTIMATED BLOOD LOSS: , Less than 10 cc.,TOTAL TOURNIQUET TIME:  ,57 minutes.,COMPLICATIONS: , None.,DISPOSITION:  ,To PACU in stable condition.,BRIEF HISTORY OF PRESENT ILLNESS: , This is a 13-year-old male who had sustained a laceration from glass and had described numbness and tingling in his right ring finger.,GROSS OPERATIVE FINDINGS: , After wound exploration, it was found there was a 100% laceration to the ulnar digital neurovascular bundle.  The FDS had a partial ulnar slip laceration and the FDP had a 25% transverse laceration as well.  The radial neurovascular bundle was found to be completely intact.,OPERATIVE PROCEDURE:  ,The patient was taken to the operating room and placed in the supine position.  All bony prominences were adequately padded.  Tourniquet was placed on the right upper extremity after being packed with Webril, but not inflated at this time.  The right upper extremity was prepped and draped in the usual sterile fashion.  The hand was inspected.  Palmar surface revealed approximally 0.5 cm laceration at the base of the right ring finger at the base of proximal phalanx, which was approximated with nylon suture.  The sutures were removed and the wound was explored.  It was found that the ulnar digital neurovascular bundle was 100% transected.  The radial neurovascular bundle on the right ring finger was found to be completely intact.  We explored the flexor tendon and found that there was a partial laceration of the ulnar slip of the FDS and a 25% laceration in a transverse fashion to the FDP.  We copiously irrigated the wound.  Repair was undertaken of the FDS with #3-0 undyed Ethibond suture.  The laceration of the FDP was not felt that it need to repair due to majority of the substance in the FDP was still intact.  Attention during our repair at the flexor tendon, the A1 pulley was incised for better visualization as well as better tendon excursion after repair.  Attention was then drawn to the ulnar digital bundle which has been transected prior during the injury.  The digital nerve was dissected proximally and distally to likely visualize the nerve.  The nerve was then approximated using microvascular technique with #8-0 nylon suture.  The hands were well approximated.  The nerve was not under undue tension.  The wound was then copiously irrigated and the skin was closed with #4-0 nylon interrupted horizontal mattress alternating with simple suture.  Sterile dressing was placed and a dorsal extension Box splint was placed.  The patient was transferred off of the bed and placed back on a gurney and taken to PACU in stable condition.  Overall prognosis is good"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Exploration of digital laceration.,ANESTHESIA: , General.,ESTIMATED BLOOD LOSS: , Less than 10 cc.,TOTAL TOURNIQUET TIME:  ,57 minutes.,COMPLICATIONS: , None.,DISPOSITION:  ,To PACU in stable condition.,BRIEF HISTORY OF PRESENT ILLNESS: , This is a 13-year-old male who had sustained a laceration from glass and had described numbness and tingling in his right ring finger.,GROSS OPERATIVE FINDINGS: , After wound exploration, it was found there was a 100% laceration to the ulnar digital neurovascular bundle.  The FDS had a partial ulnar slip laceration and the FDP had a 25% transverse laceration as well.  The radial neurovascular bundle was found to be completely intact.,OPERATIVE PROCEDURE:  ,The patient was taken to the operating room and placed in the supine position.  All bony prominences were adequately padded.  Tourniquet was placed on the right upper extremity after being packed with Webril, but not inflated at this time.  The right upper extremity was prepped and draped in the usual sterile fashion.  The hand was inspected.  Palmar surface revealed approximally 0.5 cm laceration at the base of the right ring finger at the base of proximal phalanx, which was approximated with nylon suture.  The sutures were removed and the wound was explored.  It was found that the ulnar digital neurovascular bundle was 100% transected.  The radial neurovascular bundle on the right ring finger was found to be completely intact.  We explored the flexor tendon and found that there was a partial laceration of the ulnar slip of the FDS and a 25% laceration in a transverse fashion to the FDP.  We copiously irrigated the wound.  Repair was undertaken of the FDS with #3-0 undyed Ethibond suture.  The laceration of the FDP was not felt that it need to repair due to majority of the substance in the FDP was still intact.  Attention during our repair at the flexor tendon, the A1 pulley was incised for better visualization as well as better tendon excursion after repair.  Attention was then drawn to the ulnar digital bundle which has been transected prior during the injury.  The digital nerve was dissected proximally and distally to likely visualize the nerve.  The nerve was then approximated using microvascular technique with #8-0 nylon suture.  The hands were well approximated.  The nerve was not under undue tension.  The wound was then copiously irrigated and the skin was closed with #4-0 nylon interrupted horizontal mattress alternating with simple suture.  Sterile dressing was placed and a dorsal extension Box splint was placed.  The patient was transferred off of the bed and placed back on a gurney and taken to PACU in stable condition.  Overall prognosis is good"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "measurement",
+    "text": "10 cc"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "measurement",
+    "text": "25%"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "measurement",
+    "text": "25%"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

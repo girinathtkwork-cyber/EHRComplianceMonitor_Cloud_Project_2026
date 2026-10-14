@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage A Output Record",
+  "description": "Output of the Stage A retrieval pipeline for a single medical transcript. Conforms to the interface contract between Stage A and Stage B.",
+  "type": "object",
+  "required": ["transcript_id", "verification_status", "stage_a_version"],
+  "properties": {
+    "transcript_id": {
+      "type": ["integer", "string"],
+      "description": "Unique identifier for the transcript record."
+    },
+    "medical_specialty": {
+      "type": "string",
+      "description": "Medical specialty of the transcript (preserved from input)."
+    },
+    "sample_name": {
+      "type": "string",
+      "description": "Sample name (preserved from input)."
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description (preserved from input)."
+    },
+    "transcription": {
+      "type": "string",
+      "description": "Full transcription text (preserved from input)."
+    },
+    "ground_truth_label": {
+      "type": "object",
+      "description": "Ground truth label (preserved from input, if present).",
+      "properties": {
+        "is_error": { "type": "boolean" },
+        "error_type": { "type": "string" },
+        "injected_entity": { "type": "string" },
+        "correct_value": { "type": "string" }
+      }
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": ["completed", "partial", "error"],
+      "description": "Processing status."
+    },
+    "processing_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when processing completed."
+    },
+    "stage_a_version": {
+      "type": "string",
+      "description": "Version of the Stage A pipeline."
+    },
+    "entities": {
+      "type": "array",
+      "description": "All extracted and verified entities.",
+      "items": {
+        "type": "object",
+        "required": ["entity_type", "text", "span", "routing", "retrieval_context"],
+        "properties": {
+          "entity_type": {
+            "type": "string",
+            "enum": ["medication", "dosage", "measurement", "diagnosis", "procedure"]
+          },
+          "text": {
+            "type": "string",
+            "description": "The extracted entity text."
+          },
+          "span": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "[start_offset, end_offset] in the transcription text."
+          },
+          "routing": {
+            "type": "string",
+            "enum": ["invalid", "verified_needs_context_check", "unresolved"],
+            "description": "Routing decision. 'invalid' = failed existence check (not in RxNorm). 'verified_needs_context_check' = verified match, goes to Stage B. 'unresolved' = low-confidence ICD match, forwarded to Stage B with top candidates."
+          },
+          "retrieval_context": {
+            "type": "object",
+            "required": ["evidence_text"],
+            "properties": {
+              "evidence_text": {
+                "type": "string",
+                "description": "Compact plain-text block of retrieved facts for LLM prompt. Names the source (RxNorm, MED-RT, ICD-10-CM)."
+              },
+              "exists": { "type": "boolean" },
+              "match_type": { "type": "string" },
+              "rxcui": { "type": ["string", "null"] },
+              "canonical_name": { "type": ["string", "null"] },
+              "ingredient": {
+                "type": ["object", "null"],
+                "properties": {
+                  "rxcui": { "type": "string" },
+                  "name": { "type": "string" },
+                  "tty": { "type": "string" }
+                }
+              },
+              "indications": { "type": "object" },
+              "known_strengths": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "icd10_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "code": { "type": "string" },
+                    "description": { "type": "string" },
+                    "score": { "type": "number" }
+                  }
+                }
+              },
+              "flags": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "flag_type": { "type": "string" },
+                    "severity_hint": { "type": "string" },
+                    "detail": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "rxcui": { "type": "string" },
+          "tty": { "type": "string" },
+          "source": { "type": "string" },
+          "value": { "type": "number" },
+          "unit": { "type": "string" },
+          "associated_medication": { "type": "string" },
+          "associated_medication_span": {
+            "type": "array",
+            "items": { "type": "integer" }
+          },
+          "header": { "type": "string" }
+        }
+      }
+    },
+    "stage_a_summary": {
+      "type": "object",
+      "required": ["n_entities", "n_invalid", "n_forwarded_to_stage_b"],
+      "properties": {
+        "n_entities": { "type": "integer" },
+        "n_invalid": { "type": "integer" },
+        "n_forwarded_to_stage_b": { "type": "integer" }
+      }
+    },
+    "error": {
+      "type": "object",
+      "description": "Present when verification_status is 'error'.",
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

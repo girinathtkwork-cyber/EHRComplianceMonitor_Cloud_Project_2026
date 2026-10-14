@@ -1,0 +1,117 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:  ,Tracheal stenosis and metal stent complications.,POSTOPERATIVE DIAGNOSIS:  ,Tracheal stenosis and metal stent complications.,ANESTHESIA:  ,General endotracheal.,ENDOSCOPIC FINDINGS:,1.  Normal true vocal cords.,2.  Subglottic stenosis down to 5 mm with mature cicatrix.,3.  Tracheal granulation tissue growing through the stents at the midway point of the stents.,5.  Three metallic stents in place in the proximal trachea.,6.  Distance from the true vocal cords to the proximal stent, 2 cm.,7.  Distance from the proximal stent to the distal stent, 3.5 cm.,8.  Distance from the distal stent to the carina, 8 cm.,9.  Distal airway is clear.,PROCEDURES:,1.  Rigid bronchoscopy with dilation.,2.  Excision of granulation tissue tumor.,3.  Application of mitomycin-C.,4.  Endobronchial ultrasound.,TECHNIQUE IN DETAIL:  ,After informed consent was obtained from the patient and her husband, she was brought to the operating theater after sequence induction was done.  She had a Dedo laryngoscope placed.  Her airways were inspected thoroughly with findings as described above.  She was intermittently ventilated with an endotracheal tube placed through the Dedo scope.  Her granulation tissue was biopsied and then removed with a microdebrider.  Her proximal trachea was dilated with a combination of balloon, Bougie, and rigid scopes.  She tolerated the procedure well, was extubated, and brought to the PACU.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Tracheal stenosis and metal stent complications.,POSTOPERATIVE DIAGNOSIS:  ,Tracheal stenosis and metal stent complications.,ANESTHESIA:  ,General endotracheal.,ENDOSCOPIC FINDINGS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Tracheal stenosis and metal stent complications.,ANESTHESIA:  ,General endotracheal.,ENDOSCOPIC FINDINGS:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Normal true vocal cords"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Subglottic stenosis down to 5 mm with mature cicatrix"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Tracheal granulation tissue growing through the stents at the midway point of the stents"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Three metallic stents in place in the proximal trachea"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Distance from the true vocal cords to the proximal stent, 2 cm"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Distance from the proximal stent to the distal stent, 3.5 cm"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Distance from the distal stent to the carina, 8 cm"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Distal airway is clear.,PROCEDURES:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Rigid bronchoscopy with dilation"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Rigid bronchoscopy with dilation"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Excision of granulation tissue tumor"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Excision of granulation tissue tumor"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Application of mitomycin-C"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "Application of mitomycin-C"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Endobronchial ultrasound.,TECHNIQUE IN DETAIL:  ,After informed consent was obtained from the patient and her husband, she was brought to the operating theater after sequence induction was done.  She had a Dedo laryngoscope placed.  Her airways were inspected thoroughly with findings as described above.  She was intermittently ventilated with an endotracheal tube placed through the Dedo scope.  Her granulation tissue was biopsied and then removed with a microdebrider.  Her proximal trachea was dilated with a combination of balloon, Bougie, and rigid scopes.  She tolerated the procedure well, was extubated, and brought to the PACU"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "Endobronchial ultrasound.,TECHNIQUE IN DETAIL:  ,After informed consent was obtained from the patient and her husband, she was brought to the operating theater after sequence induction was done.  She had a Dedo laryngoscope placed.  Her airways were inspected thoroughly with findings as described above.  She was intermittently ventilated with an endotracheal tube placed through the Dedo scope.  Her granulation tissue was biopsied and then removed with a microdebrider.  Her proximal trachea was dilated with a combination of balloon, Bougie, and rigid scopes.  She tolerated the procedure well, was extubated, and brought to the PACU"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "well, was extubated, and brought to the PACU"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

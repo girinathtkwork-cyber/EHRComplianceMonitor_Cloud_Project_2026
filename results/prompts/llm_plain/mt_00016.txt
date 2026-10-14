@@ -1,0 +1,142 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Right lateral base of tongue lesion, probable cancer.,POSTOPERATIVE DIAGNOSIS: , Right lateral base of tongue lesion, probable cancer.,PROCEDURE PERFORMED:  ,Excisional biopsy with primary closure of a 4 mm right lateral base of tongue lesion.,ANESTHESIA: , General.,FINDINGS: , An ulceration in the right lateral base of tongue region.  This was completely excised.,ESTIMATED BLOOD LOSS:,  Less than 5 mL.,FLUIDS: , Crystalloid only.,COMPLICATIONS:,  None.,DRAINS:,  None.,CONDITION:,  Stable.,PROCEDURE:  ,The patient placed supine in position under general anesthesia.  First a Sweetheart gag was placed in the patient's mouth and the mouth was elevated.  The lesion in the tongue could be seen.  Then, it was injected with 1% lidocaine and 1:100,00 epinephrine.  After 5 minutes of waiting, then an elliptical incision was made around this mass with electrocautery and then it was sharply dissected off the muscular layer and removed in total.  Suction cautery was used for hemostasis.  Then, 3 simple interrupted #4-0 Vicryl sutures were used to close the wound and procedure was then terminated at that time.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Right lateral base of tongue lesion, probable cancer.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Right lateral base of tongue lesion, probable cancer.,PROCEDURE PERFORMED:  ,Excisional biopsy with primary closure of a 4 mm right lateral base of tongue lesion.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:  ,Excisional biopsy with primary closure of a 4 mm right lateral base of tongue lesion.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Excisional biopsy with primary closure of a 4 mm right lateral base of tongue lesion.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "General.,FINDINGS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "General.,FINDINGS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "An ulceration in the right lateral base of tongue region.  This was completely excised.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "An ulceration in the right lateral base of tongue region.  This was completely excised.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Less than 5 mL.,FLUIDS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Less than 5 mL.,FLUIDS:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "measurement",
+    "text": "5 mL"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Crystalloid only.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "Crystalloid only.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "None.,DRAINS:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "None.,DRAINS:"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "None.,CONDITION:"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "None.,CONDITION:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Stable.,PROCEDURE:  ,The patient placed supine in position under general anesthesia.  First a Sweetheart gag was placed in the patient's mouth and the mouth was elevated.  The lesion in the tongue could be seen.  Then, it was injected with 1% lidocaine and 1:100,00 epinephrine.  After 5 minutes of waiting, then an elliptical incision was made around this mass with electrocautery and then it was sharply dissected off the muscular layer and removed in total.  Suction cautery was used for hemostasis.  Then"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "Stable.,PROCEDURE:  ,The patient placed supine in position under general anesthesia.  First a Sweetheart gag was placed in the patient's mouth and the mouth was elevated.  The lesion in the tongue could be seen.  Then, it was injected with 1% lidocaine and 1:100,00 epinephrine.  After 5 minutes of waiting, then an elliptical incision was made around this mass with electrocautery and then it was sharply dissected off the muscular layer and removed in total.  Suction cautery was used for hemostasis.  Then"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "3 simple interrupted #4-0 Vicryl sutures were used to close the wound and procedure was then terminated at that time"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "procedure",
+    "text": "3 simple interrupted #4-0 Vicryl sutures were used to close the wound and procedure was then terminated at that time"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

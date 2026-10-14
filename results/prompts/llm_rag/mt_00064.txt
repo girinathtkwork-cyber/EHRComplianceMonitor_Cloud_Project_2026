@@ -1,0 +1,343 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+REASON FOR VISIT:,  Six-month follow-up visit for paroxysmal atrial fibrillation (PAF).,She reports that she is getting occasional chest pains with activity.  Sometimes she feels that at night when she is lying in bed and it concerns her.,She is frustrated by her inability to lose weight even though she is hyperthyroid.,MEDICATIONS: , Tapazole 10 mg b.i.d., atenolol/chlorthalidone 50/25 mg b.i.d., Micro-K 10 mEq q.d., Lanoxin 0.125 mg q.d., spironolactone 25 mg q.d., Crestor 10 mg q.h.s., famotidine 20 mg, Bayer Aspirin 81 mg q.d., Vicodin p.r.n., and Nexium 40 mg-given samples of this today.,REVIEW OF SYSTEMS:,  No palpitations.  No lightheadedness or presyncope.  She is having mild pedal edema, but she drinks a lot of fluid.,PEX: , BP:  112/74.  PR:  70.  WT:  223 pounds (up three pounds).  Cardiac:  Regular rate and rhythm with a 1/6 murmur at the upper sternal border.  Chest:  Nontender.  Lungs:  Clear.  Abdomen:  Moderately overweight.  Extremities:  Trace edema.,EKG: , Sinus bradycardia at 58 beats per minute, mild inferolateral ST abnormalities.,IMPRESSION:,1.  Chest pain-Mild.  Her EKG is mildly abnormal.  Her last stress echo was in 2001.  I am going to have her return for one just to make sure it is nothing serious.  I suspect; however, that is more likely due to her weight and acid reflux.  I gave her samples of Nexium.,2.  Mild pedal edema-Has to cut down on fluid intake, weight loss will help as well, continue with the chlorthalidone.,3.  PAF-Due to hypertension, hyperthyroidism and hypokalemia.  Staying in sinus rhythm.,4.  Hyperthyroidism-Last TSH was mildly suppressed, she had been out of her Tapazole for a while, now back on it.,5.  Dyslipidemia-Samples of Crestor given.,6.  LVH.,7.  Menometrorrhagia.,PLAN:,1.  Return for stress echo.,2.  Reduce the fluid intake to help with pedal edema.,3.  Nexium trial.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "atenolol"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "chlorthalidone"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "10 mEq"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Lanoxin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "0.125 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "spironolactone"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Crestor"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "famotidine"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Bayer Aspirin"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "81 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Nexium"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Chest pain-Mild.  Her EKG is mildly abnormal.  Her last stress echo was in"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "I am going to have her return for one just to make sure it is nothing serious.  I suspect; however, that is more likely due to her weight and acid reflux.  I gave her samples of Nexium"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "Nexium"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "Mild pedal edema-Has to cut down on fluid intake, weight loss will help as well, continue with the chlorthalidone"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "medication",
+    "text": "chlorthalidone"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "PAF-Due to hypertension, hyperthyroidism and hypokalemia.  Staying in sinus rhythm"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Hyperthyroidism-Last TSH was mildly suppressed, she had been out of her Tapazole for a while, now back on it"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "diagnosis",
+    "text": "Dyslipidemia-Samples of Crestor given"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "medication",
+    "text": "Crestor"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "diagnosis",
+    "text": "Menometrorrhagia.,PLAN:"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "diagnosis",
+    "text": "Return for stress echo"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "diagnosis",
+    "text": "Reduce the fluid intake to help with pedal edema"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "diagnosis",
+    "text": "Nexium trial"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "medication",
+    "text": "Nexium"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "Dose 10.0mg associated with atenolol \u2014 dose 10.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'atenolol' \u2192 RXCUI 1202, canonical: atenolol, match: exact\n[RxNorm] Ingredient: atenolol (RXCUI 1202)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): atenolol 0.5 MG/ML Injectable Solution; atenolol 50 MG / chlorthalidone 12.5 MG Oral Tablet; atenolol 25 MG / bendroflumethiazide 1.25 MG Oral Capsule; atenolol 100 MG Oral Tablet; atenolol 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'chlorthalidone' \u2192 RXCUI 2409, canonical: chlorthalidone, match: exact\n[RxNorm] Ingredient: chlorthalidone (RXCUI 2409)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): chlorthalidone 50 MG / triamterene 50 MG Oral Tablet; azilsartan medoxomil 40 MG / chlorthalidone 12.5 MG Oral Tablet; azilsartan medoxomil 40 MG / chlorthalidone 25 MG Oral Tablet; atenolol 50 MG / chlorthalidone 12.5 MG Oral Tablet; atenolol 100 MG / chlorthalidone 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 25.0mg associated with chlorthalidone"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "Dose 10.0meq associated with Lanoxin \u2014 dose 10.0meq not among known product strengths"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Lanoxin' \u2192 RXCUI 202988, canonical: Lanoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 0.125mg associated with Lanoxin"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'spironolactone' \u2192 RXCUI 9997, canonical: spironolactone, match: exact\n[RxNorm] Ingredient: spironolactone (RXCUI 9997)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): spironolactone 1 MG/ML Oral Suspension; spironolactone 2 MG/ML Oral Suspension; spironolactone 5 MG/ML Oral Suspension; spironolactone 10 MG/ML Oral Suspension; spironolactone 100 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "Dose 25.0mg associated with spironolactone"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Crestor' \u2192 RXCUI 320864, canonical: Crestor, match: exact\n[RxNorm] Ingredient: rosuvastatin (RXCUI 301542)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): rosuvastatin 10 MG Oral Capsule; rosuvastatin 20 MG Oral Capsule; rosuvastatin 40 MG Oral Capsule; rosuvastatin 5 MG Oral Capsule; ezetimibe 10 MG / rosuvastatin 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "Dose 10.0mg associated with Crestor"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'famotidine' \u2192 RXCUI 4278, canonical: famotidine, match: exact\n[RxNorm] Ingredient: famotidine (RXCUI 4278)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): famotidine 26.6 MG / ibuprofen 800 MG Oral Tablet; 2 ML famotidine 10 MG/ML Injection; famotidine 20 MG Disintegrating Oral Tablet; famotidine 40 MG Disintegrating Oral Tablet; famotidine 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "Dose 20.0mg associated with famotidine"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Bayer Aspirin' \u2192 RXCUI 215568, canonical: Bayer Aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 81.0mg associated with Bayer Aspirin \u2014 dose 81.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Nexium' \u2192 RXCUI 284799, canonical: Nexium, match: exact\n[RxNorm] Ingredient: esomeprazole (RXCUI 283742)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): esomeprazole 2.5 MG Granules for Oral Suspension; esomeprazole 5 MG Granules for Oral Suspension; esomeprazole strontium 49.3 MG Delayed Release Oral Capsule; esomeprazole strontium 24.65 MG Delayed Release Oral Capsule; esomeprazole 40 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "Dose 40.0mg associated with Nexium"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] R0789: Other chest pain (score: 0.4396)\n[ICD-10-CM 2027] R079: Chest pain, unspecified (score: 0.4396)\n[ICD-10-CM 2027] R9431: Abnormal electrocardiogram [ECG] [EKG] (score: 0.3728)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] P0710: Other low birth weight newborn, unspecified weight (score: 0.3068)\n[ICD-10-CM 2027] N1371: Vesicoureteral-reflux without reflux nephropathy (score: 0.2976)\n[ICD-10-CM 2027] R634: Abnormal weight loss (score: 0.2748)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'Nexium' \u2192 RXCUI 284799, canonical: Nexium, match: exact\n[RxNorm] Ingredient: esomeprazole (RXCUI 283742)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): esomeprazole 2.5 MG Granules for Oral Suspension; esomeprazole 5 MG Granules for Oral Suspension; esomeprazole strontium 49.3 MG Delayed Release Oral Capsule; esomeprazole strontium 24.65 MG Delayed Release Oral Capsule; esomeprazole 40 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] Q909: Down syndrome, unspecified (score: 0.3493)\n[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.3161)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.3148)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[RxNorm] 'chlorthalidone' \u2192 RXCUI 2409, canonical: chlorthalidone, match: exact\n[RxNorm] Ingredient: chlorthalidone (RXCUI 2409)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): chlorthalidone 50 MG / triamterene 50 MG Oral Tablet; azilsartan medoxomil 40 MG / chlorthalidone 12.5 MG Oral Tablet; azilsartan medoxomil 40 MG / chlorthalidone 25 MG Oral Tablet; atenolol 50 MG / chlorthalidone 12.5 MG Oral Tablet; atenolol 100 MG / chlorthalidone 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] E876: Hypokalemia (score: 0.5319)\n[ICD-10-CM 2027] P7432: Hypokalemia of newborn (score: 0.4690)\n[ICD-10-CM 2027] P721: Transitory neonatal hyperthyroidism (score: 0.4080)"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] O925: Suppressed lactation (score: 0.3387)\n[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.3355)\n[ICD-10-CM 2027] P721: Transitory neonatal hyperthyroidism (score: 0.3144)"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[ICD-10-CM 2027] P5842: Neonatal jaundice due to drugs or toxins given to newborn (score: 0.5518)\n[ICD-10-CM 2027] Y632: Overdose of radiation given during therapy (score: 0.5231)\n[ICD-10-CM 2027] Y630: Excessive amount of blood or other fluid given during transfusion or infusion (score: 0.4670)"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[RxNorm] 'Crestor' \u2192 RXCUI 320864, canonical: Crestor, match: exact\n[RxNorm] Ingredient: rosuvastatin (RXCUI 301542)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): rosuvastatin 10 MG Oral Capsule; rosuvastatin 20 MG Oral Capsule; rosuvastatin 40 MG Oral Capsule; rosuvastatin 5 MG Oral Capsule; ezetimibe 10 MG / rosuvastatin 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[ICD-10-CM 2027] No matches found for 'Menometrorrhagia.,PLAN:' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[ICD-10-CM 2027] M84346S: Stress fracture, unspecified finger(s), sequela (score: 0.5448)\n[ICD-10-CM 2027] M84353S: Stress fracture, unspecified femur, sequela (score: 0.5432)\n[ICD-10-CM 2027] M84343S: Stress fracture, unspecified hand, sequela (score: 0.5427)"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[ICD-10-CM 2027] R638: Other symptoms and signs concerning food and fluid intake (score: 0.4983)\n[ICD-10-CM 2027] R609: Edema, unspecified (score: 0.3890)\n[ICD-10-CM 2027] F5082: Avoidant/restrictive food intake disorder (score: 0.3753)"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[ICD-10-CM 2027] O6640: Failed trial of labor, unspecified (score: 0.7656)"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[RxNorm] 'Nexium' \u2192 RXCUI 284799, canonical: Nexium, match: exact\n[RxNorm] Ingredient: esomeprazole (RXCUI 283742)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): esomeprazole 2.5 MG Granules for Oral Suspension; esomeprazole 5 MG Granules for Oral Suspension; esomeprazole strontium 49.3 MG Delayed Release Oral Capsule; esomeprazole strontium 24.65 MG Delayed Release Oral Capsule; esomeprazole 40 MG Oral Tablet"
+  }
+]

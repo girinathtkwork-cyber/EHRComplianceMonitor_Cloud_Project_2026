@@ -1,0 +1,21 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CC:, Memory loss.,HX:, This 77 y/o RHF presented with a one year history of progressive memory loss. Two weeks prior to her evaluation at UIHC she agreed to have her sister pick her up for church at 8:15AM, Sunday morning. That Sunday she went to pick up her sister at her sister's home and when her sister was not there (because the sister had gone to pick up the patient) the patient left. She later called the sister and asked her if she (sister) had overslept. During her UIHC evaluation she denied she knew anything about the incident. No other complaints were brought forth by the patients family.,PMH:, Unremarkable.,MEDS:, None,FHX: ,Father died of an MI, Mother had DM type II.,SHX: , Denies ETOH/illicit drug/Tobacco use.,ROS:, Unremarkable.,EXAM:, Afebrile, 80BPM, BP 158/98, 16RPM. Alert and oriented to person, place, time. Euthymic. 29/30 on Folstein's MMSE with deficit on drawing. Recalled 2/6 objects at five minutes and could not recite a list of 6 objects in 6 trials. Digit span was five forward and three backward. CN: mild right lower facial droop only. MOTOR: Full strength throughout. SENSORY: No deficits to PP/Vib/Prop/LT/Temp. COORD: Poor RAM in LUE only. GAIT: NB and ambulated without difficulty. STATION: No drift or Romberg sign. REFLEXES: 3+ bilaterally with flexor plantar responses. There were no frontal release signs.,LABS:, CMB, General Screen, FT4, TSH, VDRL were all WNL.,NEUROPSYCHOLOGICAL EVALUATION, 12/7/92: ,Verbal associative fluency was defective. Verbal memory, including acquisition, and delayed recall and recognition, was severely impaired. Visual memory, including immediate and delayed recall was also severely impaired. Visuoperceptual discrimination was mildly impaired, as was 2-D constructional praxis.,HCT, 12/7/92: , Diffuse cerebral atrophy with associative mild enlargement of the ventricles consistent with patient's age. Calcification is seen in both globus pallidi and this was felt to be a normal variant.
+
+Entities:
+[]
+
+Retrieved facts:
+[]

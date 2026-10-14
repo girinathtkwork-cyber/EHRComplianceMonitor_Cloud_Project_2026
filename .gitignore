@@ -141,3 +141,14 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+dataset/raw/Code Descriptions/
+
+# Python & Build
+__pycache__/
+*.py[cod]
+*$py.class
+*.pytest_cache/
+build/
+input/
+output/

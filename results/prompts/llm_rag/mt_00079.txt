@@ -1,0 +1,233 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+SUBJECTIVE: , The patient is not in acute distress.,PHYSICAL EXAMINATION:,VITAL SIGNS:  Blood pressure of 121/63, pulse is 75, and O2 saturation is 94% on room air.,HEAD AND NECK:  Face is symmetrical.  Cranial nerves are intact.,CHEST:  There is prolonged expiration.,CARDIOVASCULAR:  First and second heart sounds are heard.  No murmur was appreciated.,ABDOMEN:  Soft and nontender.  Bowel sounds are positive.,EXTREMITIES:  He has 2+ pedal swelling.,NEUROLOGIC:  The patient is asleep, but easily arousable.,LABORATORY DATA:,  PTT is 49.  INR is pending.  BUN is improved to 20.6, creatinine is 0.7, sodium is 123, and potassium is 3.8.  AST is down to 45 and ALT to 99.,DIAGNOSTIC STUDIES: , Nuclear stress test showed moderate size, mostly fixed defect involving the inferior wall with a small area of peri-infarct ischemia.  Ejection fraction is 25%.,ASSESSMENT AND PLAN:,1.  Congestive heart failure due to rapid atrial fibrillation and systolic dysfunction.  Continue current treatment as per Cardiology.  We will consider adding ACE inhibitors as renal function improves.,2.  Acute pulmonary edema, resolved.,3.  Rapid atrial fibrillation, rate controlled.  The patient is on beta-blockers and digoxin.  Continue Coumadin.  Monitor INR.,4.  Coronary artery disease with ischemic cardiomyopathy.  Continue beta-blockers.,5.  Urinary tract infection.  Continue Rocephin.,6.  Bilateral perfusion secondary to congestive heart failure.  We will monitor.,7.  Chronic obstructive pulmonary disease, stable.,8.  Abnormal liver function due to congestive heart failure with liver congestion, improving.,9.  Rule out hypercholesterolemia.  We will check lipid profile.,10.  Tobacco smoking disorder.  The patient has been counseled.,11.  Hyponatremia, stable.  This is due to fluid overload.  Continue diuresis as per Nephrology.,12.  Deep venous thrombosis prophylaxis.  The patient is on heparin drip.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "measurement",
+    "text": "94%"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "sodium"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "potassium"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "measurement",
+    "text": "25%"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "AND PLAN:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Congestive heart failure due to rapid atrial fibrillation and systolic dysfunction.  Continue current treatment as per Cardiology.  We will consider adding ACE inhibitors as renal function improves"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Acute pulmonary edema, resolved"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Rapid atrial fibrillation, rate controlled.  The patient is on beta-blockers and digoxin.  Continue Coumadin.  Monitor INR"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "digoxin"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Coronary artery disease with ischemic cardiomyopathy.  Continue beta-blockers"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Urinary tract infection.  Continue Rocephin"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Bilateral perfusion secondary to congestive heart failure.  We will monitor"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Chronic obstructive pulmonary disease, stable"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Abnormal liver function due to congestive heart failure with liver congestion, improving"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Rule out hypercholesterolemia.  We will check lipid profile"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Tobacco smoking disorder.  The patient has been counseled"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Hyponatremia, stable.  This is due to fluid overload.  Continue diuresis as per Nephrology"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "Deep venous thrombosis prophylaxis.  The patient is on heparin drip"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "heparin"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Measurement] 94.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'sodium' \u2192 RXCUI 9853, canonical: sodium, match: exact\n[RxNorm] Ingredient: sodium (RXCUI 9853)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'potassium' \u2192 RXCUI 8588, canonical: potassium, match: exact\n[RxNorm] Ingredient: potassium (RXCUI 8588)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): potassium 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Measurement] 25.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] No matches found for 'AND PLAN:' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] I5020: Unspecified systolic (congestive) heart failure (score: 0.5686)\n[ICD-10-CM 2027] I5022: Chronic systolic (congestive) heart failure (score: 0.5488)\n[ICD-10-CM 2027] I5021: Acute systolic (congestive) heart failure (score: 0.5438)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] J810: Acute pulmonary edema (score: 0.7638)\n[ICD-10-CM 2027] J811: Chronic pulmonary edema (score: 0.5969)\n[ICD-10-CM 2027] E1337X9: Other specified diabetes mellitus with diabetic macular edema, resolved following treatment, unspecified eye (score: 0.4470)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.5585)\n[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.5301)\n[ICD-10-CM 2027] I4819: Other persistent atrial fibrillation (score: 0.4840)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'digoxin' \u2192 RXCUI 3407, canonical: digoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] I255: Ischemic cardiomyopathy (score: 0.6355)\n[ICD-10-CM 2027] I429: Cardiomyopathy, unspecified (score: 0.4792)\n[ICD-10-CM 2027] B3324: Viral cardiomyopathy (score: 0.3784)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] N390: Urinary tract infection, site not specified (score: 0.9064)\n[ICD-10-CM 2027] O2340: Unspecified infection of urinary tract in pregnancy, unspecified trimester (score: 0.8546)\n[ICD-10-CM 2027] P393: Neonatal urinary tract infection (score: 0.8257)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] I5020: Unspecified systolic (congestive) heart failure (score: 0.5447)\n[ICD-10-CM 2027] I5030: Unspecified diastolic (congestive) heart failure (score: 0.5447)\n[ICD-10-CM 2027] I5022: Chronic systolic (congestive) heart failure (score: 0.5257)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] J4489: Other specified chronic obstructive pulmonary disease (score: 0.8896)\n[ICD-10-CM 2027] J449: Chronic obstructive pulmonary disease, unspecified (score: 0.8896)\n[ICD-10-CM 2027] J440: Chronic obstructive pulmonary disease with (acute) lower respiratory infection (score: 0.7025)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] S36118D: Other injury of liver, subsequent encounter (score: 0.5330)\n[ICD-10-CM 2027] S36119D: Unspecified injury of liver, subsequent encounter (score: 0.5330)\n[ICD-10-CM 2027] S36118A: Other injury of liver, initial encounter (score: 0.5273)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] R791: Abnormal coagulation profile (score: 0.4431)\n[ICD-10-CM 2027] E78019: Familial hypercholesterolemia, unspecified (score: 0.3939)\n[ICD-10-CM 2027] E755: Other lipid storage disorders (score: 0.3738)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] O99330: Smoking (tobacco) complicating pregnancy, unspecified trimester (score: 0.6878)\n[ICD-10-CM 2027] O99335: Smoking (tobacco) complicating the puerperium (score: 0.6731)\n[ICD-10-CM 2027] O99334: Smoking (tobacco) complicating childbirth (score: 0.6666)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] E8770: Fluid overload, unspecified (score: 0.7014)\n[ICD-10-CM 2027] E8779: Other fluid overload (score: 0.7014)\n[ICD-10-CM 2027] P7422: Hyponatremia of newborn (score: 0.5406)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] R0982: Postnasal drip (score: 0.3517)\n[ICD-10-CM 2027] Z2981: Encounter for HIV pre-exposure prophylaxis (score: 0.3447)\n[ICD-10-CM 2027] D75829: Heparin-induced thrombocytopenia, unspecified (score: 0.3213)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'heparin' \u2192 RXCUI 235473, canonical: heparin, porcine, match: exact\n[RxNorm] Ingredient: heparin, porcine (RXCUI 235473)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  }
+]

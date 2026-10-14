@@ -1,0 +1,93 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM: , CT pelvis with contrast and ct abdomen with and without contrast.,INDICATIONS:  ,Abnormal liver enzymes and diarrhea.,TECHNIQUE: , CT examination of the abdomen and pelvis was performed after 100 mL of intravenous contrast administration and oral contrast administration.  Pre-contrast images through the abdomen were also obtained.,COMPARISON:  ,There were no comparison studies.,FINDINGS:  ,The lung bases are clear.,The liver demonstrates mild intrahepatic biliary ductal dilatation.  These findings may be secondary to the patient's post cholecystectomy state.  The pancreas, spleen, adrenal glands, and kidneys are unremarkable.,There is a 13 mm peripheral-enhancing fluid collection in the anterior pararenal space of uncertain etiology.  There are numerous nonspecific retroperitoneal and mesenteric lymph nodes.  These may be reactive; however, an early neoplastic process would be difficult to totally exclude.,There is a right inguinal hernia containing a loop of small bowel.  This may produce a partial obstruction as there is mild fluid distention of several small bowel loops, particularly in the right lower quadrant.  The large bowel demonstrates significant diverticulosis coli of the sigmoid and distal descending colon without evidence of diverticulitis.,There is diffuse osteopenia along with significant degenerative changes in the lower lumbar spine.,The urinary bladder is unremarkable.  The uterus is not visualized.,IMPRESSION:,1.  Right inguinal hernia containing small bowel.  Partial obstruction is suspected.,2.  Nonspecific retroperitoneal and mesenteric lymph nodes.,3.  Thirteen millimeter of circumscribed fluid collection in the anterior pararenal space of uncertain etiology.,4.  Diverticulosis without evidence of diverticulitis.,5.  Status post cholecystectomy with mild intrahepatic biliary ductal dilatation.,6.  Osteopenia and degenerative changes of the spine and pelvis.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "measurement",
+    "text": "100 mL"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Right inguinal hernia containing small bowel.  Partial obstruction is suspected"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Nonspecific retroperitoneal and mesenteric lymph nodes"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Thirteen millimeter of circumscribed fluid collection in the anterior pararenal space of uncertain etiology"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Diverticulosis without evidence of diverticulitis"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Status post cholecystectomy with mild intrahepatic biliary ductal dilatation"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Osteopenia and degenerative changes of the spine and pelvis"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Measurement] 100.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] K4000: Bilateral inguinal hernia, with obstruction, without gangrene, not specified as recurrent (score: 0.4379)\n[ICD-10-CM 2027] K4001: Bilateral inguinal hernia, with obstruction, without gangrene, recurrent (score: 0.4379)\n[ICD-10-CM 2027] K4020: Bilateral inguinal hernia, without obstruction or gangrene, not specified as recurrent (score: 0.4379)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] I880: Nonspecific mesenteric lymphadenitis (score: 0.5234)\n[ICD-10-CM 2027] K6819: Other retroperitoneal abscess (score: 0.4872)\n[ICD-10-CM 2027] K683: Retroperitoneal hematoma (score: 0.4631)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] G3184: Mild cognitive impairment of uncertain or unknown etiology (score: 0.4292)\n[ICD-10-CM 2027] I7141: Pararenal abdominal aortic aneurysm, without rupture (score: 0.3298)\n[ICD-10-CM 2027] I7131: Pararenal abdominal aortic aneurysm, ruptured (score: 0.3026)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] K5790: Diverticulosis of intestine, part unspecified, without perforation or abscess without bleeding (score: 0.3631)\n[ICD-10-CM 2027] K5791: Diverticulosis of intestine, part unspecified, without perforation or abscess with bleeding (score: 0.3631)\n[ICD-10-CM 2027] K5710: Diverticulosis of small intestine without perforation or abscess without bleeding (score: 0.3471)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Q395: Congenital dilatation of esophagus (score: 0.3459)\n[ICD-10-CM 2027] K310: Acute dilatation of stomach (score: 0.3395)\n[ICD-10-CM 2027] K9186: Retained cholelithiasis following cholecystectomy (score: 0.3259)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] R238: Other skin changes (score: 0.4745)\n[ICD-10-CM 2027] R239: Unspecified skin changes (score: 0.4745)\n[ICD-10-CM 2027] S3330XD: Dislocation of unspecified parts of lumbar spine and pelvis, subsequent encounter (score: 0.4308)"
+  }
+]

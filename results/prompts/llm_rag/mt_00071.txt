@@ -1,0 +1,253 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+ADMITTING DIAGNOSES:,1.  Respiratory distress.,2.  Reactive airways disease.,DISCHARGE DIAGNOSES:,1.  Respiratory distress.,2.  Reactive airways disease.,3.  Pneumonia.,HISTORY OF PRESENT ILLNESS: , The patient is a 3-year-old boy previously healthy who has never had a history of asthma or reactive airways disease who presented with a 36-hour presentation of URI symptoms, then had an abrupt onset of cough and increased work of breathing.  Child was brought to Children's Hospital and received nebulized treatments in the ER and the Hospitalist Service was contacted regarding admission.  The patient was seen and admitted through the emergency room.,He was placed on the hospitalist system and was started on continuous nebulized albuterol secondary to his respiratory distress.  He also received inhaled as well as systemic corticosteroids.  An x-ray was without infiltrate on initial review by the hospitalist, but there was a right upper lobe infiltrate versus atelectasis per the official radiology reading.  The patient was not started on any antibiotics and his fever resolved.  However, the CRP was relatively elevated at 6.7.  The CBC was normal with a white count of 9.6; however, the bands were 84%.  Given these results, which she is to treat the pneumonia as bacterial and discharge the child with amoxicillin and Zithromax.,He was taken off of continuous and he was not on room air all night.  In the morning, he still had some bilateral wheezing, but no tachypnea.,DISCHARGE PHYSICAL EXAMINATION: , ,GENERAL:  No acute distress, running around the room.,HEENT:  Oropharynx moist and clear.,NECK:  Supple without lymphadenopathy, thyromegaly or masses.,CHEST:  Bilateral basilar wheezing.  No distress.,CARDIOVASCULAR:  Regular rate and rhythm.  No murmurs noted.  Well perfused peripherally.,ABDOMEN:  Bowel sounds present.  The abdomen is soft.  There is no hepatosplenomegaly, no masses.  Nontender to palpation.,GENITOURINARY:  Deferred.,EXTREMITIES:  Warm and well perfused.,DISCHARGE INSTRUCTIONS:,  As follows:,1.  Activity, regular.,2.  Diet is regular.,3.  Follow up with Dr. X in 2 days.,DISCHARGE MEDICATIONS:,1.  Xopenex MDI 2 puffs every 4 hours for 2 days and then as needed for cough or wheeze.,2.  QVAR 40, 2 puffs twice daily until otherwise instructed by the primary care provider.,3.  Amoxicillin 550 mg p.o. twice daily for 10 days.,4.  Zithromax 150 mg p.o. on day 1, then 75 mg p.o. daily for 4 more days.,Total time for this discharge 37 minutes.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Respiratory distress"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Reactive airways disease.,DISCHARGE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Reactive airways disease"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Pneumonia.,HISTORY OF PRESENT ILLNESS: , The patient is a 3-year-old boy previously healthy who has never had a history of asthma or reactive airways disease who presented with a 36-hour presentation of URI symptoms, then had an abrupt onset of cough and increased work of breathing.  Child was brought to Children's Hospital and received nebulized treatments in the ER and the Hospitalist Service was contacted regarding admission.  The patient was seen and admitted through the emergency room.,He was placed on the hospitalist system and was started on continuous nebulized albuterol secondary to his respiratory distress.  He also received inhaled as well as systemic corticosteroids.  An x-ray was without infiltrate on initial review by the hospitalist, but there was a right upper lobe infiltrate versus atelectasis per the official radiology reading.  The patient was not started on any antibiotics and his fever resolved.  However, the CRP was relatively elevated at 6"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "albuterol"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "The CBC was normal with a white count of 9.6; however, the bands were 84%.  Given these results, which she is to treat the pneumonia as bacterial and discharge the child with amoxicillin and Zithromax.,He was taken off of continuous and he was not on room air all night.  In the morning, he still had some bilateral wheezing, but no tachypnea.,DISCHARGE PHYSICAL EXAMINATION: , ,GENERAL:  No acute distress, running around the room.,HEENT:  Oropharynx moist and clear.,NECK:  Supple without lymphadenopathy, thyromegaly or masses.,CHEST:  Bilateral basilar wheezing.  No distress.,CARDIOVASCULAR:  Regular rate and rhythm.  No murmurs noted.  Well perfused peripherally.,ABDOMEN:  Bowel sounds present.  The abdomen is soft.  There is no hepatosplenomegaly, no masses.  Nontender to palpation.,GENITOURINARY:  Deferred.,EXTREMITIES:  Warm and well perfused.,DISCHARGE INSTRUCTIONS:,  As follows:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "measurement",
+    "text": "84%"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "amoxicillin"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Zithromax"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Activity, regular"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Diet is regular"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Follow up with Dr. X in 2 days.,DISCHARGE MEDICATIONS:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Xopenex MDI 2 puffs every 4 hours for 2 days and then as needed for cough or wheeze"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Xopenex"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "QVAR 40, 2 puffs twice daily until otherwise instructed by the primary care provider"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "QVAR"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Amoxicillin 550 mg p.o. twice daily for 10 days"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "Amoxicillin"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "dosage",
+    "text": "550 mg"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "Zithromax 150 mg p.o. on day 1, then 75 mg p.o. daily for 4 more days.,Total time for this discharge 37 minutes"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "Zithromax"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "dosage",
+    "text": "150 mg"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "measurement",
+    "text": "75 mg"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] R0603: Acute respiratory distress (score: 0.9203)\n[ICD-10-CM 2027] P228: Other respiratory distress of newborn (score: 0.8889)\n[ICD-10-CM 2027] P229: Respiratory distress of newborn, unspecified (score: 0.8889)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] M029: Reactive arthropathy, unspecified (score: 0.4488)\n[ICD-10-CM 2027] M02849: Other reactive arthropathies, unspecified hand (score: 0.4207)\n[ICD-10-CM 2027] M02839: Other reactive arthropathies, unspecified wrist (score: 0.4173)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] M029: Reactive arthropathy, unspecified (score: 0.5048)\n[ICD-10-CM 2027] M02849: Other reactive arthropathies, unspecified hand (score: 0.4732)\n[ICD-10-CM 2027] M02839: Other reactive arthropathies, unspecified wrist (score: 0.4693)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.2822)\n[ICD-10-CM 2027] Y92230: Patient room in hospital as the place of occurrence of the external cause (score: 0.2172)\n[ICD-10-CM 2027] R7982: Elevated C-reactive protein (CRP) (score: 0.2006)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'albuterol' \u2192 RXCUI 435, canonical: albuterol, match: exact\n[RxNorm] Ingredient: albuterol (RXCUI 435)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): albuterol 0.4 MG Inhalation Powder; 120 ACTUAT albuterol 0.1 MG/ACTUAT / ipratropium bromide 0.02 MG/ACTUAT Inhalation Spray; albuterol 1 MG/ML / ipratropium bromide 0.2 MG/ML Inhalation Solution; albuterol 0.833 MG/ML / ipratropium bromide 0.167 MG/ML Inhalation Solution; albuterol 4 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2471)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.2396)\n[ICD-10-CM 2027] R062: Wheezing (score: 0.2280)\n[ICD-10-CM 2027] Match unresolved (top score 0.2471 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Measurement] 84.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'amoxicillin' \u2192 RXCUI 723, canonical: amoxicillin, match: exact\n[RxNorm] Ingredient: amoxicillin (RXCUI 723)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amoxicillin 60 MG/ML Oral Suspension; amoxicillin 50 MG / clavulanate 12.5 MG Oral Tablet; amoxicillin 200 MG / clavulanate 50 MG Oral Tablet; amoxicillin 300 MG / clavulanate 75 MG Oral Tablet; amoxicillin 100 MG / clavulanate 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Zithromax' \u2192 RXCUI 196474, canonical: Zithromax, match: exact\n[RxNorm] Ingredient: azithromycin (RXCUI 18631)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): azithromycin 250 MG Oral Capsule; azithromycin 40 MG/ML Oral Suspension; azithromycin 500 MG Injection; azithromycin 600 MG Oral Tablet; azithromycin 500 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] H52229: Regular astigmatism, unspecified eye (score: 0.5911)\n[ICD-10-CM 2027] H52222: Regular astigmatism, left eye (score: 0.5865)\n[ICD-10-CM 2027] H52221: Regular astigmatism, right eye (score: 0.5864)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] H52229: Regular astigmatism, unspecified eye (score: 0.4987)\n[ICD-10-CM 2027] H52222: Regular astigmatism, left eye (score: 0.4947)\n[ICD-10-CM 2027] H52221: Regular astigmatism, right eye (score: 0.4947)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] Z392: Encounter for routine postpartum follow-up (score: 0.4153)\n[ICD-10-CM 2027] Z362: Encounter for other antenatal screening follow-up (score: 0.4016)\n[ICD-10-CM 2027] H5311: Day blindness (score: 0.3909)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] R058: Other specified cough (score: 0.5972)\n[ICD-10-CM 2027] R059: Cough, unspecified (score: 0.5972)\n[ICD-10-CM 2027] H5311: Day blindness (score: 0.5519)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Xopenex' \u2192 RXCUI 261702, canonical: Xopenex, match: exact\n[RxNorm] Ingredient: levalbuterol (RXCUI 237159)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): levalbuterol 2.5 MG/ML Inhalation Solution; levalbuterol 0.417 MG/ML Inhalation Solution; levalbuterol 0.21 MG/ML Inhalation Solution; levalbuterol 0.103 MG/ML Inhalation Solution; 200 ACTUAT levalbuterol 0.045 MG/ACTUAT Metered Dose Inhaler"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] F99: Mental disorder, not otherwise specified (score: 0.3797)\n[ICD-10-CM 2027] J84111: Idiopathic interstitial pneumonia, not otherwise specified (score: 0.3315)\n[ICD-10-CM 2027] Z748: Other problems related to care provider dependency (score: 0.3122)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'QVAR' \u2192 RXCUI 226084, canonical: Qvar, match: exact\n[RxNorm] Ingredient: beclomethasone (RXCUI 1347)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 120 ACTUAT beclomethasone dipropionate 0.08 MG/ACTUAT Metered Dose Inhaler; 120 ACTUAT beclomethasone dipropionate 0.04 MG/ACTUAT Metered Dose Inhaler; beclomethasone dipropionate 0.04 MG/ACTUAT Metered Dose Nasal Spray; beclomethasone dipropionate 0.042 MG/ACTUAT Metered Dose Nasal Spray; beclomethasone dipropionate 0.08 MG/ACTUAT Metered Dose Nasal Spray"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] H5311: Day blindness (score: 0.3736)\n[ICD-10-CM 2027] Q6650: Congenital pes planus, unspecified foot (score: 0.2775)\n[ICD-10-CM 2027] Z00111: Health examination for newborn 8 to 28 days old (score: 0.2768)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'Amoxicillin' \u2192 RXCUI 723, canonical: amoxicillin, match: exact\n[RxNorm] Ingredient: amoxicillin (RXCUI 723)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amoxicillin 60 MG/ML Oral Suspension; amoxicillin 50 MG / clavulanate 12.5 MG Oral Tablet; amoxicillin 200 MG / clavulanate 50 MG Oral Tablet; amoxicillin 300 MG / clavulanate 75 MG Oral Tablet; amoxicillin 100 MG / clavulanate 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "Dose 550.0mg associated with Amoxicillin \u2014 dose 550.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] H5311: Day blindness (score: 0.3908)\n[ICD-10-CM 2027] Y908: Blood alcohol level of 240 mg/100 ml or more (score: 0.3006)\n[ICD-10-CM 2027] Q6650: Congenital pes planus, unspecified foot (score: 0.2902)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'Zithromax' \u2192 RXCUI 196474, canonical: Zithromax, match: exact\n[RxNorm] Ingredient: azithromycin (RXCUI 18631)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): azithromycin 250 MG Oral Capsule; azithromycin 40 MG/ML Oral Suspension; azithromycin 500 MG Injection; azithromycin 600 MG Oral Tablet; azithromycin 500 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "Dose 150.0mg associated with Zithromax \u2014 dose 150.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[Measurement] 75.0mg \u2014 not associated with any medication"
+  }
+]

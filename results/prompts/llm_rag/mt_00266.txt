@@ -1,0 +1,123 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+HISTORY: , The patient is a 71-year-old female, who was referred for an outpatient modified barium swallow study to objectively evaluate her swallowing function and safety.  The patient complained of globus sensation high in her throat particularly with solid foods and with pills.  She denied history of coughing and chocking with meals.  The patient's complete medical history is unknown to me at this time.  The patient was cooperative and compliant throughout this evaluation.,STUDY:,  Modified barium swallow study was performed in the Radiology Suite in cooperation with Dr. X. The patient was seated upright at a 90-degree angle in a video imaging chair.  To evaluate her swallowing function and safety, she was administered graduated amounts of food and liquid mixed with barium in the form of thin liquids (teaspoon x3. cup sip x4); thickened liquid (cup sip x3); puree consistency (teaspoon x3); and solid consistency (1/4 cracker x1).  The patient was given 2 additional cup sips of thin liquid following the puree and solid food presentation.,ORAL STAGE:  ,The patient had no difficulty with bolus control and transport.  No spillage out lips.  The patient appears to have pocketing __________ particularly with puree and solid food between her right faucial pillars.  The patient did state that she had her tonsil taken out as a child and appears to be a diverticulum located in this state.  Further evaluation by an ENT is highly recommended based on the residual and pooling that occurred during this evaluation.  We were not able to clear out the residual with alternating cup sips and thin liquid.,PHARYNGEAL STAGE:  ,No aspiration or penetration occurred during this evaluation.  The patient's hyolaryngeal elevation and anterior movements are within the functional limits.  Epiglottic inversion is within functional limits.  She had no residual or pooling in the pharynx after the swallow.,CERVICAL ESOPHAGEAL STAGE:  ,The patient's upper esophageal sphincter opening is well coordinated with swallow and readily accepted the bolus.,DIAGNOSTIC IMPRESSION:  ,The patient had no aspiration or penetration occurred during this evaluation.  She does appear to have a diverticulum in the area between her right faucial pillars.  Additional evaluation is needed by an ENT physician.,PLAN:  ,Based on this evaluation, the following is recommended:,1.  The patient's diet should consist regular consistency food with thin liquids.  She needs to take small bites and small sips to help decrease her risk of aspiration and penetration as well as reflux.,2.  The patient should be referred to an otolaryngologist for further evaluation of her oral cavity particularly the area between her faucial pillars.,The above recommendations and results of the evaluation were discussed with the patient as well as her daughter and both responded appropriately.,Thank you for the opportunity to be required the patient's medical care.  She is not in need of skilled speech therapy and is discharged from my services.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "barium"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "barium"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "with Dr. X. The patient was seated upright at a 90-degree angle in a video imaging chair.  To evaluate her swallowing function and safety, she was administered graduated amounts of food and liquid mixed with barium in the form of thin liquids (teaspoon x"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "barium"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "cup sip x4); thickened liquid (cup sip x3); puree consistency (teaspoon x3); and solid consistency (1/4 cracker x1).  The patient was given 2 additional cup sips of thin liquid following the puree and solid food presentation.,ORAL STAGE:  ,The patient had no difficulty with bolus control and transport.  No spillage out lips.  The patient appears to have pocketing __________ particularly with puree and solid food between her right faucial pillars.  The patient did state that she had her tonsil taken out as a child and appears to be a diverticulum located in this state.  Further evaluation by an ENT is highly recommended based on the residual and pooling that occurred during this evaluation.  We were not able to clear out the residual with alternating cup sips and thin liquid.,PHARYNGEAL STAGE:  ,No aspiration or penetration occurred during this evaluation.  The patient's hyolaryngeal elevation and anterior movements are within the functional limits.  Epiglottic inversion is within functional limits.  She had no residual or pooling in the pharynx after the swallow.,CERVICAL ESOPHAGEAL STAGE:  ,The patient's upper esophageal sphincter opening is well coordinated with swallow and readily accepted the bolus.,DIAGNOSTIC IMPRESSION:  ,The patient had no aspiration or penetration occurred during this evaluation.  She does appear to have a diverticulum in the area between her right faucial pillars.  Additional evaluation is needed by an ENT physician.,PLAN:  ,Based on this evaluation, the following is recommended:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "The patient had no aspiration or penetration occurred during this evaluation.  She does appear to have a diverticulum in the area between her right faucial pillars.  Additional evaluation is needed by an ENT physician.,PLAN:  ,Based on this evaluation, the following is recommended:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "The patient's diet should consist regular consistency food with thin liquids.  She needs to take small bites and small sips to help decrease her risk of aspiration and penetration as well as reflux"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "The patient's diet should consist regular consistency food with thin liquids.  She needs to take small bites and small sips to help decrease her risk of aspiration and penetration as well as reflux"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "The patient should be referred to an otolaryngologist for further evaluation of her oral cavity particularly the area between her faucial pillars.,The above recommendations and results of the evaluation were discussed with the patient as well as her daughter and both responded appropriately.,Thank you for the opportunity to be required the patient's medical care.  She is not in need of skilled speech therapy and is discharged from my services"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "The patient should be referred to an otolaryngologist for further evaluation of her oral cavity particularly the area between her faucial pillars.,The above recommendations and results of the evaluation were discussed with the patient as well as her daughter and both responded appropriately.,Thank you for the opportunity to be required the patient's medical care.  She is not in need of skilled speech therapy and is discharged from my services"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'barium' \u2192 RXCUI 1311067, canonical: barium, match: exact\n[RxNorm] Ingredient: barium (RXCUI 1311067)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'barium' \u2192 RXCUI 1311067, canonical: barium, match: exact\n[RxNorm] Ingredient: barium (RXCUI 1311067)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'with Dr. X. The patient was seated upright at a 90-degree angle in a video imaging chair.  To evaluate her swallowing function and safety, she was administered graduated amounts of food and liquid mixed with barium in the form of thin liquids (teaspoon x' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'barium' \u2192 RXCUI 1311067, canonical: barium, match: exact\n[RxNorm] Ingredient: barium (RXCUI 1311067)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'cup sip x4); thickened liquid (cup sip x3); puree consistency (teaspoon x3); and solid consistency (1/4 cracker x1).  The patient was given 2 additional cup sips of thin liquid following the puree and solid food presentation.,ORAL STAGE:  ,The patient had no difficulty with bolus control and transport.  No spillage out lips.  The patient appears to have pocketing __________ particularly with puree and solid food between her right faucial pillars.  The patient did state that she had her tonsil taken out as a child and appears to be a diverticulum located in this state.  Further evaluation by an ENT is highly recommended based on the residual and pooling that occurred during this evaluation.  We were not able to clear out the residual with alternating cup sips and thin liquid.,PHARYNGEAL STAGE:  ,No aspiration or penetration occurred during this evaluation.  The patient's hyolaryngeal elevation and anterior movements are within the functional limits.  Epiglottic inversion is within functional limits.  She had no residual or pooling in the pharynx after the swallow.,CERVICAL ESOPHAGEAL STAGE:  ,The patient's upper esophageal sphincter opening is well coordinated with swallow and readily accepted the bolus.,DIAGNOSTIC IMPRESSION:  ,The patient had no aspiration or penetration occurred during this evaluation.  She does appear to have a diverticulum in the area between her right faucial pillars.  Additional evaluation is needed by an ENT physician.,PLAN:  ,Based on this evaluation, the following is recommended:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Z0589: Observation and evaluation of newborn for other specified suspected condition ruled out (score: 0.3021)\n[ICD-10-CM 2027] Z059: Observation and evaluation of newborn for unspecified suspected condition ruled out (score: 0.3021)\n[ICD-10-CM 2027] Z053: Observation and evaluation of newborn for suspected respiratory condition ruled out (score: 0.2880)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] N279: Small kidney, unspecified (score: 0.2973)\n[ICD-10-CM 2027] N271: Small kidney, bilateral (score: 0.2677)\n[ICD-10-CM 2027] T183XXD: Foreign body in small intestine, subsequent encounter (score: 0.2540)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'The patient's diet should consist regular consistency food with thin liquids.  She needs to take small bites and small sips to help decrease her risk of aspiration and penetration as well as reflux' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] T63443D: Toxic effect of venom of bees, assault, subsequent encounter (score: 0.2825)\n[ICD-10-CM 2027] T63444D: Toxic effect of venom of bees, undetermined, subsequent encounter (score: 0.2822)\n[ICD-10-CM 2027] T63443A: Toxic effect of venom of bees, assault, initial encounter (score: 0.2814)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'The patient should be referred to an otolaryngologist for further evaluation of her oral cavity particularly the area between her faucial pillars.,The above recommendations and results of the evaluation were discussed with the patient as well as her daughter and both responded appropriately.,Thank you for the opportunity to be required the patient's medical care.  She is not in need of skilled speech therapy and is discharged from my services' \u2014 extracted from header, not verified against any coding system"
+  }
+]

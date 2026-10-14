@@ -1,0 +1,523 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT: , Newly diagnosed high-risk acute lymphoblastic leukemia; extensive deep vein thrombosis, right iliac vein and inferior vena cava (IVC), status post balloon angioplasty, and mechanical and pharmacologic thrombolysis following placement of a vena caval filter.,HISTORY OF PRESENT ILLNESS: , The patient was transferred here the evening of 02/23/2007 from Hospital with a new diagnosis of high-risk acute lymphoblastic leukemia based on confirmation by flow cytometry of peripheral blood lymphoblasts that afternoon.  History related to this illness probably dates back to October of 2006 when he had onset of swelling and discomfort in the left testicle with what he described as a residual "lump" posteriorly.  The left testicle has continued to be painful off and on since.  In early November, he developed pain in the posterior part of his upper right leg, which he initially thought was related to skateboarding and muscle strain.  Physical therapy was prescribed and the discomfort temporarily improved.  In December, he noted onset of increasing fatigue.  He used to work out regularly, lifting lifts, doing abdominal exercises, and playing basketball and found he did not have energy to pursue these activities.  He has lost 10 pounds since December and feels his appetite has decreased.  Night sweats and cough began in December, for which he was treated with a course of Augmentin.  However, both of these problems have continued.  He also began taking Accutane for persistent acne in December (this agent was stopped on 02/19/2007).  Despite increasing fatigue and lethargy, he continues his studies at University of Denver, has a biology major (he aspires to be an ophthalmologist).,The morning of 02/19/2007, he awakened with severe right inguinal and right lower quadrant pain.  He was seen in Emergency Room where it was noted that he had an elevated WBC of 18,000.  CT scan of the abdomen was obtained to rule out possible appendicitis and on that CT, a large clot in the inferior vena cava extending to the right iliac and femoral veins was found.  He promptly underwent appropriate treatment in interventional radiology with the above-noted angioplasty and placement of a vena caval filter followed by mechanical and pharmacologic thrombolysis.  Repeat ultrasound there on 02/20/2007 showed no evidence of deep venous thrombosis (DVT).  Continuous intravenous unfractionated heparin infusion was continued.  Because there was no obvious cause of this extensive thrombosis, occult malignancy was suspected.  Appropriate blood studies were obtained and he underwent a PET/CT scan as part of his diagnostic evaluation.  This study showed moderately increased diffuse bone marrow metabolic activity.  Because the WBC continued to rise and showed a preponderance of lymphocytes, the smear was reviewed by pathologist, Sheryl Asplund, M.D., and flow cytometry was performed on the peripheral blood.  These studies became available the afternoon of 02/23/2007, and confirmed the diagnosis of precursor-B acute lymphoblastic leukemia.  The patient was transferred here after stopping of the continuous infusion heparin and receiving a dose of Lovenox 60 mg subcutaneously for further diagnostic evaluation and management of the acute lymphoblastic leukemia (ALL).,ALLERGIES: , NO KNOWN DRUG ALLERGIES.  HE DOES SEEM TO REACT TO CERTAIN ADHESIVES.,CURRENT MEDICATIONS:  ,1.  Lovenox 60 mg subcutaneously q.12h. initiated.,2.  Coumadin 5 mg p.o., was administered on 02/19/2007 and 02/22/2007.,3.  Protonix 40 mg intravenous (IV) daily.,4.  Vicodin p.r.n.,5.  Levaquin 750 mg IV on 02/23/2007.,IMMUNIZATIONS: , Up-to-date.,PAST SURGICAL HISTORY:  ,The treatment of the thrombosis as noted above on 02/19/2007 and 02/20/2007.,FAMILY HISTORY:  ,Two half-brothers, ages 26 and 28, both in good health.  Parents are in good health.  A maternal great-grandmother had a deep venous thrombosis (DVT) of leg in her 40s.  A maternal great-uncle developed leukemia around age 50.  A maternal great-grandfather had bone cancer around age 80.  His paternal grandfather died of colon cancer at age 73, which he had had since age 68.  Adult-onset diabetes is present in distant relatives on both sides.,SOCIAL HISTORY:  ,The patient is a student at the University majoring in biology.  He lives in a dorm there.  His parents live in Breckenridge.  He admits to having smoked marijuana off and on with friends and drinking beer off and on as well.,REVIEW OF SYSTEMS: , He has had emesis off and on related to Vicodin and constipation since 02/19/2007, also related to pain medication.  He has had acne for about two years, which he describes as mild to moderate.  He denied shortness of breath, chest pain, hemoptysis, dyspnea, headaches, joint pains, rashes, except where he has had dressings applied, and extremity pain except for the right leg pain noted above.,PHYSICAL EXAMINATION:  ,GENERAL:  Alert, cooperative, moderately ill-appearing young man.,VITAL SIGNS:  At the time of admission, pulse was 94, respirations 20, blood pressure 120/62, temperature 98.7, height 171.5 cm, weight 63.04 kg, and pulse oximetry on room air 95%.,HAIR AND SKIN:  Mild facial acne.,HEENT:  Extraocular muscles (EOMs) intact.  Pupils equal, round, and reactive to light and accommodation (PERRLA), fundi normal.,CARDIOVASCULAR:  A 2/6 systolic ejection murmur (SEM), regular sinus rhythm (RSR).,LUNGS:  Clear to auscultation with an occasional productive cough.,ABDOMEN:  Soft with mild lower quadrant tenderness, right more so than left; liver and spleen each decreased 4 cm below their respective costal margins.,MUSCULOSKELETAL:  Mild swelling of the dorsal aspect of the right foot and distal right leg.  Mild tenderness over the prior catheter entrance site in the right popliteal fossa and mild tenderness over the right medial upper thigh.,GENITOURINARY:  Testicle exam disclosed no firm swelling with mild nondiscrete fullness in the posterior left testicle.,NEUROLOGIC:  Exam showed him to be oriented x4.  Normal fundi, intact cranial nerves II through XII with downgoing toes, symmetric muscle strength, and decreased patellar deep tendon reflexes (DTRs).,LABORATORY DATA:  ,White count 25,500 (26 neutrophils, 1 band, 7 lymphocytes, 1 monocyte, 1 myelocyte, 64 blasts), hemoglobin 13.3, hematocrit 38.8, and 312,000 platelets.  Electrolytes, BUN, creatinine, phosphorus, uric acid, AST, ALT, alkaline phosphatase, and magnesium were all normal.  LDH was elevated to 1925 units/L (upper normal 670), and total protein and albumin were both low at 6.2 and 3.4 g/dL respectively.  Calcium was also slightly low at 8.8 mg/dL.  Low molecular weight heparin test was low at 0.27 units/mL.  PT was 11.8, INR 1.2, and fibrinogen 374.  Urinalysis was normal.,ASSESSMENT: , 1.  Newly diagnosed high-risk acute lymphoblastic leukemia.,2.  Deep vein thrombosis of the distal iliac and common femoral/right femoral and iliac veins, status post vena caval filter placement and mechanical and thrombolytic therapy, on continued anticoagulation.,3.  Probable chronic left epididymitis.,PLAN: , 1.  Proceed with diagnostic bone marrow aspirate/biopsy and lumbar puncture (using a #27-gauge pencil-tip needle for minimal trauma) as soon as these procedures can be safely done with regard to the anticoagulation status.,2.  Prompt reassessment of the status of the deep venous thrombosis with Doppler studies.,3.  Ultrasound/Doppler of the testicles.,4.  Maintain therapeutic anticoagulation as soon as the diagnostic procedures for ALL can be completed., Patient also underwent cardiac catheterization during this visit.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "of high-risk acute lymphoblastic leukemia based on confirmation by flow cytometry of peripheral blood lymphoblasts that afternoon.  History related to this illness probably dates back to October of 2006 when he had onset of swelling and discomfort in the left testicle with what he described as a residual \"lump\" posteriorly.  The left testicle has continued to be painful off and on since.  In early November, he developed pain in the posterior part of his upper right leg, which he initially thought was related to skateboarding and muscle strain.  Physical therapy was prescribed and the discomfort temporarily improved.  In December, he noted onset of increasing fatigue.  He used to work out regularly, lifting lifts, doing abdominal exercises, and playing basketball and found he did not have energy to pursue these activities.  He has lost 10 pounds since December and feels his appetite has decreased.  Night sweats and cough began in December, for which he was treated with a course of Augmentin.  However, both of these problems have continued.  He also began taking Accutane for persistent acne in December (this agent was stopped on 02/19/2007).  Despite increasing fatigue and lethargy, he continues his studies at University of Denver, has a biology major (he aspires to be an ophthalmologist).,The morning of 02/19/2007, he awakened with severe right inguinal and right lower quadrant pain.  He was seen in Emergency Room where it was noted that he had an elevated WBC of 18"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Augmentin"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Accutane"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "CT scan of the abdomen was obtained to rule out possible appendicitis and on that CT, a large clot in the inferior vena cava extending to the right iliac and femoral veins was found.  He promptly underwent appropriate treatment in interventional radiology with the above-noted angioplasty and placement of a vena caval filter followed by mechanical and pharmacologic thrombolysis.  Repeat ultrasound there on 02/20/2007 showed no evidence of deep venous thrombosis (DVT).  Continuous intravenous unfractionated heparin infusion was continued.  Because there was no obvious cause of this extensive thrombosis, occult malignancy was suspected.  Appropriate blood studies were obtained and he underwent a PET/CT scan as part of his diagnostic evaluation.  This study showed moderately increased diffuse bone marrow metabolic activity.  Because the WBC continued to rise and showed a preponderance of lymphocytes, the smear was reviewed by pathologist, Sheryl Asplund, M.D., and flow cytometry was performed on the peripheral blood.  These studies became available the afternoon of 02/23/2007, and confirmed the diagnosis of precursor-B acute lymphoblastic leukemia.  The patient was transferred here after stopping of the continuous infusion heparin and receiving a dose of Lovenox 60 mg subcutaneously for further diagnostic evaluation and management of the acute lymphoblastic leukemia (ALL).,ALLERGIES: , NO KNOWN DRUG ALLERGIES.  HE DOES SEEM TO REACT TO CERTAIN ADHESIVES.,CURRENT MEDICATIONS:  "
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "heparin"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "heparin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Lovenox"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "60 mg"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "REACT"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Lovenox 60 mg subcutaneously q.12h. initiated"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Lovenox"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "dosage",
+    "text": "60 mg"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Coumadin 5 mg p.o., was administered on 02/19/2007 and 02/22/2007"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "5 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Protonix 40 mg intravenous (IV) daily"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "Protonix"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Vicodin p.r.n"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "Levaquin 750 mg IV on 02/23/2007.,IMMUNIZATIONS: , Up-to-date.,PAST SURGICAL HISTORY:  ,The treatment of the thrombosis as noted above on 02/19/2007 and 02/20/2007.,FAMILY HISTORY:  ,Two half-brothers, ages 26 and 28, both in good health.  Parents are in good health.  A maternal great-grandmother had a deep venous thrombosis (DVT) of leg in her 40s.  A maternal great-uncle developed leukemia around age"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "Levaquin"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "dosage",
+    "text": "750 mg"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "A maternal great-grandfather had bone cancer around age"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "His paternal grandfather died of colon cancer at age 73, which he had had since age"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Adult-onset diabetes is present in distant relatives on both sides.,SOCIAL HISTORY:  ,The patient is a student at the University majoring in biology.  He lives in a dorm there.  His parents live in Breckenridge.  He admits to having smoked marijuana off and on with friends and drinking beer off and on as well.,REVIEW OF SYSTEMS: , He has had emesis off and on related to Vicodin and constipation since 02/19/2007, also related to pain medication.  He has had acne for about two years, which he describes as mild to moderate.  He denied shortness of breath, chest pain, hemoptysis, dyspnea, headaches, joint pains, rashes, except where he has had dressings applied, and extremity pain except for the right leg pain noted above.,PHYSICAL EXAMINATION:  ,GENERAL:  Alert, cooperative, moderately ill-appearing young man.,VITAL SIGNS:  At the time of admission, pulse was 94, respirations 20, blood pressure 120/62, temperature 98.7, height 171.5 cm, weight 63.04 kg, and pulse oximetry on room air 95%.,HAIR AND SKIN:  Mild facial acne.,HEENT:  Extraocular muscles (EOMs) intact.  Pupils equal, round, and reactive to light and accommodation (PERRLA), fundi normal.,CARDIOVASCULAR:  A 2/6 systolic ejection murmur (SEM), regular sinus rhythm (RSR).,LUNGS:  Clear to auscultation with an occasional productive cough.,ABDOMEN:  Soft with mild lower quadrant tenderness, right more so than left; liver and spleen each decreased 4 cm below their respective costal margins.,MUSCULOSKELETAL:  Mild swelling of the dorsal aspect of the right foot and distal right leg.  Mild tenderness over the prior catheter entrance site in the right popliteal fossa and mild tenderness over the right medial upper thigh.,GENITOURINARY:  Testicle exam disclosed no firm swelling with mild nondiscrete fullness in the posterior left testicle.,NEUROLOGIC:  Exam showed him to be oriented x"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "measurement",
+    "text": "63.04 kg"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "measurement",
+    "text": "95%"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "diagnosis",
+    "text": "Normal fundi, intact cranial nerves II through XII with downgoing toes, symmetric muscle strength, and decreased patellar deep tendon reflexes (DTRs).,LABORATORY DATA:  ,White count 25,500 (26 neutrophils, 1 band, 7 lymphocytes, 1 monocyte, 1 myelocyte, 64 blasts), hemoglobin 13.3, hematocrit 38.8, and 312,000 platelets.  Electrolytes, BUN, creatinine, phosphorus, uric acid, AST, ALT, alkaline phosphatase, and magnesium were all normal.  LDH was elevated to 1925 units/L (upper normal 670), and total protein and albumin were both low at 6.2 and 3.4 g/dL respectively.  Calcium was also slightly low at 8.8 mg/dL.  Low molecular weight heparin test was low at 0.27 units/mL.  PT was 11.8, INR 1.2, and fibrinogen"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "medication",
+    "text": "phosphorus"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "medication",
+    "text": "uric acid"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "medication",
+    "text": "magnesium"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "measurement",
+    "text": "1925 units"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "measurement",
+    "text": "3.4 g"
+  },
+  {
+    "entity_id": "E35",
+    "entity_type": "measurement",
+    "text": "8.8 mg"
+  },
+  {
+    "entity_id": "E36",
+    "entity_type": "medication",
+    "text": "heparin"
+  },
+  {
+    "entity_id": "E37",
+    "entity_type": "dosage",
+    "text": "0.27 units"
+  },
+  {
+    "entity_id": "E38",
+    "entity_type": "medication",
+    "text": "fibrinogen"
+  },
+  {
+    "entity_id": "E39",
+    "entity_type": "diagnosis",
+    "text": "Urinalysis was normal.,ASSESSMENT: "
+  },
+  {
+    "entity_id": "E40",
+    "entity_type": "diagnosis",
+    "text": "Newly diagnosed high-risk acute lymphoblastic leukemia"
+  },
+  {
+    "entity_id": "E41",
+    "entity_type": "diagnosis",
+    "text": "Deep vein thrombosis of the distal iliac and common femoral/right femoral and iliac veins, status post vena caval filter placement and mechanical and thrombolytic therapy, on continued anticoagulation"
+  },
+  {
+    "entity_id": "E42",
+    "entity_type": "diagnosis",
+    "text": "Probable chronic left epididymitis.,PLAN: "
+  },
+  {
+    "entity_id": "E43",
+    "entity_type": "diagnosis",
+    "text": "Proceed with diagnostic bone marrow aspirate/biopsy and lumbar puncture (using a #27-gauge pencil-tip needle for minimal trauma) as soon as these procedures can be safely done with regard to the anticoagulation status"
+  },
+  {
+    "entity_id": "E44",
+    "entity_type": "procedure",
+    "text": "can be safely done with regard to the anticoagulation status"
+  },
+  {
+    "entity_id": "E45",
+    "entity_type": "diagnosis",
+    "text": "Prompt reassessment of the status of the deep venous thrombosis with Doppler studies"
+  },
+  {
+    "entity_id": "E46",
+    "entity_type": "procedure",
+    "text": "Prompt reassessment of the status of the deep venous thrombosis with Doppler studies"
+  },
+  {
+    "entity_id": "E47",
+    "entity_type": "diagnosis",
+    "text": "Ultrasound/Doppler of the testicles"
+  },
+  {
+    "entity_id": "E48",
+    "entity_type": "procedure",
+    "text": "Ultrasound/Doppler of the testicles"
+  },
+  {
+    "entity_id": "E49",
+    "entity_type": "diagnosis",
+    "text": "Maintain therapeutic anticoagulation as soon as the diagnostic procedures for ALL can be completed., Patient also underwent cardiac catheterization during this visit"
+  },
+  {
+    "entity_id": "E50",
+    "entity_type": "procedure",
+    "text": "Maintain therapeutic anticoagulation as soon as the diagnostic procedures for ALL can be completed., Patient also underwent cardiac catheterization during this visit"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] H53149: Visual discomfort, unspecified (score: 0.1975)\n[ICD-10-CM 2027] H53141: Visual discomfort, right eye (score: 0.1963)\n[ICD-10-CM 2027] H53142: Visual discomfort, left eye (score: 0.1934)\n[ICD-10-CM 2027] Match unresolved (top score 0.1975 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Augmentin' \u2192 RXCUI 151392, canonical: Augmentin, match: exact\n[RxNorm] Ingredient: clavulanate (RXCUI 48203)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amoxicillin 50 MG / clavulanate 12.5 MG Oral Tablet; amoxicillin 200 MG / clavulanate 50 MG Oral Tablet; amoxicillin 300 MG / clavulanate 75 MG Oral Tablet; amoxicillin 100 MG / clavulanate 25 MG Oral Tablet; amoxicillin 100 MG / clavulanate 25 MG Chewable Tablet"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Accutane' \u2192 RXCUI 202795, canonical: Accutane, match: exact\n[RxNorm] Ingredient: isotretinoin (RXCUI 6064)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): isotretinoin 5 MG Oral Capsule; isotretinoin 0.0005 MG/MG Topical Gel; erythromycin 0.02 MG/MG / isotretinoin 0.0005 MG/MG Topical Gel; isotretinoin 25 MG Oral Capsule; isotretinoin 35 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] I82220: Acute embolism and thrombosis of inferior vena cava (score: 0.2320)\n[ICD-10-CM 2027] C9101: Acute lymphoblastic leukemia, in remission (score: 0.2290)\n[ICD-10-CM 2027] C9102: Acute lymphoblastic leukemia, in relapse (score: 0.2157)\n[ICD-10-CM 2027] Match unresolved (top score 0.2320 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'heparin' \u2192 RXCUI 235473, canonical: heparin, porcine, match: exact\n[RxNorm] Ingredient: heparin, porcine (RXCUI 235473)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'heparin' \u2192 RXCUI 235473, canonical: heparin, porcine, match: exact\n[RxNorm] Ingredient: heparin, porcine (RXCUI 235473)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Lovenox' \u2192 RXCUI 225036, canonical: Lovenox, match: exact\n[RxNorm] Ingredient: enoxaparin (RXCUI 67108)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 0.3 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.4 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.6 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.8 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.8 ML enoxaparin sodium 150 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "Dose 60.0mg associated with Lovenox \u2014 dose 60.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'REACT' \u2192 RXCUI 1788859, canonical: React, match: exact\n[RxNorm] Ingredient: levonorgestrel (RXCUI 6373)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): levonorgestrel 0.03 MG Oral Tablet; levonorgestrel 0.0375 MG Oral Tablet; levonorgestrel 0.000583 MG/HR Intrauterine System; ethinyl estradiol 0.02 MG / levonorgestrel 0.15 MG Oral Tablet; ethinyl estradiol 0.025 MG / levonorgestrel 0.15 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] A78: Q fever (score: 0.5866)\n[ICD-10-CM 2027] C9261: Acute myeloid leukemia with 11q23-abnormality in remission (score: 0.4056)\n[ICD-10-CM 2027] Y901: Blood alcohol level of 20-39 mg/100 ml (score: 0.4019)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Lovenox' \u2192 RXCUI 225036, canonical: Lovenox, match: exact\n[RxNorm] Ingredient: enoxaparin (RXCUI 67108)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 0.3 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.4 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.6 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.8 ML enoxaparin sodium 100 MG/ML Prefilled Syringe; 0.8 ML enoxaparin sodium 150 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "Dose 60.0mg associated with Lovenox \u2014 dose 60.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] P938: Other reactions and intoxications due to drugs administered to newborn (score: 0.3517)\n[ICD-10-CM 2027] Q6650: Congenital pes planus, unspecified foot (score: 0.3331)\n[ICD-10-CM 2027] Q6652: Congenital pes planus, left foot (score: 0.3307)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 5.0mg associated with Coumadin"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] T411X6D: Underdosing of intravenous anesthetics, subsequent encounter (score: 0.3347)\n[ICD-10-CM 2027] T411X6A: Underdosing of intravenous anesthetics, initial encounter (score: 0.3333)\n[ICD-10-CM 2027] T411X6S: Underdosing of intravenous anesthetics, sequela (score: 0.3332)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'Protonix' \u2192 RXCUI 261624, canonical: Protonix, match: exact\n[RxNorm] Ingredient: pantoprazole (RXCUI 40790)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pantoprazole 20 MG Delayed Release Oral Tablet; 100 ML pantoprazole 0.4 MG/ML Injection; 50 ML pantoprazole 0.8 MG/ML Injection; 100 ML pantoprazole 0.8 MG/ML Injection; pantoprazole 40 MG Injection"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "Dose 40.0mg associated with Protonix"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] D68023: Von Willebrand disease, type 2N (score: 0.3942)\n[ICD-10-CM 2027] E8882: Obesity due to disruption of MC4R pathway (score: 0.3287)\n[ICD-10-CM 2027] Q6650: Congenital pes planus, unspecified foot (score: 0.3176)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] Z806: Family history of leukemia (score: 0.2971)\n[ICD-10-CM 2027] Z86718: Personal history of other venous thrombosis and embolism (score: 0.2862)\n[ICD-10-CM 2027] Z789: Other specified health status (score: 0.2666)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'Levaquin' \u2192 RXCUI 217992, canonical: Levaquin, match: exact\n[RxNorm] Ingredient: levofloxacin (RXCUI 82122)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 50 ML levofloxacin 5 MG/ML Injection; 100 ML levofloxacin 5 MG/ML Injection; 150 ML levofloxacin 5 MG/ML Injection; 20 ML levofloxacin 25 MG/ML Injection; 30 ML levofloxacin 25 MG/ML Injection"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "Dose 750.0mg associated with Levaquin"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.3271)\n[ICD-10-CM 2027] D701: Agranulocytosis secondary to cancer chemotherapy (score: 0.2782)\n[ICD-10-CM 2027] Z15060: Genetic susceptibility to colorectal cancer (score: 0.2589)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.4527)\n[ICD-10-CM 2027] H2589: Other age-related cataract (score: 0.2247)\n[ICD-10-CM 2027] H259: Unspecified age-related cataract (score: 0.2247)"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] M79604: Pain in right leg (score: 0.2574)\n[ICD-10-CM 2027] R52: Pain, unspecified (score: 0.2487)\n[ICD-10-CM 2027] M79661: Pain in right lower leg (score: 0.2474)"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[Measurement] 63.04kg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[Measurement] 95.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[ICD-10-CM 2027] M5450: Low back pain, unspecified (score: 0.2528)\n[ICD-10-CM 2027] M5459: Other low back pain (score: 0.2528)\n[ICD-10-CM 2027] H54511A: Low vision right eye category 1, normal vision left eye (score: 0.2471)"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[RxNorm] 'phosphorus' \u2192 RXCUI 8263, canonical: phosphorus, match: exact\n[RxNorm] Ingredient: phosphorus (RXCUI 8263)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[RxNorm] 'uric acid' \u2192 RXCUI 1427088, canonical: uric acid, match: exact\n[RxNorm] Ingredient: uric acid (RXCUI 1427088)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[RxNorm] 'magnesium' \u2192 RXCUI 6574, canonical: magnesium, match: exact\n[RxNorm] Ingredient: magnesium (RXCUI 6574)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F33",
+    "entity_id": "E33",
+    "text": "[Measurement] 1925.0units \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F34",
+    "entity_id": "E34",
+    "text": "[Measurement] 3.4g \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F35",
+    "entity_id": "E35",
+    "text": "[Measurement] 8.8mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F36",
+    "entity_id": "E36",
+    "text": "[RxNorm] 'heparin' \u2192 RXCUI 235473, canonical: heparin, porcine, match: exact\n[RxNorm] Ingredient: heparin, porcine (RXCUI 235473)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F37",
+    "entity_id": "E37",
+    "text": "Dose 0.27units associated with heparin"
+  },
+  {
+    "fact_id": "F38",
+    "entity_id": "E38",
+    "text": "[RxNorm] 'fibrinogen' \u2192 RXCUI 4385, canonical: fibrinogen, match: exact\n[RxNorm] Ingredient: fibrinogen (RXCUI 4385)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fibrinogen, human 337 MG / thrombin, human 123 UNT Medicated Patch; fibrinogen, human 171 MG / thrombin, human 62.2 UNT Medicated Patch; 2 ML fibrinogen, human 106 MG/ML / thrombin, human 6.5 UNT/ML Prefilled Syringe; 4 ML fibrinogen, human 106 MG/ML / thrombin, human 6.5 UNT/ML Prefilled Syringe; 10 ML fibrinogen, human 106 MG/ML / thrombin, human 6.5 UNT/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F39",
+    "entity_id": "E39",
+    "text": "[ICD-10-CM 2027] Z3480: Encounter for supervision of other normal pregnancy, unspecified trimester (score: 0.6460)\n[ICD-10-CM 2027] Z3490: Encounter for supervision of normal pregnancy, unspecified, unspecified trimester (score: 0.6460)\n[ICD-10-CM 2027] Z3483: Encounter for supervision of other normal pregnancy, third trimester (score: 0.6134)"
+  },
+  {
+    "fact_id": "F40",
+    "entity_id": "E40",
+    "text": "[ICD-10-CM 2027] C9101: Acute lymphoblastic leukemia, in remission (score: 0.6812)\n[ICD-10-CM 2027] C9102: Acute lymphoblastic leukemia, in relapse (score: 0.6416)\n[ICD-10-CM 2027] C9100: Acute lymphoblastic leukemia not having achieved remission (score: 0.5369)"
+  },
+  {
+    "fact_id": "F41",
+    "entity_id": "E41",
+    "text": "[ICD-10-CM 2027] S35514D: Injury of right iliac vein, subsequent encounter (score: 0.5493)\n[ICD-10-CM 2027] S35516D: Injury of unspecified iliac vein, subsequent encounter (score: 0.5480)\n[ICD-10-CM 2027] S35514A: Injury of right iliac vein, initial encounter (score: 0.5457)"
+  },
+  {
+    "fact_id": "F42",
+    "entity_id": "E42",
+    "text": "[ICD-10-CM 2027] N451: Epididymitis (score: 0.9291)\n[ICD-10-CM 2027] M86642: Other chronic osteomyelitis, left hand (score: 0.2045)\n[ICD-10-CM 2027] M86612: Other chronic osteomyelitis, left shoulder (score: 0.1988)"
+  },
+  {
+    "fact_id": "F43",
+    "entity_id": "E43",
+    "text": "[ICD-10-CM 2027] Z9481: Bone marrow transplant status (score: 0.3196)\n[ICD-10-CM 2027] Z523: Bone marrow donor (score: 0.2501)\n[ICD-10-CM 2027] C7952: Secondary malignant neoplasm of bone marrow (score: 0.2463)"
+  },
+  {
+    "fact_id": "F44",
+    "entity_id": "E44",
+    "text": "[Procedure] 'can be safely done with regard to the anticoagulation status' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F45",
+    "entity_id": "E45",
+    "text": "[ICD-10-CM 2027] O2250: Cerebral venous thrombosis in pregnancy, unspecified trimester (score: 0.4316)\n[ICD-10-CM 2027] O873: Cerebral venous thrombosis in the puerperium (score: 0.4193)\n[ICD-10-CM 2027] R94113: Abnormal oculomotor study (score: 0.4190)"
+  },
+  {
+    "fact_id": "F46",
+    "entity_id": "E46",
+    "text": "[Procedure] 'Prompt reassessment of the status of the deep venous thrombosis with Doppler studies' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F47",
+    "entity_id": "E47",
+    "text": "[ICD-10-CM 2027] R3984: Bilateral non-palpable testicles (score: 0.6479)\n[ICD-10-CM 2027] R93813: Abnormal radiologic findings on diagnostic imaging of testicles, bilateral (score: 0.5250)"
+  },
+  {
+    "fact_id": "F48",
+    "entity_id": "E48",
+    "text": "[Procedure] 'Ultrasound/Doppler of the testicles' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F49",
+    "entity_id": "E49",
+    "text": "[ICD-10-CM 2027] W361XXD: Explosion and rupture of aerosol can, subsequent encounter (score: 0.2315)\n[ICD-10-CM 2027] W361XXA: Explosion and rupture of aerosol can, initial encounter (score: 0.2310)\n[ICD-10-CM 2027] W361XXS: Explosion and rupture of aerosol can, sequela (score: 0.2310)\n[ICD-10-CM 2027] Match unresolved (top score 0.2315 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F50",
+    "entity_id": "E50",
+    "text": "[Procedure] 'Maintain therapeutic anticoagulation as soon as the diagnostic procedures for ALL can be completed., Patient also underwent cardiac catheterization during this visit' \u2014 extracted from header, not verified against any coding system"
+  }
+]

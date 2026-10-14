@@ -1,0 +1,3 @@
+"""
+Stage A: Retrieval.
+"""

@@ -1,0 +1,123 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+POSTOPERATIVE DIAGNOSIS:  Fever.,PROCEDURES:  Bronchoalveolar lavage.,INDICATIONS FOR PROCEDURE:  The patient is a 28-year-old male, status post abdominal trauma, splenic laceration, and splenectomy performed at the outside hospital, who was admitted to the Trauma Intensive Care Unit on the evening of August 4, 2008.  Greater than 24 hours postoperative, the patient began to run a fever in excess of 102.  Therefore, evaluation of his airway for possible bacterial infection was performed using bronchoalveolar lavage.,DESCRIPTION OF PROCEDURE:  The patient was preoxygenated with 100% FIO2 for approximately 5 to 10 minutes prior to the procedure.  The correct patient and procedure was identified by time out by all members of the team.  The patient was prepped and draped in a sterile fashion and sterile technique was used to connect the BAL lavage catheter to Lukens trap suction.  A catheter was introduced into the endotracheal tube through a T connector and five successive 20 mL aliquots of normal saline were flushed through the catheter, each time suctioning out the sample into the Lukens trap.  A total volume of 30 to 40 mL was collected in the trap and sent to the lab for quantitative bacteriology.  The patient tolerated the procedure well and had no episodes of desaturation, apnea, or cardiac arrhythmia.  A postoperative chest x-ray was obtained.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Fever.,PROCEDURES:  Bronchoalveolar lavage.,INDICATIONS FOR PROCEDURE:  The patient is a 28-year-old male, status post abdominal trauma, splenic laceration, and splenectomy performed at the outside hospital, who was admitted to the Trauma Intensive Care Unit on the evening of August 4"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "Bronchoalveolar lavage.,INDICATIONS FOR PROCEDURE:  The patient is a 28-year-old male, status post abdominal trauma, splenic laceration, and splenectomy performed at the outside hospital, who was admitted to the Trauma Intensive Care Unit on the evening of August 4"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "The patient is a 28-year-old male, status post abdominal trauma, splenic laceration, and splenectomy performed at the outside hospital, who was admitted to the Trauma Intensive Care Unit on the evening of August 4"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Greater than 24 hours postoperative, the patient began to run a fever in excess of"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Greater than 24 hours postoperative, the patient began to run a fever in excess of"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Therefore, evaluation of his airway for possible bacterial infection was performed using bronchoalveolar lavage.,DESCRIPTION OF PROCEDURE:  The patient was preoxygenated with 100% FIO2 for approximately 5 to 10 minutes prior to the procedure.  The correct patient and procedure was identified by time out by all members of the team.  The patient was prepped and draped in a sterile fashion and sterile technique was used to connect the BAL lavage catheter to Lukens trap suction.  A catheter was introduced into the endotracheal tube through a T connector and five successive 20 mL aliquots of normal saline were flushed through the catheter, each time suctioning out the sample into the Lukens trap.  A total volume of 30 to 40 mL was collected in the trap and sent to the lab for quantitative bacteriology.  The patient tolerated the procedure well and had no episodes of desaturation, apnea, or cardiac arrhythmia.  A postoperative chest x-ray was obtained"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Therefore, evaluation of his airway for possible bacterial infection was performed using bronchoalveolar lavage.,DESCRIPTION OF PROCEDURE:  The patient was preoxygenated with 100% FIO2 for approximately 5 to 10 minutes prior to the procedure.  The correct patient and procedure was identified by time out by all members of the team.  The patient was prepped and draped in a sterile fashion and sterile technique was used to connect the BAL lavage catheter to Lukens trap suction.  A catheter was introduced into the endotracheal tube through a T connector and five successive 20 mL aliquots of normal saline were flushed through the catheter, each time suctioning out the sample into the Lukens trap.  A total volume of 30 to 40 mL was collected in the trap and sent to the lab for quantitative bacteriology.  The patient tolerated the procedure well and had no episodes of desaturation, apnea, or cardiac arrhythmia.  A postoperative chest x-ray was obtained"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "measurement",
+    "text": "20 mL"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "measurement",
+    "text": "40 mL"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] G8921: Chronic pain due to trauma (score: 0.2852)\n[ICD-10-CM 2027] G8911: Acute pain due to trauma (score: 0.2787)\n[ICD-10-CM 2027] O7189: Other specified obstetric trauma (score: 0.2689)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'Bronchoalveolar lavage.,INDICATIONS FOR PROCEDURE:  The patient is a 28-year-old male, status post abdominal trauma, splenic laceration, and splenectomy performed at the outside hospital, who was admitted to the Trauma Intensive Care Unit on the evening of August 4' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'The patient is a 28-year-old male, status post abdominal trauma, splenic laceration, and splenectomy performed at the outside hospital, who was admitted to the Trauma Intensive Care Unit on the evening of August 4' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] R509: Fever, unspecified (score: 0.3697)\n[ICD-10-CM 2027] S06896D: Other specified intracranial injury with loss of consciousness greater than 24 hours without return to pre-existing conscious level with patient surviving, subsequent encounter (score: 0.3461)\n[ICD-10-CM 2027] S069X6D: Unspecified intracranial injury with loss of consciousness greater than 24 hours without return to pre-existing conscious level with patient surviving, subsequent encounter (score: 0.3461)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Greater than 24 hours postoperative, the patient began to run a fever in excess of' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Y839: Surgical procedure, unspecified as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.3035)\n[ICD-10-CM 2027] Z5301: Procedure and treatment not carried out due to patient smoking (score: 0.2988)\n[ICD-10-CM 2027] Y849: Medical procedure, unspecified as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.2984)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Therefore, evaluation of his airway for possible bacterial infection was performed using bronchoalveolar lavage.,DESCRIPTION OF PROCEDURE:  The patient was preoxygenated with 100% FIO2 for approximately 5 to 10 minutes prior to the procedure.  The correct patient and procedure was identified by time out by all members of the team.  The patient was prepped and draped in a sterile fashion and sterile technique was used to connect the BAL lavage catheter to Lukens trap suction.  A catheter was introduced into the endotracheal tube through a T connector and five successive 20 mL aliquots of normal saline were flushed through the catheter, each time suctioning out the sample into the Lukens trap.  A total volume of 30 to 40 mL was collected in the trap and sent to the lab for quantitative bacteriology.  The patient tolerated the procedure well and had no episodes of desaturation, apnea, or cardiac arrhythmia.  A postoperative chest x-ray was obtained' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Measurement] 100.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Measurement] 20.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Measurement] 40.0ml \u2014 not associated with any medication"
+  }
+]

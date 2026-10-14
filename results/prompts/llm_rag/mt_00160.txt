@@ -1,0 +1,53 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+FINDINGS:,By dates the patient is 8 weeks, 2 days. Additional diagnosis noted: Hyperlipidemia.,There is a gestational sac within the endometrial cavity measuring 2.1cm consistent with 6 weeks 4 days. There is a fetal pole measuring 7mm consistent with 6 weeks 4 days. There was no fetal heart motion on Doppler or on color Doppler.,There is no fluid within the endometrial cavity.,There is a 2.8 x 1.2cm right adnexal cyst.,IMPRESSION:,Gestational sac with a fetal pole but no fetal heart motion consistent with fetal demise at 6 weeks 4 days. By dates the patient is 8 weeks, 2 days.,A preliminary report was called by the ultrasound technologist to the referring physician.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Hyperlipidemia.,There is a gestational sac within the endometrial cavity measuring 2.1cm consistent with 6 weeks 4 days. There is a fetal pole measuring 7mm consistent with 6 weeks 4 days. There was no fetal heart motion on Doppler or on color Doppler.,There is no fluid within the endometrial cavity.,There is a 2.8 x 1.2cm right adnexal cyst.,IMPRESSION:,Gestational sac with a fetal pole but no fetal heart motion consistent with fetal demise at 6 weeks 4 days. By dates the patient is 8 weeks"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Gestational sac with a fetal pole but no fetal heart motion consistent with fetal demise at 6 weeks 4 days. By dates the patient is 8 weeks"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "2 days.,A preliminary report was called by the ultrasound technologist to the referring physician"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] H5311: Day blindness (score: 0.3071)\n[ICD-10-CM 2027] Z3A00: Weeks of gestation of pregnancy not specified (score: 0.2458)\n[ICD-10-CM 2027] Z3A08: 8 weeks gestation of pregnancy (score: 0.2458)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] O35BXX1: Maternal care for other (suspected) fetal abnormality and damage, fetal cardiac anomalies, fetus 1 (score: 0.2781)\n[ICD-10-CM 2027] O35BXX2: Maternal care for other (suspected) fetal abnormality and damage, fetal cardiac anomalies, fetus 2 (score: 0.2781)\n[ICD-10-CM 2027] O35BXX3: Maternal care for other (suspected) fetal abnormality and damage, fetal cardiac anomalies, fetus 3 (score: 0.2781)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] H5311: Day blindness (score: 0.7939)\n[ICD-10-CM 2027] Z00111: Health examination for newborn 8 to 28 days old (score: 0.5882)\n[ICD-10-CM 2027] Z00110: Health examination for newborn under 8 days old (score: 0.5328)"
+  }
+]

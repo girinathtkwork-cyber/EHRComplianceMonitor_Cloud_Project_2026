@@ -1,0 +1,113 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PROCEDURE PERFORMED: , Bassini inguinal herniorrhaphy.,ANESTHESIA: , Local with MAC anesthesia.,PROCEDURE: , After informed consent was obtained, the patient was brought to the operative suite and placed supine on the operating table.  The patient was sedated and an adequate local anesthetic was administered using 1% lidocaine without epinephrine.  The patient was prepped and draped in the usual sterile manner.,A standard inguinal incision was made, and dissection was carried down to the external oblique aponeurosis using a combination of Metzenbaum scissors and Bovie electrocautery.  The external oblique aponeurosis was cleared of overlying adherent tissue, and the external ring was delineated.  The external oblique was then incised with a scalpel and this incision was carried out to the external ring using Metzenbaum scissors.  Care was taken not to injure the ilioinguinal nerve.  Having exposed the inguinal canal, the cord structures were separated from the canal using blunt dissection, and a Penrose drain was then used to retract the cord structures as needed.  Adherent cremasteric muscle was dissected free from the cord using Bovie electrocautery.,The cord was then explored using a combination of sharp and blunt dissection, and the sac was found anteromedially to the cord structures.  The sac was dissected free from the cord structures using a combination of blunt dissection and Bovie electrocautery.,Once preperitoneal fat was encountered, the dissection stopped and the sac was suture ligated at the level of the preperitoneal fat using a 2-0 silk suture ligature.  The sac was excised and sent to Pathology.  The stump was examined and no bleeding was noted.  The ends of the suture were then cut, and the stump retracted back into the abdomen.,The floor of the inguinal canal was then strengthened by suturing the shelving edge of Poupart's ligament to the conjoined tendon using a 2-0 Prolene, starting at the pubic tubercle and running towards the internal ring.  In this manner, an internal ring was created that admitted just the tip of my smallest finger.,The Penrose drain was removed.  The wound was then irrigated using sterile saline, and hemostasis was obtained using Bovie electrocautery.  The incision in the external oblique was approximated using a 2-0 Vicryl in a running fashion, thus reforming the external ring.  Marcaine 0.5% was injected 1 fingerbreadth anterior to the anterior and superior iliac spine and around the wound for postanesthetic pain control.  The skin incision was approximated with skin staples.  A dressing was then applied.  All surgical counts were reported as correct.,Having tolerated the procedure well, the patient was subsequently taken to the recovery room in good and stable condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "Bassini inguinal herniorrhaphy.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Local with MAC anesthesia.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "After informed consent was obtained, the patient was brought to the operative suite and placed supine on the operating table.  The patient was sedated and an adequate local anesthetic was administered using 1% lidocaine without epinephrine.  The patient was prepped and draped in the usual sterile manner.,A standard inguinal incision was made, and dissection was carried down to the external oblique aponeurosis using a combination of Metzenbaum scissors and Bovie electrocautery.  The external oblique aponeurosis was cleared of overlying adherent tissue, and the external ring was delineated.  The external oblique was then incised with a scalpel and this incision was carried out to the external ring using Metzenbaum scissors.  Care was taken not to injure the ilioinguinal nerve.  Having exposed the inguinal canal, the cord structures were separated from the canal using blunt dissection, and a Penrose drain was then used to retract the cord structures as needed.  Adherent cremasteric muscle was dissected free from the cord using Bovie electrocautery.,The cord was then explored using a combination of sharp and blunt dissection, and the sac was found anteromedially to the cord structures.  The sac was dissected free from the cord structures using a combination of blunt dissection and Bovie electrocautery.,Once preperitoneal fat was encountered, the dissection stopped and the sac was suture ligated at the level of the preperitoneal fat using a 2-0 silk suture ligature.  The sac was excised and sent to Pathology.  The stump was examined and no bleeding was noted.  The ends of the suture were then cut, and the stump retracted back into the abdomen.,The floor of the inguinal canal was then strengthened by suturing the shelving edge of Poupart's ligament to the conjoined tendon using a 2-0 Prolene, starting at the pubic tubercle and running towards the internal ring.  In this manner, an internal ring was created that admitted just the tip of my smallest finger.,The Penrose drain was removed.  The wound was then irrigated using sterile saline, and hemostasis was obtained using Bovie electrocautery.  The incision in the external oblique was approximated using a 2-0 Vicryl in a running fashion, thus reforming the external ring.  Marcaine 0.5% was injected 1 fingerbreadth anterior to the anterior and superior iliac spine and around the wound for postanesthetic pain control.  The skin incision was approximated with skin staples.  A dressing was then applied.  All surgical counts were reported as correct.,Having tolerated the procedure well, the patient was subsequently taken to the recovery room in good and stable condition"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Marcaine"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "0.5%"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'Bassini inguinal herniorrhaphy.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'Local with MAC anesthesia.,PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'After informed consent was obtained, the patient was brought to the operative suite and placed supine on the operating table.  The patient was sedated and an adequate local anesthetic was administered using 1% lidocaine without epinephrine.  The patient was prepped and draped in the usual sterile manner.,A standard inguinal incision was made, and dissection was carried down to the external oblique aponeurosis using a combination of Metzenbaum scissors and Bovie electrocautery.  The external oblique aponeurosis was cleared of overlying adherent tissue, and the external ring was delineated.  The external oblique was then incised with a scalpel and this incision was carried out to the external ring using Metzenbaum scissors.  Care was taken not to injure the ilioinguinal nerve.  Having exposed the inguinal canal, the cord structures were separated from the canal using blunt dissection, and a Penrose drain was then used to retract the cord structures as needed.  Adherent cremasteric muscle was dissected free from the cord using Bovie electrocautery.,The cord was then explored using a combination of sharp and blunt dissection, and the sac was found anteromedially to the cord structures.  The sac was dissected free from the cord structures using a combination of blunt dissection and Bovie electrocautery.,Once preperitoneal fat was encountered, the dissection stopped and the sac was suture ligated at the level of the preperitoneal fat using a 2-0 silk suture ligature.  The sac was excised and sent to Pathology.  The stump was examined and no bleeding was noted.  The ends of the suture were then cut, and the stump retracted back into the abdomen.,The floor of the inguinal canal was then strengthened by suturing the shelving edge of Poupart's ligament to the conjoined tendon using a 2-0 Prolene, starting at the pubic tubercle and running towards the internal ring.  In this manner, an internal ring was created that admitted just the tip of my smallest finger.,The Penrose drain was removed.  The wound was then irrigated using sterile saline, and hemostasis was obtained using Bovie electrocautery.  The incision in the external oblique was approximated using a 2-0 Vicryl in a running fashion, thus reforming the external ring.  Marcaine 0.5% was injected 1 fingerbreadth anterior to the anterior and superior iliac spine and around the wound for postanesthetic pain control.  The skin incision was approximated with skin staples.  A dressing was then applied.  All surgical counts were reported as correct.,Having tolerated the procedure well, the patient was subsequently taken to the recovery room in good and stable condition' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "Dose 1.0% associated with lidocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Marcaine' \u2192 RXCUI 1012397, canonical: Marcaine, match: exact\n[RxNorm] Ingredient: bupivacaine (RXCUI 1815)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bupivacaine hydrochloride 3.75 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; bupivacaine hydrochloride 2.5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; bupivacaine hydrochloride 5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; 30 ML bupivacaine hydrochloride 7.5 MG/ML / epinephrine 0.005 MG/ML Injection; bupivacaine hydrochloride 2.5 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "Dose 0.5% associated with Marcaine \u2014 dose 0.5% not among known product strengths"
+  }
+]

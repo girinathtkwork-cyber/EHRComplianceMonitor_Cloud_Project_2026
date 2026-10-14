@@ -1,0 +1,363 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES: , Bilateral cleft lip and bilateral cleft of the palate.,POSTOPERATIVE DIAGNOSES: , Bilateral cleft lip and bilateral cleft of the palate.,PROCEDURE PERFORMED: , Repair of bilateral cleft of the palate with vomer flaps.,ESTIMATED BLOOD LOSS: , 40 mL.,COMPLICATIONS: , None.,ANESTHESIA: , General endotracheal anesthesia.,CONDITION OF THE PATIENT AT THE END OF THE PROCEDURE:,  Stable, extubated, and transferred to the recovery room in stable condition.,INDICATIONS FOR PROCEDURE:  ,The patient is a 10-month-old baby with a history of a bilateral cleft of the lip and palate.  The patient has undergone cleft lip repair, and she is here today for her cleft palate operation.  We have discussed with the mother the nature of the procedure, risks, and benefits; the risks included but not limited to the risk of bleeding, infection, dehiscence, scarring, the need for future revision surgeries.  We will proceed with surgery.,DETAILS OF THE PROCEDURE:,  The patient was taken into the operating room, placed in the supine position, and general anesthetic was administered.  A prophylactic dose of antibiotics was given.  The patient proceeded to have bilateral PE tube placement by Dr. X, from Ear, Nose, and Throat Surgery.  After he was done with his procedure, the head of the bed was turned 90 degrees.  The patient was positioned with a shoulder roll and doughnut.  A Dingman retractor was placed.  The operative area was infiltrated with lidocaine with epinephrine 1:200,000, a total of 3 mL, and then, I proceeded with the prepping and draping.  The patient was prepped and draped.  I proceeded to do the palate repair.  The nature of the palate repair was done in the same way on the both sides.  I will describe one side.  The other side was done exactly in the same manner.  The 2 hemiuvulas are placed, holding from a single hook and infiltrated with lidocaine with epinephrine 1:200,000, triangle in the nasal mucosa was previously marked.  This triangle of nasal mucosa was removed and excised.  This was done on both uvulas.  Then, an incision was done at the level of the palatal cleft at the junction of the nasal and oral mucosa.  A 1-mm cuff of oral mucosa was used to be able to approximate the nasal mucosa better.  Once the incision was done up to the level of the hard palate, the muscle was dissected off the surrounding tissue, 2 mm from the nasal and the oral mucosa.  Then, I proceeded to place an incision at the alveolopalatal junction with the help of 15-blade.  The incision starts at the maxillary tuberosity posteriorly and comes anteriorly at the alveolopalatal junction through the full thickness of mucoperiosteal flap.  Then the flap was lifted up with the help of a freer, and then the remaining of the incision medially was completed.  Hemostasis was achieved with help of electrocautery and Surgicel.  The mucoperiosteal flap was retracted posteriorly with the help of a freer elevator.  The greater auricular foramen was exposed, and the pedicle skeletonized to allow medial retraction of the mucoperiosteal flap.  Then an osteotomy was done at the level of the greater auricular foramen to allow mobilization of the pedicle medially as well as a small incision was done in the periosteum around the pedicle.  The pedicle carefully dissected to allow better mobilization of the mucoperiosteal flap medially.  This procedure was done on both sides in the same manner, and then __________ dissection was done including dissection of the hard palate from the nasal mucosa, it was evident that the nasal mucosa would not reach medially to be placed together.  At this point, the decision was made to proceed with vomer flaps.  The flaps are __________ infiltrated the vomer with the help of lidocaine with epinephrine after an incision in the manner of an open book.  The incision was done with a 15C blade.  The vomer flaps were dissected, and the mucosa was moved laterally to approximate to the nasal mucosa of the hard palate.  This was approximated on both sides with 5-0 chromic running and interrupted stitches, and I proceeded to the remaining of the posterior aspect of the nasal mucosa with a 5-0 chromic and a 4-0 chromic.  Then 2 stitches of 4-0 Vicryl were applied to the soft palate in the Delaire manner through the full thickness of the mucosa and muscle on one side, on the other side, and then coming back on the mucosa to evert the edges of the soft palate.  The remaining part of the soft palate was placed together with 4-0 Vicryl and 4-0 chromic interrupted stitches.  The throat pack was removed.  The palate was cleaned.  The Dingman retractor was removed, and a single stitch after infiltration of lidocaine without epinephrine at the level of the midline of the tongue was applied with 2-0 silk to the dorsal aspect of the tongue and attached to the right cheek with a piece of Tegaderm.  The patient tolerated the procedure without complications.  BSS is applied to the eye after removing the Tegaderm.  I was present and participated in all aspects of the procedure.  The sponge, needle, and instrument count were completed at the end of the procedure.  The patient tolerated the procedure without complications and was transferred to the recovery room in a stable condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Bilateral cleft lip and bilateral cleft of the palate.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Bilateral cleft lip and bilateral cleft of the palate.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Repair of bilateral cleft of the palate with vomer flaps.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Repair of bilateral cleft of the palate with vomer flaps.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "40 mL.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "40 mL.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "measurement",
+    "text": "40 mL"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "None.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "None.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "General endotracheal anesthesia.,CONDITION OF THE PATIENT AT THE END OF THE PROCEDURE:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "General endotracheal anesthesia.,CONDITION OF THE PATIENT AT THE END OF THE PROCEDURE:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Stable, extubated, and transferred to the recovery room in stable condition.,INDICATIONS FOR PROCEDURE:  ,The patient is a 10-month-old baby with a history of a bilateral cleft of the lip and palate.  The patient has undergone cleft lip repair, and she is here today for her cleft palate operation.  We have discussed with the mother the nature of the procedure, risks, and benefits; the risks included but not limited to the risk of bleeding, infection, dehiscence, scarring, the need for future revision surgeries.  We will proceed with surgery.,DETAILS OF THE PROCEDURE:"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Stable, extubated, and transferred to the recovery room in stable condition.,INDICATIONS FOR PROCEDURE:  ,The patient is a 10-month-old baby with a history of a bilateral cleft of the lip and palate.  The patient has undergone cleft lip repair, and she is here today for her cleft palate operation.  We have discussed with the mother the nature of the procedure, risks, and benefits; the risks included but not limited to the risk of bleeding, infection, dehiscence, scarring, the need for future revision surgeries.  We will proceed with surgery.,DETAILS OF THE PROCEDURE:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "The patient was taken into the operating room, placed in the supine position, and general anesthetic was administered.  A prophylactic dose of antibiotics was given.  The patient proceeded to have bilateral PE tube placement by Dr. X, from Ear"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "The patient was taken into the operating room, placed in the supine position, and general anesthetic was administered.  A prophylactic dose of antibiotics was given.  The patient proceeded to have bilateral PE tube placement by Dr. X, from Ear"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Nose, and Throat Surgery.  After he was done with his procedure, the head of the bed was turned 90 degrees.  The patient was positioned with a shoulder roll and doughnut.  A Dingman retractor was placed.  The operative area was infiltrated with lidocaine with epinephrine 1:200,000, a total of 3 mL, and then"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "Nose, and Throat Surgery.  After he was done with his procedure, the head of the bed was turned 90 degrees.  The patient was positioned with a shoulder roll and doughnut.  A Dingman retractor was placed.  The operative area was infiltrated with lidocaine with epinephrine 1:200,000, a total of 3 mL, and then"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "dosage",
+    "text": "3 mL"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "I proceeded with the prepping and draping.  The patient was prepped and draped.  I proceeded to do the palate repair.  The nature of the palate repair was done in the same way on the both sides.  I will describe one side.  The other side was done exactly in the same manner.  The 2 hemiuvulas are placed, holding from a single hook and infiltrated with lidocaine with epinephrine 1:200,000, triangle in the nasal mucosa was previously marked.  This triangle of nasal mucosa was removed and excised.  This was done on both uvulas.  Then, an incision was done at the level of the palatal cleft at the junction of the nasal and oral mucosa.  A 1-mm cuff of oral mucosa was used to be able to approximate the nasal mucosa better.  Once the incision was done up to the level of the hard palate, the muscle was dissected off the surrounding tissue"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "procedure",
+    "text": "I proceeded with the prepping and draping.  The patient was prepped and draped.  I proceeded to do the palate repair.  The nature of the palate repair was done in the same way on the both sides.  I will describe one side.  The other side was done exactly in the same manner.  The 2 hemiuvulas are placed, holding from a single hook and infiltrated with lidocaine with epinephrine 1:200,000, triangle in the nasal mucosa was previously marked.  This triangle of nasal mucosa was removed and excised.  This was done on both uvulas.  Then, an incision was done at the level of the palatal cleft at the junction of the nasal and oral mucosa.  A 1-mm cuff of oral mucosa was used to be able to approximate the nasal mucosa better.  Once the incision was done up to the level of the hard palate, the muscle was dissected off the surrounding tissue"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "diagnosis",
+    "text": "2 mm from the nasal and the oral mucosa.  Then"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "procedure",
+    "text": "2 mm from the nasal and the oral mucosa.  Then"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "diagnosis",
+    "text": "I proceeded to place an incision at the alveolopalatal junction with the help of 15-blade.  The incision starts at the maxillary tuberosity posteriorly and comes anteriorly at the alveolopalatal junction through the full thickness of mucoperiosteal flap.  Then the flap was lifted up with the help of a freer, and then the remaining of the incision medially was completed.  Hemostasis was achieved with help of electrocautery and Surgicel.  The mucoperiosteal flap was retracted posteriorly with the help of a freer elevator.  The greater auricular foramen was exposed, and the pedicle skeletonized to allow medial retraction of the mucoperiosteal flap.  Then an osteotomy was done at the level of the greater auricular foramen to allow mobilization of the pedicle medially as well as a small incision was done in the periosteum around the pedicle.  The pedicle carefully dissected to allow better mobilization of the mucoperiosteal flap medially.  This procedure was done on both sides in the same manner, and then __________ dissection was done including dissection of the hard palate from the nasal mucosa, it was evident that the nasal mucosa would not reach medially to be placed together.  At this point, the decision was made to proceed with vomer flaps.  The flaps are __________ infiltrated the vomer with the help of lidocaine with epinephrine after an incision in the manner of an open book.  The incision was done with a 15C blade.  The vomer flaps were dissected, and the mucosa was moved laterally to approximate to the nasal mucosa of the hard palate.  This was approximated on both sides with 5-0 chromic running and interrupted stitches, and I proceeded to the remaining of the posterior aspect of the nasal mucosa with a 5-0 chromic and a 4-0 chromic.  Then 2 stitches of 4-0 Vicryl were applied to the soft palate in the Delaire manner through the full thickness of the mucosa and muscle on one side, on the other side, and then coming back on the mucosa to evert the edges of the soft palate.  The remaining part of the soft palate was placed together with 4-0 Vicryl and 4-0 chromic interrupted stitches.  The throat pack was removed.  The palate was cleaned.  The Dingman retractor was removed, and a single stitch after infiltration of lidocaine without epinephrine at the level of the midline of the tongue was applied with 2-0 silk to the dorsal aspect of the tongue and attached to the right cheek with a piece of Tegaderm.  The patient tolerated the procedure without complications.  BSS is applied to the eye after removing the Tegaderm.  I was present and participated in all aspects of the procedure.  The sponge, needle, and instrument count were completed at the end of the procedure.  The patient tolerated the procedure without complications and was transferred to the recovery room in a stable condition"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "procedure",
+    "text": "I proceeded to place an incision at the alveolopalatal junction with the help of 15-blade.  The incision starts at the maxillary tuberosity posteriorly and comes anteriorly at the alveolopalatal junction through the full thickness of mucoperiosteal flap.  Then the flap was lifted up with the help of a freer, and then the remaining of the incision medially was completed.  Hemostasis was achieved with help of electrocautery and Surgicel.  The mucoperiosteal flap was retracted posteriorly with the help of a freer elevator.  The greater auricular foramen was exposed, and the pedicle skeletonized to allow medial retraction of the mucoperiosteal flap.  Then an osteotomy was done at the level of the greater auricular foramen to allow mobilization of the pedicle medially as well as a small incision was done in the periosteum around the pedicle.  The pedicle carefully dissected to allow better mobilization of the mucoperiosteal flap medially.  This procedure was done on both sides in the same manner, and then __________ dissection was done including dissection of the hard palate from the nasal mucosa, it was evident that the nasal mucosa would not reach medially to be placed together.  At this point, the decision was made to proceed with vomer flaps.  The flaps are __________ infiltrated the vomer with the help of lidocaine with epinephrine after an incision in the manner of an open book.  The incision was done with a 15C blade.  The vomer flaps were dissected, and the mucosa was moved laterally to approximate to the nasal mucosa of the hard palate.  This was approximated on both sides with 5-0 chromic running and interrupted stitches, and I proceeded to the remaining of the posterior aspect of the nasal mucosa with a 5-0 chromic and a 4-0 chromic.  Then 2 stitches of 4-0 Vicryl were applied to the soft palate in the Delaire manner through the full thickness of the mucosa and muscle on one side, on the other side, and then coming back on the mucosa to evert the edges of the soft palate.  The remaining part of the soft palate was placed together with 4-0 Vicryl and 4-0 chromic interrupted stitches.  The throat pack was removed.  The palate was cleaned.  The Dingman retractor was removed, and a single stitch after infiltration of lidocaine without epinephrine at the level of the midline of the tongue was applied with 2-0 silk to the dorsal aspect of the tongue and attached to the right cheek with a piece of Tegaderm.  The patient tolerated the procedure without complications.  BSS is applied to the eye after removing the Tegaderm.  I was present and participated in all aspects of the procedure.  The sponge, needle, and instrument count were completed at the end of the procedure.  The patient tolerated the procedure without complications and was transferred to the recovery room in a stable condition"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] Q378: Unspecified cleft palate with bilateral cleft lip (score: 0.9808)\n[ICD-10-CM 2027] Q372: Cleft soft palate with bilateral cleft lip (score: 0.9324)\n[ICD-10-CM 2027] Q370: Cleft hard palate with bilateral cleft lip (score: 0.8973)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] Q378: Unspecified cleft palate with bilateral cleft lip (score: 0.9481)\n[ICD-10-CM 2027] Q372: Cleft soft palate with bilateral cleft lip (score: 0.9013)\n[ICD-10-CM 2027] Q370: Cleft hard palate with bilateral cleft lip (score: 0.8674)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] Q359: Cleft palate, unspecified (score: 0.6889)\n[ICD-10-CM 2027] Q378: Unspecified cleft palate with bilateral cleft lip (score: 0.6541)\n[ICD-10-CM 2027] Q355: Cleft hard palate with cleft soft palate (score: 0.6232)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Repair of bilateral cleft of the palate with vomer flaps.,ESTIMATED BLOOD LOSS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Y901: Blood alcohol level of 20-39 mg/100 ml (score: 0.5234)\n[ICD-10-CM 2027] Y902: Blood alcohol level of 40-59 mg/100 ml (score: 0.5234)\n[ICD-10-CM 2027] Y903: Blood alcohol level of 60-79 mg/100 ml (score: 0.5234)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] '40 mL.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Measurement] 40.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] T8859XD: Other complications of anesthesia, subsequent encounter (score: 0.4832)\n[ICD-10-CM 2027] T8859XA: Other complications of anesthesia, initial encounter (score: 0.4789)\n[ICD-10-CM 2027] T8859XS: Other complications of anesthesia, sequela (score: 0.4787)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'None.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] Y653: Endotracheal tube wrongly placed during anesthetic procedure (score: 0.3915)\n[ICD-10-CM 2027] T8853XD: Unintended awareness under general anesthesia during procedure, subsequent encounter (score: 0.3394)\n[ICD-10-CM 2027] T8853XA: Unintended awareness under general anesthesia during procedure, initial encounter (score: 0.3389)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'General endotracheal anesthesia.,CONDITION OF THE PATIENT AT THE END OF THE PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] Q378: Unspecified cleft palate with bilateral cleft lip (score: 0.5245)\n[ICD-10-CM 2027] Q372: Cleft soft palate with bilateral cleft lip (score: 0.4986)\n[ICD-10-CM 2027] Q379: Unspecified cleft palate with unilateral cleft lip (score: 0.4962)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'Stable, extubated, and transferred to the recovery room in stable condition.,INDICATIONS FOR PROCEDURE:  ,The patient is a 10-month-old baby with a history of a bilateral cleft of the lip and palate.  The patient has undergone cleft lip repair, and she is here today for her cleft palate operation.  We have discussed with the mother the nature of the procedure, risks, and benefits; the risks included but not limited to the risk of bleeding, infection, dehiscence, scarring, the need for future revision surgeries.  We will proceed with surgery.,DETAILS OF THE PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] Y92234: Operating room of hospital as the place of occurrence of the external cause (score: 0.3063)\n[ICD-10-CM 2027] Y92230: Patient room in hospital as the place of occurrence of the external cause (score: 0.2732)\n[ICD-10-CM 2027] T41206D: Underdosing of unspecified general anesthetics, subsequent encounter (score: 0.2440)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'The patient was taken into the operating room, placed in the supine position, and general anesthetic was administered.  A prophylactic dose of antibiotics was given.  The patient proceeded to have bilateral PE tube placement by Dr. X, from Ear' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] R041: Hemorrhage from throat (score: 0.2508)\n[ICD-10-CM 2027] S100XXD: Contusion of throat, subsequent encounter (score: 0.2489)\n[ICD-10-CM 2027] S100XXA: Contusion of throat, initial encounter (score: 0.2472)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'Nose, and Throat Surgery.  After he was done with his procedure, the head of the bed was turned 90 degrees.  The patient was positioned with a shoulder roll and doughnut.  A Dingman retractor was placed.  The operative area was infiltrated with lidocaine with epinephrine 1:200,000, a total of 3 mL, and then' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "Dose 3.0ml associated with epinephrine \u2014 dose 3.0ml not among known product strengths"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] K1370: Unspecified lesions of oral mucosa (score: 0.3887)\n[ICD-10-CM 2027] K1379: Other lesions of oral mucosa (score: 0.3887)\n[ICD-10-CM 2027] Y990: Civilian activity done for income or pay (score: 0.3105)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[Procedure] 'I proceeded with the prepping and draping.  The patient was prepped and draped.  I proceeded to do the palate repair.  The nature of the palate repair was done in the same way on the both sides.  I will describe one side.  The other side was done exactly in the same manner.  The 2 hemiuvulas are placed, holding from a single hook and infiltrated with lidocaine with epinephrine 1:200,000, triangle in the nasal mucosa was previously marked.  This triangle of nasal mucosa was removed and excised.  This was done on both uvulas.  Then, an incision was done at the level of the palatal cleft at the junction of the nasal and oral mucosa.  A 1-mm cuff of oral mucosa was used to be able to approximate the nasal mucosa better.  Once the incision was done up to the level of the hard palate, the muscle was dissected off the surrounding tissue' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[ICD-10-CM 2027] K1370: Unspecified lesions of oral mucosa (score: 0.7180)\n[ICD-10-CM 2027] K1379: Other lesions of oral mucosa (score: 0.7180)\n[ICD-10-CM 2027] K1321: Leukoplakia of oral mucosa, including tongue (score: 0.5070)"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[Procedure] '2 mm from the nasal and the oral mucosa.  Then' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[ICD-10-CM 2027] C060: Malignant neoplasm of cheek mucosa (score: 0.3033)\n[ICD-10-CM 2027] K1370: Unspecified lesions of oral mucosa (score: 0.2897)\n[ICD-10-CM 2027] K1379: Other lesions of oral mucosa (score: 0.2897)"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[Procedure] 'I proceeded to place an incision at the alveolopalatal junction with the help of 15-blade.  The incision starts at the maxillary tuberosity posteriorly and comes anteriorly at the alveolopalatal junction through the full thickness of mucoperiosteal flap.  Then the flap was lifted up with the help of a freer, and then the remaining of the incision medially was completed.  Hemostasis was achieved with help of electrocautery and Surgicel.  The mucoperiosteal flap was retracted posteriorly with the help of a freer elevator.  The greater auricular foramen was exposed, and the pedicle skeletonized to allow medial retraction of the mucoperiosteal flap.  Then an osteotomy was done at the level of the greater auricular foramen to allow mobilization of the pedicle medially as well as a small incision was done in the periosteum around the pedicle.  The pedicle carefully dissected to allow better mobilization of the mucoperiosteal flap medially.  This procedure was done on both sides in the same manner, and then __________ dissection was done including dissection of the hard palate from the nasal mucosa, it was evident that the nasal mucosa would not reach medially to be placed together.  At this point, the decision was made to proceed with vomer flaps.  The flaps are __________ infiltrated the vomer with the help of lidocaine with epinephrine after an incision in the manner of an open book.  The incision was done with a 15C blade.  The vomer flaps were dissected, and the mucosa was moved laterally to approximate to the nasal mucosa of the hard palate.  This was approximated on both sides with 5-0 chromic running and interrupted stitches, and I proceeded to the remaining of the posterior aspect of the nasal mucosa with a 5-0 chromic and a 4-0 chromic.  Then 2 stitches of 4-0 Vicryl were applied to the soft palate in the Delaire manner through the full thickness of the mucosa and muscle on one side, on the other side, and then coming back on the mucosa to evert the edges of the soft palate.  The remaining part of the soft palate was placed together with 4-0 Vicryl and 4-0 chromic interrupted stitches.  The throat pack was removed.  The palate was cleaned.  The Dingman retractor was removed, and a single stitch after infiltration of lidocaine without epinephrine at the level of the midline of the tongue was applied with 2-0 silk to the dorsal aspect of the tongue and attached to the right cheek with a piece of Tegaderm.  The patient tolerated the procedure without complications.  BSS is applied to the eye after removing the Tegaderm.  I was present and participated in all aspects of the procedure.  The sponge, needle, and instrument count were completed at the end of the procedure.  The patient tolerated the procedure without complications and was transferred to the recovery room in a stable condition' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F33",
+    "entity_id": "E33",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F34",
+    "entity_id": "E34",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  }
+]

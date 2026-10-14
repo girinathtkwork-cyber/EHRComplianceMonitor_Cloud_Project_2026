@@ -1,0 +1,303 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES: , Cholelithiasis, cholecystitis, and recurrent biliary colic.,POSTOPERATIVE DIAGNOSES: , Severe cholecystitis, cholelithiasis, choledocholithiasis, and morbid obesity.,PROCEDURES PERFORMED: , Laparoscopy, laparotomy, cholecystectomy with operative cholangiogram, choledocholithotomy with operative choledochoscopy and T-tube drainage of the common bile duct.,ANESTHESIA: , General.,INDICATIONS: , This is a 63-year-old white male patient with multiple medical problems including hypertension, diabetes, end-stage renal disease, coronary artery disease, and the patient is on hemodialysis, who has had recurrent episodes of epigastric right upper quadrant pain.  The patient was found to have cholelithiasis on last admission.  He was being worked up for this including cardiac clearance.  However, in the interim, he returned again with another episode of same pain.  The patient had a HIDA scan done yesterday, which shows nonvisualization of the gallbladder consistent with cystic duct obstruction.  Because of these, laparoscopic cholecystectomy was advised with cholangiogram.  Possibility of open laparotomy and open procedure was also explained to the patient.  The procedure, indications, risks, and alternatives were discussed with the patient in detail and informed consent was obtained.,DESCRIPTION OF PROCEDURE: , The patient was put in supine position on the operating table under satisfactory general anesthesia.  The entire abdomen was prepped and draped.  A small transverse incision was made about 2-1/2 inches above the umbilicus in the midline under local anesthesia.  The patient has a rather long torso.  Fascia was opened vertically and stay sutures were placed in the fascia.  Peritoneal cavity was carefully entered.  Hasson cannula was inserted into the peritoneal cavity and it was insufflated with CO2.  Laparoscopic camera was inserted and examination at this time showed difficult visualization with a part of omentum and hepatic flexure of the colon stuck in the subhepatic area.  The patient was placed in reverse Trendelenburg and rotated to the left.  An 11-mm trocar was placed in the subxiphoid space and two 5-mm in the right subcostal region.  Slowly, the dissection was carried out in the right subhepatic area.  Initially, I was able to dissect some of the omentum and hepatic flexure off the undersurface of the liver.  Then, some inflammatory changes were noted with some fatty necrosis type of changes and it was not quite clear whether this was part of the gallbladder or it was just pericholecystic infection/inflammation.  The visualization was extremely difficult because of the patient's obesity and a lot of fat intra-abdominally, although his abdominal wall is not that thick.  After evaluating this for a little while, we decided that there was no way that this could be done laparoscopically and proceeded with formal laparotomy.  The trocars were removed.,A right subcostal incision was made and peritoneal cavity was entered.  A Bookwalter retractor was put in place.  The dissection was then carried out on the undersurface of the liver.  Eventually, the gallbladder was identified, which was markedly scarred down and shrunk and appeared to have palpable stone in it.  Dissection was further carried down to what was felt to be the common bile duct, which appeared to be somewhat larger than normal about a centimeter in size.  The duodenum was kocherized.  The gallbladder was partly intrahepatic.  Because of this, I decided not to dig it out of the liver bed causing further bleeding and problem.  The inferior wall of the gallbladder was opened and two large stones, one was about 3 cm long and another one about 1.5 x 2 cm long, were taken out of the gallbladder.,It was difficult to tell where the cystic duct was.  Eventually after probing near the neck of the gallbladder, I did find the cystic duct, which was relatively very short.  Intraoperative cystic duct cholangiogram was done using C-arm fluoroscopy.  This showed a rounded density at the lower end of the bile duct consistent with the stone.  At this time, a decision was made to proceed with common duct exploration.  The common duct was opened between stay sutures of 4-0 Vicryl and immediately essentially clear bile came out.  After some pressing over the head of the pancreas through a kocherized maneuver, the stone did fall into the opening in the common bile duct.  So, it was about a 1-cm size stone, which was removed.  Following this, a 10-French red rubber catheter was passed into the common bile duct both proximally and distally and irrigated generously.  No further stones were obtained.  The catheter went easily into the duodenum through the ampulla of Vater.  At this point, a choledochoscope was inserted and proximally, I did not see any evidence of any common duct stones or proximally into the biliary tree.  However, a stone was found distally still floating around.  This was removed with stone forceps.  The bile ducts were irrigated again.  No further stones were removed.  A 16-French T-tube was then placed into the bile duct and the bile duct was repaired around the T-tube using 4-0 Vicryl interrupted sutures obtaining watertight closure.  A completion T-tube cholangiogram was done at this time, which showed slight narrowing and possibly a filling defect proximally below the confluence of the right and left hepatic duct, although externally, I was unable to see anything or palpate anything in this area.  Because of this, the T-tube was removed, and I passed the choledochoscope proximally again, and I was unable to see any evidence of any lesion or any stone in this area.  I felt at this time this was most likely an impression from the outside, which was still left over a gallbladder where the stone was stuck and it was impressing on the bile duct.  The bile duct lumen was widely open.  T-tube was again replaced into the bile duct and closed again and a completion T-tube cholangiogram appeared to be more satisfactory at this time.  The cystic duct opening through which I had done earlier a cystic duct cholangiogram, this was closed with a figure-of-eight suture of 2-0 Vicryl, and this was actually done earlier and completion cholangiogram did not show any leak from this area.,The remaining gallbladder bed, which was left in situ, was cauterized both for hemostasis and to burn off the mucosal lining.  Subhepatic and subdiaphragmatic spaces were irrigated with sterile saline solution.  Hemostasis was good.  A 10-mm Jackson-Pratt drain was left in the foramen of Winslow and brought out through the lateral 5-mm port site.  The T-tube was brought out through the middle 5-mm port site, which was just above the incision.  Abdominal incision was then closed in layers using 0 Vicryl running suture for the peritoneal layer and #1 Novafil running suture for the fascia.  Subcutaneous tissue was closed with 3-0 Vicryl running sutures in two layers.  Subfascial and subcutaneous tissues were injected with a total of 20 mL of 0.25% Marcaine with epinephrine for postoperative pain control.  The umbilical incision was closed with 0 Vicryl figure-of-eight sutures for the fascia, 2-0 Vicryl for the subcutaneous tissues, and staples for the skin.  Sterile dressing was applied, and the patient transferred to recovery room in stable condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Cholelithiasis, cholecystitis, and recurrent biliary colic.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Severe cholecystitis, cholelithiasis, choledocholithiasis, and morbid obesity.,PROCEDURES PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Laparoscopy, laparotomy, cholecystectomy with operative cholangiogram, choledocholithotomy with operative choledochoscopy and T-tube drainage of the common bile duct.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Laparoscopy, laparotomy, cholecystectomy with operative cholangiogram, choledocholithotomy with operative choledochoscopy and T-tube drainage of the common bile duct.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "General.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "General.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "This is a 63-year-old white male patient with multiple medical problems including hypertension, diabetes, end-stage renal disease, coronary artery disease, and the patient is on hemodialysis, who has had recurrent episodes of epigastric right upper quadrant pain.  The patient was found to have cholelithiasis on last admission.  He was being worked up for this including cardiac clearance.  However, in the interim, he returned again with another episode of same pain.  The patient had a HIDA scan done yesterday, which shows nonvisualization of the gallbladder consistent with cystic duct obstruction.  Because of these, laparoscopic cholecystectomy was advised with cholangiogram.  Possibility of open laparotomy and open procedure was also explained to the patient.  The procedure, indications, risks, and alternatives were discussed with the patient in detail and informed consent was obtained.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "This is a 63-year-old white male patient with multiple medical problems including hypertension, diabetes, end-stage renal disease, coronary artery disease, and the patient is on hemodialysis, who has had recurrent episodes of epigastric right upper quadrant pain.  The patient was found to have cholelithiasis on last admission.  He was being worked up for this including cardiac clearance.  However, in the interim, he returned again with another episode of same pain.  The patient had a HIDA scan done yesterday, which shows nonvisualization of the gallbladder consistent with cystic duct obstruction.  Because of these, laparoscopic cholecystectomy was advised with cholangiogram.  Possibility of open laparotomy and open procedure was also explained to the patient.  The procedure, indications, risks, and alternatives were discussed with the patient in detail and informed consent was obtained.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "was also explained to the patient.  The procedure, indications, risks, and alternatives were discussed with the patient in detail and informed consent was obtained.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "The patient was put in supine position on the operating table under satisfactory general anesthesia.  The entire abdomen was prepped and draped.  A small transverse incision was made about 2-1/2 inches above the umbilicus in the midline under local anesthesia.  The patient has a rather long torso.  Fascia was opened vertically and stay sutures were placed in the fascia.  Peritoneal cavity was carefully entered.  Hasson cannula was inserted into the peritoneal cavity and it was insufflated with CO2.  Laparoscopic camera was inserted and examination at this time showed difficult visualization with a part of omentum and hepatic flexure of the colon stuck in the subhepatic area.  The patient was placed in reverse Trendelenburg and rotated to the left.  An 11-mm trocar was placed in the subxiphoid space and two 5-mm in the right subcostal region.  Slowly, the dissection was carried out in the right subhepatic area.  Initially"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "The patient was put in supine position on the operating table under satisfactory general anesthesia.  The entire abdomen was prepped and draped.  A small transverse incision was made about 2-1/2 inches above the umbilicus in the midline under local anesthesia.  The patient has a rather long torso.  Fascia was opened vertically and stay sutures were placed in the fascia.  Peritoneal cavity was carefully entered.  Hasson cannula was inserted into the peritoneal cavity and it was insufflated with CO2.  Laparoscopic camera was inserted and examination at this time showed difficult visualization with a part of omentum and hepatic flexure of the colon stuck in the subhepatic area.  The patient was placed in reverse Trendelenburg and rotated to the left.  An 11-mm trocar was placed in the subxiphoid space and two 5-mm in the right subcostal region.  Slowly, the dissection was carried out in the right subhepatic area.  Initially"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "I was able to dissect some of the omentum and hepatic flexure off the undersurface of the liver.  Then, some inflammatory changes were noted with some fatty necrosis type of changes and it was not quite clear whether this was part of the gallbladder or it was just pericholecystic infection/inflammation.  The visualization was extremely difficult because of the patient's obesity and a lot of fat intra-abdominally, although his abdominal wall is not that thick.  After evaluating this for a little while, we decided that there was no way that this could be done laparoscopically and proceeded with formal laparotomy.  The trocars were removed.,A right subcostal incision was made and peritoneal cavity was entered.  A Bookwalter retractor was put in place.  The dissection was then carried out on the undersurface of the liver.  Eventually, the gallbladder was identified, which was markedly scarred down and shrunk and appeared to have palpable stone in it.  Dissection was further carried down to what was felt to be the common bile duct, which appeared to be somewhat larger than normal about a centimeter in size.  The duodenum was kocherized.  The gallbladder was partly intrahepatic.  Because of this"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "I was able to dissect some of the omentum and hepatic flexure off the undersurface of the liver.  Then, some inflammatory changes were noted with some fatty necrosis type of changes and it was not quite clear whether this was part of the gallbladder or it was just pericholecystic infection/inflammation.  The visualization was extremely difficult because of the patient's obesity and a lot of fat intra-abdominally, although his abdominal wall is not that thick.  After evaluating this for a little while, we decided that there was no way that this could be done laparoscopically and proceeded with formal laparotomy.  The trocars were removed.,A right subcostal incision was made and peritoneal cavity was entered.  A Bookwalter retractor was put in place.  The dissection was then carried out on the undersurface of the liver.  Eventually, the gallbladder was identified, which was markedly scarred down and shrunk and appeared to have palpable stone in it.  Dissection was further carried down to what was felt to be the common bile duct, which appeared to be somewhat larger than normal about a centimeter in size.  The duodenum was kocherized.  The gallbladder was partly intrahepatic.  Because of this"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "I decided not to dig it out of the liver bed causing further bleeding and problem.  The inferior wall of the gallbladder was opened and two large stones, one was about 3 cm long and another one about 1.5 x 2 cm long, were taken out of the gallbladder.,It was difficult to tell where the cystic duct was.  Eventually after probing near the neck of the gallbladder"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "I decided not to dig it out of the liver bed causing further bleeding and problem.  The inferior wall of the gallbladder was opened and two large stones, one was about 3 cm long and another one about 1.5 x 2 cm long, were taken out of the gallbladder.,It was difficult to tell where the cystic duct was.  Eventually after probing near the neck of the gallbladder"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "I did find the cystic duct, which was relatively very short.  Intraoperative cystic duct cholangiogram was done using C-arm fluoroscopy.  This showed a rounded density at the lower end of the bile duct consistent with the stone.  At this time, a decision was made to proceed with common duct exploration.  The common duct was opened between stay sutures of 4-0 Vicryl and immediately essentially clear bile came out.  After some pressing over the head of the pancreas through a kocherized maneuver, the stone did fall into the opening in the common bile duct.  So, it was about a 1-cm size stone, which was removed.  Following this, a 10-French red rubber catheter was passed into the common bile duct both proximally and distally and irrigated generously.  No further stones were obtained.  The catheter went easily into the duodenum through the ampulla of Vater.  At this point, a choledochoscope was inserted and proximally"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "I did find the cystic duct, which was relatively very short.  Intraoperative cystic duct cholangiogram was done using C-arm fluoroscopy.  This showed a rounded density at the lower end of the bile duct consistent with the stone.  At this time, a decision was made to proceed with common duct exploration.  The common duct was opened between stay sutures of 4-0 Vicryl and immediately essentially clear bile came out.  After some pressing over the head of the pancreas through a kocherized maneuver, the stone did fall into the opening in the common bile duct.  So, it was about a 1-cm size stone, which was removed.  Following this, a 10-French red rubber catheter was passed into the common bile duct both proximally and distally and irrigated generously.  No further stones were obtained.  The catheter went easily into the duodenum through the ampulla of Vater.  At this point, a choledochoscope was inserted and proximally"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "I did not see any evidence of any common duct stones or proximally into the biliary tree.  However, a stone was found distally still floating around.  This was removed with stone forceps.  The bile ducts were irrigated again.  No further stones were removed.  A 16-French T-tube was then placed into the bile duct and the bile duct was repaired around the T-tube using 4-0 Vicryl interrupted sutures obtaining watertight closure.  A completion T-tube cholangiogram was done at this time, which showed slight narrowing and possibly a filling defect proximally below the confluence of the right and left hepatic duct, although externally"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "I did not see any evidence of any common duct stones or proximally into the biliary tree.  However, a stone was found distally still floating around.  This was removed with stone forceps.  The bile ducts were irrigated again.  No further stones were removed.  A 16-French T-tube was then placed into the bile duct and the bile duct was repaired around the T-tube using 4-0 Vicryl interrupted sutures obtaining watertight closure.  A completion T-tube cholangiogram was done at this time, which showed slight narrowing and possibly a filling defect proximally below the confluence of the right and left hepatic duct, although externally"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "I was unable to see anything or palpate anything in this area.  Because of this, the T-tube was removed, and I passed the choledochoscope proximally again, and I was unable to see any evidence of any lesion or any stone in this area.  I felt at this time this was most likely an impression from the outside, which was still left over a gallbladder where the stone was stuck and it was impressing on the bile duct.  The bile duct lumen was widely open.  T-tube was again replaced into the bile duct and closed again and a completion T-tube cholangiogram appeared to be more satisfactory at this time.  The cystic duct opening through which I had done earlier a cystic duct cholangiogram, this was closed with a figure-of-eight suture of 2-0 Vicryl, and this was actually done earlier and completion cholangiogram did not show any leak from this area.,The remaining gallbladder bed, which was left in situ, was cauterized both for hemostasis and to burn off the mucosal lining.  Subhepatic and subdiaphragmatic spaces were irrigated with sterile saline solution.  Hemostasis was good.  A 10-mm Jackson-Pratt drain was left in the foramen of Winslow and brought out through the lateral 5-mm port site.  The T-tube was brought out through the middle 5-mm port site, which was just above the incision.  Abdominal incision was then closed in layers using 0 Vicryl running suture for the peritoneal layer and #1 Novafil running suture for the fascia.  Subcutaneous tissue was closed with 3-0 Vicryl running sutures in two layers.  Subfascial and subcutaneous tissues were injected with a total of 20 mL of 0.25% Marcaine with epinephrine for postoperative pain control.  The umbilical incision was closed with 0 Vicryl figure-of-eight sutures for the fascia"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "procedure",
+    "text": "I was unable to see anything or palpate anything in this area.  Because of this, the T-tube was removed, and I passed the choledochoscope proximally again, and I was unable to see any evidence of any lesion or any stone in this area.  I felt at this time this was most likely an impression from the outside, which was still left over a gallbladder where the stone was stuck and it was impressing on the bile duct.  The bile duct lumen was widely open.  T-tube was again replaced into the bile duct and closed again and a completion T-tube cholangiogram appeared to be more satisfactory at this time.  The cystic duct opening through which I had done earlier a cystic duct cholangiogram, this was closed with a figure-of-eight suture of 2-0 Vicryl, and this was actually done earlier and completion cholangiogram did not show any leak from this area.,The remaining gallbladder bed, which was left in situ, was cauterized both for hemostasis and to burn off the mucosal lining.  Subhepatic and subdiaphragmatic spaces were irrigated with sterile saline solution.  Hemostasis was good.  A 10-mm Jackson-Pratt drain was left in the foramen of Winslow and brought out through the lateral 5-mm port site.  The T-tube was brought out through the middle 5-mm port site, which was just above the incision.  Abdominal incision was then closed in layers using 0 Vicryl running suture for the peritoneal layer and #1 Novafil running suture for the fascia.  Subcutaneous tissue was closed with 3-0 Vicryl running sutures in two layers.  Subfascial and subcutaneous tissues were injected with a total of 20 mL of 0.25% Marcaine with epinephrine for postoperative pain control.  The umbilical incision was closed with 0 Vicryl figure-of-eight sutures for the fascia"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "from the outside, which was still left over a gallbladder where the stone was stuck and it was impressing on the bile duct.  The bile duct lumen was widely open.  T-tube was again replaced into the bile duct and closed again and a completion T-tube cholangiogram appeared to be more satisfactory at this time.  The cystic duct opening through which I had done earlier a cystic duct cholangiogram, this was closed with a figure-of-eight suture of 2-0 Vicryl, and this was actually done earlier and completion cholangiogram did not show any leak from this area.,The remaining gallbladder bed, which was left in situ, was cauterized both for hemostasis and to burn off the mucosal lining.  Subhepatic and subdiaphragmatic spaces were irrigated with sterile saline solution.  Hemostasis was good.  A 10-mm Jackson-Pratt drain was left in the foramen of Winslow and brought out through the lateral 5-mm port site.  The T-tube was brought out through the middle 5-mm port site, which was just above the incision.  Abdominal incision was then closed in layers using 0 Vicryl running suture for the peritoneal layer and #1 Novafil running suture for the fascia.  Subcutaneous tissue was closed with 3-0 Vicryl running sutures in two layers.  Subfascial and subcutaneous tissues were injected with a total of 20 mL of 0.25% Marcaine with epinephrine for postoperative pain control.  The umbilical incision was closed with 0 Vicryl figure-of-eight sutures for the fascia"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "dosage",
+    "text": "20 mL"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "dosage",
+    "text": "0.25%"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "medication",
+    "text": "Marcaine with epinephrine"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "diagnosis",
+    "text": "2-0 Vicryl for the subcutaneous tissues, and staples for the skin.  Sterile dressing was applied, and the patient transferred to recovery room in stable condition"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "procedure",
+    "text": "2-0 Vicryl for the subcutaneous tissues, and staples for the skin.  Sterile dressing was applied, and the patient transferred to recovery room in stable condition"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] R1083: Colic (score: 0.5420)\n[ICD-10-CM 2027] N23: Unspecified renal colic (score: 0.4723)\n[ICD-10-CM 2027] K8080: Other cholelithiasis without obstruction (score: 0.4459)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] E662: Morbid (severe) obesity with alveolar hypoventilation (score: 0.5269)\n[ICD-10-CM 2027] E6601: Morbid (severe) obesity due to excess calories (score: 0.5134)\n[ICD-10-CM 2027] K8080: Other cholelithiasis without obstruction (score: 0.4067)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] S3613XD: Injury of bile duct, subsequent encounter (score: 0.4267)\n[ICD-10-CM 2027] S3613XA: Injury of bile duct, initial encounter (score: 0.4244)\n[ICD-10-CM 2027] S3613XS: Injury of bile duct, sequela (score: 0.4243)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Laparoscopy, laparotomy, cholecystectomy with operative cholangiogram, choledocholithotomy with operative choledochoscopy and T-tube drainage of the common bile duct.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] O82: Encounter for cesarean delivery without indication (score: 0.6234)\n[ICD-10-CM 2027] Z008: Encounter for other general examination (score: 0.3824)\n[ICD-10-CM 2027] T41206D: Underdosing of unspecified general anesthetics, subsequent encounter (score: 0.3462)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'General.,INDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.3667)\n[ICD-10-CM 2027] Y849: Medical procedure, unspecified as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.2783)\n[ICD-10-CM 2027] Z5320: Procedure and treatment not carried out because of patient's decision for unspecified reasons (score: 0.2664)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'This is a 63-year-old white male patient with multiple medical problems including hypertension, diabetes, end-stage renal disease, coronary artery disease, and the patient is on hemodialysis, who has had recurrent episodes of epigastric right upper quadrant pain.  The patient was found to have cholelithiasis on last admission.  He was being worked up for this including cardiac clearance.  However, in the interim, he returned again with another episode of same pain.  The patient had a HIDA scan done yesterday, which shows nonvisualization of the gallbladder consistent with cystic duct obstruction.  Because of these, laparoscopic cholecystectomy was advised with cholangiogram.  Possibility of open laparotomy and open procedure was also explained to the patient.  The procedure, indications, risks, and alternatives were discussed with the patient in detail and informed consent was obtained.,DESCRIPTION OF PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'was also explained to the patient.  The procedure, indications, risks, and alternatives were discussed with the patient in detail and informed consent was obtained.,DESCRIPTION OF PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] Z03823: Encounter for observation for suspected inserted (injected) foreign body ruled out (score: 0.2094)\n[ICD-10-CM 2027] Z5301: Procedure and treatment not carried out due to patient smoking (score: 0.1954)\n[ICD-10-CM 2027] Z9284: Personal history of unintended awareness under general anesthesia (score: 0.1935)\n[ICD-10-CM 2027] Match unresolved (top score 0.2094 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'The patient was put in supine position on the operating table under satisfactory general anesthesia.  The entire abdomen was prepped and draped.  A small transverse incision was made about 2-1/2 inches above the umbilicus in the midline under local anesthesia.  The patient has a rather long torso.  Fascia was opened vertically and stay sutures were placed in the fascia.  Peritoneal cavity was carefully entered.  Hasson cannula was inserted into the peritoneal cavity and it was insufflated with CO2.  Laparoscopic camera was inserted and examination at this time showed difficult visualization with a part of omentum and hepatic flexure of the colon stuck in the subhepatic area.  The patient was placed in reverse Trendelenburg and rotated to the left.  An 11-mm trocar was placed in the subxiphoid space and two 5-mm in the right subcostal region.  Slowly, the dissection was carried out in the right subhepatic area.  Initially' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] D015: Carcinoma in situ of liver, gallbladder and bile ducts (score: 0.2555)\n[ICD-10-CM 2027] S36128D: Other injury of gallbladder, subsequent encounter (score: 0.2457)\n[ICD-10-CM 2027] S36129D: Unspecified injury of gallbladder, subsequent encounter (score: 0.2457)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'I was able to dissect some of the omentum and hepatic flexure off the undersurface of the liver.  Then, some inflammatory changes were noted with some fatty necrosis type of changes and it was not quite clear whether this was part of the gallbladder or it was just pericholecystic infection/inflammation.  The visualization was extremely difficult because of the patient's obesity and a lot of fat intra-abdominally, although his abdominal wall is not that thick.  After evaluating this for a little while, we decided that there was no way that this could be done laparoscopically and proceeded with formal laparotomy.  The trocars were removed.,A right subcostal incision was made and peritoneal cavity was entered.  A Bookwalter retractor was put in place.  The dissection was then carried out on the undersurface of the liver.  Eventually, the gallbladder was identified, which was markedly scarred down and shrunk and appeared to have palpable stone in it.  Dissection was further carried down to what was felt to be the common bile duct, which appeared to be somewhat larger than normal about a centimeter in size.  The duodenum was kocherized.  The gallbladder was partly intrahepatic.  Because of this' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] S36128D: Other injury of gallbladder, subsequent encounter (score: 0.4456)\n[ICD-10-CM 2027] S36129D: Unspecified injury of gallbladder, subsequent encounter (score: 0.4456)\n[ICD-10-CM 2027] S36128A: Other injury of gallbladder, initial encounter (score: 0.4415)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'I decided not to dig it out of the liver bed causing further bleeding and problem.  The inferior wall of the gallbladder was opened and two large stones, one was about 3 cm long and another one about 1.5 x 2 cm long, were taken out of the gallbladder.,It was difficult to tell where the cystic duct was.  Eventually after probing near the neck of the gallbladder' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] S3613XD: Injury of bile duct, subsequent encounter (score: 0.5556)\n[ICD-10-CM 2027] S3613XA: Injury of bile duct, initial encounter (score: 0.5526)\n[ICD-10-CM 2027] S3613XS: Injury of bile duct, sequela (score: 0.5525)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Procedure] 'I did find the cystic duct, which was relatively very short.  Intraoperative cystic duct cholangiogram was done using C-arm fluoroscopy.  This showed a rounded density at the lower end of the bile duct consistent with the stone.  At this time, a decision was made to proceed with common duct exploration.  The common duct was opened between stay sutures of 4-0 Vicryl and immediately essentially clear bile came out.  After some pressing over the head of the pancreas through a kocherized maneuver, the stone did fall into the opening in the common bile duct.  So, it was about a 1-cm size stone, which was removed.  Following this, a 10-French red rubber catheter was passed into the common bile duct both proximally and distally and irrigated generously.  No further stones were obtained.  The catheter went easily into the duodenum through the ampulla of Vater.  At this point, a choledochoscope was inserted and proximally' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] S3613XD: Injury of bile duct, subsequent encounter (score: 0.5265)\n[ICD-10-CM 2027] S3613XA: Injury of bile duct, initial encounter (score: 0.5236)\n[ICD-10-CM 2027] S3613XS: Injury of bile duct, sequela (score: 0.5235)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Procedure] 'I did not see any evidence of any common duct stones or proximally into the biliary tree.  However, a stone was found distally still floating around.  This was removed with stone forceps.  The bile ducts were irrigated again.  No further stones were removed.  A 16-French T-tube was then placed into the bile duct and the bile duct was repaired around the T-tube using 4-0 Vicryl interrupted sutures obtaining watertight closure.  A completion T-tube cholangiogram was done at this time, which showed slight narrowing and possibly a filling defect proximally below the confluence of the right and left hepatic duct, although externally' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] S3613XD: Injury of bile duct, subsequent encounter (score: 0.3378)\n[ICD-10-CM 2027] S3613XA: Injury of bile duct, initial encounter (score: 0.3360)\n[ICD-10-CM 2027] S3613XS: Injury of bile duct, sequela (score: 0.3359)"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[Procedure] 'I was unable to see anything or palpate anything in this area.  Because of this, the T-tube was removed, and I passed the choledochoscope proximally again, and I was unable to see any evidence of any lesion or any stone in this area.  I felt at this time this was most likely an impression from the outside, which was still left over a gallbladder where the stone was stuck and it was impressing on the bile duct.  The bile duct lumen was widely open.  T-tube was again replaced into the bile duct and closed again and a completion T-tube cholangiogram appeared to be more satisfactory at this time.  The cystic duct opening through which I had done earlier a cystic duct cholangiogram, this was closed with a figure-of-eight suture of 2-0 Vicryl, and this was actually done earlier and completion cholangiogram did not show any leak from this area.,The remaining gallbladder bed, which was left in situ, was cauterized both for hemostasis and to burn off the mucosal lining.  Subhepatic and subdiaphragmatic spaces were irrigated with sterile saline solution.  Hemostasis was good.  A 10-mm Jackson-Pratt drain was left in the foramen of Winslow and brought out through the lateral 5-mm port site.  The T-tube was brought out through the middle 5-mm port site, which was just above the incision.  Abdominal incision was then closed in layers using 0 Vicryl running suture for the peritoneal layer and #1 Novafil running suture for the fascia.  Subcutaneous tissue was closed with 3-0 Vicryl running sutures in two layers.  Subfascial and subcutaneous tissues were injected with a total of 20 mL of 0.25% Marcaine with epinephrine for postoperative pain control.  The umbilical incision was closed with 0 Vicryl figure-of-eight sutures for the fascia' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] S3613XD: Injury of bile duct, subsequent encounter (score: 0.3823)\n[ICD-10-CM 2027] S3613XA: Injury of bile duct, initial encounter (score: 0.3802)\n[ICD-10-CM 2027] S3613XS: Injury of bile duct, sequela (score: 0.3801)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "Dose 20.0ml associated with Marcaine with epinephrine"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "Dose 0.25% associated with Marcaine with epinephrine \u2014 dose 0.25% not among known product strengths"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[RxNorm] 'Marcaine with epinephrine' \u2192 RXCUI 1372694, canonical: Marcaine with Epinephrine, match: exact\n[RxNorm] Ingredient: bupivacaine (RXCUI 1815)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bupivacaine hydrochloride 3.75 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; bupivacaine hydrochloride 2.5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; bupivacaine hydrochloride 5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; 30 ML bupivacaine hydrochloride 7.5 MG/ML / epinephrine 0.005 MG/ML Injection; bupivacaine hydrochloride 2.5 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[ICD-10-CM 2027] L988: Other specified disorders of the skin and subcutaneous tissue (score: 0.2967)\n[ICD-10-CM 2027] L989: Disorder of the skin and subcutaneous tissue, unspecified (score: 0.2967)\n[ICD-10-CM 2027] Y92230: Patient room in hospital as the place of occurrence of the external cause (score: 0.2912)"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[Procedure] '2-0 Vicryl for the subcutaneous tissues, and staples for the skin.  Sterile dressing was applied, and the patient transferred to recovery room in stable condition' \u2014 extracted from header, not verified against any coding system"
+  }
+]

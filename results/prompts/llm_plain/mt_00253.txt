@@ -1,0 +1,52 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES: , Nonhealing decubitus ulcer, left ischial region? Osteomyelitis, paraplegia, and history of spina bifida.,POSTOPERATIVE DIAGNOSES: , Nonhealing decubitus ulcer, left ischial region? Osteomyelitis, paraplegia, and history of spina bifida.,PROCEDURE PERFORMED:  ,Debridement left ischial ulcer.,ANESTHESIA: ,Local MAC.,INDICATIONS:,  This is a 27-year-old white male patient, with a history of spina bifida who underwent spinal surgery about two years ago and subsequently he has been paraplegic.  The patient has a nonhealing decubitus ulcer in the left ischial region, which is quite deep.  It appears to be right down to the bone.  MRI shows findings suggestive of osteomyelitis.  The patient is being brought to operating room for debridement of this ulcer.  Procedure, indication, and risks were explained to the patient.  Consent obtained.,PROCEDURE IN DETAIL: ,The patient was put in right lateral position and left buttock and ischial region was prepped and draped.  Examination at this time showed fair amount of chronic granulation tissue and scarred tissue circumferentially as well as the base of this decubitus ulcer.  This was sharply excised until bleeding and healthy tissue was obtained circumferentially as well as the base.  The ulcer does not appear to be going into the bone itself as there was a covering on the bone, which appears to be quite healthy, normal and bone itself appeared solid.,I did not rongeur the bone.  The deeper portion of the excised tissue was also sent for tissue cultures.  Hemostasis was achieved with cautery and the wound was irrigated with sterile saline solution and then packed with medicated Kerlix.  Sterile dressing was applied.  The patient transferred to recovery room in stable condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Nonhealing decubitus ulcer, left ischial region? Osteomyelitis, paraplegia, and history of spina bifida.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Nonhealing decubitus ulcer, left ischial region? Osteomyelitis, paraplegia, and history of spina bifida.,PROCEDURE PERFORMED:  ,Debridement left ischial ulcer.,ANESTHESIA: ,Local MAC.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:  ,Debridement left ischial ulcer.,ANESTHESIA: ,Local MAC.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Debridement left ischial ulcer.,ANESTHESIA: ,Local MAC.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "This is a 27-year-old white male patient, with a history of spina bifida who underwent spinal surgery about two years ago and subsequently he has been paraplegic.  The patient has a nonhealing decubitus ulcer in the left ischial region, which is quite deep.  It appears to be right down to the bone.  MRI shows findings suggestive of osteomyelitis.  The patient is being brought to operating room for debridement of this ulcer.  Procedure, indication, and risks were explained to the patient.  Consent obtained.,PROCEDURE IN DETAIL: ,The patient was put in right lateral position and left buttock and ischial region was prepped and draped.  Examination at this time showed fair amount of chronic granulation tissue and scarred tissue circumferentially as well as the base of this decubitus ulcer.  This was sharply excised until bleeding and healthy tissue was obtained circumferentially as well as the base.  The ulcer does not appear to be going into the bone itself as there was a covering on the bone, which appears to be quite healthy, normal and bone itself appeared solid.,I did not rongeur the bone.  The deeper portion of the excised tissue was also sent for tissue cultures.  Hemostasis was achieved with cautery and the wound was irrigated with sterile saline solution and then packed with medicated Kerlix.  Sterile dressing was applied.  The patient transferred to recovery room in stable condition"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "This is a 27-year-old white male patient, with a history of spina bifida who underwent spinal surgery about two years ago and subsequently he has been paraplegic.  The patient has a nonhealing decubitus ulcer in the left ischial region, which is quite deep.  It appears to be right down to the bone.  MRI shows findings suggestive of osteomyelitis.  The patient is being brought to operating room for debridement of this ulcer.  Procedure, indication, and risks were explained to the patient.  Consent obtained.,PROCEDURE IN DETAIL: ,The patient was put in right lateral position and left buttock and ischial region was prepped and draped.  Examination at this time showed fair amount of chronic granulation tissue and scarred tissue circumferentially as well as the base of this decubitus ulcer.  This was sharply excised until bleeding and healthy tissue was obtained circumferentially as well as the base.  The ulcer does not appear to be going into the bone itself as there was a covering on the bone, which appears to be quite healthy, normal and bone itself appeared solid.,I did not rongeur the bone.  The deeper portion of the excised tissue was also sent for tissue cultures.  Hemostasis was achieved with cautery and the wound was irrigated with sterile saline solution and then packed with medicated Kerlix.  Sterile dressing was applied.  The patient transferred to recovery room in stable condition"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

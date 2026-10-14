@@ -1,0 +1,107 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PROCEDURE: , Bilateral L5, S1, S2, and S3 radiofrequency ablation.,INDICATION: , Sacroiliac joint pain.,INFORMED CONSENT: , The risks, benefits and alternatives of the procedure were discussed with the patient.  The patient was given opportunity to ask questions regarding the procedure, its indications and the associated risks.,The risk of the procedure discussed include infection, bleeding, allergic reaction, dural puncture, headache, nerve injuries, spinal cord injury, and cardiovascular and CNS side effects with possible of vascular entry of medications.  I also informed the patient of potential side effects or reactions to the medications potentially used during the procedure including sedatives, narcotics, nonionic contrast agents, anesthetics, and corticosteroids.,The patient was informed both verbally and in writing.  The patient understood the informed consent and desired to have the procedure performed.,PROCEDURE: , Oxygen saturation and vital signs were monitored continuously throughout the procedure.  The patient remained awake throughout the procedure in order to interact and give feedback.  The x-ray technician was supervised and instructed to operate the fluoroscopy machine.,The patient was placed in a prone position on the treatment table with a pillow under the chest and head rotated.  The skin over and surrounding the treatment area was cleaned with Betadine.  The area was covered with sterile drapes, leaving a small window opening for needle placement.  Fluoroscopy was used to identify the bony landmarks of the sacrum and the sacroiliac joints and the planned needle approach.  The skin, subcutaneous tissue, and muscle within the planned approach were anesthetized with 1% Lidocaine.,With fluoroscopy, a 20 gauge 10-mm bent Teflon coated needle was gently guided into the groove between the SAP and the sacrum for the dorsal ramus of L5 and the lateral border of the posterior sacral foramen, for the lateral branches of S1, S2, and S3.  Also, fluoroscopic views were used to ensure proper needle placement.,The following technique was used to confirm correct placement.  Motor stimulation was applied at 2 Hz with 1 millisecond duration.  No extremity movement was noted at less than 2 volts.  Following this, the needle trocar was removed and a syringe containing 1% lidocaine was attached.  At each level, after syringe aspiration with no blood return, 0.5 mL of 1% lidocaine was injected to anesthetize the lateral branch and the surrounding tissue.  After completion, a lesion was created at that level with a temperature of 80 degrees for 90 seconds.,All injected medications were preservative free.  Sterile technique was used throughout the procedure.,ADDITIONAL DETAILS:  ,None.,COMPLICATIONS: , None.,DISCUSSION: , Post-procedure vital signs and oximetry were stable.  The patient was discharged with instructions to ice the injection site as needed for 15-20 minutes as frequently as twice per hour for the next day and to avoid aggressive activities for 1 day.  The patient was told to resume all medications.  The patient was told to be in relative rest for 1 day but then could resume all normal activities.,The patient was instructed to seek immediate medical attention for shortness of breath, chest pain, fever, chills, increased pain, weakness, sensory or motor changes, or changes in bowel or bladder function.,Follow up appointment was made at PM&R Spine Clinic in approximately one to two weeks.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "Bilateral L5"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "S2, and S3 radiofrequency ablation.,INDICATION:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Sacroiliac joint pain.,INFORMED CONSENT:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "The risks, benefits and alternatives of the procedure were discussed with the patient.  The patient was given opportunity to ask questions regarding the procedure, its indications and the associated risks.,The risk of the procedure discussed include infection, bleeding, allergic reaction, dural puncture, headache, nerve injuries, spinal cord injury, and cardiovascular and CNS side effects with possible of vascular entry of medications.  I also informed the patient of potential side effects or reactions to the medications potentially used during the procedure including sedatives, narcotics, nonionic contrast agents, anesthetics, and corticosteroids.,The patient was informed both verbally and in writing.  The patient understood the informed consent and desired to have the procedure performed.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Oxygen saturation and vital signs were monitored continuously throughout the procedure.  The patient remained awake throughout the procedure in order to interact and give feedback.  The x-ray technician was supervised and instructed to operate the fluoroscopy machine.,The patient was placed in a prone position on the treatment table with a pillow under the chest and head rotated.  The skin over and surrounding the treatment area was cleaned with Betadine.  The area was covered with sterile drapes, leaving a small window opening for needle placement.  Fluoroscopy was used to identify the bony landmarks of the sacrum and the sacroiliac joints and the planned needle approach.  The skin, subcutaneous tissue, and muscle within the planned approach were anesthetized with 1% Lidocaine.,With fluoroscopy, a 20 gauge 10-mm bent Teflon coated needle was gently guided into the groove between the SAP and the sacrum for the dorsal ramus of L5 and the lateral border of the posterior sacral foramen, for the lateral branches of S1"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Betadine"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Lidocaine"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "S2, and S3.  Also, fluoroscopic views were used to ensure proper needle placement.,The following technique was used to confirm correct placement.  Motor stimulation was applied at 2 Hz with 1 millisecond duration.  No extremity movement was noted at less than 2 volts.  Following this, the needle trocar was removed and a syringe containing 1% lidocaine was attached.  At each level, after syringe aspiration with no blood return"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "0.5 mL of 1% lidocaine was injected to anesthetize the lateral branch and the surrounding tissue.  After completion, a lesion was created at that level with a temperature of 80 degrees for 90 seconds.,All injected medications were preservative free.  Sterile technique was used throughout the procedure.,ADDITIONAL DETAILS:  ,None.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "0.5 mL"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "None.,DISCUSSION:"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Post-procedure vital signs and oximetry were stable.  The patient was discharged with instructions to ice the injection site as needed for 15-20 minutes as frequently as twice per hour for the next day and to avoid aggressive activities for 1 day.  The patient was told to resume all medications.  The patient was told to be in relative rest for 1 day but then could resume all normal activities.,The patient was instructed to seek immediate medical attention for shortness of breath, chest pain, fever, chills, increased pain, weakness, sensory or motor changes, or changes in bowel or bladder function.,Follow up appointment was made at PM&R Spine Clinic in approximately one to two weeks"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

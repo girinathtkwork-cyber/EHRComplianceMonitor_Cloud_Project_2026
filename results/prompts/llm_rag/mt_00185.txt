@@ -1,0 +1,343 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+SUBJECTIVE:,  The patient is an 89-year-old lady.  She actually turns 90 later this month, seen today for a short-term followup.  Actually, the main reasons we are seeing her back so soon which are elevated blood pressure and her right arm symptoms are basically resolved.  Blood pressure is better even though she is not currently on the higher dose Mavik likely recommended.  She apparently did not feel well with the higher dose, so she just went back to her previous dose of 1 mg daily.  She thinks, she also has an element of office hypertension.  Also, since she is on Mavik plus verapamil, she could switch over to the combined drug Tarka.  However, when we gave her samples of that she thought they were too big for her to swallow.  Basically, she is just back on her previous blood pressure regimen.  However, her blood pressure seems to be better today.  Her daughter says that they do check it periodically and it is similar to today’s reading.  Her right arm symptoms are basically resolved and she attributed that to her muscle problem back in the right shoulder blade.  We did do a C-spine and right shoulder x-ray and those just mainly showed some degenerative changes and possibly some rotator cuff injury with the humeral head quite high up in the glenoid in the right shoulder, but this does not seem to cause her any problems.  She has some vague “stomach problems”, although apparently it is improved when she stopped Aleve and she does not have any more aches or pains off Aleve.  She takes Tylenol p.r.n., which seems to be enough for her.  She does not think she has any acid reflux symptoms or heartburn.  She does take Tums t.i.d. and also Mylanta at night.  She has had dentures for many, many years and just recently I guess in the last few months, although she was somewhat vague on this, she has had some sores in her mouth.  They do heal up, but then she will get another one.  She also thinks since she has been on the Lexapro, she has somewhat of a tremor of her basically whole body at least upper body including the torso and arms and had all of the daughters who I not noticed to speak of and it is certainly difficult to tell her today that she has much tremor.  They do think the Lexapro has helped to some extent.,ALLERGIES: , None.,MEDICATION: , Verapamil 240 mg a day, Mavik 1 mg a day, Lipitor 10 mg one and half daily, vitamins daily, Ocuvite daily, Tums t.i.d., Tylenol 2-3 daily p.r.n., and Mylanta at night.,REVIEW OF SYSTEMS:,  Mostly otherwise as above.,OBJECTIVE:,General:  She is a pleasant elderly lady.  She is in no acute distress, accompanied by daughter.,Vital signs:  Blood pressure:  128/82.  Pulse:  68.  Weight:  143 pounds.,HEENT:  No acute changes.  Atraumatic, normocephalic.  On mouth exam, she does have dentures.  She removed her upper denture.  I really do not see any sores at all.  Her mouth exam was unremarkable.,Neck:  No adenopathy, tenderness, JVD, bruits, or mass.,Lungs:  Clear.,Heart:  Regular rate and rhythm.,Extremities:  No significant edema.  Reasonable pulses.  No clubbing or cyanosis, may be just a minimal tremor in head and hands, but it is very subtle and hardly noticeable.  No other focal or neurological deficits grossly.,IMPRESSION:,1.  Hypertension, better reading today.,2.  Right arm symptoms, resolved.,3.  Depression probably somewhat improved with Lexapro and she will just continue that.  She only got up to the full dose 10 mg pill about a week ago and apparently some days does not need to take it.,4.  Perhaps a very subtle tremor.  I will just watch that.,5.  Osteoporosis.,6.  Osteoarthritis.,PLAN:,  I think I will just watch everything for now.  I would continue the Lexapro, we gave her more samples plus a prescription for the 20 mg that she can cut in half.  I offered to see her for again short-term followup.  However, they both preferred just to wait until the annual check up already set up for next April and they know they can call sooner.  She might get a flu shot here in the next few weeks.  Daughter mentioned here today that she thinks her mom is doing pretty well, especially given that she is turning 90 here later this month and I would tend to agree with that.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "measurement",
+    "text": "1 mg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "verapamil"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Aleve"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Aleve"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Tylenol"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Tums"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Lexapro"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Lexapro"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Verapamil"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "dosage",
+    "text": "240 mg"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "1 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Lipitor"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "Ocuvite"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "Tums"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "Tylenol"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "Hypertension, better reading today"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "Right arm symptoms, resolved"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "Depression probably somewhat improved with Lexapro and she will just continue that.  She only got up to the full dose 10 mg pill about a week ago and apparently some days does not need to take it"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "medication",
+    "text": "Lexapro"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "measurement",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "diagnosis",
+    "text": "Perhaps a very subtle tremor.  I will just watch that"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "diagnosis",
+    "text": "Osteoporosis"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "diagnosis",
+    "text": "Osteoarthritis.,PLAN:,  I think I will just watch everything for now.  I would continue the Lexapro, we gave her more samples plus a prescription for the 20 mg that she can cut in half.  I offered to see her for again short-term followup.  However, they both preferred just to wait until the annual check up already set up for next April and they know they can call sooner.  She might get a flu shot here in the next few weeks.  Daughter mentioned here today that she thinks her mom is doing pretty well, especially given that she is turning 90 here later this month and I would tend to agree with that"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "medication",
+    "text": "Lexapro"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "measurement",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "medication",
+    "text": "today"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Measurement] 1.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'verapamil' \u2192 RXCUI 11170, canonical: verapamil, match: exact\n[RxNorm] Ingredient: verapamil (RXCUI 11170)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML verapamil hydrochloride 2.5 MG/ML Injection; 4 ML verapamil hydrochloride 2.5 MG/ML Injection; 24 HR trandolapril 2 MG / verapamil hydrochloride 180 MG Extended Release Oral Capsule; 24 HR verapamil hydrochloride 100 MG Extended Release Oral Capsule; 24 HR verapamil hydrochloride 200 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Aleve' \u2192 RXCUI 215101, canonical: Aleve, match: exact\n[RxNorm] Ingredient: naproxen (RXCUI 7258)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): naproxen 250 MG Delayed Release Oral Tablet; naproxen sodium 220 MG Oral Capsule; 24 HR naproxen 375 MG Extended Release Oral Tablet; 24 HR naproxen 500 MG Extended Release Oral Tablet; 24 HR naproxen 750 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Aleve' \u2192 RXCUI 215101, canonical: Aleve, match: exact\n[RxNorm] Ingredient: naproxen (RXCUI 7258)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): naproxen 250 MG Delayed Release Oral Tablet; naproxen sodium 220 MG Oral Capsule; 24 HR naproxen 375 MG Extended Release Oral Tablet; 24 HR naproxen 500 MG Extended Release Oral Tablet; 24 HR naproxen 750 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Tylenol' \u2192 RXCUI 202433, canonical: Tylenol, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Tums' \u2192 RXCUI 220508, canonical: Tums, match: exact\n[RxNorm] Ingredient: calcium carbonate (RXCUI 1897)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): calcium carbonate 625 MG / ergocalciferol 125 UNT Oral Tablet; calcium carbonate 400 MG / cholecalciferol 133 UNT / magnesium oxide 167 MG Oral Tablet; calcium carbonate 1250 MG / cholecalciferol 100 UNT / vitamin K1 0.04 MG Chewable Tablet; calcium carbonate 250 MG / wheat dextrin 1000 MG Chewable Tablet; calcium carbonate 600 MG / ergocalciferol 200 UNT Oral Capsule"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Lexapro' \u2192 RXCUI 352741, canonical: Lexapro, match: exact\n[RxNorm] Ingredient: escitalopram (RXCUI 321988)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): escitalopram 15 MG Oral Capsule; escitalopram 10 MG Oral Tablet; escitalopram 5 MG Oral Tablet; escitalopram 20 MG Oral Tablet; escitalopram 1 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Lexapro' \u2192 RXCUI 352741, canonical: Lexapro, match: exact\n[RxNorm] Ingredient: escitalopram (RXCUI 321988)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): escitalopram 15 MG Oral Capsule; escitalopram 10 MG Oral Tablet; escitalopram 5 MG Oral Tablet; escitalopram 20 MG Oral Tablet; escitalopram 1 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Verapamil' \u2192 RXCUI 11170, canonical: verapamil, match: exact\n[RxNorm] Ingredient: verapamil (RXCUI 11170)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML verapamil hydrochloride 2.5 MG/ML Injection; 4 ML verapamil hydrochloride 2.5 MG/ML Injection; 24 HR trandolapril 2 MG / verapamil hydrochloride 180 MG Extended Release Oral Capsule; 24 HR verapamil hydrochloride 100 MG Extended Release Oral Capsule; 24 HR verapamil hydrochloride 200 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "Dose 240.0mg associated with Verapamil"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 1.0mg associated with Lipitor \u2014 dose 1.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Lipitor' \u2192 RXCUI 153165, canonical: Lipitor, match: exact\n[RxNorm] Ingredient: atorvastatin (RXCUI 83367)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): atorvastatin 20 MG / ezetimibe 10 MG Oral Tablet; atorvastatin 40 MG / ezetimibe 10 MG Oral Tablet; atorvastatin 80 MG / ezetimibe 10 MG Oral Tablet; atorvastatin 80 MG Oral Tablet; atorvastatin 4 MG/ML Oral Suspension"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "Dose 10.0mg associated with Lipitor"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'Ocuvite' \u2192 RXCUI 218860, canonical: Ocuvite, match: exact\n[RxNorm] Ingredient: vitamin E (RXCUI 11256)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): vitamin E 100 MG/ML Oral Suspension; 24 HR ascorbic acid 500 MG / biotin 0.15 MG / copper sulfate 3 MG / dl-alpha tocopheryl acetate 30 UNT / docusate sodium 50 MG / folic acid 1 MG / iron carbonyl 150 MG / vitamin B12 0.06 MG Extended Release Oral Tablet; ubidecarenone 20 MG/ML / vitamin E 0.2 UNT/ML Oral Solution; ascorbic acid 60 MG / beta carotene 5000 UNT / copper sulfate 40 MG / dl-alpha tocopheryl acetate 30 UNT / sodium selenite 0.04 MG / zinc oxide 40 MG Oral Tablet; ubidecarenone 6 MG/ML / vitamin E 3 UNT/ML Oral Solution"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'Tums' \u2192 RXCUI 220508, canonical: Tums, match: exact\n[RxNorm] Ingredient: calcium carbonate (RXCUI 1897)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): calcium carbonate 625 MG / ergocalciferol 125 UNT Oral Tablet; calcium carbonate 400 MG / cholecalciferol 133 UNT / magnesium oxide 167 MG Oral Tablet; calcium carbonate 1250 MG / cholecalciferol 100 UNT / vitamin K1 0.04 MG Chewable Tablet; calcium carbonate 250 MG / wheat dextrin 1000 MG Chewable Tablet; calcium carbonate 600 MG / ergocalciferol 200 UNT Oral Capsule"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'Tylenol' \u2192 RXCUI 202433, canonical: Tylenol, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] F810: Specific reading disorder (score: 0.6566)\n[ICD-10-CM 2027] R030: Elevated blood-pressure reading, without diagnosis of hypertension (score: 0.6240)\n[ICD-10-CM 2027] R031: Nonspecific low blood-pressure reading (score: 0.5144)"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] F4329: Adjustment disorder with other symptoms (score: 0.4160)\n[ICD-10-CM 2027] H26121: Partially resolved traumatic cataract, right eye (score: 0.3916)\n[ICD-10-CM 2027] N6459: Other signs and symptoms in breast (score: 0.3786)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] F32A: Depression, unspecified (score: 0.2925)\n[ICD-10-CM 2027] Z66: Do not resuscitate (score: 0.2415)\n[ICD-10-CM 2027] Z1331: Encounter for screening for depression (score: 0.2402)"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[RxNorm] 'Lexapro' \u2192 RXCUI 352741, canonical: Lexapro, match: exact\n[RxNorm] Ingredient: escitalopram (RXCUI 321988)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): escitalopram 15 MG Oral Capsule; escitalopram 10 MG Oral Tablet; escitalopram 5 MG Oral Tablet; escitalopram 20 MG Oral Tablet; escitalopram 1 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[Measurement] 10.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[ICD-10-CM 2027] R251: Tremor, unspecified (score: 0.6659)\n[ICD-10-CM 2027] G251: Drug-induced tremor (score: 0.5579)\n[ICD-10-CM 2027] G252: Other specified forms of tremor (score: 0.5450)"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[ICD-10-CM 2027] Z13820: Encounter for screening for osteoporosis (score: 0.6301)\n[ICD-10-CM 2027] M818: Other osteoporosis without current pathological fracture (score: 0.6243)\n[ICD-10-CM 2027] M80859S: Other osteoporosis with current pathological fracture, unspecified femur, sequela (score: 0.5735)"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[ICD-10-CM 2027] W361XXD: Explosion and rupture of aerosol can, subsequent encounter (score: 0.2951)\n[ICD-10-CM 2027] W361XXA: Explosion and rupture of aerosol can, initial encounter (score: 0.2945)\n[ICD-10-CM 2027] W361XXS: Explosion and rupture of aerosol can, sequela (score: 0.2944)"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[RxNorm] 'Lexapro' \u2192 RXCUI 352741, canonical: Lexapro, match: exact\n[RxNorm] Ingredient: escitalopram (RXCUI 321988)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): escitalopram 15 MG Oral Capsule; escitalopram 10 MG Oral Tablet; escitalopram 5 MG Oral Tablet; escitalopram 20 MG Oral Tablet; escitalopram 1 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[Measurement] 20.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  }
+]

@@ -1,0 +1,43 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT: , Right knee. ,HISTORY OF THE PRESENT ILLNESS: , The patient presents today for follow up of osteoarthritis Grade IV of the bilateral knees and flexion contracture, doing great.  Physical therapy is helping. The subjective pain is on the bilateral knees right worse than left.,Pain:  Localized to the bilateral knees right worse than left.,Quality:  There is no swelling, no redness, or warmth.  The pain is described as aching occasionally.  There is no burning. ,Duration:  Months.,Associated symptoms:  Includes stiffness and weakness.  There is no sleep loss and no instability.  ,Hip Pain:  None. ,Back pain: None. ,Radicular type pain:  None. ,Modifying factors: Includes weight bearing pain and pain with ambulation.  There is no sitting, and no night pain.  There is no pain with weather change.,VISCOSUPPLEMENTATION IN PAST:,  No Synvisc.,VAS PAIN SCORE: , 10 bilaterally.,WOMAC SCORE: , 8,A-1 WOMAC SCORE: , 0,See the enclosed WOMAC osteoarthritis index, which accompanies the patient's chart, for complete details of the patient's limitations to activities of daily living.  ,REVIEW OF SYSTEMS:,  No change.,Constitutional:  Good appetite and energy.  No fever.  No general complaints.,HEENT:  No headaches, no difficulty swallowing, no change in vision, no change in hearing.,CV - RESP:  No shortness of breath at rest or with exertion.  No paroxysmal nocturnal dyspnea, orthopnea, and without significant cough, hemoptysis, or sputum.  No chest pain on exertion.,GI:
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Synvisc"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Synvisc' \u2192 RXCUI 220144, canonical: Synvisc, match: exact\n[RxNorm] Ingredient: hylan G-F 20 (RXCUI 284637)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML hylan G-F 20 8 MG/ML Prefilled Syringe; 6 ML hylan G-F 20 8 MG/ML Prefilled Syringe"
+  }
+]

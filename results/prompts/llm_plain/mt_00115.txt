@@ -1,0 +1,21 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+FINDINGS:,Axial scans were performed from L1 to S2 and reformatted images were obtained in the sagittal and coronal planes.,Preliminary scout film demonstrates anterior end plate spondylosis at T11-12 and T12-L1.,L1-2: There is normal disc height, anterior end plate spondylosis, very minimal vacuum change with no posterior annular disc bulging or protrusion. Normal central canal, intervertebral neural foramina and facet joints (image #4).,L2-3: There is mild decreased disc height, anterior end plate spondylosis, circumferential disc protrusion measuring 4.6mm (AP) and right extraforaminal osteophyte disc complex. There is mild non-compressive right neural foraminal narrowing, minimal facet arthrosis, normal central canal and left neural foramen (image #13).,L3-4: There is normal disc height, anterior end plate spondylosis, and circumferential non-compressive annular disc bulging. The disc bulging flattens the ventral thecal sac and there is minimal non-compressive right neural foraminal narrowing, minimal to mild facet arthrosis with vacuum change on the right, normal central canal and left neural foramen (image #25).,L4-5:
+
+Entities:
+[]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

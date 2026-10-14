@@ -1,0 +1,463 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES,1.  Cervical spondylosis with myelopathy.,2.  Herniated cervical disk, C4-C5.,POSTOPERATIVE DIAGNOSES,1.  Cervical spondylosis with myelopathy.,2.  Herniated cervical disk, C4-C5.,OPERATIONS PERFORMED,1.  Anterior cervical discectomy and removal of herniated disk and osteophytes and decompression of spinal cord at C5-C6.,2.  Bilateral C6 nerve root decompression.,3.  Anterior cervical discectomy at C4-C5 with removal of herniated disk and osteophytes and decompression of spinal cord.,4.  Bilateral C5 nerve root decompression.,5.  Anterior cervical discectomy at C3-C4 with removal of herniated disk and osteophytes, and decompression of spinal cord.,6.  Bilateral C4 nerve root decompression.,7.  Harvesting of autologous bone from the vertebral bodies.,8.  Grafting of allograft bone for creation of arthrodesis.,9.  Creation of arthrodesis with allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C5-C6.,10.  Creation of additional arthrodesis using allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C4-C5.,11.  Creation of additional arthrodesis using allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C3-C4.,12.  Placement of anterior spinal instrumentation from C3 to C6 using a Synthes Small Stature Plate, using the operating microscope and microdissection technique.,INDICATIONS FOR PROCEDURE: , This 62-year-old man has severe cervical spondylosis with myelopathy and cord compression at C5-C6.  There was a herniated disk with cord compression and radiculopathy at C4-C5.  C3-C4 was the source of neck pain as documented by facet injections.,A detailed discussion ensued with the patient as to the pros and cons of the surgery by two levels versus three levels.  Because of the severe component of the neck pain that has been relieved with facet injections, we elected to proceed ahead with anterior cervical discectomy and fusion at C3-C4, C4-C5, and C5-C6.,I explained the nature of this procedure in great detail including all risks and alternatives.  He clearly understands and has no further questions and requests that I proceed.,PROCEDURE:  ,The patient was placed on the operating room table and was intubated taking great care to keep the neck in a neutral position.  The methylprednisolone spinal cord protocol was instituted with bolus and continuous infusion dosages.,The left side of the neck was carefully prepped and draped in the usual sterile manner.,A transverse incision was made in the neck crease.  Dissection was carried down through the platysma musculature and the anterior spine was exposed.  The medial borders of the longus colli muscle were dissected free from their attachments to the spine.  Caspar self-retaining pins were placed into the bodies of C3, C4, C5, and C6 and x-ray localization was obtained.  A needle was placed in what was revealed to be the disk space at C4-C5 and an x-ray confirmed proper localization.,Self-retaining retractors were then placed in the wound, taking great care to keep the blades of the retractors underneath the longus colli muscles.,First I removed the large amount of anterior overhanging osteophytes at C5-C6 and distracted the space.  The high-speed cutting bur was used to drill back the osteophytes towards the posterior lips of the vertebral bodies.,An incision was then made at C4-C5 and the annulus was incised and a discectomy was performed back to the posterior lips of the vertebral bodies.,The retractors were then adjusted and again discectomy was performed at C3-C4 back to the posterior lips of the vertebral bodies.  The operating microscope was then utilized.,Working under magnification, I started at C3-C4 and began to work my way down to the posterior longitudinal ligament.  The ligament was incised and the underlying dura was exposed.  I worked out laterally towards the takeoff of the C4 nerve root and widely decompressed the nerve root edge of the foramen.  There were a large number of veins overlying the nerve root which were oozing and rather than remove these and produce tremendous amount of bleeding, I left them intact.  However, I could to palpate the nerve root along the pedicle into the foramen and widely decompressed it on the right.  The microscope was angled to the left side where similar decompression was achieved.,The retractors were readjusted and attention was turned to C4-C5.  I worked down through bony osteophytes and identified the posterior longitudinal ligament.  The ligament was incised; and as I worked to the right of the midline, I encountered herniated disk material which was removed in a number of large pieces.  The C5 root was exposed and then widely decompressed until I was flush with the pedicle and into the foramen.  The root had a somewhat high takeoff but I worked to expose the axilla and widely decompressed it.  Again the microscope was angled to the left side where similar decompression was achieved.  Central decompression was achieved here where there was a moderate amount of spinal cord compression.  This was removed by undercutting with 1 and 2-mm Cloward punches.,Attention was then turned to the C5-C6 space.  Here there were large osteophytes projecting posteriorly against the cord.  I slowly and carefully used the high-speed cutting diamond bur to drill these and then used 1 to 2-mm Cloward punches to widely decompress the spinal cord.  This necessitated undercutting the bodies of both C5 and C6 extensively, but I was then able to achieve a good decompression of the cord.  I exposed the C6 root and widely decompressed it until I was flush with the pedicle and into the foramen on the right.  The microscope was angled to the left side where a similar decompression was achieved.,Attention was then turned to creation of the arthrodesis.  A high-speed Cornerstone bur was used to decorticate the bodies of C5-C6, C4-C5 and C3-C4 to create a posterior shelf to prevent backwards graft migration.  Bone dust during the drilling was harvested for later use.,Attention was turned to creation of the arthrodesis.  Using the various Synthes sizers, I selected a 7-mm lordotic graft at C5-C6 and an 8-mm lordotic graft at C4-C5 and a 9-mm lordotic graft at C3-C4.  Each graft was filled with autologous bone from the vertebral bodies and bone morphogenetic protein soaked sponge.  I decided to use BMP in this case because there were three levels of fusion and because this patient has a very heavy history of smoking and having just recently discontinued for two weeks.  The BMP sponge and the ____________ bone were then packed in the center of the allograft.,Under distraction, the graft was placed at C3-C4, C4-C5, and C5-C6 as described.  An x-ray was obtained which showed good graft placement with preservation of the cervical lordosis.,Attention was turned to the placement of anterior spinal instrumentation.  Various sizes of Synthes plates were selected until I decided that a 54-mm plate was appropriate.  The plate had to be somewhat contoured and bent inferiorly and the vertebral bodies had to be drilled so that the plates would sit flush.  The holes were drilled and the screws were placed.  Eight screws were placed with two screws at C3, two screws at C4, two screws at C5, and two screws at C6.  All eight screws had good purchase.  The locking screws were tightly applied.  An x-ray was obtained which showed good placement of the graft, plate, and screws.,Attention was turned to closure.  The wound was copiously irrigated with Bacitracin solution and meticulous hemostasis was obtained.  A medium Hemovac drain was placed in the anterior vertebral body space and brought out through a separate stab incision in the skin.  The wound was then carefully closed in layers.  Sterile dressings were applied, and the operation was terminated.,The patient tolerated the procedure well and left for the recovery room in excellent condition.  The sponge and needle counts were reported as correct.  There were no intraoperative complications.,Specimens were sent to Pathology consisting of disk material and bone and soft tissue.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Herniated cervical disk, C4-C5.,POSTOPERATIVE DIAGNOSES"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Cervical spondylosis with myelopathy"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Herniated cervical disk, C4-C5.,OPERATIONS PERFORMED"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "PERFORMED"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical discectomy and removal of herniated disk and osteophytes and decompression of spinal cord at C5-C6"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Anterior cervical discectomy and removal of herniated disk and osteophytes and decompression of spinal cord at C5-C6"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Bilateral C6 nerve root decompression"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Bilateral C6 nerve root decompression"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical discectomy at C4-C5 with removal of herniated disk and osteophytes and decompression of spinal cord"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Anterior cervical discectomy at C4-C5 with removal of herniated disk and osteophytes and decompression of spinal cord"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Bilateral C5 nerve root decompression"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Bilateral C5 nerve root decompression"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical discectomy at C3-C4 with removal of herniated disk and osteophytes, and decompression of spinal cord"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Anterior cervical discectomy at C3-C4 with removal of herniated disk and osteophytes, and decompression of spinal cord"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Bilateral C4 nerve root decompression"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "Bilateral C4 nerve root decompression"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Harvesting of autologous bone from the vertebral bodies"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "procedure",
+    "text": "Harvesting of autologous bone from the vertebral bodies"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Grafting of allograft bone for creation of arthrodesis"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "Grafting of allograft bone for creation of arthrodesis"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "Creation of arthrodesis with allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C5-C6"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "procedure",
+    "text": "Creation of arthrodesis with allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C5-C6"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "Creation of additional arthrodesis using allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C4-C5"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "procedure",
+    "text": "Creation of additional arthrodesis using allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C4-C5"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Creation of additional arthrodesis using allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C3-C4"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "procedure",
+    "text": "Creation of additional arthrodesis using allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C3-C4"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "diagnosis",
+    "text": "Placement of anterior spinal instrumentation from C3 to C6 using a Synthes Small Stature Plate, using the operating microscope and microdissection technique.,INDICATIONS FOR PROCEDURE: , This 62-year-old man has severe cervical spondylosis with myelopathy and cord compression at C5-C"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "procedure",
+    "text": "Placement of anterior spinal instrumentation from C3 to C6 using a Synthes Small Stature Plate, using the operating microscope and microdissection technique.,INDICATIONS FOR PROCEDURE: , This 62-year-old man has severe cervical spondylosis with myelopathy and cord compression at C5-C"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "procedure",
+    "text": "This 62-year-old man has severe cervical spondylosis with myelopathy and cord compression at C5-C"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "diagnosis",
+    "text": "There was a herniated disk with cord compression and radiculopathy at C4-C"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "procedure",
+    "text": "There was a herniated disk with cord compression and radiculopathy at C4-C"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "diagnosis",
+    "text": "C3-C4 was the source of neck pain as documented by facet injections.,A detailed discussion ensued with the patient as to the pros and cons of the surgery by two levels versus three levels.  Because of the severe component of the neck pain that has been relieved with facet injections, we elected to proceed ahead with anterior cervical discectomy and fusion at C3-C4, C4-C5, and C5-C6.,I explained the nature of this procedure in great detail including all risks and alternatives.  He clearly understands and has no further questions and requests that I proceed.,PROCEDURE:  ,The patient was placed on the operating room table and was intubated taking great care to keep the neck in a neutral position.  The methylprednisolone spinal cord protocol was instituted with bolus and continuous infusion dosages.,The left side of the neck was carefully prepped and draped in the usual sterile manner.,A transverse incision was made in the neck crease.  Dissection was carried down through the platysma musculature and the anterior spine was exposed.  The medial borders of the longus colli muscle were dissected free from their attachments to the spine.  Caspar self-retaining pins were placed into the bodies of C3, C4, C5, and C6 and x-ray localization was obtained.  A needle was placed in what was revealed to be the disk space at C4-C5 and an x-ray confirmed proper localization.,Self-retaining retractors were then placed in the wound, taking great care to keep the blades of the retractors underneath the longus colli muscles.,First I removed the large amount of anterior overhanging osteophytes at C5-C6 and distracted the space.  The high-speed cutting bur was used to drill back the osteophytes towards the posterior lips of the vertebral bodies.,An incision was then made at C4-C5 and the annulus was incised and a discectomy was performed back to the posterior lips of the vertebral bodies.,The retractors were then adjusted and again discectomy was performed at C3-C4 back to the posterior lips of the vertebral bodies.  The operating microscope was then utilized.,Working under magnification, I started at C3-C4 and began to work my way down to the posterior longitudinal ligament.  The ligament was incised and the underlying dura was exposed.  I worked out laterally towards the takeoff of the C4 nerve root and widely decompressed the nerve root edge of the foramen.  There were a large number of veins overlying the nerve root which were oozing and rather than remove these and produce tremendous amount of bleeding, I left them intact.  However, I could to palpate the nerve root along the pedicle into the foramen and widely decompressed it on the right.  The microscope was angled to the left side where similar decompression was achieved.,The retractors were readjusted and attention was turned to C4-C"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "procedure",
+    "text": "C3-C4 was the source of neck pain as documented by facet injections.,A detailed discussion ensued with the patient as to the pros and cons of the surgery by two levels versus three levels.  Because of the severe component of the neck pain that has been relieved with facet injections, we elected to proceed ahead with anterior cervical discectomy and fusion at C3-C4, C4-C5, and C5-C6.,I explained the nature of this procedure in great detail including all risks and alternatives.  He clearly understands and has no further questions and requests that I proceed.,PROCEDURE:  ,The patient was placed on the operating room table and was intubated taking great care to keep the neck in a neutral position.  The methylprednisolone spinal cord protocol was instituted with bolus and continuous infusion dosages.,The left side of the neck was carefully prepped and draped in the usual sterile manner.,A transverse incision was made in the neck crease.  Dissection was carried down through the platysma musculature and the anterior spine was exposed.  The medial borders of the longus colli muscle were dissected free from their attachments to the spine.  Caspar self-retaining pins were placed into the bodies of C3, C4, C5, and C6 and x-ray localization was obtained.  A needle was placed in what was revealed to be the disk space at C4-C5 and an x-ray confirmed proper localization.,Self-retaining retractors were then placed in the wound, taking great care to keep the blades of the retractors underneath the longus colli muscles.,First I removed the large amount of anterior overhanging osteophytes at C5-C6 and distracted the space.  The high-speed cutting bur was used to drill back the osteophytes towards the posterior lips of the vertebral bodies.,An incision was then made at C4-C5 and the annulus was incised and a discectomy was performed back to the posterior lips of the vertebral bodies.,The retractors were then adjusted and again discectomy was performed at C3-C4 back to the posterior lips of the vertebral bodies.  The operating microscope was then utilized.,Working under magnification, I started at C3-C4 and began to work my way down to the posterior longitudinal ligament.  The ligament was incised and the underlying dura was exposed.  I worked out laterally towards the takeoff of the C4 nerve root and widely decompressed the nerve root edge of the foramen.  There were a large number of veins overlying the nerve root which were oozing and rather than remove these and produce tremendous amount of bleeding, I left them intact.  However, I could to palpate the nerve root along the pedicle into the foramen and widely decompressed it on the right.  The microscope was angled to the left side where similar decompression was achieved.,The retractors were readjusted and attention was turned to C4-C"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "medication",
+    "text": "methylprednisolone"
+  },
+  {
+    "entity_id": "E35",
+    "entity_type": "medication",
+    "text": "my way"
+  },
+  {
+    "entity_id": "E36",
+    "entity_type": "diagnosis",
+    "text": "I worked down through bony osteophytes and identified the posterior longitudinal ligament.  The ligament was incised; and as I worked to the right of the midline, I encountered herniated disk material which was removed in a number of large pieces.  The C5 root was exposed and then widely decompressed until I was flush with the pedicle and into the foramen.  The root had a somewhat high takeoff but I worked to expose the axilla and widely decompressed it.  Again the microscope was angled to the left side where similar decompression was achieved.  Central decompression was achieved here where there was a moderate amount of spinal cord compression.  This was removed by undercutting with 1 and 2-mm Cloward punches.,Attention was then turned to the C5-C6 space.  Here there were large osteophytes projecting posteriorly against the cord.  I slowly and carefully used the high-speed cutting diamond bur to drill these and then used 1 to 2-mm Cloward punches to widely decompress the spinal cord.  This necessitated undercutting the bodies of both C5 and C6 extensively, but I was then able to achieve a good decompression of the cord.  I exposed the C6 root and widely decompressed it until I was flush with the pedicle and into the foramen on the right.  The microscope was angled to the left side where a similar decompression was achieved.,Attention was then turned to creation of the arthrodesis.  A high-speed Cornerstone bur was used to decorticate the bodies of C5-C6, C4-C5 and C3-C4 to create a posterior shelf to prevent backwards graft migration.  Bone dust during the drilling was harvested for later use.,Attention was turned to creation of the arthrodesis.  Using the various Synthes sizers, I selected a 7-mm lordotic graft at C5-C6 and an 8-mm lordotic graft at C4-C5 and a 9-mm lordotic graft at C3-C"
+  },
+  {
+    "entity_id": "E37",
+    "entity_type": "procedure",
+    "text": "I worked down through bony osteophytes and identified the posterior longitudinal ligament.  The ligament was incised; and as I worked to the right of the midline, I encountered herniated disk material which was removed in a number of large pieces.  The C5 root was exposed and then widely decompressed until I was flush with the pedicle and into the foramen.  The root had a somewhat high takeoff but I worked to expose the axilla and widely decompressed it.  Again the microscope was angled to the left side where similar decompression was achieved.  Central decompression was achieved here where there was a moderate amount of spinal cord compression.  This was removed by undercutting with 1 and 2-mm Cloward punches.,Attention was then turned to the C5-C6 space.  Here there were large osteophytes projecting posteriorly against the cord.  I slowly and carefully used the high-speed cutting diamond bur to drill these and then used 1 to 2-mm Cloward punches to widely decompress the spinal cord.  This necessitated undercutting the bodies of both C5 and C6 extensively, but I was then able to achieve a good decompression of the cord.  I exposed the C6 root and widely decompressed it until I was flush with the pedicle and into the foramen on the right.  The microscope was angled to the left side where a similar decompression was achieved.,Attention was then turned to creation of the arthrodesis.  A high-speed Cornerstone bur was used to decorticate the bodies of C5-C6, C4-C5 and C3-C4 to create a posterior shelf to prevent backwards graft migration.  Bone dust during the drilling was harvested for later use.,Attention was turned to creation of the arthrodesis.  Using the various Synthes sizers, I selected a 7-mm lordotic graft at C5-C6 and an 8-mm lordotic graft at C4-C5 and a 9-mm lordotic graft at C3-C"
+  },
+  {
+    "entity_id": "E38",
+    "entity_type": "medication",
+    "text": "diamond"
+  },
+  {
+    "entity_id": "E39",
+    "entity_type": "diagnosis",
+    "text": "Each graft was filled with autologous bone from the vertebral bodies and bone morphogenetic protein soaked sponge.  I decided to use BMP in this case because there were three levels of fusion and because this patient has a very heavy history of smoking and having just recently discontinued for two weeks.  The BMP sponge and the ____________ bone were then packed in the center of the allograft.,Under distraction, the graft was placed at C3-C4, C4-C5, and C5-C6 as described.  An x-ray was obtained which showed good graft placement with preservation of the cervical lordosis.,Attention was turned to the placement of anterior spinal instrumentation.  Various sizes of Synthes plates were selected until I decided that a 54-mm plate was appropriate.  The plate had to be somewhat contoured and bent inferiorly and the vertebral bodies had to be drilled so that the plates would sit flush.  The holes were drilled and the screws were placed.  Eight screws were placed with two screws at C3, two screws at C4, two screws at C5, and two screws at C"
+  },
+  {
+    "entity_id": "E40",
+    "entity_type": "procedure",
+    "text": "Each graft was filled with autologous bone from the vertebral bodies and bone morphogenetic protein soaked sponge.  I decided to use BMP in this case because there were three levels of fusion and because this patient has a very heavy history of smoking and having just recently discontinued for two weeks.  The BMP sponge and the ____________ bone were then packed in the center of the allograft.,Under distraction, the graft was placed at C3-C4, C4-C5, and C5-C6 as described.  An x-ray was obtained which showed good graft placement with preservation of the cervical lordosis.,Attention was turned to the placement of anterior spinal instrumentation.  Various sizes of Synthes plates were selected until I decided that a 54-mm plate was appropriate.  The plate had to be somewhat contoured and bent inferiorly and the vertebral bodies had to be drilled so that the plates would sit flush.  The holes were drilled and the screws were placed.  Eight screws were placed with two screws at C3, two screws at C4, two screws at C5, and two screws at C"
+  },
+  {
+    "entity_id": "E41",
+    "entity_type": "diagnosis",
+    "text": "All eight screws had good purchase.  The locking screws were tightly applied.  An x-ray was obtained which showed good placement of the graft, plate, and screws.,Attention was turned to closure.  The wound was copiously irrigated with Bacitracin solution and meticulous hemostasis was obtained.  A medium Hemovac drain was placed in the anterior vertebral body space and brought out through a separate stab incision in the skin.  The wound was then carefully closed in layers.  Sterile dressings were applied, and the operation was terminated.,The patient tolerated the procedure well and left for the recovery room in excellent condition.  The sponge and needle counts were reported as correct.  There were no intraoperative complications.,Specimens were sent to Pathology consisting of disk material and bone and soft tissue"
+  },
+  {
+    "entity_id": "E42",
+    "entity_type": "procedure",
+    "text": "All eight screws had good purchase.  The locking screws were tightly applied.  An x-ray was obtained which showed good placement of the graft, plate, and screws.,Attention was turned to closure.  The wound was copiously irrigated with Bacitracin solution and meticulous hemostasis was obtained.  A medium Hemovac drain was placed in the anterior vertebral body space and brought out through a separate stab incision in the skin.  The wound was then carefully closed in layers.  Sterile dressings were applied, and the operation was terminated.,The patient tolerated the procedure well and left for the recovery room in excellent condition.  The sponge and needle counts were reported as correct.  There were no intraoperative complications.,Specimens were sent to Pathology consisting of disk material and bone and soft tissue"
+  },
+  {
+    "entity_id": "E43",
+    "entity_type": "medication",
+    "text": "Bacitracin"
+  },
+  {
+    "entity_id": "E44",
+    "entity_type": "procedure",
+    "text": "was terminated.,The patient tolerated the procedure well and left for the recovery room in excellent condition.  The sponge and needle counts were reported as correct.  There were no intraoperative complications.,Specimens were sent to Pathology consisting of disk material and bone and soft tissue"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M5080: Other cervical disc disorders, unspecified cervical region (score: 0.7228)\n[ICD-10-CM 2027] M5090: Cervical disc disorder, unspecified, unspecified cervical region (score: 0.7228)\n[ICD-10-CM 2027] M5020: Other cervical disc displacement, unspecified cervical region (score: 0.6872)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] M4712: Other spondylosis with myelopathy, cervical region (score: 0.9337)\n[ICD-10-CM 2027] M4710: Other spondylosis with myelopathy, site unspecified (score: 0.8527)\n[ICD-10-CM 2027] M47812: Spondylosis without myelopathy or radiculopathy, cervical region (score: 0.8019)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] M5080: Other cervical disc disorders, unspecified cervical region (score: 0.4981)\n[ICD-10-CM 2027] M5090: Cervical disc disorder, unspecified, unspecified cervical region (score: 0.4981)\n[ICD-10-CM 2027] Y3790XD: Military operations, unspecified, subsequent encounter (score: 0.4939)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'PERFORMED' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] S14139D: Anterior cord syndrome at unspecified level of cervical spinal cord, subsequent encounter (score: 0.5345)\n[ICD-10-CM 2027] S14139A: Anterior cord syndrome at unspecified level of cervical spinal cord, initial encounter (score: 0.5330)\n[ICD-10-CM 2027] S14139S: Anterior cord syndrome at unspecified level of cervical spinal cord, sequela (score: 0.5330)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Anterior cervical discectomy and removal of herniated disk and osteophytes and decompression of spinal cord at C5-C6' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] S142XXD: Injury of nerve root of cervical spine, subsequent encounter (score: 0.4974)\n[ICD-10-CM 2027] S142XXA: Injury of nerve root of cervical spine, initial encounter (score: 0.4955)\n[ICD-10-CM 2027] S142XXS: Injury of nerve root of cervical spine, sequela (score: 0.4954)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Bilateral C6 nerve root decompression' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] S14139D: Anterior cord syndrome at unspecified level of cervical spinal cord, subsequent encounter (score: 0.5345)\n[ICD-10-CM 2027] S14139A: Anterior cord syndrome at unspecified level of cervical spinal cord, initial encounter (score: 0.5330)\n[ICD-10-CM 2027] S14139S: Anterior cord syndrome at unspecified level of cervical spinal cord, sequela (score: 0.5330)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'Anterior cervical discectomy at C4-C5 with removal of herniated disk and osteophytes and decompression of spinal cord' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] S142XXD: Injury of nerve root of cervical spine, subsequent encounter (score: 0.4974)\n[ICD-10-CM 2027] S142XXA: Injury of nerve root of cervical spine, initial encounter (score: 0.4955)\n[ICD-10-CM 2027] S142XXS: Injury of nerve root of cervical spine, sequela (score: 0.4954)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Bilateral C5 nerve root decompression' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] S14139D: Anterior cord syndrome at unspecified level of cervical spinal cord, subsequent encounter (score: 0.5345)\n[ICD-10-CM 2027] S14139A: Anterior cord syndrome at unspecified level of cervical spinal cord, initial encounter (score: 0.5330)\n[ICD-10-CM 2027] S14139S: Anterior cord syndrome at unspecified level of cervical spinal cord, sequela (score: 0.5330)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'Anterior cervical discectomy at C3-C4 with removal of herniated disk and osteophytes, and decompression of spinal cord' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] S142XXD: Injury of nerve root of cervical spine, subsequent encounter (score: 0.4974)\n[ICD-10-CM 2027] S142XXA: Injury of nerve root of cervical spine, initial encounter (score: 0.4955)\n[ICD-10-CM 2027] S142XXS: Injury of nerve root of cervical spine, sequela (score: 0.4954)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'Bilateral C4 nerve root decompression' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] Z5221: Bone donor, autologous (score: 0.5225)\n[ICD-10-CM 2027] S15109D: Unspecified injury of unspecified vertebral artery, subsequent encounter (score: 0.4826)\n[ICD-10-CM 2027] S15199D: Other specified injury of unspecified vertebral artery, subsequent encounter (score: 0.4826)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Procedure] 'Harvesting of autologous bone from the vertebral bodies' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] Z981: Arthrodesis status (score: 0.6467)\n[ICD-10-CM 2027] J4A8: Other chronic lung allograft dysfunction (score: 0.4226)\n[ICD-10-CM 2027] J4A9: Chronic lung allograft dysfunction, unspecified (score: 0.4226)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Procedure] 'Grafting of allograft bone for creation of arthrodesis' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] Z981: Arthrodesis status (score: 0.4185)\n[ICD-10-CM 2027] Z5221: Bone donor, autologous (score: 0.3695)\n[ICD-10-CM 2027] M899: Disorder of bone, unspecified (score: 0.3428)"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[Procedure] 'Creation of arthrodesis with allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C5-C6' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] Z981: Arthrodesis status (score: 0.3898)\n[ICD-10-CM 2027] Z5221: Bone donor, autologous (score: 0.3442)\n[ICD-10-CM 2027] M899: Disorder of bone, unspecified (score: 0.3193)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[Procedure] 'Creation of additional arthrodesis using allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C4-C5' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] Z981: Arthrodesis status (score: 0.3898)\n[ICD-10-CM 2027] Z5221: Bone donor, autologous (score: 0.3442)\n[ICD-10-CM 2027] M899: Disorder of bone, unspecified (score: 0.3193)"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[Procedure] 'Creation of additional arthrodesis using allograft bone and autologous bone from the vertebral bodies and bone morphogenetic protein at C3-C4' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[ICD-10-CM 2027] M4712: Other spondylosis with myelopathy, cervical region (score: 0.3219)\n[ICD-10-CM 2027] M4710: Other spondylosis with myelopathy, site unspecified (score: 0.2940)\n[ICD-10-CM 2027] S14131D: Anterior cord syndrome at C1 level of cervical spinal cord, subsequent encounter (score: 0.2929)"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[Procedure] 'Placement of anterior spinal instrumentation from C3 to C6 using a Synthes Small Stature Plate, using the operating microscope and microdissection technique.,INDICATIONS FOR PROCEDURE: , This 62-year-old man has severe cervical spondylosis with myelopathy and cord compression at C5-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[Procedure] 'This 62-year-old man has severe cervical spondylosis with myelopathy and cord compression at C5-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[ICD-10-CM 2027] G9520: Unspecified cord compression (score: 0.6430)\n[ICD-10-CM 2027] G9529: Other cord compression (score: 0.6430)\n[ICD-10-CM 2027] M50121: Cervical disc disorder at C4-C5 level with radiculopathy (score: 0.5984)"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[Procedure] 'There was a herniated disk with cord compression and radiculopathy at C4-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[ICD-10-CM 2027] S142XXD: Injury of nerve root of cervical spine, subsequent encounter (score: 0.2864)\n[ICD-10-CM 2027] S142XXA: Injury of nerve root of cervical spine, initial encounter (score: 0.2854)\n[ICD-10-CM 2027] S142XXS: Injury of nerve root of cervical spine, sequela (score: 0.2853)"
+  },
+  {
+    "fact_id": "F33",
+    "entity_id": "E33",
+    "text": "[Procedure] 'C3-C4 was the source of neck pain as documented by facet injections.,A detailed discussion ensued with the patient as to the pros and cons of the surgery by two levels versus three levels.  Because of the severe component of the neck pain that has been relieved with facet injections, we elected to proceed ahead with anterior cervical discectomy and fusion at C3-C4, C4-C5, and C5-C6.,I explained the nature of this procedure in great detail including all risks and alternatives.  He clearly understands and has no further questions and requests that I proceed.,PROCEDURE:  ,The patient was placed on the operating room table and was intubated taking great care to keep the neck in a neutral position.  The methylprednisolone spinal cord protocol was instituted with bolus and continuous infusion dosages.,The left side of the neck was carefully prepped and draped in the usual sterile manner.,A transverse incision was made in the neck crease.  Dissection was carried down through the platysma musculature and the anterior spine was exposed.  The medial borders of the longus colli muscle were dissected free from their attachments to the spine.  Caspar self-retaining pins were placed into the bodies of C3, C4, C5, and C6 and x-ray localization was obtained.  A needle was placed in what was revealed to be the disk space at C4-C5 and an x-ray confirmed proper localization.,Self-retaining retractors were then placed in the wound, taking great care to keep the blades of the retractors underneath the longus colli muscles.,First I removed the large amount of anterior overhanging osteophytes at C5-C6 and distracted the space.  The high-speed cutting bur was used to drill back the osteophytes towards the posterior lips of the vertebral bodies.,An incision was then made at C4-C5 and the annulus was incised and a discectomy was performed back to the posterior lips of the vertebral bodies.,The retractors were then adjusted and again discectomy was performed at C3-C4 back to the posterior lips of the vertebral bodies.  The operating microscope was then utilized.,Working under magnification, I started at C3-C4 and began to work my way down to the posterior longitudinal ligament.  The ligament was incised and the underlying dura was exposed.  I worked out laterally towards the takeoff of the C4 nerve root and widely decompressed the nerve root edge of the foramen.  There were a large number of veins overlying the nerve root which were oozing and rather than remove these and produce tremendous amount of bleeding, I left them intact.  However, I could to palpate the nerve root along the pedicle into the foramen and widely decompressed it on the right.  The microscope was angled to the left side where similar decompression was achieved.,The retractors were readjusted and attention was turned to C4-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F34",
+    "entity_id": "E34",
+    "text": "[RxNorm] 'methylprednisolone' \u2192 RXCUI 6902, canonical: methylprednisolone, match: exact\n[RxNorm] Ingredient: methylprednisolone (RXCUI 6902)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methylprednisolone acetate 0.01 MG/MG Topical Gel; methylprednisolone 2000 MG Injection; lidocaine hydrochloride 10 MG/ML / methylprednisolone acetate 40 MG/ML Injectable Suspension; methylprednisolone acetate 20 MG/ML Injectable Suspension; methylprednisolone acetate 40 MG/ML Injectable Suspension"
+  },
+  {
+    "fact_id": "F35",
+    "entity_id": "E35",
+    "text": "[RxNorm] 'my way' \u2192 RXCUI 1426876, canonical: My Way, match: exact\n[RxNorm] Ingredient: levonorgestrel (RXCUI 6373)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): levonorgestrel 0.03 MG Oral Tablet; levonorgestrel 0.0375 MG Oral Tablet; levonorgestrel 0.000583 MG/HR Intrauterine System; ethinyl estradiol 0.02 MG / levonorgestrel 0.15 MG Oral Tablet; ethinyl estradiol 0.025 MG / levonorgestrel 0.15 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F36",
+    "entity_id": "E36",
+    "text": "[ICD-10-CM 2027] T703XXD: Caisson disease [decompression sickness], subsequent encounter (score: 0.2163)\n[ICD-10-CM 2027] T703XXA: Caisson disease [decompression sickness], initial encounter (score: 0.2159)\n[ICD-10-CM 2027] T703XXS: Caisson disease [decompression sickness], sequela (score: 0.2159)\n[ICD-10-CM 2027] Match unresolved (top score 0.2163 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F37",
+    "entity_id": "E37",
+    "text": "[Procedure] 'I worked down through bony osteophytes and identified the posterior longitudinal ligament.  The ligament was incised; and as I worked to the right of the midline, I encountered herniated disk material which was removed in a number of large pieces.  The C5 root was exposed and then widely decompressed until I was flush with the pedicle and into the foramen.  The root had a somewhat high takeoff but I worked to expose the axilla and widely decompressed it.  Again the microscope was angled to the left side where similar decompression was achieved.  Central decompression was achieved here where there was a moderate amount of spinal cord compression.  This was removed by undercutting with 1 and 2-mm Cloward punches.,Attention was then turned to the C5-C6 space.  Here there were large osteophytes projecting posteriorly against the cord.  I slowly and carefully used the high-speed cutting diamond bur to drill these and then used 1 to 2-mm Cloward punches to widely decompress the spinal cord.  This necessitated undercutting the bodies of both C5 and C6 extensively, but I was then able to achieve a good decompression of the cord.  I exposed the C6 root and widely decompressed it until I was flush with the pedicle and into the foramen on the right.  The microscope was angled to the left side where a similar decompression was achieved.,Attention was then turned to creation of the arthrodesis.  A high-speed Cornerstone bur was used to decorticate the bodies of C5-C6, C4-C5 and C3-C4 to create a posterior shelf to prevent backwards graft migration.  Bone dust during the drilling was harvested for later use.,Attention was turned to creation of the arthrodesis.  Using the various Synthes sizers, I selected a 7-mm lordotic graft at C5-C6 and an 8-mm lordotic graft at C4-C5 and a 9-mm lordotic graft at C3-C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F38",
+    "entity_id": "E38",
+    "text": "[RxNorm] 'diamond' \u2192 RXCUI 1362686, canonical: diamond, match: exact\n[RxNorm] Ingredient: diamond (RXCUI 1362686)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F39",
+    "entity_id": "E39",
+    "text": "[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.2392)\n[ICD-10-CM 2027] T86838: Other complications of bone graft (score: 0.2031)\n[ICD-10-CM 2027] T86839: Unspecified complication of bone graft (score: 0.2031)\n[ICD-10-CM 2027] Match unresolved (top score 0.2392 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F40",
+    "entity_id": "E40",
+    "text": "[Procedure] 'Each graft was filled with autologous bone from the vertebral bodies and bone morphogenetic protein soaked sponge.  I decided to use BMP in this case because there were three levels of fusion and because this patient has a very heavy history of smoking and having just recently discontinued for two weeks.  The BMP sponge and the ____________ bone were then packed in the center of the allograft.,Under distraction, the graft was placed at C3-C4, C4-C5, and C5-C6 as described.  An x-ray was obtained which showed good graft placement with preservation of the cervical lordosis.,Attention was turned to the placement of anterior spinal instrumentation.  Various sizes of Synthes plates were selected until I decided that a 54-mm plate was appropriate.  The plate had to be somewhat contoured and bent inferiorly and the vertebral bodies had to be drilled so that the plates would sit flush.  The holes were drilled and the screws were placed.  Eight screws were placed with two screws at C3, two screws at C4, two screws at C5, and two screws at C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F41",
+    "entity_id": "E41",
+    "text": "[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.2241)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.2234)\n[ICD-10-CM 2027] W880XXS: Exposure to X-rays, sequela (score: 0.2234)\n[ICD-10-CM 2027] Match unresolved (top score 0.2241 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F42",
+    "entity_id": "E42",
+    "text": "[Procedure] 'All eight screws had good purchase.  The locking screws were tightly applied.  An x-ray was obtained which showed good placement of the graft, plate, and screws.,Attention was turned to closure.  The wound was copiously irrigated with Bacitracin solution and meticulous hemostasis was obtained.  A medium Hemovac drain was placed in the anterior vertebral body space and brought out through a separate stab incision in the skin.  The wound was then carefully closed in layers.  Sterile dressings were applied, and the operation was terminated.,The patient tolerated the procedure well and left for the recovery room in excellent condition.  The sponge and needle counts were reported as correct.  There were no intraoperative complications.,Specimens were sent to Pathology consisting of disk material and bone and soft tissue' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F43",
+    "entity_id": "E43",
+    "text": "[RxNorm] 'Bacitracin' \u2192 RXCUI 1291, canonical: bacitracin, match: exact\n[RxNorm] Ingredient: bacitracin (RXCUI 1291)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bacitracin 0.5 UNT/ML / dimethicone 200 MG/ML / zinc oxide 250 MG/ML Topical Spray; bacitracin 0.4 UNT/MG / lidocaine 0.04 MG/MG / neomycin 0.0035 MG/MG / polymyxin B 5 UNT/MG Topical Ointment; bacitracin zinc 0.4 UNT/MG / hydrocortisone acetate 0.01 MG/MG / neomycin sulfate 0.0035 MG/MG / polymyxin B sulfate 10 UNT/MG Ophthalmic Ointment; bacitracin 0.5 UNT/MG / pramoxine hydrochloride 0.01 MG/MG Topical Ointment; bacitracin 0.4 UNT/MG / neomycin 0.0035 MG/MG / polymyxin B 10 UNT/MG / pramoxine hydrochloride 0.01 MG/MG Topical Ointment"
+  },
+  {
+    "fact_id": "F44",
+    "entity_id": "E44",
+    "text": "[Procedure] 'was terminated.,The patient tolerated the procedure well and left for the recovery room in excellent condition.  The sponge and needle counts were reported as correct.  There were no intraoperative complications.,Specimens were sent to Pathology consisting of disk material and bone and soft tissue' \u2014 extracted from header, not verified against any coding system"
+  }
+]

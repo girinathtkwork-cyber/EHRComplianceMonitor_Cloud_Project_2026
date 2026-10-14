@@ -1,0 +1,373 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Severe low back pain.,POSTOPERATIVE DIAGNOSIS: , Severe low back pain.,OPERATIONS PERFORMED: , Anterior lumbar fusion, L4-L5, L5-S1, PEEK vertebral spacer, structural autograft from L5 vertebral body, BMP and anterior plate.,ANESTHESIA:,  General endotracheal.,ESTIMATED BLOOD LOSS: , Less than 50 mL.,DRAINS:,  None.,COMPLICATIONS: , None.,PATHOLOGICAL FINDINGS:,  Dr. X made the approach and once we were at the L5-S1 disk space, we removed the disk and we placed a 13-mm PEEK vertebral spacer filled with a core of bone taken from the L5 vertebral body.  This was filled with a 15 x 20-mm Chronos VerteFill tricalcium phosphate plug.  At L4-L5, we used a 13-mm PEEK vertebral spacer with structural autograft and BMP, and then we placed a two-level 87-mm Integra sacral plate with 28 x 6-mm screws, two each at L4 and L5 and 36 x 6-mm screws at S1.,OPERATION IN DETAIL:,  The patient was placed under general endotracheal anesthesia.  The abdomen was prepped and draped in the usual fashion.  Dr. X made the approach, and once the L5-S1 disk space was identified, we incised this with a knife and then removed a large core of bone taking rotating cutters.  I was able to remove additional disk space and score the vertebral bodies.  The rest of the disk removal was done with the curette, scraping the endplates.  I tried various sized spacers, and at this point, we exposed the L5 body and took a dowel from the body and filled the hole with a 15 x 20-mm Chronos VerteFill tricalcium phosphate plug.  Half of this was used to fill the spacer at L5-S1, BMP was placed in the spacer as well and then it was tapped into place.  We then moved the vessels over the opposite way approaching the L4-L5 disk space laterally, and the disk was removed in a similar fashion and we also used a 13-mm PEEK vertebral spacer, but this is the variety that we could put in from one side.  This was filled with bone and BMP as well.  Once this was done, we were able to place an 87-mm Integra sacral plate down over the three vertebral bodies and place these screws.  Following this, bleeding points were controlled and Dr. X proceeded with the closure of the abdomen.,SUMMARY: , This is a 51-year-old man who reports 15-year history of low back pain and intermittent bilateral leg pain and achiness.  He has tried multiple conservative treatments including physical therapy, epidural steroid injections, etc.  MRI scan shows a very degenerated disk at L5-S1, less so at L3-L4 and L4-L5.  A discogram was positive with the lower 3 levels, but he has pain, which starts below the iliac crest and I feel that the L3-L4 disk is probably that symptomatic.  An anterior lumbar interbody fusion was suggested.  Procedure, risks, and complications were explained.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Severe low back pain.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Severe low back pain.,OPERATIONS PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Anterior lumbar fusion"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Anterior lumbar fusion"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "L4-L5"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "L4-L5"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "L5-S1"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "L5-S1"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "PEEK vertebral spacer, structural autograft from L5 vertebral body"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "PEEK vertebral spacer, structural autograft from L5 vertebral body"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "BMP and anterior plate.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "BMP and anterior plate.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "General endotracheal.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "General endotracheal.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Less than 50 mL.,DRAINS:"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Less than 50 mL.,DRAINS:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "measurement",
+    "text": "50 mL"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "None.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "None.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "None.,PATHOLOGICAL FINDINGS:"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "procedure",
+    "text": "None.,PATHOLOGICAL FINDINGS:"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "Dr. X made the approach and once we were at the L5-S1 disk space, we removed the disk and we placed a 13-mm PEEK vertebral spacer filled with a core of bone taken from the L5 vertebral body.  This was filled with a 15 x 20-mm Chronos VerteFill tricalcium phosphate plug.  At L4-L5, we used a 13-mm PEEK vertebral spacer with structural autograft and BMP, and then we placed a two-level 87-mm Integra sacral plate with 28 x 6-mm screws, two each at L4 and L5 and 36 x 6-mm screws at S1.,OPERATION IN DETAIL:"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "procedure",
+    "text": "Dr. X made the approach and once we were at the L5-S1 disk space, we removed the disk and we placed a 13-mm PEEK vertebral spacer filled with a core of bone taken from the L5 vertebral body.  This was filled with a 15 x 20-mm Chronos VerteFill tricalcium phosphate plug.  At L4-L5, we used a 13-mm PEEK vertebral spacer with structural autograft and BMP, and then we placed a two-level 87-mm Integra sacral plate with 28 x 6-mm screws, two each at L4 and L5 and 36 x 6-mm screws at S1.,OPERATION IN DETAIL:"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "medication",
+    "text": "tricalcium phosphate"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "procedure",
+    "text": "IN DETAIL:"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "diagnosis",
+    "text": "The patient was placed under general endotracheal anesthesia.  The abdomen was prepped and draped in the usual fashion.  Dr. X made the approach, and once the L5-S1 disk space was identified, we incised this with a knife and then removed a large core of bone taking rotating cutters.  I was able to remove additional disk space and score the vertebral bodies.  The rest of the disk removal was done with the curette, scraping the endplates.  I tried various sized spacers, and at this point, we exposed the L5 body and took a dowel from the body and filled the hole with a 15 x 20-mm Chronos VerteFill tricalcium phosphate plug.  Half of this was used to fill the spacer at L5-S1"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "procedure",
+    "text": "The patient was placed under general endotracheal anesthesia.  The abdomen was prepped and draped in the usual fashion.  Dr. X made the approach, and once the L5-S1 disk space was identified, we incised this with a knife and then removed a large core of bone taking rotating cutters.  I was able to remove additional disk space and score the vertebral bodies.  The rest of the disk removal was done with the curette, scraping the endplates.  I tried various sized spacers, and at this point, we exposed the L5 body and took a dowel from the body and filled the hole with a 15 x 20-mm Chronos VerteFill tricalcium phosphate plug.  Half of this was used to fill the spacer at L5-S1"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "medication",
+    "text": "tricalcium phosphate"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "diagnosis",
+    "text": "BMP was placed in the spacer as well and then it was tapped into place.  We then moved the vessels over the opposite way approaching the L4-L5 disk space laterally, and the disk was removed in a similar fashion and we also used a 13-mm PEEK vertebral spacer, but this is the variety that we could put in from one side.  This was filled with bone and BMP as well.  Once this was done, we were able to place an 87-mm Integra sacral plate down over the three vertebral bodies and place these screws.  Following this, bleeding points were controlled and Dr. X proceeded with the closure of the abdomen.,SUMMARY:"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "procedure",
+    "text": "BMP was placed in the spacer as well and then it was tapped into place.  We then moved the vessels over the opposite way approaching the L4-L5 disk space laterally, and the disk was removed in a similar fashion and we also used a 13-mm PEEK vertebral spacer, but this is the variety that we could put in from one side.  This was filled with bone and BMP as well.  Once this was done, we were able to place an 87-mm Integra sacral plate down over the three vertebral bodies and place these screws.  Following this, bleeding points were controlled and Dr. X proceeded with the closure of the abdomen.,SUMMARY:"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "diagnosis",
+    "text": "This is a 51-year-old man who reports 15-year history of low back pain and intermittent bilateral leg pain and achiness.  He has tried multiple conservative treatments including physical therapy, epidural steroid injections, etc.  MRI scan shows a very degenerated disk at L5-S1, less so at L3-L4 and L4-L5.  A discogram was positive with the lower 3 levels, but he has pain, which starts below the iliac crest and I feel that the L3-L4 disk is probably that symptomatic.  An anterior lumbar interbody fusion was suggested.  Procedure, risks, and complications were explained"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "procedure",
+    "text": "This is a 51-year-old man who reports 15-year history of low back pain and intermittent bilateral leg pain and achiness.  He has tried multiple conservative treatments including physical therapy, epidural steroid injections, etc.  MRI scan shows a very degenerated disk at L5-S1, less so at L3-L4 and L4-L5.  A discogram was positive with the lower 3 levels, but he has pain, which starts below the iliac crest and I feel that the L3-L4 disk is probably that symptomatic.  An anterior lumbar interbody fusion was suggested.  Procedure, risks, and complications were explained"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "medication",
+    "text": "crest"
+  },
+  {
+    "entity_id": "E35",
+    "entity_type": "procedure",
+    "text": "risks, and complications were explained"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M5450: Low back pain, unspecified (score: 0.6392)\n[ICD-10-CM 2027] M5459: Other low back pain (score: 0.6392)\n[ICD-10-CM 2027] M5451: Vertebrogenic low back pain (score: 0.4295)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] M5450: Low back pain, unspecified (score: 0.7901)\n[ICD-10-CM 2027] M5459: Other low back pain (score: 0.7901)\n[ICD-10-CM 2027] M5451: Vertebrogenic low back pain (score: 0.5309)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] M4326: Fusion of spine, lumbar region (score: 0.7225)\n[ICD-10-CM 2027] M4320: Fusion of spine, site unspecified (score: 0.5787)\n[ICD-10-CM 2027] M4322: Fusion of spine, cervical region (score: 0.5372)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Anterior lumbar fusion' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] No matches found for 'L4-L5' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'L4-L5' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] No matches found for 'L5-S1' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'L5-S1' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] S15109D: Unspecified injury of unspecified vertebral artery, subsequent encounter (score: 0.5315)\n[ICD-10-CM 2027] S15199D: Other specified injury of unspecified vertebral artery, subsequent encounter (score: 0.5315)\n[ICD-10-CM 2027] S15109A: Unspecified injury of unspecified vertebral artery, initial encounter (score: 0.5274)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'PEEK vertebral spacer, structural autograft from L5 vertebral body' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] T8859XD: Other complications of anesthesia, subsequent encounter (score: 0.4820)\n[ICD-10-CM 2027] T8859XA: Other complications of anesthesia, initial encounter (score: 0.4778)\n[ICD-10-CM 2027] T8859XS: Other complications of anesthesia, sequela (score: 0.4776)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'BMP and anterior plate.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] Y653: Endotracheal tube wrongly placed during anesthetic procedure (score: 0.3886)\n[ICD-10-CM 2027] Z008: Encounter for other general examination (score: 0.3424)\n[ICD-10-CM 2027] T41206D: Underdosing of unspecified general anesthetics, subsequent encounter (score: 0.3100)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'General endotracheal.,ESTIMATED BLOOD LOSS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] Y900: Blood alcohol level of less than 20 mg/100 ml (score: 0.5738)\n[ICD-10-CM 2027] T310: Burns involving less than 10% of body surface (score: 0.4112)\n[ICD-10-CM 2027] T320: Corrosions involving less than 10% of body surface (score: 0.4105)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'Less than 50 mL.,DRAINS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Measurement] 50.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] R402310: Coma scale, best motor response, none, unspecified time (score: 0.4319)\n[ICD-10-CM 2027] R402210: Coma scale, best verbal response, none, unspecified time (score: 0.4056)\n[ICD-10-CM 2027] R402313: Coma scale, best motor response, none, at hospital admission (score: 0.4007)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Procedure] 'None.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] R402310: Coma scale, best motor response, none, unspecified time (score: 0.3670)\n[ICD-10-CM 2027] R402210: Coma scale, best verbal response, none, unspecified time (score: 0.3446)\n[ICD-10-CM 2027] R402313: Coma scale, best motor response, none, at hospital admission (score: 0.3404)"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[Procedure] 'None.,PATHOLOGICAL FINDINGS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] Q960: Karyotype 45, X (score: 0.3780)\n[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.3276)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.3266)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[Procedure] 'Dr. X made the approach and once we were at the L5-S1 disk space, we removed the disk and we placed a 13-mm PEEK vertebral spacer filled with a core of bone taken from the L5 vertebral body.  This was filled with a 15 x 20-mm Chronos VerteFill tricalcium phosphate plug.  At L4-L5, we used a 13-mm PEEK vertebral spacer with structural autograft and BMP, and then we placed a two-level 87-mm Integra sacral plate with 28 x 6-mm screws, two each at L4 and L5 and 36 x 6-mm screws at S1.,OPERATION IN DETAIL:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[RxNorm] 'tricalcium phosphate' \u2192 RXCUI 47628, canonical: tricalcium phosphate, match: exact\n[RxNorm] Ingredient: tricalcium phosphate (RXCUI 47628)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alpha tocopherol 30 UNT / ascorbic acid 28 MG / cholecalciferol 400 UNT / docosahexaenoic acid 300 MG / docusate sodium 55 MG / ferrous fumarate 27 MG / folic acid 1.25 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; silicon dioxide 0.025 MG/MG / tricalcium phosphate 0.19 MG/MG Toothpaste; alpha tocopherol 30 UNT / ascorbic acid 25 MG / cholecalciferol 170 UNT / doconexent 265 MG / docusate sodium 55 MG / ferrous fumarate 30 MG / folic acid 1.2 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; cholecalciferol 0.01 MG / tricalcium phosphate 658 MG Chewable Tablet; tricalcium phosphate 600 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[Procedure] 'IN DETAIL:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[ICD-10-CM 2027] Q972: Mosaicism, lines with various numbers of X chromosomes (score: 0.2068)\n[ICD-10-CM 2027] Q960: Karyotype 45, X (score: 0.1987)\n[ICD-10-CM 2027] N80B5: Endometriosis of the mediastinal space (score: 0.1969)\n[ICD-10-CM 2027] Match unresolved (top score 0.2068 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[Procedure] 'The patient was placed under general endotracheal anesthesia.  The abdomen was prepped and draped in the usual fashion.  Dr. X made the approach, and once the L5-S1 disk space was identified, we incised this with a knife and then removed a large core of bone taking rotating cutters.  I was able to remove additional disk space and score the vertebral bodies.  The rest of the disk removal was done with the curette, scraping the endplates.  I tried various sized spacers, and at this point, we exposed the L5 body and took a dowel from the body and filled the hole with a 15 x 20-mm Chronos VerteFill tricalcium phosphate plug.  Half of this was used to fill the spacer at L5-S1' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[RxNorm] 'tricalcium phosphate' \u2192 RXCUI 47628, canonical: tricalcium phosphate, match: exact\n[RxNorm] Ingredient: tricalcium phosphate (RXCUI 47628)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alpha tocopherol 30 UNT / ascorbic acid 28 MG / cholecalciferol 400 UNT / docosahexaenoic acid 300 MG / docusate sodium 55 MG / ferrous fumarate 27 MG / folic acid 1.25 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; silicon dioxide 0.025 MG/MG / tricalcium phosphate 0.19 MG/MG Toothpaste; alpha tocopherol 30 UNT / ascorbic acid 25 MG / cholecalciferol 170 UNT / doconexent 265 MG / docusate sodium 55 MG / ferrous fumarate 30 MG / folic acid 1.2 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; cholecalciferol 0.01 MG / tricalcium phosphate 658 MG Chewable Tablet; tricalcium phosphate 600 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.3304)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.3291)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.3290)"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[Procedure] 'BMP was placed in the spacer as well and then it was tapped into place.  We then moved the vessels over the opposite way approaching the L4-L5 disk space laterally, and the disk was removed in a similar fashion and we also used a 13-mm PEEK vertebral spacer, but this is the variety that we could put in from one side.  This was filled with bone and BMP as well.  Once this was done, we were able to place an 87-mm Integra sacral plate down over the three vertebral bodies and place these screws.  Following this, bleeding points were controlled and Dr. X proceeded with the closure of the abdomen.,SUMMARY:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[ICD-10-CM 2027] R52: Pain, unspecified (score: 0.3777)\n[ICD-10-CM 2027] M79606: Pain in leg, unspecified (score: 0.3626)\n[ICD-10-CM 2027] M5450: Low back pain, unspecified (score: 0.3623)"
+  },
+  {
+    "fact_id": "F33",
+    "entity_id": "E33",
+    "text": "[Procedure] 'This is a 51-year-old man who reports 15-year history of low back pain and intermittent bilateral leg pain and achiness.  He has tried multiple conservative treatments including physical therapy, epidural steroid injections, etc.  MRI scan shows a very degenerated disk at L5-S1, less so at L3-L4 and L4-L5.  A discogram was positive with the lower 3 levels, but he has pain, which starts below the iliac crest and I feel that the L3-L4 disk is probably that symptomatic.  An anterior lumbar interbody fusion was suggested.  Procedure, risks, and complications were explained' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F34",
+    "entity_id": "E34",
+    "text": "[RxNorm] 'crest' \u2192 RXCUI 1044552, canonical: Crest, match: exact\n[RxNorm] Ingredient: sodium fluoride (RXCUI 9873)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): sodium fluoride 50 MG/ML Mouthwash; potassium nitrate 0.05 MG/MG / sodium fluoride 0.00243 MG/MG Toothpaste; potassium nitrate 0.05 MG/MG / sodium fluoride 0.0015 MG/MG Toothpaste; sodium fluoride 0.221 MG/ML Mouthwash; potassium nitrate 0.05 MG/MG / sodium fluoride 0.0024 MG/MG Toothpaste"
+  },
+  {
+    "fact_id": "F35",
+    "entity_id": "E35",
+    "text": "[Procedure] 'risks, and complications were explained' \u2014 extracted from header, not verified against any coding system"
+  }
+]

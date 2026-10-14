@@ -1,0 +1,303 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:,  Airway stenosis with self-expanding metallic stent complication.,POSTOPERATIVE DIAGNOSIS:,  Airway stenosis with self-expanding metallic stent complication.,PROCEDURES:,1.  Rigid bronchoscopy with removal of foreign body, prolonged procedure taking two hours to remove the stent piecemeal in a very difficult and trying situation.,2.  Excision of granulation tissue tumor.,3.  Bronchial dilation with a balloon bronchoplasty, right main bronchus.,4.  Argon plasma coagulation to control bleeding in the trachea.,5.  Placement of a tracheal and bilateral bronchial stents with a silicon wire stent.,ENDOSCOPIC FINDINGS:,1.  Normal true vocal cords.,2.  Proximal trachea with high-grade occlusion blocking approximately 90% of the trachea due to granulation tissue tumor and break down of metallic stent.,3.  Multiple stent fractures in the mid portion of the trachea with granulation tissue.,4.  High-grade obstruction of the right main bronchus by stent and granulation tissue.,5.  Left main bronchus was covered by the distal portion of the stent and was only being ventilated through the struts of the stent.,6.  All in all a high-grade terrible airway obstruction with involvement of the carina, left and right main stem bronchus, mid, distal, and proximal trachea.,TECHNIQUE IN DETAIL: , After informed consent was obtained from the patient, he was brought into the operating field.  A rapid sequence induction was done.  He was intubated with a rigid scope.  Jet ventilation technique was carried out using a rigid and flexible scope.  A thorough airway inspection was carried out with findings as described above.,Dr. D was present in the operating room and we conferred on operative strategy and agreed that the best of strategy would be to first dilate the right main bronchus, cauterize it to control bleeding and then piecemeal removed the stent from distal to proximal.  This is the technique that was carried out in a painstaking fashion removing bits of the stent piecemeal with finally getting all of the visible stent out of the airway.  It should be noted that Dr. Donovan and I felt that two of the metallic stents were probably in place but we cannot be sure because of the terrible anatomy and the fact that the stent pieces were coming out twisted metal in fragments.  Nevertheless, all the visible stent was removed, and the airway was much better after with the dilation of balloon and the rigid scope.  We took measurements and decided to place stents in the trachea, left and right main bronchus using a Dumon Y-stent.  It was measured 18 mm in tracheal diameter and 14 mm in bronchial diameter.  The right main stem stent was 2.25 cm in length, the left main stem stent was 3 cm in length and the tracheal portion was 9 cm in length.  After it was placed, excellent placement was achieved with the proximal end of the stent 3 cm below the true vocal cords.  The patient tolerated the procedure well and was brought to the recovery room extubated.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Airway stenosis with self-expanding metallic stent complication.,POSTOPERATIVE DIAGNOSIS:,  Airway stenosis with self-expanding metallic stent complication.,PROCEDURES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Airway stenosis with self-expanding metallic stent complication.,PROCEDURES:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Rigid bronchoscopy with removal of foreign body, prolonged procedure taking two hours to remove the stent piecemeal in a very difficult and trying situation"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Rigid bronchoscopy with removal of foreign body, prolonged procedure taking two hours to remove the stent piecemeal in a very difficult and trying situation"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "taking two hours to remove the stent piecemeal in a very difficult and trying situation"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Excision of granulation tissue tumor"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Excision of granulation tissue tumor"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Bronchial dilation with a balloon bronchoplasty, right main bronchus"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Bronchial dilation with a balloon bronchoplasty, right main bronchus"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Argon plasma coagulation to control bleeding in the trachea"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Argon plasma coagulation to control bleeding in the trachea"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Argon"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Placement of a tracheal and bilateral bronchial stents with a silicon wire stent.,ENDOSCOPIC FINDINGS:"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Placement of a tracheal and bilateral bronchial stents with a silicon wire stent.,ENDOSCOPIC FINDINGS:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "silicon"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Normal true vocal cords"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Normal true vocal cords"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Proximal trachea with high-grade occlusion blocking approximately 90% of the trachea due to granulation tissue tumor and break down of metallic stent"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "Proximal trachea with high-grade occlusion blocking approximately 90% of the trachea due to granulation tissue tumor and break down of metallic stent"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "measurement",
+    "text": "90%"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "Multiple stent fractures in the mid portion of the trachea with granulation tissue"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "procedure",
+    "text": "Multiple stent fractures in the mid portion of the trachea with granulation tissue"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "High-grade obstruction of the right main bronchus by stent and granulation tissue"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "procedure",
+    "text": "High-grade obstruction of the right main bronchus by stent and granulation tissue"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Left main bronchus was covered by the distal portion of the stent and was only being ventilated through the struts of the stent"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "procedure",
+    "text": "Left main bronchus was covered by the distal portion of the stent and was only being ventilated through the struts of the stent"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "diagnosis",
+    "text": "All in all a high-grade terrible airway obstruction with involvement of the carina, left and right main stem bronchus, mid, distal, and proximal trachea.,TECHNIQUE IN DETAIL: , After informed consent was obtained from the patient, he was brought into the operating field.  A rapid sequence induction was done.  He was intubated with a rigid scope.  Jet ventilation technique was carried out using a rigid and flexible scope.  A thorough airway inspection was carried out with findings as described above.,Dr. D was present in the operating room and we conferred on operative strategy and agreed that the best of strategy would be to first dilate the right main bronchus, cauterize it to control bleeding and then piecemeal removed the stent from distal to proximal.  This is the technique that was carried out in a painstaking fashion removing bits of the stent piecemeal with finally getting all of the visible stent out of the airway.  It should be noted that Dr. Donovan and I felt that two of the metallic stents were probably in place but we cannot be sure because of the terrible anatomy and the fact that the stent pieces were coming out twisted metal in fragments.  Nevertheless, all the visible stent was removed, and the airway was much better after with the dilation of balloon and the rigid scope.  We took measurements and decided to place stents in the trachea, left and right main bronchus using a Dumon Y-stent.  It was measured 18 mm in tracheal diameter and 14 mm in bronchial diameter.  The right main stem stent was 2.25 cm in length, the left main stem stent was 3 cm in length and the tracheal portion was 9 cm in length.  After it was placed, excellent placement was achieved with the proximal end of the stent 3 cm below the true vocal cords.  The patient tolerated the procedure well and was brought to the recovery room extubated"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "procedure",
+    "text": "All in all a high-grade terrible airway obstruction with involvement of the carina, left and right main stem bronchus, mid, distal, and proximal trachea.,TECHNIQUE IN DETAIL: , After informed consent was obtained from the patient, he was brought into the operating field.  A rapid sequence induction was done.  He was intubated with a rigid scope.  Jet ventilation technique was carried out using a rigid and flexible scope.  A thorough airway inspection was carried out with findings as described above.,Dr. D was present in the operating room and we conferred on operative strategy and agreed that the best of strategy would be to first dilate the right main bronchus, cauterize it to control bleeding and then piecemeal removed the stent from distal to proximal.  This is the technique that was carried out in a painstaking fashion removing bits of the stent piecemeal with finally getting all of the visible stent out of the airway.  It should be noted that Dr. Donovan and I felt that two of the metallic stents were probably in place but we cannot be sure because of the terrible anatomy and the fact that the stent pieces were coming out twisted metal in fragments.  Nevertheless, all the visible stent was removed, and the airway was much better after with the dilation of balloon and the rigid scope.  We took measurements and decided to place stents in the trachea, left and right main bronchus using a Dumon Y-stent.  It was measured 18 mm in tracheal diameter and 14 mm in bronchial diameter.  The right main stem stent was 2.25 cm in length, the left main stem stent was 3 cm in length and the tracheal portion was 9 cm in length.  After it was placed, excellent placement was achieved with the proximal end of the stent 3 cm below the true vocal cords.  The patient tolerated the procedure well and was brought to the recovery room extubated"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] T82855D: Stenosis of coronary artery stent, subsequent encounter (score: 0.4771)\n[ICD-10-CM 2027] T82855A: Stenosis of coronary artery stent, initial encounter (score: 0.4753)\n[ICD-10-CM 2027] T82855S: Stenosis of coronary artery stent, sequela (score: 0.4752)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] T8189XD: Other complications of procedures, not elsewhere classified, subsequent encounter (score: 0.4932)\n[ICD-10-CM 2027] T8189XA: Other complications of procedures, not elsewhere classified, initial encounter (score: 0.4911)\n[ICD-10-CM 2027] T8189XS: Other complications of procedures, not elsewhere classified, sequela (score: 0.4910)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] O481: Prolonged pregnancy (score: 0.2821)\n[ICD-10-CM 2027] R460: Very low level of personal hygiene (score: 0.2571)\n[ICD-10-CM 2027] Z4582: Encounter for adjustment or removal of myringotomy device (stent) (tube) (score: 0.2560)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Rigid bronchoscopy with removal of foreign body, prolonged procedure taking two hours to remove the stent piecemeal in a very difficult and trying situation' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'taking two hours to remove the stent piecemeal in a very difficult and trying situation' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] H95129: Granulation of postmastoidectomy cavity, unspecified ear (score: 0.5122)\n[ICD-10-CM 2027] H95122: Granulation of postmastoidectomy cavity, left ear (score: 0.5086)\n[ICD-10-CM 2027] H95121: Granulation of postmastoidectomy cavity, right ear (score: 0.5086)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Excision of granulation tissue tumor' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] C3401: Malignant neoplasm of right main bronchus (score: 0.5965)\n[ICD-10-CM 2027] C3400: Malignant neoplasm of unspecified main bronchus (score: 0.5889)\n[ICD-10-CM 2027] C3402: Malignant neoplasm of left main bronchus (score: 0.5842)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Bronchial dilation with a balloon bronchoplasty, right main bronchus' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] O24419: Gestational diabetes mellitus in pregnancy, unspecified control (score: 0.3499)\n[ICD-10-CM 2027] R779: Abnormality of plasma protein, unspecified (score: 0.3426)\n[ICD-10-CM 2027] C9011: Plasma cell leukemia in remission (score: 0.3389)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Argon plasma coagulation to control bleeding in the trachea' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Argon' \u2192 RXCUI 1368133, canonical: argon, match: exact\n[RxNorm] Ingredient: argon (RXCUI 1368133)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] T83123D: Displacement of other urinary stents, subsequent encounter (score: 0.5497)\n[ICD-10-CM 2027] T83123A: Displacement of other urinary stents, initial encounter (score: 0.5472)\n[ICD-10-CM 2027] T83123S: Displacement of other urinary stents, sequela (score: 0.5471)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'Placement of a tracheal and bilateral bronchial stents with a silicon wire stent.,ENDOSCOPIC FINDINGS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'silicon' \u2192 RXCUI 9774, canonical: silicon, match: exact\n[RxNorm] Ingredient: silicon (RXCUI 9774)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] S11039D: Unspecified open wound of vocal cord, subsequent encounter (score: 0.5053)\n[ICD-10-CM 2027] S11039A: Unspecified open wound of vocal cord, initial encounter (score: 0.5027)\n[ICD-10-CM 2027] J383: Other diseases of vocal cords (score: 0.5026)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'Normal true vocal cords' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] S11029D: Unspecified open wound of trachea, subsequent encounter (score: 0.3844)\n[ICD-10-CM 2027] S11029A: Unspecified open wound of trachea, initial encounter (score: 0.3810)\n[ICD-10-CM 2027] S11029S: Unspecified open wound of trachea, sequela (score: 0.3809)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'Proximal trachea with high-grade occlusion blocking approximately 90% of the trachea due to granulation tissue tumor and break down of metallic stent' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Measurement] 90.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] H95129: Granulation of postmastoidectomy cavity, unspecified ear (score: 0.3224)\n[ICD-10-CM 2027] H95122: Granulation of postmastoidectomy cavity, left ear (score: 0.3201)\n[ICD-10-CM 2027] H95121: Granulation of postmastoidectomy cavity, right ear (score: 0.3201)"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[Procedure] 'Multiple stent fractures in the mid portion of the trachea with granulation tissue' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] C3401: Malignant neoplasm of right main bronchus (score: 0.4954)\n[ICD-10-CM 2027] C3400: Malignant neoplasm of unspecified main bronchus (score: 0.4891)\n[ICD-10-CM 2027] C3402: Malignant neoplasm of left main bronchus (score: 0.4852)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[Procedure] 'High-grade obstruction of the right main bronchus by stent and granulation tissue' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] T83123D: Displacement of other urinary stents, subsequent encounter (score: 0.4205)\n[ICD-10-CM 2027] T83123A: Displacement of other urinary stents, initial encounter (score: 0.4186)\n[ICD-10-CM 2027] C3402: Malignant neoplasm of left main bronchus (score: 0.4186)"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[Procedure] 'Left main bronchus was covered by the distal portion of the stent and was only being ventilated through the struts of the stent' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[ICD-10-CM 2027] T83123D: Displacement of other urinary stents, subsequent encounter (score: 0.3912)\n[ICD-10-CM 2027] T83123A: Displacement of other urinary stents, initial encounter (score: 0.3895)\n[ICD-10-CM 2027] T83123S: Displacement of other urinary stents, sequela (score: 0.3894)"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[Procedure] 'All in all a high-grade terrible airway obstruction with involvement of the carina, left and right main stem bronchus, mid, distal, and proximal trachea.,TECHNIQUE IN DETAIL: , After informed consent was obtained from the patient, he was brought into the operating field.  A rapid sequence induction was done.  He was intubated with a rigid scope.  Jet ventilation technique was carried out using a rigid and flexible scope.  A thorough airway inspection was carried out with findings as described above.,Dr. D was present in the operating room and we conferred on operative strategy and agreed that the best of strategy would be to first dilate the right main bronchus, cauterize it to control bleeding and then piecemeal removed the stent from distal to proximal.  This is the technique that was carried out in a painstaking fashion removing bits of the stent piecemeal with finally getting all of the visible stent out of the airway.  It should be noted that Dr. Donovan and I felt that two of the metallic stents were probably in place but we cannot be sure because of the terrible anatomy and the fact that the stent pieces were coming out twisted metal in fragments.  Nevertheless, all the visible stent was removed, and the airway was much better after with the dilation of balloon and the rigid scope.  We took measurements and decided to place stents in the trachea, left and right main bronchus using a Dumon Y-stent.  It was measured 18 mm in tracheal diameter and 14 mm in bronchial diameter.  The right main stem stent was 2.25 cm in length, the left main stem stent was 3 cm in length and the tracheal portion was 9 cm in length.  After it was placed, excellent placement was achieved with the proximal end of the stent 3 cm below the true vocal cords.  The patient tolerated the procedure well and was brought to the recovery room extubated' \u2014 extracted from header, not verified against any coding system"
+  }
+]

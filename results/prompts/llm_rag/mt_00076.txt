@@ -1,0 +1,543 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREPROCEDURE DIAGNOSIS: , Complete heart block.,POSTPROCEDURE DIAGNOSIS:  ,Complete heart block.,PROCEDURES PLANNED AND PERFORMED,1.  Implantation of a dual-chamber pacemaker.,2.  Fluoroscopic guidance for implantation of a dual-chamber pacemaker.,FLUOROSCOPY TIME: , 2.6 minutes.,MEDICATIONS AT THE TIME OF STUDY,1.  Versed 2.50mg.,2.  Fentanyl 150 mcg.,3.  Benadryl 50 mg.,CLINICAL HISTORY: , the patient is a pleasant 80-year-old female who presented to the hospital with complete heart block.  She has been referred for a pacemaker implantation.,RISKS AND BENEFITS: , Risks, benefits, and alternatives to implantation of a dual-chamber pacemaker were discussed with the patient.  The patient agreed both verbally and via written consent.,DESCRIPTION OF PROCEDURE: , The patient was transported to the cardiac catheterization laboratory in the fasting state.  The region of the left deltopectoral groove was prepped and draped in the usual sterile manner.  Lidocaine 1% (20 mL) was administered to the area.  After achieving appropriate anesthesia, percutaneous access of the left axillary vein was then performed under fluoroscopy.  A guide wire was advanced into the vein.  Following this, a 4-inch long transverse incision was made through the skin and subcutaneous tissue exposing the pectoral fascia and muscle beneath.  Hemostasis was achieved with electrocautery.  Lidocaine 1% (10 mL) was then administered to the medial aspect of the incision.  A pocket was then fashioned in the medial direction.  Using the previously placed wire, a 7-French side-arm sheath was advanced over the wire into the left axillary vein.  The dilator was then removed over the wire.  A second wire was then advanced into the sheath into the left axillary vein.  The sheath was then removed over the top of the two wires.  One wire was then pinned to the drape.  Using the remaining wire, a 7 French side-arm sheath was advanced back into the left axillary vein.  The dilator and wire were removed.  A passive pacing lead was then advanced down into the right atrium.  The peel-away sheath was removed.  The lead was then passed across the tricuspid valve and positioned in the apical location.  Adequate pacing and sensing functions were established.  Suture sleeve was advanced to the entry point of the tissue and connected securely to the tissue.  With the remaining wire, a 7-French side-arm sheath was advanced over the wire into the axillary vein.  The wire and dilating sheaths were removed.  An active pacing lead was then advanced down into the right atrium.  The peel-away sheath was removed.  Preformed J stylet was then advanced into the lead.  The lead was positioned in the appendage location.  Lead body was then turned, and the active fix screw was fixed to the tissue.  Adequate pacing and sensing function were established.  Suture sleeve was advanced to the entry point of the tissue and connected securely to the tissue.  The pocket was then washed with antibiotic-impregnated saline.  Pulse generator was obtained and connected securely to the leads.  The leads were then carefully wrapped behind the pulse generator, and the entire system was placed in the pocket.  The pocket was then closed with 2-0, 3-0, and 4-0 Vicryl using a running mattress stitch.  Sponge and needle counts were correct at the end of the procedure.  No acute complications were noted.,DEVICE DATA,1.  Pulse generator, manufacturer Boston Scientific, model # 12345, serial #1234.,2.  Right atrial lead, manufacturer Guidant, model #12345, serial #1234.,3.  Right ventricular lead, manufacturer Guidant, model #12345, serial #1234.,MEASURED INTRAOPERATIVE DATA,1.  Right atrial lead impedance 534 ohms.  P waves measured at 1.2 millivolts.  Pacing threshold 1.0 volt at 0.5 milliseconds.,2.  Right ventricular lead impedance 900 ohms.  R-waves measured 6.0 millivolts.  Pacing threshold 1.0 volt at 0.5 milliseconds.,DEVICE SETTINGS: , DDD 60 to 130.,CONCLUSIONS,1.  Successful implantation of a dual-chamber pacemaker with adequate pacing and sensing function.,2.  No acute complications.,PLAN,1.  The patient will be taken back to her room for continued observation.  She can be dismissed in 24 hours provided no acute complications at the discretion of the primary service.,2.  Chest x-ray to rule out pneumothorax and verified lead position.,3.  Completion of the course of antibiotics.,4.  Home dismissal instructions provided in written format.,5.  Device interrogation in the morning.,6.  Wound check in 7 to 10 days.,7.  Enrollment in device clinic.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "DIAGNOSIS: , Complete heart block.,POSTPROCEDURE DIAGNOSIS:  ,Complete heart block.,PROCEDURES PLANNED AND PERFORMED"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Complete heart block.,POSTPROCEDURE DIAGNOSIS:  ,Complete heart block.,PROCEDURES PLANNED AND PERFORMED"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PLANNED AND PERFORMED"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Implantation of a dual-chamber pacemaker"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Implantation of a dual-chamber pacemaker"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Fluoroscopic guidance for implantation of a dual-chamber pacemaker.,FLUOROSCOPY TIME: , 2.6 minutes.,MEDICATIONS AT THE TIME OF STUDY"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Fluoroscopic guidance for implantation of a dual-chamber pacemaker.,FLUOROSCOPY TIME: , 2.6 minutes.,MEDICATIONS AT THE TIME OF STUDY"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Versed 2.50mg"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Versed 2.50mg"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "measurement",
+    "text": "2.50mg"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Fentanyl 150 mcg"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Fentanyl 150 mcg"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Fentanyl"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "dosage",
+    "text": "150 mcg"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Benadryl 50 mg.,CLINICAL HISTORY: , the patient is a pleasant 80-year-old female who presented to the hospital with complete heart block.  She has been referred for a pacemaker implantation.,RISKS AND BENEFITS: , Risks, benefits, and alternatives to implantation of a dual-chamber pacemaker were discussed with the patient.  The patient agreed both verbally and via written consent.,DESCRIPTION OF PROCEDURE: , The patient was transported to the cardiac catheterization laboratory in the fasting state.  The region of the left deltopectoral groove was prepped and draped in the usual sterile manner.  Lidocaine 1% (20 mL) was administered to the area.  After achieving appropriate anesthesia, percutaneous access of the left axillary vein was then performed under fluoroscopy.  A guide wire was advanced into the vein.  Following this, a 4-inch long transverse incision was made through the skin and subcutaneous tissue exposing the pectoral fascia and muscle beneath.  Hemostasis was achieved with electrocautery.  Lidocaine 1% (10 mL) was then administered to the medial aspect of the incision.  A pocket was then fashioned in the medial direction.  Using the previously placed wire, a 7-French side-arm sheath was advanced over the wire into the left axillary vein.  The dilator was then removed over the wire.  A second wire was then advanced into the sheath into the left axillary vein.  The sheath was then removed over the top of the two wires.  One wire was then pinned to the drape.  Using the remaining wire, a 7 French side-arm sheath was advanced back into the left axillary vein.  The dilator and wire were removed.  A passive pacing lead was then advanced down into the right atrium.  The peel-away sheath was removed.  The lead was then passed across the tricuspid valve and positioned in the apical location.  Adequate pacing and sensing functions were established.  Suture sleeve was advanced to the entry point of the tissue and connected securely to the tissue.  With the remaining wire, a 7-French side-arm sheath was advanced over the wire into the axillary vein.  The wire and dilating sheaths were removed.  An active pacing lead was then advanced down into the right atrium.  The peel-away sheath was removed.  Preformed J stylet was then advanced into the lead.  The lead was positioned in the appendage location.  Lead body was then turned, and the active fix screw was fixed to the tissue.  Adequate pacing and sensing function were established.  Suture sleeve was advanced to the entry point of the tissue and connected securely to the tissue.  The pocket was then washed with antibiotic-impregnated saline.  Pulse generator was obtained and connected securely to the leads.  The leads were then carefully wrapped behind the pulse generator, and the entire system was placed in the pocket.  The pocket was then closed with 2-0, 3-0, and 4-0 Vicryl using a running mattress stitch.  Sponge and needle counts were correct at the end of the procedure.  No acute complications were noted.,DEVICE DATA"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "Benadryl 50 mg.,CLINICAL HISTORY: , the patient is a pleasant 80-year-old female who presented to the hospital with complete heart block.  She has been referred for a pacemaker implantation.,RISKS AND BENEFITS: , Risks, benefits, and alternatives to implantation of a dual-chamber pacemaker were discussed with the patient.  The patient agreed both verbally and via written consent.,DESCRIPTION OF PROCEDURE: , The patient was transported to the cardiac catheterization laboratory in the fasting state.  The region of the left deltopectoral groove was prepped and draped in the usual sterile manner.  Lidocaine 1% (20 mL) was administered to the area.  After achieving appropriate anesthesia, percutaneous access of the left axillary vein was then performed under fluoroscopy.  A guide wire was advanced into the vein.  Following this, a 4-inch long transverse incision was made through the skin and subcutaneous tissue exposing the pectoral fascia and muscle beneath.  Hemostasis was achieved with electrocautery.  Lidocaine 1% (10 mL) was then administered to the medial aspect of the incision.  A pocket was then fashioned in the medial direction.  Using the previously placed wire, a 7-French side-arm sheath was advanced over the wire into the left axillary vein.  The dilator was then removed over the wire.  A second wire was then advanced into the sheath into the left axillary vein.  The sheath was then removed over the top of the two wires.  One wire was then pinned to the drape.  Using the remaining wire, a 7 French side-arm sheath was advanced back into the left axillary vein.  The dilator and wire were removed.  A passive pacing lead was then advanced down into the right atrium.  The peel-away sheath was removed.  The lead was then passed across the tricuspid valve and positioned in the apical location.  Adequate pacing and sensing functions were established.  Suture sleeve was advanced to the entry point of the tissue and connected securely to the tissue.  With the remaining wire, a 7-French side-arm sheath was advanced over the wire into the axillary vein.  The wire and dilating sheaths were removed.  An active pacing lead was then advanced down into the right atrium.  The peel-away sheath was removed.  Preformed J stylet was then advanced into the lead.  The lead was positioned in the appendage location.  Lead body was then turned, and the active fix screw was fixed to the tissue.  Adequate pacing and sensing function were established.  Suture sleeve was advanced to the entry point of the tissue and connected securely to the tissue.  The pocket was then washed with antibiotic-impregnated saline.  Pulse generator was obtained and connected securely to the leads.  The leads were then carefully wrapped behind the pulse generator, and the entire system was placed in the pocket.  The pocket was then closed with 2-0, 3-0, and 4-0 Vicryl using a running mattress stitch.  Sponge and needle counts were correct at the end of the procedure.  No acute complications were noted.,DEVICE DATA"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "Benadryl"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "dosage",
+    "text": "50 mg"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "Lidocaine"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "dosage",
+    "text": "20 mL"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "Lidocaine"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "dosage",
+    "text": "10 mL"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Pulse generator, manufacturer Boston Scientific, model # 12345, serial #1234"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "procedure",
+    "text": "Pulse generator, manufacturer Boston Scientific, model # 12345, serial #1234"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "diagnosis",
+    "text": "Right atrial lead, manufacturer Guidant, model #12345, serial #1234"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "procedure",
+    "text": "Right atrial lead, manufacturer Guidant, model #12345, serial #1234"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "diagnosis",
+    "text": "Right ventricular lead, manufacturer Guidant, model #12345, serial #1234.,MEASURED INTRAOPERATIVE DATA"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "procedure",
+    "text": "Right ventricular lead, manufacturer Guidant, model #12345, serial #1234.,MEASURED INTRAOPERATIVE DATA"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "diagnosis",
+    "text": "Right atrial lead impedance 534 ohms.  P waves measured at 1.2 millivolts.  Pacing threshold 1.0 volt at 0.5 milliseconds"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "procedure",
+    "text": "Right atrial lead impedance 534 ohms.  P waves measured at 1.2 millivolts.  Pacing threshold 1.0 volt at 0.5 milliseconds"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "diagnosis",
+    "text": "Right ventricular lead impedance 900 ohms.  R-waves measured 6.0 millivolts.  Pacing threshold 1.0 volt at 0.5 milliseconds.,DEVICE SETTINGS: , DDD 60 to 130.,CONCLUSIONS"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "procedure",
+    "text": "Right ventricular lead impedance 900 ohms.  R-waves measured 6.0 millivolts.  Pacing threshold 1.0 volt at 0.5 milliseconds.,DEVICE SETTINGS: , DDD 60 to 130.,CONCLUSIONS"
+  },
+  {
+    "entity_id": "E35",
+    "entity_type": "diagnosis",
+    "text": "Successful implantation of a dual-chamber pacemaker with adequate pacing and sensing function"
+  },
+  {
+    "entity_id": "E36",
+    "entity_type": "procedure",
+    "text": "Successful implantation of a dual-chamber pacemaker with adequate pacing and sensing function"
+  },
+  {
+    "entity_id": "E37",
+    "entity_type": "diagnosis",
+    "text": "No acute complications.,PLAN"
+  },
+  {
+    "entity_id": "E38",
+    "entity_type": "procedure",
+    "text": "No acute complications.,PLAN"
+  },
+  {
+    "entity_id": "E39",
+    "entity_type": "diagnosis",
+    "text": "The patient will be taken back to her room for continued observation.  She can be dismissed in 24 hours provided no acute complications at the discretion of the primary service"
+  },
+  {
+    "entity_id": "E40",
+    "entity_type": "procedure",
+    "text": "The patient will be taken back to her room for continued observation.  She can be dismissed in 24 hours provided no acute complications at the discretion of the primary service"
+  },
+  {
+    "entity_id": "E41",
+    "entity_type": "diagnosis",
+    "text": "Chest x-ray to rule out pneumothorax and verified lead position"
+  },
+  {
+    "entity_id": "E42",
+    "entity_type": "procedure",
+    "text": "Chest x-ray to rule out pneumothorax and verified lead position"
+  },
+  {
+    "entity_id": "E43",
+    "entity_type": "diagnosis",
+    "text": "Completion of the course of antibiotics"
+  },
+  {
+    "entity_id": "E44",
+    "entity_type": "procedure",
+    "text": "Completion of the course of antibiotics"
+  },
+  {
+    "entity_id": "E45",
+    "entity_type": "diagnosis",
+    "text": "Home dismissal instructions provided in written format"
+  },
+  {
+    "entity_id": "E46",
+    "entity_type": "procedure",
+    "text": "Home dismissal instructions provided in written format"
+  },
+  {
+    "entity_id": "E47",
+    "entity_type": "diagnosis",
+    "text": "Device interrogation in the morning"
+  },
+  {
+    "entity_id": "E48",
+    "entity_type": "procedure",
+    "text": "Device interrogation in the morning"
+  },
+  {
+    "entity_id": "E49",
+    "entity_type": "diagnosis",
+    "text": "Wound check in 7 to 10 days"
+  },
+  {
+    "entity_id": "E50",
+    "entity_type": "procedure",
+    "text": "Wound check in 7 to 10 days"
+  },
+  {
+    "entity_id": "E51",
+    "entity_type": "diagnosis",
+    "text": "Enrollment in device clinic"
+  },
+  {
+    "entity_id": "E52",
+    "entity_type": "procedure",
+    "text": "Enrollment in device clinic"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'DIAGNOSIS: , Complete heart block.,POSTPROCEDURE DIAGNOSIS:  ,Complete heart block.,PROCEDURES PLANNED AND PERFORMED' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] I455: Other specified heart block (score: 0.7110)\n[ICD-10-CM 2027] Q246: Congenital heart block (score: 0.6346)\n[ICD-10-CM 2027] I442: Atrioventricular block, complete (score: 0.5073)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PLANNED AND PERFORMED' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] H21329: Implantation cysts of iris, ciliary body or anterior chamber, unspecified eye (score: 0.4313)\n[ICD-10-CM 2027] H21322: Implantation cysts of iris, ciliary body or anterior chamber, left eye (score: 0.4295)\n[ICD-10-CM 2027] H21321: Implantation cysts of iris, ciliary body or anterior chamber, right eye (score: 0.4295)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Implantation of a dual-chamber pacemaker' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] M2654: Insufficient anterior guidance (score: 0.2792)\n[ICD-10-CM 2027] H21329: Implantation cysts of iris, ciliary body or anterior chamber, unspecified eye (score: 0.2707)\n[ICD-10-CM 2027] H21322: Implantation cysts of iris, ciliary body or anterior chamber, left eye (score: 0.2695)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Fluoroscopic guidance for implantation of a dual-chamber pacemaker.,FLUOROSCOPY TIME: , 2.6 minutes.,MEDICATIONS AT THE TIME OF STUDY' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] No matches found for 'Versed 2.50mg' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Versed 2.50mg' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Measurement] 2.5mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] T40416D: Underdosing of fentanyl or fentanyl analogs, subsequent encounter (score: 0.8622)\n[ICD-10-CM 2027] T40416A: Underdosing of fentanyl or fentanyl analogs, initial encounter (score: 0.8608)\n[ICD-10-CM 2027] T40416S: Underdosing of fentanyl or fentanyl analogs, sequela (score: 0.8608)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Fentanyl 150 mcg' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Fentanyl' \u2192 RXCUI 4337, canonical: fentanyl, match: exact\n[RxNorm] Ingredient: fentanyl (RXCUI 4337)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fentanyl 0.1 MG Sublingual Tablet; fentanyl 0.2 MG Sublingual Tablet; fentanyl 0.3 MG Sublingual Tablet; fentanyl 0.4 MG Sublingual Tablet; fentanyl 0.6 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "Dose 150.0mcg associated with Fentanyl \u2014 dose 150.0mcg not among known product strengths"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] M65022: Abscess of tendon sheath, left upper arm (score: 0.2389)\n[ICD-10-CM 2027] M65042: Abscess of tendon sheath, left hand (score: 0.2351)\n[ICD-10-CM 2027] M65021: Abscess of tendon sheath, right upper arm (score: 0.2350)\n[ICD-10-CM 2027] Match unresolved (top score 0.2389 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'Benadryl 50 mg.,CLINICAL HISTORY: , the patient is a pleasant 80-year-old female who presented to the hospital with complete heart block.  She has been referred for a pacemaker implantation.,RISKS AND BENEFITS: , Risks, benefits, and alternatives to implantation of a dual-chamber pacemaker were discussed with the patient.  The patient agreed both verbally and via written consent.,DESCRIPTION OF PROCEDURE: , The patient was transported to the cardiac catheterization laboratory in the fasting state.  The region of the left deltopectoral groove was prepped and draped in the usual sterile manner.  Lidocaine 1% (20 mL) was administered to the area.  After achieving appropriate anesthesia, percutaneous access of the left axillary vein was then performed under fluoroscopy.  A guide wire was advanced into the vein.  Following this, a 4-inch long transverse incision was made through the skin and subcutaneous tissue exposing the pectoral fascia and muscle beneath.  Hemostasis was achieved with electrocautery.  Lidocaine 1% (10 mL) was then administered to the medial aspect of the incision.  A pocket was then fashioned in the medial direction.  Using the previously placed wire, a 7-French side-arm sheath was advanced over the wire into the left axillary vein.  The dilator was then removed over the wire.  A second wire was then advanced into the sheath into the left axillary vein.  The sheath was then removed over the top of the two wires.  One wire was then pinned to the drape.  Using the remaining wire, a 7 French side-arm sheath was advanced back into the left axillary vein.  The dilator and wire were removed.  A passive pacing lead was then advanced down into the right atrium.  The peel-away sheath was removed.  The lead was then passed across the tricuspid valve and positioned in the apical location.  Adequate pacing and sensing functions were established.  Suture sleeve was advanced to the entry point of the tissue and connected securely to the tissue.  With the remaining wire, a 7-French side-arm sheath was advanced over the wire into the axillary vein.  The wire and dilating sheaths were removed.  An active pacing lead was then advanced down into the right atrium.  The peel-away sheath was removed.  Preformed J stylet was then advanced into the lead.  The lead was positioned in the appendage location.  Lead body was then turned, and the active fix screw was fixed to the tissue.  Adequate pacing and sensing function were established.  Suture sleeve was advanced to the entry point of the tissue and connected securely to the tissue.  The pocket was then washed with antibiotic-impregnated saline.  Pulse generator was obtained and connected securely to the leads.  The leads were then carefully wrapped behind the pulse generator, and the entire system was placed in the pocket.  The pocket was then closed with 2-0, 3-0, and 4-0 Vicryl using a running mattress stitch.  Sponge and needle counts were correct at the end of the procedure.  No acute complications were noted.,DEVICE DATA' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'Benadryl' \u2192 RXCUI 203457, canonical: Benadryl, match: exact\n[RxNorm] Ingredient: diphenhydramine (RXCUI 3498)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): diphenhydramine hydrochloride 50 MG Oral Capsule; acetaminophen 325 MG / diphenhydramine hydrochloride 25 MG / phenylephrine hydrochloride 5 MG Oral Tablet; benzethonium chloride 0.0015 MG/MG / diphenhydramine hydrochloride 0.02 MG/MG / zinc acetate 0.00215 MG/MG Topical Gel; 1 ML diphenhydramine hydrochloride 50 MG/ML Prefilled Syringe; diphenhydramine hydrochloride 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "Dose 50.0mg associated with Benadryl"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'Lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "Dose 1.0% associated with Lidocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "Dose 20.0ml associated with Lidocaine"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[RxNorm] 'Lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "Dose 1.0% associated with Lidocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "Dose 10.0ml associated with Lidocaine \u2014 dose 10.0ml not among known product strengths"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] T82121D: Displacement of cardiac pulse generator (battery), subsequent encounter (score: 0.5215)\n[ICD-10-CM 2027] T82121A: Displacement of cardiac pulse generator (battery), initial encounter (score: 0.5204)\n[ICD-10-CM 2027] T82121S: Displacement of cardiac pulse generator (battery), sequela (score: 0.5204)"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[Procedure] 'Pulse generator, manufacturer Boston Scientific, model # 12345, serial #1234' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.5192)\n[ICD-10-CM 2027] I4892: Unspecified atrial flutter (score: 0.5022)\n[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.4928)"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[Procedure] 'Right atrial lead, manufacturer Guidant, model #12345, serial #1234' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[ICD-10-CM 2027] I501: Left ventricular failure, unspecified (score: 0.4785)\n[ICD-10-CM 2027] I4720: Ventricular tachycardia, unspecified (score: 0.4153)\n[ICD-10-CM 2027] I4729: Other ventricular tachycardia (score: 0.4153)"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[Procedure] 'Right ventricular lead, manufacturer Guidant, model #12345, serial #1234.,MEASURED INTRAOPERATIVE DATA' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[ICD-10-CM 2027] W420XXD: Exposure to supersonic waves, subsequent encounter (score: 0.3360)\n[ICD-10-CM 2027] W420XXA: Exposure to supersonic waves, initial encounter (score: 0.3352)\n[ICD-10-CM 2027] W420XXS: Exposure to supersonic waves, sequela (score: 0.3352)"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[Procedure] 'Right atrial lead impedance 534 ohms.  P waves measured at 1.2 millivolts.  Pacing threshold 1.0 volt at 0.5 milliseconds' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F33",
+    "entity_id": "E33",
+    "text": "[ICD-10-CM 2027] W420XXD: Exposure to supersonic waves, subsequent encounter (score: 0.2752)\n[ICD-10-CM 2027] W420XXA: Exposure to supersonic waves, initial encounter (score: 0.2745)\n[ICD-10-CM 2027] W420XXS: Exposure to supersonic waves, sequela (score: 0.2745)"
+  },
+  {
+    "fact_id": "F34",
+    "entity_id": "E34",
+    "text": "[Procedure] 'Right ventricular lead impedance 900 ohms.  R-waves measured 6.0 millivolts.  Pacing threshold 1.0 volt at 0.5 milliseconds.,DEVICE SETTINGS: , DDD 60 to 130.,CONCLUSIONS' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F35",
+    "entity_id": "E35",
+    "text": "[ICD-10-CM 2027] H21329: Implantation cysts of iris, ciliary body or anterior chamber, unspecified eye (score: 0.3568)\n[ICD-10-CM 2027] H21322: Implantation cysts of iris, ciliary body or anterior chamber, left eye (score: 0.3553)\n[ICD-10-CM 2027] H21321: Implantation cysts of iris, ciliary body or anterior chamber, right eye (score: 0.3553)"
+  },
+  {
+    "fact_id": "F36",
+    "entity_id": "E36",
+    "text": "[Procedure] 'Successful implantation of a dual-chamber pacemaker with adequate pacing and sensing function' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F37",
+    "entity_id": "E37",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.3272)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.3173)\n[ICD-10-CM 2027] H70003: Acute mastoiditis without complications, bilateral (score: 0.3078)"
+  },
+  {
+    "fact_id": "F38",
+    "entity_id": "E38",
+    "text": "[Procedure] 'No acute complications.,PLAN' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F39",
+    "entity_id": "E39",
+    "text": "[ICD-10-CM 2027] T63443D: Toxic effect of venom of bees, assault, subsequent encounter (score: 0.3802)\n[ICD-10-CM 2027] T63444D: Toxic effect of venom of bees, undetermined, subsequent encounter (score: 0.3798)\n[ICD-10-CM 2027] T63443A: Toxic effect of venom of bees, assault, initial encounter (score: 0.3788)"
+  },
+  {
+    "fact_id": "F40",
+    "entity_id": "E40",
+    "text": "[Procedure] 'The patient will be taken back to her room for continued observation.  She can be dismissed in 24 hours provided no acute complications at the discretion of the primary service' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F41",
+    "entity_id": "E41",
+    "text": "[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.5425)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.5409)\n[ICD-10-CM 2027] W880XXS: Exposure to X-rays, sequela (score: 0.5408)"
+  },
+  {
+    "fact_id": "F42",
+    "entity_id": "E42",
+    "text": "[Procedure] 'Chest x-ray to rule out pneumothorax and verified lead position' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F43",
+    "entity_id": "E43",
+    "text": "[ICD-10-CM 2027] Y93A5: Activity, obstacle course (score: 0.5635)\n[ICD-10-CM 2027] T368X6D: Underdosing of other systemic antibiotics, subsequent encounter (score: 0.3253)\n[ICD-10-CM 2027] T3696XD: Underdosing of unspecified systemic antibiotic, subsequent encounter (score: 0.3253)"
+  },
+  {
+    "fact_id": "F44",
+    "entity_id": "E44",
+    "text": "[Procedure] 'Completion of the course of antibiotics' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F45",
+    "entity_id": "E45",
+    "text": "[ICD-10-CM 2027] Z322: Encounter for childbirth instruction (score: 0.4918)\n[ICD-10-CM 2027] F8181: Disorder of written expression (score: 0.4684)\n[ICD-10-CM 2027] Z323: Encounter for childcare instruction (score: 0.4222)"
+  },
+  {
+    "fact_id": "F46",
+    "entity_id": "E46",
+    "text": "[Procedure] 'Home dismissal instructions provided in written format' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F47",
+    "entity_id": "E47",
+    "text": "[ICD-10-CM 2027] T82199D: Other mechanical complication of unspecified cardiac device, subsequent encounter (score: 0.5038)\n[ICD-10-CM 2027] T82199A: Other mechanical complication of unspecified cardiac device, initial encounter (score: 0.5011)\n[ICD-10-CM 2027] T82199S: Other mechanical complication of unspecified cardiac device, sequela (score: 0.5010)"
+  },
+  {
+    "fact_id": "F48",
+    "entity_id": "E48",
+    "text": "[Procedure] 'Device interrogation in the morning' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F49",
+    "entity_id": "E49",
+    "text": "[ICD-10-CM 2027] H5311: Day blindness (score: 0.7354)\n[ICD-10-CM 2027] Z00111: Health examination for newborn 8 to 28 days old (score: 0.5449)\n[ICD-10-CM 2027] Z00110: Health examination for newborn under 8 days old (score: 0.4936)"
+  },
+  {
+    "fact_id": "F50",
+    "entity_id": "E50",
+    "text": "[Procedure] 'Wound check in 7 to 10 days' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F51",
+    "entity_id": "E51",
+    "text": "[ICD-10-CM 2027] T82199D: Other mechanical complication of unspecified cardiac device, subsequent encounter (score: 0.5038)\n[ICD-10-CM 2027] T82199A: Other mechanical complication of unspecified cardiac device, initial encounter (score: 0.5011)\n[ICD-10-CM 2027] T82199S: Other mechanical complication of unspecified cardiac device, sequela (score: 0.5010)"
+  },
+  {
+    "fact_id": "F52",
+    "entity_id": "E52",
+    "text": "[Procedure] 'Enrollment in device clinic' \u2014 extracted from header, not verified against any coding system"
+  }
+]

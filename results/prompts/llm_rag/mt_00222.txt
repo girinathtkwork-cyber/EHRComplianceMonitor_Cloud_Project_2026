@@ -1,0 +1,203 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT: , Mental changes today. Additional diagnosis noted: Major Depressive Disorder.,HISTORY OF PRESENT ILLNESS: , This patient is a resident from Mazatlan, Mexico, visiting her son here in Utah, with a history of diabetes.  She usually does not take her meal on time, and also not having her regular meals lately.  The patient usually still takes her diabetic medication.  Today, the patient was found to have decrease in mental alertness, but no other GI symptoms.  Some sweating and agitation, but no fever or chills.  No other rash.  Because of the above symptoms, the patient was treated in the emergency department here.  She was found to glucose in 30 range, and hypertension.  There was some question whether she also take her blood pressure medication or not.  Because of the above symptoms, the patient was admitted to the hospital for further care.  The patient was given labetalol IV and also Norvasc blood pressure, and also some glucose supplement.  At this time, the patient's glucose was in the 175 range.,PAST MEDICAL HISTORY: , Diabetes, hypertension.,PAST SURGICAL HISTORY:,  None.,FAMILY HISTORY: , Unremarkable.,ALLERGIES: , No known drug allergies.,MEDICATIONS:,  In Spanish label.  They are the diabetic medication, and also blood pressure medication.  She also takes aspirin a day.,SOCIAL HISTORY:  ,The patient is a Mazatlan, Mexico resident, visiting her son here.,PHYSICAL EXAMINATION:,GENERAL:  The patient appears to be no acute distress, resting comfortably in bed, alert, oriented x3, and coherent through interpreter.,HEENT:  Clear, atraumatic, normocephalic.  No sinus tenderness.  No obvious head injury or any laceration.  Extraocular movements are intact.  Dry mucosal linings.,HEART:  Regular rate and rhythm, without murmur.  Normal S1, S2.,LUNGS:  Clear.  No rales.  No wheeze.  Good excursion.,ABDOMEN:  Soft, active bowel sounds in 4 quarters, nontender, no organomegaly.,EXTREMITIES:  No edema, clubbing, or cyanosis.  No rash.,LABORATORY FINDINGS: , On Admission:  CPK, troponin are negative.  CMP is remarkable for glucose of 33.  BMP is remarkable for BUN of 60, creatinine is 4.3, potassium 4.7.  Urinalysis shows specific gravity of 10.30.  CT of the brain showed no hemorrhage.  Chest x-ray showed no acute cardiomegaly or any infiltrates.,IMPRESSION:,1.  Hypoglycemia due to not eating her meals on a regular basis.,2.  Hypertension.,3.  Renal insufficiency, may be dehydration, or diabetic nephropathy.,PLAN: , Admit the patient to the medical ward, IV fluid, glucometer checks, and adjust the blood pressure medication and also diabetic medication.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "noted: Major Depressive Disorder.,HISTORY OF PRESENT ILLNESS: , This patient is a resident from Mazatlan, Mexico, visiting her son here in Utah, with a history of diabetes.  She usually does not take her meal on time, and also not having her regular meals lately.  The patient usually still takes her diabetic medication.  Today, the patient was found to have decrease in mental alertness, but no other GI symptoms.  Some sweating and agitation, but no fever or chills.  No other rash.  Because of the above symptoms, the patient was treated in the emergency department here.  She was found to glucose in 30 range, and hypertension.  There was some question whether she also take her blood pressure medication or not.  Because of the above symptoms, the patient was admitted to the hospital for further care.  The patient was given labetalol IV and also Norvasc blood pressure, and also some glucose supplement.  At this time, the patient's glucose was in the 175 range.,PAST MEDICAL HISTORY: , Diabetes, hypertension.,PAST SURGICAL HISTORY:,  None.,FAMILY HISTORY: , Unremarkable.,ALLERGIES: , No known drug allergies.,MEDICATIONS:,  In Spanish label.  They are the diabetic medication, and also blood pressure medication.  She also takes aspirin a day.,SOCIAL HISTORY:  ,The patient is a Mazatlan, Mexico resident, visiting her son here.,PHYSICAL EXAMINATION:,GENERAL:  The patient appears to be no acute distress, resting comfortably in bed, alert, oriented x3, and coherent through interpreter.,HEENT:  Clear, atraumatic, normocephalic.  No sinus tenderness.  No obvious head injury or any laceration.  Extraocular movements are intact.  Dry mucosal linings.,HEART:  Regular rate and rhythm, without murmur.  Normal S1, S2.,LUNGS:  Clear.  No rales.  No wheeze.  Good excursion.,ABDOMEN:  Soft, active bowel sounds in 4 quarters, nontender, no organomegaly.,EXTREMITIES:  No edema, clubbing, or cyanosis.  No rash.,LABORATORY FINDINGS: , On Admission:  CPK, troponin are negative.  CMP is remarkable for glucose of"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Today"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "glucose"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "labetalol"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Norvasc"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "glucose"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "glucose"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "aspirin"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "glucose"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "BMP is remarkable for BUN of 60, creatinine is 4.3, potassium 4"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "potassium"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Urinalysis shows specific gravity of 10"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "CT of the brain showed no hemorrhage.  Chest x-ray showed no acute cardiomegaly or any infiltrates.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Hypoglycemia due to not eating her meals on a regular basis"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Hypertension"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Renal insufficiency, may be dehydration, or diabetic nephropathy.,PLAN: , Admit the patient to the medical ward, IV fluid, glucometer checks, and adjust the blood pressure medication and also diabetic medication"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2578)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.2540)\n[ICD-10-CM 2027] Z91128: Patient's intentional underdosing of medication regimen for other reason (score: 0.2314)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'labetalol' \u2192 RXCUI 6185, canonical: labetalol, match: exact\n[RxNorm] Ingredient: labetalol (RXCUI 6185)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 4 ML labetalol hydrochloride 5 MG/ML Cartridge; 4 ML labetalol hydrochloride 5 MG/ML Injection; 200 ML labetalol hydrochloride 1 MG/ML Injection; 100 ML labetalol hydrochloride 1 MG/ML Injection; 300 ML labetalol hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Norvasc' \u2192 RXCUI 58927, canonical: Norvasc, match: exact\n[RxNorm] Ingredient: amlodipine (RXCUI 17767)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet; aliskiren 150 MG / amlodipine 5 MG / hydrochlorothiazide 12.5 MG Oral Tablet; aliskiren 300 MG / amlodipine 10 MG / hydrochlorothiazide 12.5 MG Oral Tablet; aliskiren 300 MG / amlodipine 10 MG / hydrochlorothiazide 25 MG Oral Tablet; aliskiren 300 MG / amlodipine 5 MG / hydrochlorothiazide 12.5 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] No matches found for 'BMP is remarkable for BUN of 60, creatinine is 4.3, potassium 4' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'potassium' \u2192 RXCUI 8588, canonical: potassium, match: exact\n[RxNorm] Ingredient: potassium (RXCUI 8588)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): potassium 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] P8330: Unspecified edema specific to newborn (score: 0.6500)\n[ICD-10-CM 2027] P8339: Other edema specific to newborn (score: 0.6500)\n[ICD-10-CM 2027] F6089: Other specific personality disorders (score: 0.5868)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.3982)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.3970)\n[ICD-10-CM 2027] W880XXS: Exposure to X-rays, sequela (score: 0.3970)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] E161: Other hypoglycemia (score: 0.5394)\n[ICD-10-CM 2027] E162: Hypoglycemia, unspecified (score: 0.5394)\n[ICD-10-CM 2027] F5089: Other specified eating disorder (score: 0.5075)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] I158: Other secondary hypertension (score: 0.7957)\n[ICD-10-CM 2027] I159: Secondary hypertension, unspecified (score: 0.7957)\n[ICD-10-CM 2027] O169: Unspecified maternal hypertension, unspecified trimester (score: 0.7538)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] P0418: Newborn affected by other maternal medication (score: 0.3666)\n[ICD-10-CM 2027] Z91128: Patient's intentional underdosing of medication regimen for other reason (score: 0.3627)\n[ICD-10-CM 2027] Z91138: Patient's unintentional underdosing of medication regimen for other reason (score: 0.3619)"
+  }
+]

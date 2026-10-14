@@ -1,0 +1,283 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Cervical myelopathy, C3-4, secondary to stenosis from herniated nucleus pulposus, C3-4.,POSTOPERATIVE DIAGNOSES: , Cervical myelopathy, C3-4, secondary to stenosis from herniated nucleus pulposus, C3-4.,OPERATIVE PROCEDURES,1.  Anterior cervical discectomy with decompression, C3-4.,2.  Arthrodesis with anterior interbody fusion, C3-4.,3.  Spinal instrumentation using Pioneer 18-mm plate and four 14 x 4.3 mm screws (all titanium).,4.  Implant using PEEK 7 mm.,5.  Allograft using Vitoss.,DRAINS: , Round French 10 JP drain.,FLUIDS: , 1800 mL of crystalloids.,URINE OUTPUT:  ,1000 mL.,SPECIMENS: , None.,COMPLICATIONS:  ,None.,ANESTHESIA: , General endotracheal anesthesia.,ESTIMATED BLOOD LOSS:  ,Less than 100 mL.,CONDITION:  ,To postanesthesia care unit extubated with stable vital signs.,INDICATIONS FOR THE OPERATION:  ,This is a case of a very pleasant 32-year-old Caucasian male who had been experiencing posterior neck discomfort and was shooting basketball last week, during which time he felt a pop.  Since then, the patient started complaining of acute right arm and right leg weakness, which had been progressively worsening.  About two days ago, he started noticing weakness on the left arm.  The patient also noted shuffling gait.  The patient presented to a family physician and was referred to Dr. X for further evaluation.  Dr. X could not attempt to this, so he called me at the office and the patient was sent to the emergency room, where an MRI of the brain was essentially unremarkable as well as MRI of the thoracic spine.  MRI of the cervical spine, however, revealed an acute disk herniation at C3-C4 with evidence of stenosis and cord changes.  Based on these findings, I recommended decompression.  The patient was started on Decadron at 10 mg IV q.6h.  Operation, expected outcome, risks, and benefits were discussed with him.  Risks to include but not exclusive of bleeding and infection.  Bleeding can be superficial, but can compromise airway, for which he has been told that he may be brought emergently back to the operating room for evacuation of said hematoma.  The hematoma could also be an epidural hematoma, which may compress the spinal cord and result in weakness of all four extremities, numbness of all four extremities, and impairment of bowel and bladder function.  Should this happen, he needs to be brought emergently back to the operating room for evacuation of said hematoma.  There is also the risk by removing the hematoma that he can deteriorate as far as neurological condition, but this hopefully with the steroid prep will be prevented or if present will only be transient.  There is also the possibility of infection, which can be superficial and treated with IV and p.o. antibiotics.  However, should the infection be extensive or be deep, he may require return to the operating room for debridement and irrigation.  This may pose a medical problem since in the presence of infection, the graft as well as spinal instrumentation may have to be removed.  There is also the possibility of dural tear with its attendant complaints of headache, nausea, vomiting, photophobia, as well as the development of pseudomeningocele.  This too can compromise airway and may require return to the operating room for repair of the dural tear.  There is also potential risk of injury to the esophagus, the trachea, as well as the carotid.  The patient can also have a stroke on the right cerebral circulation should the plaque be propelled into the right circulation.  The patient understood all these risks together with the risk associated with anesthesia and agreed to have the procedure performed.,DESCRIPTION OF PROCEDURE:  ,The patient was brought to the operating room, awake, alert and not in any form of distress.  After smooth induction and intubation, a Foley catheter was inserted.  No monitoring leads were placed.  The patient was then positioned supine on the operating table with the head supported on a foam doughnut and the neck placed on hyperextension with a shoulder roll under both shoulders.  Localizing x-ray verified the marker to be right at the C3-4 interspace.  Proceeded to mark an incision along the anterior border of the sternocleidomastoid with the central point at the area of the marker measuring about 3 cm in length.  The area was then prepped with DuraPrep.,After sterile drapes were laid out, an incision was made using a scalpel blade #10.  Wound edge bleeders were controlled with bipolar coagulation and a hot knife was utilized to cut the platysma in a similar fashion.  The anterior border of the sternocleidomastoid was identified and dissection was carried superior to and lateral to the esophagus and trachea, but medial to the carotid sheath.  The prevertebral fascia was identified.  Localizing x-ray verified another marker to be at the C3-4 interspace.  Proceeded to strip the longus colli muscles off the vertebral body of C3 and C4 and a self-retaining retractor was then laid out.  There was some degree of anterior osteophyte and this was carefully drilled down with a Midas 5-mm bur.  The disk was then cut through the annulus and removal of the disk was done with the use of the Midas 5-mm bur and later a 3-mm bur.  The inferior endplate of C3 and the superior endplate of C4 were likewise drilled out together with posterior inferior osteophyte at the C3 and the posterior superior osteophyte at C4.  There was note of a central disk herniation centrally, but more marked displacement of the cord on the left side.  By careful dissection of this disk, posterior longitudinal ligament was removed and pressure on the cord was removed.  Hemostasis of the epidural bleeders was done with a combination of bipolar coagulation, but we needed to put a small piece of Gelfoam on the patient's left because of profuse venous bleeder.  With this completed, the Valsalva maneuver showed no evidence of any CSF leakage.  A 7-mm implant with its interior packed with Vitoss was then tapped into place.  An 18-mm plate was then screwed down with four 14 x 4.0 mm screws.  The area was irrigated with saline, with bacitracin solution.  Postoperative x-ray showed excellent placement of the graft and spinal instrumentation.  A round French 10 JP drain was laid over the construct and exteriorized though a separate stab incision on the patient's right inferiorly.  The wound was then closed in layers with Vicryl 3-0 inverted interrupted sutures for the platysma, Vicryl 4-0 subcuticular stitch for the dermis and Dermabond.  The catheter was anchored to the skin with a nylon 3-0 stitch.  Dressing was placed only on the exit site of the drain.  C-collar was placed, and the patient was transferred to the recovery awake and moving all four extremities.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Cervical myelopathy, C3-4, secondary to stenosis from herniated nucleus pulposus, C3-4.,POSTOPERATIVE DIAGNOSES: , Cervical myelopathy, C3-4, secondary to stenosis from herniated nucleus pulposus, C3-4.,OPERATIVE PROCEDURES"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Cervical myelopathy, C3-4, secondary to stenosis from herniated nucleus pulposus, C3-4.,OPERATIVE PROCEDURES"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Anterior cervical discectomy with decompression, C3-4"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Anterior cervical discectomy with decompression, C3-4"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Arthrodesis with anterior interbody fusion, C3-4"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Arthrodesis with anterior interbody fusion, C3-4"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Spinal instrumentation using Pioneer 18-mm plate and four 14 x 4.3 mm screws (all titanium)"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Spinal instrumentation using Pioneer 18-mm plate and four 14 x 4.3 mm screws (all titanium)"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "titanium"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Implant using PEEK 7 mm"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Implant using PEEK 7 mm"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Allograft using Vitoss.,DRAINS: , Round French 10 JP drain.,FLUIDS: , 1800 mL of crystalloids.,URINE OUTPUT:  ,1000 mL.,SPECIMENS: , None.,COMPLICATIONS:  ,None.,ANESTHESIA: , General endotracheal anesthesia.,ESTIMATED BLOOD LOSS:  ,Less than 100 mL.,CONDITION:  ,To postanesthesia care unit extubated with stable vital signs.,INDICATIONS FOR THE OPERATION:  ,This is a case of a very pleasant 32-year-old Caucasian male who had been experiencing posterior neck discomfort and was shooting basketball last week, during which time he felt a pop.  Since then, the patient started complaining of acute right arm and right leg weakness, which had been progressively worsening.  About two days ago, he started noticing weakness on the left arm.  The patient also noted shuffling gait.  The patient presented to a family physician and was referred to Dr. X for further evaluation.  Dr. X could not attempt to this, so he called me at the office and the patient was sent to the emergency room, where an MRI of the brain was essentially unremarkable as well as MRI of the thoracic spine.  MRI of the cervical spine, however, revealed an acute disk herniation at C3-C4 with evidence of stenosis and cord changes.  Based on these findings, I recommended decompression.  The patient was started on Decadron at 10 mg IV q.6h.  Operation, expected outcome, risks, and benefits were discussed with him.  Risks to include but not exclusive of bleeding and infection.  Bleeding can be superficial, but can compromise airway, for which he has been told that he may be brought emergently back to the operating room for evacuation of said hematoma.  The hematoma could also be an epidural hematoma, which may compress the spinal cord and result in weakness of all four extremities, numbness of all four extremities, and impairment of bowel and bladder function.  Should this happen, he needs to be brought emergently back to the operating room for evacuation of said hematoma.  There is also the risk by removing the hematoma that he can deteriorate as far as neurological condition, but this hopefully with the steroid prep will be prevented or if present will only be transient.  There is also the possibility of infection, which can be superficial and treated with IV and p.o. antibiotics.  However, should the infection be extensive or be deep, he may require return to the operating room for debridement and irrigation.  This may pose a medical problem since in the presence of infection, the graft as well as spinal instrumentation may have to be removed.  There is also the possibility of dural tear with its attendant complaints of headache, nausea, vomiting, photophobia, as well as the development of pseudomeningocele.  This too can compromise airway and may require return to the operating room for repair of the dural tear.  There is also potential risk of injury to the esophagus, the trachea, as well as the carotid.  The patient can also have a stroke on the right cerebral circulation should the plaque be propelled into the right circulation.  The patient understood all these risks together with the risk associated with anesthesia and agreed to have the procedure performed.,DESCRIPTION OF PROCEDURE:  ,The patient was brought to the operating room, awake, alert and not in any form of distress.  After smooth induction and intubation, a Foley catheter was inserted.  No monitoring leads were placed.  The patient was then positioned supine on the operating table with the head supported on a foam doughnut and the neck placed on hyperextension with a shoulder roll under both shoulders.  Localizing x-ray verified the marker to be right at the C3-4 interspace.  Proceeded to mark an incision along the anterior border of the sternocleidomastoid with the central point at the area of the marker measuring about 3 cm in length.  The area was then prepped with DuraPrep.,After sterile drapes were laid out, an incision was made using a scalpel blade #"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "Allograft using Vitoss.,DRAINS: , Round French 10 JP drain.,FLUIDS: , 1800 mL of crystalloids.,URINE OUTPUT:  ,1000 mL.,SPECIMENS: , None.,COMPLICATIONS:  ,None.,ANESTHESIA: , General endotracheal anesthesia.,ESTIMATED BLOOD LOSS:  ,Less than 100 mL.,CONDITION:  ,To postanesthesia care unit extubated with stable vital signs.,INDICATIONS FOR THE OPERATION:  ,This is a case of a very pleasant 32-year-old Caucasian male who had been experiencing posterior neck discomfort and was shooting basketball last week, during which time he felt a pop.  Since then, the patient started complaining of acute right arm and right leg weakness, which had been progressively worsening.  About two days ago, he started noticing weakness on the left arm.  The patient also noted shuffling gait.  The patient presented to a family physician and was referred to Dr. X for further evaluation.  Dr. X could not attempt to this, so he called me at the office and the patient was sent to the emergency room, where an MRI of the brain was essentially unremarkable as well as MRI of the thoracic spine.  MRI of the cervical spine, however, revealed an acute disk herniation at C3-C4 with evidence of stenosis and cord changes.  Based on these findings, I recommended decompression.  The patient was started on Decadron at 10 mg IV q.6h.  Operation, expected outcome, risks, and benefits were discussed with him.  Risks to include but not exclusive of bleeding and infection.  Bleeding can be superficial, but can compromise airway, for which he has been told that he may be brought emergently back to the operating room for evacuation of said hematoma.  The hematoma could also be an epidural hematoma, which may compress the spinal cord and result in weakness of all four extremities, numbness of all four extremities, and impairment of bowel and bladder function.  Should this happen, he needs to be brought emergently back to the operating room for evacuation of said hematoma.  There is also the risk by removing the hematoma that he can deteriorate as far as neurological condition, but this hopefully with the steroid prep will be prevented or if present will only be transient.  There is also the possibility of infection, which can be superficial and treated with IV and p.o. antibiotics.  However, should the infection be extensive or be deep, he may require return to the operating room for debridement and irrigation.  This may pose a medical problem since in the presence of infection, the graft as well as spinal instrumentation may have to be removed.  There is also the possibility of dural tear with its attendant complaints of headache, nausea, vomiting, photophobia, as well as the development of pseudomeningocele.  This too can compromise airway and may require return to the operating room for repair of the dural tear.  There is also potential risk of injury to the esophagus, the trachea, as well as the carotid.  The patient can also have a stroke on the right cerebral circulation should the plaque be propelled into the right circulation.  The patient understood all these risks together with the risk associated with anesthesia and agreed to have the procedure performed.,DESCRIPTION OF PROCEDURE:  ,The patient was brought to the operating room, awake, alert and not in any form of distress.  After smooth induction and intubation, a Foley catheter was inserted.  No monitoring leads were placed.  The patient was then positioned supine on the operating table with the head supported on a foam doughnut and the neck placed on hyperextension with a shoulder roll under both shoulders.  Localizing x-ray verified the marker to be right at the C3-4 interspace.  Proceeded to mark an incision along the anterior border of the sternocleidomastoid with the central point at the area of the marker measuring about 3 cm in length.  The area was then prepped with DuraPrep.,After sterile drapes were laid out, an incision was made using a scalpel blade #"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "measurement",
+    "text": "1800 mL"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "measurement",
+    "text": "1000 mL"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "measurement",
+    "text": "100 mL"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "This is a case of a very pleasant 32-year-old Caucasian male who had been experiencing posterior neck discomfort and was shooting basketball last week, during which time he felt a pop.  Since then, the patient started complaining of acute right arm and right leg weakness, which had been progressively worsening.  About two days ago, he started noticing weakness on the left arm.  The patient also noted shuffling gait.  The patient presented to a family physician and was referred to Dr. X for further evaluation.  Dr. X could not attempt to this, so he called me at the office and the patient was sent to the emergency room, where an MRI of the brain was essentially unremarkable as well as MRI of the thoracic spine.  MRI of the cervical spine, however, revealed an acute disk herniation at C3-C4 with evidence of stenosis and cord changes.  Based on these findings, I recommended decompression.  The patient was started on Decadron at 10 mg IV q.6h.  Operation, expected outcome, risks, and benefits were discussed with him.  Risks to include but not exclusive of bleeding and infection.  Bleeding can be superficial, but can compromise airway, for which he has been told that he may be brought emergently back to the operating room for evacuation of said hematoma.  The hematoma could also be an epidural hematoma, which may compress the spinal cord and result in weakness of all four extremities, numbness of all four extremities, and impairment of bowel and bladder function.  Should this happen, he needs to be brought emergently back to the operating room for evacuation of said hematoma.  There is also the risk by removing the hematoma that he can deteriorate as far as neurological condition, but this hopefully with the steroid prep will be prevented or if present will only be transient.  There is also the possibility of infection, which can be superficial and treated with IV and p.o. antibiotics.  However, should the infection be extensive or be deep, he may require return to the operating room for debridement and irrigation.  This may pose a medical problem since in the presence of infection, the graft as well as spinal instrumentation may have to be removed.  There is also the possibility of dural tear with its attendant complaints of headache, nausea, vomiting, photophobia, as well as the development of pseudomeningocele.  This too can compromise airway and may require return to the operating room for repair of the dural tear.  There is also potential risk of injury to the esophagus, the trachea, as well as the carotid.  The patient can also have a stroke on the right cerebral circulation should the plaque be propelled into the right circulation.  The patient understood all these risks together with the risk associated with anesthesia and agreed to have the procedure performed.,DESCRIPTION OF PROCEDURE:  ,The patient was brought to the operating room, awake, alert and not in any form of distress.  After smooth induction and intubation, a Foley catheter was inserted.  No monitoring leads were placed.  The patient was then positioned supine on the operating table with the head supported on a foam doughnut and the neck placed on hyperextension with a shoulder roll under both shoulders.  Localizing x-ray verified the marker to be right at the C3-4 interspace.  Proceeded to mark an incision along the anterior border of the sternocleidomastoid with the central point at the area of the marker measuring about 3 cm in length.  The area was then prepped with DuraPrep.,After sterile drapes were laid out, an incision was made using a scalpel blade #"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "Decadron"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "performed.,DESCRIPTION OF PROCEDURE:  ,The patient was brought to the operating room, awake, alert and not in any form of distress.  After smooth induction and intubation, a Foley catheter was inserted.  No monitoring leads were placed.  The patient was then positioned supine on the operating table with the head supported on a foam doughnut and the neck placed on hyperextension with a shoulder roll under both shoulders.  Localizing x-ray verified the marker to be right at the C3-4 interspace.  Proceeded to mark an incision along the anterior border of the sternocleidomastoid with the central point at the area of the marker measuring about 3 cm in length.  The area was then prepped with DuraPrep.,After sterile drapes were laid out, an incision was made using a scalpel blade #"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "DuraPrep"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "Wound edge bleeders were controlled with bipolar coagulation and a hot knife was utilized to cut the platysma in a similar fashion.  The anterior border of the sternocleidomastoid was identified and dissection was carried superior to and lateral to the esophagus and trachea, but medial to the carotid sheath.  The prevertebral fascia was identified.  Localizing x-ray verified another marker to be at the C3-4 interspace.  Proceeded to strip the longus colli muscles off the vertebral body of C3 and C4 and a self-retaining retractor was then laid out.  There was some degree of anterior osteophyte and this was carefully drilled down with a Midas 5-mm bur.  The disk was then cut through the annulus and removal of the disk was done with the use of the Midas 5-mm bur and later a 3-mm bur.  The inferior endplate of C3 and the superior endplate of C4 were likewise drilled out together with posterior inferior osteophyte at the C3 and the posterior superior osteophyte at C"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "procedure",
+    "text": "Wound edge bleeders were controlled with bipolar coagulation and a hot knife was utilized to cut the platysma in a similar fashion.  The anterior border of the sternocleidomastoid was identified and dissection was carried superior to and lateral to the esophagus and trachea, but medial to the carotid sheath.  The prevertebral fascia was identified.  Localizing x-ray verified another marker to be at the C3-4 interspace.  Proceeded to strip the longus colli muscles off the vertebral body of C3 and C4 and a self-retaining retractor was then laid out.  There was some degree of anterior osteophyte and this was carefully drilled down with a Midas 5-mm bur.  The disk was then cut through the annulus and removal of the disk was done with the use of the Midas 5-mm bur and later a 3-mm bur.  The inferior endplate of C3 and the superior endplate of C4 were likewise drilled out together with posterior inferior osteophyte at the C3 and the posterior superior osteophyte at C"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "There was note of a central disk herniation centrally, but more marked displacement of the cord on the left side.  By careful dissection of this disk, posterior longitudinal ligament was removed and pressure on the cord was removed.  Hemostasis of the epidural bleeders was done with a combination of bipolar coagulation, but we needed to put a small piece of Gelfoam on the patient's left because of profuse venous bleeder.  With this completed, the Valsalva maneuver showed no evidence of any CSF leakage.  A 7-mm implant with its interior packed with Vitoss was then tapped into place.  An 18-mm plate was then screwed down with four 14 x 4.0 mm screws.  The area was irrigated with saline, with bacitracin solution.  Postoperative x-ray showed excellent placement of the graft and spinal instrumentation.  A round French 10 JP drain was laid over the construct and exteriorized though a separate stab incision on the patient's right inferiorly.  The wound was then closed in layers with Vicryl 3-0 inverted interrupted sutures for the platysma, Vicryl 4-0 subcuticular stitch for the dermis and Dermabond.  The catheter was anchored to the skin with a nylon 3-0 stitch.  Dressing was placed only on the exit site of the drain.  C-collar was placed, and the patient was transferred to the recovery awake and moving all four extremities"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "procedure",
+    "text": "There was note of a central disk herniation centrally, but more marked displacement of the cord on the left side.  By careful dissection of this disk, posterior longitudinal ligament was removed and pressure on the cord was removed.  Hemostasis of the epidural bleeders was done with a combination of bipolar coagulation, but we needed to put a small piece of Gelfoam on the patient's left because of profuse venous bleeder.  With this completed, the Valsalva maneuver showed no evidence of any CSF leakage.  A 7-mm implant with its interior packed with Vitoss was then tapped into place.  An 18-mm plate was then screwed down with four 14 x 4.0 mm screws.  The area was irrigated with saline, with bacitracin solution.  Postoperative x-ray showed excellent placement of the graft and spinal instrumentation.  A round French 10 JP drain was laid over the construct and exteriorized though a separate stab incision on the patient's right inferiorly.  The wound was then closed in layers with Vicryl 3-0 inverted interrupted sutures for the platysma, Vicryl 4-0 subcuticular stitch for the dermis and Dermabond.  The catheter was anchored to the skin with a nylon 3-0 stitch.  Dressing was placed only on the exit site of the drain.  C-collar was placed, and the patient was transferred to the recovery awake and moving all four extremities"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "medication",
+    "text": "bacitracin"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M5000: Cervical disc disorder with myelopathy, unspecified cervical region (score: 0.5491)\n[ICD-10-CM 2027] M4712: Other spondylosis with myelopathy, cervical region (score: 0.5129)\n[ICD-10-CM 2027] M5001: Cervical disc disorder with myelopathy, high cervical region (score: 0.5023)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] M5000: Cervical disc disorder with myelopathy, unspecified cervical region (score: 0.4750)\n[ICD-10-CM 2027] M4712: Other spondylosis with myelopathy, cervical region (score: 0.4437)\n[ICD-10-CM 2027] M5001: Cervical disc disorder with myelopathy, high cervical region (score: 0.4345)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] T703XXD: Caisson disease [decompression sickness], subsequent encounter (score: 0.4805)\n[ICD-10-CM 2027] T703XXA: Caisson disease [decompression sickness], initial encounter (score: 0.4796)\n[ICD-10-CM 2027] T703XXS: Caisson disease [decompression sickness], sequela (score: 0.4795)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Anterior cervical discectomy with decompression, C3-4' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] M960: Pseudarthrosis after fusion or arthrodesis (score: 0.6878)\n[ICD-10-CM 2027] Z981: Arthrodesis status (score: 0.6395)\n[ICD-10-CM 2027] M4320: Fusion of spine, site unspecified (score: 0.4511)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Arthrodesis with anterior interbody fusion, C3-4' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] Q960: Karyotype 45, X (score: 0.3342)\n[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.2896)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.2888)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Spinal instrumentation using Pioneer 18-mm plate and four 14 x 4.3 mm screws (all titanium)' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'titanium' \u2192 RXCUI 1305547, canonical: titanium, match: exact\n[RxNorm] Ingredient: titanium (RXCUI 1305547)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] Y37451D: Military operations involving combat using blunt or piercing object, civilian, subsequent encounter (score: 0.3719)\n[ICD-10-CM 2027] Y37451A: Military operations involving combat using blunt or piercing object, civilian, initial encounter (score: 0.3713)\n[ICD-10-CM 2027] Y37451S: Military operations involving combat using blunt or piercing object, civilian, sequela (score: 0.3713)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Implant using PEEK 7 mm' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] T63443D: Toxic effect of venom of bees, assault, subsequent encounter (score: 0.3390)\n[ICD-10-CM 2027] T63444D: Toxic effect of venom of bees, undetermined, subsequent encounter (score: 0.3386)\n[ICD-10-CM 2027] T63443A: Toxic effect of venom of bees, assault, initial encounter (score: 0.3377)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'Allograft using Vitoss.,DRAINS: , Round French 10 JP drain.,FLUIDS: , 1800 mL of crystalloids.,URINE OUTPUT:  ,1000 mL.,SPECIMENS: , None.,COMPLICATIONS:  ,None.,ANESTHESIA: , General endotracheal anesthesia.,ESTIMATED BLOOD LOSS:  ,Less than 100 mL.,CONDITION:  ,To postanesthesia care unit extubated with stable vital signs.,INDICATIONS FOR THE OPERATION:  ,This is a case of a very pleasant 32-year-old Caucasian male who had been experiencing posterior neck discomfort and was shooting basketball last week, during which time he felt a pop.  Since then, the patient started complaining of acute right arm and right leg weakness, which had been progressively worsening.  About two days ago, he started noticing weakness on the left arm.  The patient also noted shuffling gait.  The patient presented to a family physician and was referred to Dr. X for further evaluation.  Dr. X could not attempt to this, so he called me at the office and the patient was sent to the emergency room, where an MRI of the brain was essentially unremarkable as well as MRI of the thoracic spine.  MRI of the cervical spine, however, revealed an acute disk herniation at C3-C4 with evidence of stenosis and cord changes.  Based on these findings, I recommended decompression.  The patient was started on Decadron at 10 mg IV q.6h.  Operation, expected outcome, risks, and benefits were discussed with him.  Risks to include but not exclusive of bleeding and infection.  Bleeding can be superficial, but can compromise airway, for which he has been told that he may be brought emergently back to the operating room for evacuation of said hematoma.  The hematoma could also be an epidural hematoma, which may compress the spinal cord and result in weakness of all four extremities, numbness of all four extremities, and impairment of bowel and bladder function.  Should this happen, he needs to be brought emergently back to the operating room for evacuation of said hematoma.  There is also the risk by removing the hematoma that he can deteriorate as far as neurological condition, but this hopefully with the steroid prep will be prevented or if present will only be transient.  There is also the possibility of infection, which can be superficial and treated with IV and p.o. antibiotics.  However, should the infection be extensive or be deep, he may require return to the operating room for debridement and irrigation.  This may pose a medical problem since in the presence of infection, the graft as well as spinal instrumentation may have to be removed.  There is also the possibility of dural tear with its attendant complaints of headache, nausea, vomiting, photophobia, as well as the development of pseudomeningocele.  This too can compromise airway and may require return to the operating room for repair of the dural tear.  There is also potential risk of injury to the esophagus, the trachea, as well as the carotid.  The patient can also have a stroke on the right cerebral circulation should the plaque be propelled into the right circulation.  The patient understood all these risks together with the risk associated with anesthesia and agreed to have the procedure performed.,DESCRIPTION OF PROCEDURE:  ,The patient was brought to the operating room, awake, alert and not in any form of distress.  After smooth induction and intubation, a Foley catheter was inserted.  No monitoring leads were placed.  The patient was then positioned supine on the operating table with the head supported on a foam doughnut and the neck placed on hyperextension with a shoulder roll under both shoulders.  Localizing x-ray verified the marker to be right at the C3-4 interspace.  Proceeded to mark an incision along the anterior border of the sternocleidomastoid with the central point at the area of the marker measuring about 3 cm in length.  The area was then prepped with DuraPrep.,After sterile drapes were laid out, an incision was made using a scalpel blade #' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Measurement] 1800.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Measurement] 1000.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Measurement] 100.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'This is a case of a very pleasant 32-year-old Caucasian male who had been experiencing posterior neck discomfort and was shooting basketball last week, during which time he felt a pop.  Since then, the patient started complaining of acute right arm and right leg weakness, which had been progressively worsening.  About two days ago, he started noticing weakness on the left arm.  The patient also noted shuffling gait.  The patient presented to a family physician and was referred to Dr. X for further evaluation.  Dr. X could not attempt to this, so he called me at the office and the patient was sent to the emergency room, where an MRI of the brain was essentially unremarkable as well as MRI of the thoracic spine.  MRI of the cervical spine, however, revealed an acute disk herniation at C3-C4 with evidence of stenosis and cord changes.  Based on these findings, I recommended decompression.  The patient was started on Decadron at 10 mg IV q.6h.  Operation, expected outcome, risks, and benefits were discussed with him.  Risks to include but not exclusive of bleeding and infection.  Bleeding can be superficial, but can compromise airway, for which he has been told that he may be brought emergently back to the operating room for evacuation of said hematoma.  The hematoma could also be an epidural hematoma, which may compress the spinal cord and result in weakness of all four extremities, numbness of all four extremities, and impairment of bowel and bladder function.  Should this happen, he needs to be brought emergently back to the operating room for evacuation of said hematoma.  There is also the risk by removing the hematoma that he can deteriorate as far as neurological condition, but this hopefully with the steroid prep will be prevented or if present will only be transient.  There is also the possibility of infection, which can be superficial and treated with IV and p.o. antibiotics.  However, should the infection be extensive or be deep, he may require return to the operating room for debridement and irrigation.  This may pose a medical problem since in the presence of infection, the graft as well as spinal instrumentation may have to be removed.  There is also the possibility of dural tear with its attendant complaints of headache, nausea, vomiting, photophobia, as well as the development of pseudomeningocele.  This too can compromise airway and may require return to the operating room for repair of the dural tear.  There is also potential risk of injury to the esophagus, the trachea, as well as the carotid.  The patient can also have a stroke on the right cerebral circulation should the plaque be propelled into the right circulation.  The patient understood all these risks together with the risk associated with anesthesia and agreed to have the procedure performed.,DESCRIPTION OF PROCEDURE:  ,The patient was brought to the operating room, awake, alert and not in any form of distress.  After smooth induction and intubation, a Foley catheter was inserted.  No monitoring leads were placed.  The patient was then positioned supine on the operating table with the head supported on a foam doughnut and the neck placed on hyperextension with a shoulder roll under both shoulders.  Localizing x-ray verified the marker to be right at the C3-4 interspace.  Proceeded to mark an incision along the anterior border of the sternocleidomastoid with the central point at the area of the marker measuring about 3 cm in length.  The area was then prepped with DuraPrep.,After sterile drapes were laid out, an incision was made using a scalpel blade #' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'Decadron' \u2192 RXCUI 227682, canonical: Decadron, match: exact\n[RxNorm] Ingredient: dexamethasone (RXCUI 3264)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): dexamethasone 1 MG/ML / neomycin 3.2 MG/ML / thiabendazole 40 MG/ML Topical Solution; dexamethasone sodium phosphate 4 MG/ML Injectable Solution; dexamethasone phosphate 4 MG/ML Injectable Solution; dexamethasone sodium phosphate 0.4 MG/ML Injectable Solution; dexamethasone acetate 8 MG/ML Injectable Suspension"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "Dose 10.0mg associated with Decadron"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Procedure] 'performed.,DESCRIPTION OF PROCEDURE:  ,The patient was brought to the operating room, awake, alert and not in any form of distress.  After smooth induction and intubation, a Foley catheter was inserted.  No monitoring leads were placed.  The patient was then positioned supine on the operating table with the head supported on a foam doughnut and the neck placed on hyperextension with a shoulder roll under both shoulders.  Localizing x-ray verified the marker to be right at the C3-4 interspace.  Proceeded to mark an incision along the anterior border of the sternocleidomastoid with the central point at the area of the marker measuring about 3 cm in length.  The area was then prepped with DuraPrep.,After sterile drapes were laid out, an incision was made using a scalpel blade #' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'DuraPrep' \u2192 RXCUI 1090519, canonical: DuraPrep, match: exact\n[RxNorm] Ingredient: iodine povacrylex (RXCUI 692863)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): iodine povacrylex 7 MG/ML / isopropyl alcohol 0.74 ML/ML Topical Solution"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] M25749: Osteophyte, unspecified hand (score: 0.3209)\n[ICD-10-CM 2027] M25776: Osteophyte, unspecified foot (score: 0.3181)\n[ICD-10-CM 2027] M25739: Osteophyte, unspecified wrist (score: 0.3171)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[Procedure] 'Wound edge bleeders were controlled with bipolar coagulation and a hot knife was utilized to cut the platysma in a similar fashion.  The anterior border of the sternocleidomastoid was identified and dissection was carried superior to and lateral to the esophagus and trachea, but medial to the carotid sheath.  The prevertebral fascia was identified.  Localizing x-ray verified another marker to be at the C3-4 interspace.  Proceeded to strip the longus colli muscles off the vertebral body of C3 and C4 and a self-retaining retractor was then laid out.  There was some degree of anterior osteophyte and this was carefully drilled down with a Midas 5-mm bur.  The disk was then cut through the annulus and removal of the disk was done with the use of the Midas 5-mm bur and later a 3-mm bur.  The inferior endplate of C3 and the superior endplate of C4 were likewise drilled out together with posterior inferior osteophyte at the C3 and the posterior superior osteophyte at C' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.2326)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.2319)\n[ICD-10-CM 2027] W880XXS: Exposure to X-rays, sequela (score: 0.2319)\n[ICD-10-CM 2027] Match unresolved (top score 0.2326 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[Procedure] 'There was note of a central disk herniation centrally, but more marked displacement of the cord on the left side.  By careful dissection of this disk, posterior longitudinal ligament was removed and pressure on the cord was removed.  Hemostasis of the epidural bleeders was done with a combination of bipolar coagulation, but we needed to put a small piece of Gelfoam on the patient's left because of profuse venous bleeder.  With this completed, the Valsalva maneuver showed no evidence of any CSF leakage.  A 7-mm implant with its interior packed with Vitoss was then tapped into place.  An 18-mm plate was then screwed down with four 14 x 4.0 mm screws.  The area was irrigated with saline, with bacitracin solution.  Postoperative x-ray showed excellent placement of the graft and spinal instrumentation.  A round French 10 JP drain was laid over the construct and exteriorized though a separate stab incision on the patient's right inferiorly.  The wound was then closed in layers with Vicryl 3-0 inverted interrupted sutures for the platysma, Vicryl 4-0 subcuticular stitch for the dermis and Dermabond.  The catheter was anchored to the skin with a nylon 3-0 stitch.  Dressing was placed only on the exit site of the drain.  C-collar was placed, and the patient was transferred to the recovery awake and moving all four extremities' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[RxNorm] 'bacitracin' \u2192 RXCUI 1291, canonical: bacitracin, match: exact\n[RxNorm] Ingredient: bacitracin (RXCUI 1291)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bacitracin 0.5 UNT/ML / dimethicone 200 MG/ML / zinc oxide 250 MG/ML Topical Spray; bacitracin 0.4 UNT/MG / lidocaine 0.04 MG/MG / neomycin 0.0035 MG/MG / polymyxin B 5 UNT/MG Topical Ointment; bacitracin zinc 0.4 UNT/MG / hydrocortisone acetate 0.01 MG/MG / neomycin sulfate 0.0035 MG/MG / polymyxin B sulfate 10 UNT/MG Ophthalmic Ointment; bacitracin 0.5 UNT/MG / pramoxine hydrochloride 0.01 MG/MG Topical Ointment; bacitracin 0.4 UNT/MG / neomycin 0.0035 MG/MG / polymyxin B 10 UNT/MG / pramoxine hydrochloride 0.01 MG/MG Topical Ointment"
+  }
+]

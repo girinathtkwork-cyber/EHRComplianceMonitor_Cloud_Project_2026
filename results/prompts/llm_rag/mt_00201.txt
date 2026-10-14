@@ -1,0 +1,123 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT: , Left flank pain and unable to urinate. Additional diagnosis noted: Type 2 Diabetes Mellitus.,HISTORY: , The patient is a 46-year-old female who presented to the emergency room with left flank pain and difficulty urinating.  Details are in the history and physical.  She does have a vague history of a bruised left kidney in a motor vehicle accident.  She feels much better today.  I was consulted by Dr. X.,MEDICATIONS:,  Ritalin 50 a day.,ALLERGIES: , To penicillin.,PAST MEDICAL HISTORY: , ADHD.,SOCIAL HISTORY:,  No smoking, alcohol, or drug abuse.,PHYSICAL EXAMINATION: , She is awake, alert, and quite comfortable.  Abdomen is benign.  She points to her left flank, where she was feeling the pain.,DIAGNOSTIC DATA: , Her CAT scan showed a focal ileus in left upper quadrant, but no thickening, no obstruction, no free air, normal appendix, and no kidney stones.,LABORATORY WORK: , Showed white count 6200, hematocrit 44.7.  Liver function tests and amylase were normal.  Urinalysis 3+ bacteria.,IMPRESSION:,1.  Left flank pain, question etiology.,2.  No evidence of surgical pathology.,3.  Rule out urinary tract infection.,PLAN:,1.  No further intervention from my point of view.,2.  Agree with discharge and followup as an outpatient.  Further intervention will depend on how she does clinically.  She fully understood and agreed.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.,HISTORY: , The patient is a 46-year-old female who presented to the emergency room with left flank pain and difficulty urinating.  Details are in the history and physical.  She does have a vague history of a bruised left kidney in a motor vehicle accident.  She feels much better today.  I was consulted by Dr. X.,MEDICATIONS:,  Ritalin 50 a day.,ALLERGIES: , To penicillin.,PAST MEDICAL HISTORY: , ADHD.,SOCIAL HISTORY:,  No smoking, alcohol, or drug abuse.,PHYSICAL EXAMINATION: , She is awake, alert, and quite comfortable.  Abdomen is benign.  She points to her left flank, where she was feeling the pain.,DIAGNOSTIC DATA: , Her CAT scan showed a focal ileus in left upper quadrant, but no thickening, no obstruction, no free air, normal appendix, and no kidney stones.,LABORATORY WORK: , Showed white count 6200, hematocrit 44"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Ritalin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Liver function tests and amylase were normal.  Urinalysis 3+ bacteria.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "amylase"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Left flank pain, question etiology"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "No evidence of surgical pathology"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Rule out urinary tract infection.,PLAN:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "No further intervention from my point of view"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Agree with discharge and followup as an outpatient.  Further intervention will depend on how she does clinically.  She fully understood and agreed"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2295)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.2225)\n[ICD-10-CM 2027] Z91410: Personal history of adult physical and sexual abuse (score: 0.2193)\n[ICD-10-CM 2027] Match unresolved (top score 0.2295 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Ritalin' \u2192 RXCUI 224917, canonical: Ritalin, match: exact\n[RxNorm] Ingredient: methylphenidate (RXCUI 6901)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methylphenidate hydrochloride 2 MG/ML Oral Solution; 8 HR methylphenidate hydrochloride 10 MG Extended Release Oral Tablet; methylphenidate hydrochloride 10 MG Oral Tablet; methylphenidate hydrochloride 10 MG Chewable Tablet; 24 HR methylphenidate hydrochloride 18 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] M00849: Arthritis due to other bacteria, unspecified hand (score: 0.3861)\n[ICD-10-CM 2027] M00839: Arthritis due to other bacteria, unspecified wrist (score: 0.3826)\n[ICD-10-CM 2027] M00842: Arthritis due to other bacteria, left hand (score: 0.3806)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'amylase' \u2192 RXCUI 743, canonical: amylase, match: exact\n[RxNorm] Ingredient: amylase (RXCUI 743)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amylase 15000 UNT / lipase 3000 UNT / protease 9500 UNT Delayed Release Oral Capsule; amylase 78300 UNT / lipase 20880 UNT / protease 78300 UNT Oral Tablet; amylase 39150 UNT / lipase 10440 UNT / protease 39150 UNT Oral Tablet; amylase 60500 UNT / lipase 16000 UNT / protease 57500 UNT Delayed Release Oral Capsule; amylase 30250 UNT / lipase 8000 UNT / protease 28750 UNT Delayed Release Oral Capsule"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] R10A2: Flank pain, left side (score: 0.5485)\n[ICD-10-CM 2027] R10A3: Flank pain, bilateral (score: 0.5434)\n[ICD-10-CM 2027] R10A0: Flank pain, unspecified side (score: 0.5359)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] M2759: Other periradicular pathology associated with previous endodontic treatment (score: 0.3206)\n[ICD-10-CM 2027] O8609: Infection of obstetric surgical wound, other surgical site (score: 0.2364)\n[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2275)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] N390: Urinary tract infection, site not specified (score: 0.7398)\n[ICD-10-CM 2027] O2340: Unspecified infection of urinary tract in pregnancy, unspecified trimester (score: 0.6975)\n[ICD-10-CM 2027] P393: Neonatal urinary tract infection (score: 0.6739)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] I4721: Torsades de pointes (score: 0.4199)\n[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2475)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.2400)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] Z66: Do not resuscitate (score: 0.4804)\n[ICD-10-CM 2027] Y35009D: Legal intervention involving unspecified firearm discharge, unspecified person injured, subsequent encounter (score: 0.3025)\n[ICD-10-CM 2027] Y35099D: Legal intervention involving other firearm discharge, unspecified person injured, subsequent encounter (score: 0.3025)"
+  }
+]

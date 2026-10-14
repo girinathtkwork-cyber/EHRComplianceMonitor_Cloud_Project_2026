@@ -1,0 +1,253 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT:,  Patient AF is a 50-year-old hepatitis C positive African-American man presenting with a 2-day history of abdominal pain and distention with nausea and vomiting. Additional diagnosis noted: Type 2 Diabetes Mellitus.,HISTORY OF PRESENT ILLNESS: , AF's symptoms began 2 days ago, and he has not passed gas or had any bowel movements.  He has not eaten anything, and has vomited 8 times.  AF reports 10/10 pain in the LLQ.,PAST MEDICAL HISTORY:,  AF's past medical history is significant for an abdominal injury during the Vietnam War which required surgery, and multiple episodes of small bowel obstruction and abdominal pain.  Other elements of his history include alcoholism, cocaine abuse, alcoholic hepatitis, hepatitis C positive, acute pancreatitis, chronic pancreatitis, appendicitis, liver hematoma/contusion, Hodgkin's Disease, constipation, diarrhea, paralytic ileus, anemia, multiple blood transfusions, chorioretinitis, pneumonia, and "crack chest pain" ,PAST SURGICAL HISTORY: , AF has had multiple abdominal surgeries, including Bill Roth Procedure Type 1 (partial gastrectomy) during Vietnam War, at least 2 exploratory laparotomies and enterolysis procedures (1993; 2000), and appendectomy,MEDICATIONS:,  None.,ALLERGIES:,  Iodine, IV contrast (anaphylaxis), and seafood/shellfish.,FAMILY HISTORY:,  Noncontributory.,SOCIAL HISTORY:,  AF was born and raised in San Francisco.  His father was an alcoholic.  He currently lives with his sister, and does not work; he collects a pension.,HEALTH-RELATED BEHAVIORS:,  AF reports that he smokes 1 to 2 cigarettes per day, and drinks 40 ounces of beer per day.,REVIEW OF SYSTEMS: , Noncontributory, except that patient reports a 6 pound weight loss since his symptoms began, and reports multiple transfusions for anemia.,PHYSICAL EXAM:,Vital Signs:  T:  37.1
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.,HISTORY OF PRESENT ILLNESS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "AF's symptoms began 2 days ago, and he has not passed gas or had any bowel movements.  He has not eaten anything, and has vomited 8 times.  AF reports 10/10 pain in the LLQ.,PAST MEDICAL HISTORY:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "AF's past medical history is significant for an abdominal injury during the Vietnam War which required surgery, and multiple episodes of small bowel obstruction and abdominal pain.  Other elements of his history include alcoholism, cocaine abuse, alcoholic hepatitis, hepatitis C positive, acute pancreatitis, chronic pancreatitis, appendicitis, liver hematoma/contusion"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "cocaine"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Hodgkin's Disease, constipation, diarrhea, paralytic ileus, anemia, multiple blood transfusions, chorioretinitis, pneumonia, and \"crack chest pain\" ,PAST SURGICAL HISTORY:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "AF has had multiple abdominal surgeries, including Bill Roth Procedure Type 1 (partial gastrectomy) during Vietnam War, at least 2 exploratory laparotomies and enterolysis procedures (1993; 2000), and appendectomy,MEDICATIONS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Type 1 (partial gastrectomy) during Vietnam War, at least 2 exploratory laparotomies and enterolysis procedures (1993; 2000), and appendectomy,MEDICATIONS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "(1993; 2000), and appendectomy,MEDICATIONS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "None.,ALLERGIES:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "None.,ALLERGIES:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Iodine"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Iodine"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "Iodine"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "IV contrast (anaphylaxis), and seafood/shellfish.,FAMILY HISTORY:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "IV contrast (anaphylaxis), and seafood/shellfish.,FAMILY HISTORY:"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Noncontributory.,SOCIAL HISTORY:"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Noncontributory.,SOCIAL HISTORY:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "AF was born and raised in San Francisco.  His father was an alcoholic.  He currently lives with his sister, and does not work; he collects a pension.,HEALTH-RELATED BEHAVIORS:"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "AF was born and raised in San Francisco.  His father was an alcoholic.  He currently lives with his sister, and does not work; he collects a pension.,HEALTH-RELATED BEHAVIORS:"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "AF reports that he smokes 1 to 2 cigarettes per day, and drinks 40 ounces of beer per day.,REVIEW OF SYSTEMS:"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "procedure",
+    "text": "AF reports that he smokes 1 to 2 cigarettes per day, and drinks 40 ounces of beer per day.,REVIEW OF SYSTEMS:"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "Noncontributory, except that patient reports a 6 pound weight loss since his symptoms began, and reports multiple transfusions for anemia.,PHYSICAL EXAM:,Vital Signs:  T:  37.1"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "procedure",
+    "text": "Noncontributory, except that patient reports a 6 pound weight loss since his symptoms began, and reports multiple transfusions for anemia.,PHYSICAL EXAM:,Vital Signs:  T:  37.1"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] R69: Illness, unspecified (score: 0.4834)\n[ICD-10-CM 2027] Z833: Family history of diabetes mellitus (score: 0.3844)\n[ICD-10-CM 2027] E1069: Type 1 diabetes mellitus with other specified complication (score: 0.3409)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] R141: Gas pain (score: 0.3139)\n[ICD-10-CM 2027] H5311: Day blindness (score: 0.2770)\n[ICD-10-CM 2027] Z9289: Personal history of other medical treatment (score: 0.2310)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] K861: Other chronic pancreatitis (score: 0.3572)\n[ICD-10-CM 2027] K739: Chronic hepatitis, unspecified (score: 0.3196)\n[ICD-10-CM 2027] K712: Toxic liver disease with acute hepatitis (score: 0.3040)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'cocaine' \u2192 RXCUI 2653, canonical: cocaine, match: exact\n[RxNorm] Ingredient: cocaine (RXCUI 2653)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cocaine 40 MG/ML Ophthalmic Solution; cocaine 50 MG/ML Ophthalmic Solution; cocaine 200 MG/ML Ophthalmic Solution; cocaine 100 MG/ML Nasal Solution; cocaine 0.1 MG/MG Paste"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] K560: Paralytic ileus (score: 0.3819)\n[ICD-10-CM 2027] R197: Diarrhea, unspecified (score: 0.3211)\n[ICD-10-CM 2027] K567: Ileus, unspecified (score: 0.3138)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] O754: Other complications of obstetric surgery and procedures (score: 0.3623)\n[ICD-10-CM 2027] T8189XD: Other complications of procedures, not elsewhere classified, subsequent encounter (score: 0.2746)\n[ICD-10-CM 2027] T8189XA: Other complications of procedures, not elsewhere classified, initial encounter (score: 0.2734)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Type 1 (partial gastrectomy) during Vietnam War, at least 2 exploratory laparotomies and enterolysis procedures (1993; 2000), and appendectomy,MEDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] '(1993; 2000), and appendectomy,MEDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] T7840XD: Allergy, unspecified, subsequent encounter (score: 0.6398)\n[ICD-10-CM 2027] T7849XD: Other allergy, subsequent encounter (score: 0.6398)\n[ICD-10-CM 2027] T7840XA: Allergy, unspecified, initial encounter (score: 0.6335)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'None.,ALLERGIES:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Iodine' \u2192 RXCUI 5933, canonical: iodine, match: exact\n[RxNorm] Ingredient: iodine (RXCUI 5933)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): iodine 17.5 MG/ML Topical Solution; iodine 30 MG/ML Topical Solution; heptanoic acid 4 MG/ML / iodine 10 MG/ML Topical Solution; iodine 25 MG/ML / potassium iodide 25 MG/ML Topical Solution; chloroxylenol 5 MG/ML / iodine 0.2 MG/ML / menthol 12.7 MG/ML Topical Solution"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] E009: Congenital iodine-deficiency syndrome, unspecified (score: 0.6919)\n[ICD-10-CM 2027] E002: Congenital iodine-deficiency syndrome, mixed type (score: 0.6059)\n[ICD-10-CM 2027] E000: Congenital iodine-deficiency syndrome, neurological type (score: 0.5771)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'Iodine' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] Z87892: Personal history of anaphylaxis (score: 0.5154)\n[ICD-10-CM 2027] N1411: Contrast-induced nephropathy (score: 0.3668)\n[ICD-10-CM 2027] Z8261: Family history of arthritis (score: 0.3454)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'IV contrast (anaphylaxis), and seafood/shellfish.,FAMILY HISTORY:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] Z878901: Personal history of social gender transition (score: 0.5686)\n[ICD-10-CM 2027] F4010: Social phobia, unspecified (score: 0.5413)\n[ICD-10-CM 2027] F4011: Social phobia, generalized (score: 0.4689)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'Noncontributory.,SOCIAL HISTORY:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] Z66: Do not resuscitate (score: 0.2528)\n[ICD-10-CM 2027] Y07411: Sister, perpetrator of maltreatment and neglect (score: 0.2395)\n[ICD-10-CM 2027] Z566: Other physical and mental strain related to work (score: 0.2337)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'AF was born and raised in San Francisco.  His father was an alcoholic.  He currently lives with his sister, and does not work; he collects a pension.,HEALTH-RELATED BEHAVIORS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] H5311: Day blindness (score: 0.6466)\n[ICD-10-CM 2027] Z00111: Health examination for newborn 8 to 28 days old (score: 0.4791)\n[ICD-10-CM 2027] Z00110: Health examination for newborn under 8 days old (score: 0.4340)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[Procedure] 'AF reports that he smokes 1 to 2 cigarettes per day, and drinks 40 ounces of beer per day.,REVIEW OF SYSTEMS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] N6459: Other signs and symptoms in breast (score: 0.3871)\n[ICD-10-CM 2027] R6889: Other general symptoms and signs (score: 0.3604)\n[ICD-10-CM 2027] R29818: Other symptoms and signs involving the nervous system (score: 0.3371)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[Procedure] 'Noncontributory, except that patient reports a 6 pound weight loss since his symptoms began, and reports multiple transfusions for anemia.,PHYSICAL EXAM:,Vital Signs:  T:  37.1' \u2014 extracted from header, not verified against any coding system"
+  }
+]

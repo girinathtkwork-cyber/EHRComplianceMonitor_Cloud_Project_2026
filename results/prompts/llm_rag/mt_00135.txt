@@ -1,0 +1,183 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+REASON FOR EXAM: , Aortic valve replacement.  Assessment of stenotic valve.  Evaluation for thrombus on the valve.,PREOPERATIVE DIAGNOSIS:  ,Atrial valve replacement.,POSTOPERATIVE DIAGNOSES:,  Moderate stenosis of aortic valve replacement.  Mild mitral regurgitation.  Normal left ventricular function.,PROCEDURES IN DETAIL: , The procedure was explained to the patient with risks and benefits.  The patient agreed and signed the consent form.  The patient received a total of 30mg of Versed and 50 mcg of fentanyl for conscious sedation and pain control.  The oropharynx anesthetized with benzocaine spray and lidocaine solution.,Esophageal intubation was done with no difficulty with the second attempt.  In a semi-Fowler position, the probe was passed to transthoracic views at about 40 to 42 cm.  Multiple pictures obtained.  Assessment of the peak velocity was done later.,The probe was pulled to the mid esophageal level.  Different pictures including short-axis views of the aortic valve was done.  Extubation done with no problems and no blood on the probe.  The patient tolerated the procedure well with no immediate postprocedure complications.,INTERPRETATION: , The left atrium was mildly dilated.  No masses or thrombi were seen.  The left atrial appendage was free of thrombus.  Pulse wave interrogation showed peak velocities of 60 cm per second.,The left ventricle was normal in size and contractility with mild LVH.  EF is normal and preserved.,The right atrium and right ventricle were both normal in size.,Mitral valve showed no vegetations or prolapse.  There was mild-to-moderate regurgitation on color flow interrogation.  Aortic valve was well-seated mechanical valve, bileaflet with acoustic shadowing beyond the valve noticed.  No perivalvular leak was noticed.  There was increased velocity across the valve with peak velocity of 3.2 m/sec with calculated aortic valve area by continuity equation at 1.2 cm2 indicative of moderate aortic valve stenosis based on criteria for native heart valves.,No AIC.,Pulmonic valve was somewhat difficult to see because of acoustic shadowing from the aortic valve.  Overall showed no abnormalities.  The tricuspid valve was structurally normal.,Interatrial septum appeared to be intact, confirmed by color flow interrogation as well as agitated saline contrast study.,The aorta and aortic arch were unremarkable.  No dissection.,IMPRESSION:,1.  Mildly dilated left atrium.,2.  Mild-to-moderate regurgitation.,3.  Well-seated mechanical aortic valve with peak velocity of 3.2 m/sec and calculated valve area of 1.2 cm2 consistent with moderate aortic stenosis.  Reevaluation in two to three years with transthoracic echocardiogram will be recommended.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "of stenotic valve.  Evaluation for thrombus on the valve.,PREOPERATIVE DIAGNOSIS:  ,Atrial valve replacement.,POSTOPERATIVE DIAGNOSES:,  Moderate stenosis of aortic valve replacement.  Mild mitral regurgitation.  Normal left ventricular function.,PROCEDURES IN DETAIL: , The procedure was explained to the patient with risks and benefits.  The patient agreed and signed the consent form.  The patient received a total of 30mg of Versed and 50 mcg of fentanyl for conscious sedation and pain control.  The oropharynx anesthetized with benzocaine spray and lidocaine solution.,Esophageal intubation was done with no difficulty with the second attempt.  In a semi-Fowler position, the probe was passed to transthoracic views at about 40 to 42 cm.  Multiple pictures obtained.  Assessment of the peak velocity was done later.,The probe was pulled to the mid esophageal level.  Different pictures including short-axis views of the aortic valve was done.  Extubation done with no problems and no blood on the probe.  The patient tolerated the procedure well with no immediate postprocedure complications.,INTERPRETATION: , The left atrium was mildly dilated.  No masses or thrombi were seen.  The left atrial appendage was free of thrombus.  Pulse wave interrogation showed peak velocities of 60 cm per second.,The left ventricle was normal in size and contractility with mild LVH.  EF is normal and preserved.,The right atrium and right ventricle were both normal in size.,Mitral valve showed no vegetations or prolapse.  There was mild-to-moderate regurgitation on color flow interrogation.  Aortic valve was well-seated mechanical valve, bileaflet with acoustic shadowing beyond the valve noticed.  No perivalvular leak was noticed.  There was increased velocity across the valve with peak velocity of 3.2 m/sec with calculated aortic valve area by continuity equation at 1.2 cm2 indicative of moderate aortic valve stenosis based on criteria for native heart valves.,No AIC.,Pulmonic valve was somewhat difficult to see because of acoustic shadowing from the aortic valve.  Overall showed no abnormalities.  The tricuspid valve was structurally normal.,Interatrial septum appeared to be intact, confirmed by color flow interrogation as well as agitated saline contrast study.,The aorta and aortic arch were unremarkable.  No dissection.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Atrial valve replacement.,POSTOPERATIVE DIAGNOSES:,  Moderate stenosis of aortic valve replacement.  Mild mitral regurgitation.  Normal left ventricular function.,PROCEDURES IN DETAIL: , The procedure was explained to the patient with risks and benefits.  The patient agreed and signed the consent form.  The patient received a total of 30mg of Versed and 50 mcg of fentanyl for conscious sedation and pain control.  The oropharynx anesthetized with benzocaine spray and lidocaine solution.,Esophageal intubation was done with no difficulty with the second attempt.  In a semi-Fowler position, the probe was passed to transthoracic views at about 40 to 42 cm.  Multiple pictures obtained.  Assessment of the peak velocity was done later.,The probe was pulled to the mid esophageal level.  Different pictures including short-axis views of the aortic valve was done.  Extubation done with no problems and no blood on the probe.  The patient tolerated the procedure well with no immediate postprocedure complications.,INTERPRETATION: , The left atrium was mildly dilated.  No masses or thrombi were seen.  The left atrial appendage was free of thrombus.  Pulse wave interrogation showed peak velocities of 60 cm per second.,The left ventricle was normal in size and contractility with mild LVH.  EF is normal and preserved.,The right atrium and right ventricle were both normal in size.,Mitral valve showed no vegetations or prolapse.  There was mild-to-moderate regurgitation on color flow interrogation.  Aortic valve was well-seated mechanical valve, bileaflet with acoustic shadowing beyond the valve noticed.  No perivalvular leak was noticed.  There was increased velocity across the valve with peak velocity of 3.2 m/sec with calculated aortic valve area by continuity equation at 1.2 cm2 indicative of moderate aortic valve stenosis based on criteria for native heart valves.,No AIC.,Pulmonic valve was somewhat difficult to see because of acoustic shadowing from the aortic valve.  Overall showed no abnormalities.  The tricuspid valve was structurally normal.,Interatrial septum appeared to be intact, confirmed by color flow interrogation as well as agitated saline contrast study.,The aorta and aortic arch were unremarkable.  No dissection.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Moderate stenosis of aortic valve replacement.  Mild mitral regurgitation.  Normal left ventricular function.,PROCEDURES IN DETAIL: , The procedure was explained to the patient with risks and benefits.  The patient agreed and signed the consent form.  The patient received a total of 30mg of Versed and 50 mcg of fentanyl for conscious sedation and pain control.  The oropharynx anesthetized with benzocaine spray and lidocaine solution.,Esophageal intubation was done with no difficulty with the second attempt.  In a semi-Fowler position, the probe was passed to transthoracic views at about 40 to 42 cm.  Multiple pictures obtained.  Assessment of the peak velocity was done later.,The probe was pulled to the mid esophageal level.  Different pictures including short-axis views of the aortic valve was done.  Extubation done with no problems and no blood on the probe.  The patient tolerated the procedure well with no immediate postprocedure complications.,INTERPRETATION: , The left atrium was mildly dilated.  No masses or thrombi were seen.  The left atrial appendage was free of thrombus.  Pulse wave interrogation showed peak velocities of 60 cm per second.,The left ventricle was normal in size and contractility with mild LVH.  EF is normal and preserved.,The right atrium and right ventricle were both normal in size.,Mitral valve showed no vegetations or prolapse.  There was mild-to-moderate regurgitation on color flow interrogation.  Aortic valve was well-seated mechanical valve, bileaflet with acoustic shadowing beyond the valve noticed.  No perivalvular leak was noticed.  There was increased velocity across the valve with peak velocity of 3.2 m/sec with calculated aortic valve area by continuity equation at 1.2 cm2 indicative of moderate aortic valve stenosis based on criteria for native heart valves.,No AIC.,Pulmonic valve was somewhat difficult to see because of acoustic shadowing from the aortic valve.  Overall showed no abnormalities.  The tricuspid valve was structurally normal.,Interatrial septum appeared to be intact, confirmed by color flow interrogation as well as agitated saline contrast study.,The aorta and aortic arch were unremarkable.  No dissection.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "IN DETAIL: , The procedure was explained to the patient with risks and benefits.  The patient agreed and signed the consent form.  The patient received a total of 30mg of Versed and 50 mcg of fentanyl for conscious sedation and pain control.  The oropharynx anesthetized with benzocaine spray and lidocaine solution.,Esophageal intubation was done with no difficulty with the second attempt.  In a semi-Fowler position, the probe was passed to transthoracic views at about 40 to 42 cm.  Multiple pictures obtained.  Assessment of the peak velocity was done later.,The probe was pulled to the mid esophageal level.  Different pictures including short-axis views of the aortic valve was done.  Extubation done with no problems and no blood on the probe.  The patient tolerated the procedure well with no immediate postprocedure complications.,INTERPRETATION: , The left atrium was mildly dilated.  No masses or thrombi were seen.  The left atrial appendage was free of thrombus.  Pulse wave interrogation showed peak velocities of 60 cm per second.,The left ventricle was normal in size and contractility with mild LVH.  EF is normal and preserved.,The right atrium and right ventricle were both normal in size.,Mitral valve showed no vegetations or prolapse.  There was mild-to-moderate regurgitation on color flow interrogation.  Aortic valve was well-seated mechanical valve, bileaflet with acoustic shadowing beyond the valve noticed.  No perivalvular leak was noticed.  There was increased velocity across the valve with peak velocity of 3.2 m/sec with calculated aortic valve area by continuity equation at 1.2 cm2 indicative of moderate aortic valve stenosis based on criteria for native heart valves.,No AIC.,Pulmonic valve was somewhat difficult to see because of acoustic shadowing from the aortic valve.  Overall showed no abnormalities.  The tricuspid valve was structurally normal.,Interatrial septum appeared to be intact, confirmed by color flow interrogation as well as agitated saline contrast study.,The aorta and aortic arch were unremarkable.  No dissection.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "was explained to the patient with risks and benefits.  The patient agreed and signed the consent form.  The patient received a total of 30mg of Versed and 50 mcg of fentanyl for conscious sedation and pain control.  The oropharynx anesthetized with benzocaine spray and lidocaine solution.,Esophageal intubation was done with no difficulty with the second attempt.  In a semi-Fowler position, the probe was passed to transthoracic views at about 40 to 42 cm.  Multiple pictures obtained.  Assessment of the peak velocity was done later.,The probe was pulled to the mid esophageal level.  Different pictures including short-axis views of the aortic valve was done.  Extubation done with no problems and no blood on the probe.  The patient tolerated the procedure well with no immediate postprocedure complications.,INTERPRETATION: , The left atrium was mildly dilated.  No masses or thrombi were seen.  The left atrial appendage was free of thrombus.  Pulse wave interrogation showed peak velocities of 60 cm per second.,The left ventricle was normal in size and contractility with mild LVH.  EF is normal and preserved.,The right atrium and right ventricle were both normal in size.,Mitral valve showed no vegetations or prolapse.  There was mild-to-moderate regurgitation on color flow interrogation.  Aortic valve was well-seated mechanical valve, bileaflet with acoustic shadowing beyond the valve noticed.  No perivalvular leak was noticed.  There was increased velocity across the valve with peak velocity of 3.2 m/sec with calculated aortic valve area by continuity equation at 1.2 cm2 indicative of moderate aortic valve stenosis based on criteria for native heart valves.,No AIC.,Pulmonic valve was somewhat difficult to see because of acoustic shadowing from the aortic valve.  Overall showed no abnormalities.  The tricuspid valve was structurally normal.,Interatrial septum appeared to be intact, confirmed by color flow interrogation as well as agitated saline contrast study.,The aorta and aortic arch were unremarkable.  No dissection.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "30mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "50 mcg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "fentanyl"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "benzocaine"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Mildly dilated left atrium"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Mildly dilated left atrium"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Mild-to-moderate regurgitation"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "Mild-to-moderate regurgitation"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Well-seated mechanical aortic valve with peak velocity of 3.2 m/sec and calculated valve area of 1.2 cm2 consistent with moderate aortic stenosis.  Reevaluation in two to three years with transthoracic echocardiogram will be recommended"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "Well-seated mechanical aortic valve with peak velocity of 3.2 m/sec and calculated valve area of 1.2 cm2 consistent with moderate aortic stenosis.  Reevaluation in two to three years with transthoracic echocardiogram will be recommended"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] Q230: Congenital stenosis of aortic valve (score: 0.4596)\n[ICD-10-CM 2027] Q231: Congenital insufficiency of aortic valve (score: 0.4097)\n[ICD-10-CM 2027] I069: Rheumatic aortic valve disease, unspecified (score: 0.4093)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] Q230: Congenital stenosis of aortic valve (score: 0.4376)\n[ICD-10-CM 2027] I350: Nonrheumatic aortic (valve) stenosis (score: 0.3895)\n[ICD-10-CM 2027] Q231: Congenital insufficiency of aortic valve (score: 0.3879)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Q230: Congenital stenosis of aortic valve (score: 0.4274)\n[ICD-10-CM 2027] I350: Nonrheumatic aortic (valve) stenosis (score: 0.3803)\n[ICD-10-CM 2027] Q231: Congenital insufficiency of aortic valve (score: 0.3776)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'IN DETAIL: , The procedure was explained to the patient with risks and benefits.  The patient agreed and signed the consent form.  The patient received a total of 30mg of Versed and 50 mcg of fentanyl for conscious sedation and pain control.  The oropharynx anesthetized with benzocaine spray and lidocaine solution.,Esophageal intubation was done with no difficulty with the second attempt.  In a semi-Fowler position, the probe was passed to transthoracic views at about 40 to 42 cm.  Multiple pictures obtained.  Assessment of the peak velocity was done later.,The probe was pulled to the mid esophageal level.  Different pictures including short-axis views of the aortic valve was done.  Extubation done with no problems and no blood on the probe.  The patient tolerated the procedure well with no immediate postprocedure complications.,INTERPRETATION: , The left atrium was mildly dilated.  No masses or thrombi were seen.  The left atrial appendage was free of thrombus.  Pulse wave interrogation showed peak velocities of 60 cm per second.,The left ventricle was normal in size and contractility with mild LVH.  EF is normal and preserved.,The right atrium and right ventricle were both normal in size.,Mitral valve showed no vegetations or prolapse.  There was mild-to-moderate regurgitation on color flow interrogation.  Aortic valve was well-seated mechanical valve, bileaflet with acoustic shadowing beyond the valve noticed.  No perivalvular leak was noticed.  There was increased velocity across the valve with peak velocity of 3.2 m/sec with calculated aortic valve area by continuity equation at 1.2 cm2 indicative of moderate aortic valve stenosis based on criteria for native heart valves.,No AIC.,Pulmonic valve was somewhat difficult to see because of acoustic shadowing from the aortic valve.  Overall showed no abnormalities.  The tricuspid valve was structurally normal.,Interatrial septum appeared to be intact, confirmed by color flow interrogation as well as agitated saline contrast study.,The aorta and aortic arch were unremarkable.  No dissection.,IMPRESSION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'was explained to the patient with risks and benefits.  The patient agreed and signed the consent form.  The patient received a total of 30mg of Versed and 50 mcg of fentanyl for conscious sedation and pain control.  The oropharynx anesthetized with benzocaine spray and lidocaine solution.,Esophageal intubation was done with no difficulty with the second attempt.  In a semi-Fowler position, the probe was passed to transthoracic views at about 40 to 42 cm.  Multiple pictures obtained.  Assessment of the peak velocity was done later.,The probe was pulled to the mid esophageal level.  Different pictures including short-axis views of the aortic valve was done.  Extubation done with no problems and no blood on the probe.  The patient tolerated the procedure well with no immediate postprocedure complications.,INTERPRETATION: , The left atrium was mildly dilated.  No masses or thrombi were seen.  The left atrial appendage was free of thrombus.  Pulse wave interrogation showed peak velocities of 60 cm per second.,The left ventricle was normal in size and contractility with mild LVH.  EF is normal and preserved.,The right atrium and right ventricle were both normal in size.,Mitral valve showed no vegetations or prolapse.  There was mild-to-moderate regurgitation on color flow interrogation.  Aortic valve was well-seated mechanical valve, bileaflet with acoustic shadowing beyond the valve noticed.  No perivalvular leak was noticed.  There was increased velocity across the valve with peak velocity of 3.2 m/sec with calculated aortic valve area by continuity equation at 1.2 cm2 indicative of moderate aortic valve stenosis based on criteria for native heart valves.,No AIC.,Pulmonic valve was somewhat difficult to see because of acoustic shadowing from the aortic valve.  Overall showed no abnormalities.  The tricuspid valve was structurally normal.,Interatrial septum appeared to be intact, confirmed by color flow interrogation as well as agitated saline contrast study.,The aorta and aortic arch were unremarkable.  No dissection.,IMPRESSION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 30.0mg associated with fentanyl \u2014 dose 30.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 50.0mcg associated with fentanyl \u2014 dose 50.0mcg not among known product strengths"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'fentanyl' \u2192 RXCUI 4337, canonical: fentanyl, match: exact\n[RxNorm] Ingredient: fentanyl (RXCUI 4337)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fentanyl 0.1 MG Sublingual Tablet; fentanyl 0.2 MG Sublingual Tablet; fentanyl 0.3 MG Sublingual Tablet; fentanyl 0.4 MG Sublingual Tablet; fentanyl 0.6 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'benzocaine' \u2192 RXCUI 1399, canonical: benzocaine, match: exact\n[RxNorm] Ingredient: benzocaine (RXCUI 1399)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): benzocaine 0.2 MG/MG / menthol 0.02 MG/MG Oral Gel; allantoin 0.01 MG/MG / benzocaine 0.2 MG/MG / camphor 0.03 MG/MG / petrolatum 0.649 MG/MG Topical Ointment; benzocaine 200 MG/ML / menthol 10 MG/ML Medicated Pad; benzocaine 200 MG/ML / menthol 9.5 ML/ML Medicated Pad; benzocaine 7.5 MG / dextromethorphan hydrobromide 5 MG Oral Lozenge"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] I4200: Dilated cardiomyopathy, unspecified (score: 0.5094)\n[ICD-10-CM 2027] I4209: Other dilated cardiomyopathy (score: 0.5094)\n[ICD-10-CM 2027] I4201: Familial-genetic dilated cardiomyopathy (score: 0.3956)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Mildly dilated left atrium' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] P921: Regurgitation and rumination of newborn (score: 0.5474)\n[ICD-10-CM 2027] O1400: Mild to moderate pre-eclampsia, unspecified trimester (score: 0.3942)\n[ICD-10-CM 2027] O1403: Mild to moderate pre-eclampsia, third trimester (score: 0.3790)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'Mild-to-moderate regurgitation' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] Q230: Congenital stenosis of aortic valve (score: 0.6285)\n[ICD-10-CM 2027] I350: Nonrheumatic aortic (valve) stenosis (score: 0.5593)\n[ICD-10-CM 2027] Q231: Congenital insufficiency of aortic valve (score: 0.5089)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'Well-seated mechanical aortic valve with peak velocity of 3.2 m/sec and calculated valve area of 1.2 cm2 consistent with moderate aortic stenosis.  Reevaluation in two to three years with transthoracic echocardiogram will be recommended' \u2014 extracted from header, not verified against any coding system"
+  }
+]

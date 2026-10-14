@@ -1,0 +1,113 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:,1.  Lumbar osteomyelitis.,2.  Need for durable central intravenous access.,POSTOPERATIVE DIAGNOSES:,1.  Lumbar osteomyelitis.,2.  Need for durable central intravenous access.,ANESTHESIA:,  General.,PROCEDURE:,  Placement of left subclavian 4-French Broviac catheter.,INDICATIONS:  ,The patient is a toddler admitted with a limp and back pain, who was eventually found on bone scan and septic workup to have probable osteomyelitis of the lumbar spine at disk areas.  The patient needs prolonged IV antibiotic therapy, but attempt at a PICC line failed.  She has exhausted most of her easy peripheral IV access routes and referral was made to the Pediatric Surgery Service for Broviac placement.  I met with the patient's mom.  With the help of a Spanish interpreter, I explained the technique for Broviac placement.  We discussed the surgical risks and alternatives, most of which have been exhausted.  All their questions have been answered, and the patient is fit for operation today.,DESCRIPTION OF OPERATION:  ,The patient came to the operating room and had an uneventful induction of general anesthesia.  We conducted a surgical time-out to reiterate all of the patient's important identifying information and to confirm that we were here to place the Broviac catheter.  Preparation and draping of her skin was performed with chlorhexidine based prep solution and then an infraclavicular approach to left subclavian vein was performed.  A flexible guidewire was inserted into the central location and then a 4-French Broviac catheter was tunneled through the subcutaneous tissues and exiting on the right anterolateral chest wall well below and lateral to the breast and pectoralis major margins.  The catheter was brought to the subclavian insertion site and trimmed so that the tip would lie at the junction of the superior vena cava and right atrium based on fluoroscopic guidelines.  The peel-away sheath was passed over the guidewire and then the 4-French catheter was deployed through the peel-away sheath.  There was easy blood return and fluoroscopic imaging showed initially the catheter had transited across the mediastinum up the opposite subclavian vein, then it was withdrawn and easily replaced in the superior vena cava.  The catheter insertion site was closed with one buried 5-0 Monocryl stitch and the same 5-0 Monocryl was used to tether the catheter at the exit site until fibrous ingrowth of the attached cuff has occurred.  Heparinized saline solution was used to flush the line.  A sterile occlusive dressing was applied, and the line was prepared for immediate use.  The patient was transported to the recovery room in good condition.  There were no intraoperative complications, and her blood loss was between 5 and 100mL during the line placement portion of the procedure.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Need for durable central intravenous access.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Lumbar osteomyelitis"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Need for durable central intravenous access.,ANESTHESIA:,  General.,PROCEDURE:,  Placement of left subclavian 4-French Broviac catheter.,INDICATIONS:  ,The patient is a toddler admitted with a limp and back pain, who was eventually found on bone scan and septic workup to have probable osteomyelitis of the lumbar spine at disk areas.  The patient needs prolonged IV antibiotic therapy, but attempt at a PICC line failed.  She has exhausted most of her easy peripheral IV access routes and referral was made to the Pediatric Surgery Service for Broviac placement.  I met with the patient's mom.  With the help of a Spanish interpreter, I explained the technique for Broviac placement.  We discussed the surgical risks and alternatives, most of which have been exhausted.  All their questions have been answered, and the patient is fit for operation today.,DESCRIPTION OF OPERATION:  ,The patient came to the operating room and had an uneventful induction of general anesthesia.  We conducted a surgical time-out to reiterate all of the patient's important identifying information and to confirm that we were here to place the Broviac catheter.  Preparation and draping of her skin was performed with chlorhexidine based prep solution and then an infraclavicular approach to left subclavian vein was performed.  A flexible guidewire was inserted into the central location and then a 4-French Broviac catheter was tunneled through the subcutaneous tissues and exiting on the right anterolateral chest wall well below and lateral to the breast and pectoralis major margins.  The catheter was brought to the subclavian insertion site and trimmed so that the tip would lie at the junction of the superior vena cava and right atrium based on fluoroscopic guidelines.  The peel-away sheath was passed over the guidewire and then the 4-French catheter was deployed through the peel-away sheath.  There was easy blood return and fluoroscopic imaging showed initially the catheter had transited across the mediastinum up the opposite subclavian vein, then it was withdrawn and easily replaced in the superior vena cava.  The catheter insertion site was closed with one buried 5-0 Monocryl stitch and the same 5-0 Monocryl was used to tether the catheter at the exit site until fibrous ingrowth of the attached cuff has occurred.  Heparinized saline solution was used to flush the line.  A sterile occlusive dressing was applied, and the line was prepared for immediate use.  The patient was transported to the recovery room in good condition.  There were no intraoperative complications, and her blood loss was between 5 and 100mL during the line placement portion of the procedure"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Placement of left subclavian 4-French Broviac catheter.,INDICATIONS:  ,The patient is a toddler admitted with a limp and back pain, who was eventually found on bone scan and septic workup to have probable osteomyelitis of the lumbar spine at disk areas.  The patient needs prolonged IV antibiotic therapy, but attempt at a PICC line failed.  She has exhausted most of her easy peripheral IV access routes and referral was made to the Pediatric Surgery Service for Broviac placement.  I met with the patient's mom.  With the help of a Spanish interpreter"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "I explained the technique for Broviac placement.  We discussed the surgical risks and alternatives, most of which have been exhausted.  All their questions have been answered, and the patient is fit for operation today.,DESCRIPTION OF OPERATION:  ,The patient came to the operating room and had an uneventful induction of general anesthesia.  We conducted a surgical time-out to reiterate all of the patient's important identifying information and to confirm that we were here to place the Broviac catheter.  Preparation and draping of her skin was performed with chlorhexidine based prep solution and then an infraclavicular approach to left subclavian vein was performed.  A flexible guidewire was inserted into the central location and then a 4-French Broviac catheter was tunneled through the subcutaneous tissues and exiting on the right anterolateral chest wall well below and lateral to the breast and pectoralis major margins.  The catheter was brought to the subclavian insertion site and trimmed so that the tip would lie at the junction of the superior vena cava and right atrium based on fluoroscopic guidelines.  The peel-away sheath was passed over the guidewire and then the 4-French catheter was deployed through the peel-away sheath.  There was easy blood return and fluoroscopic imaging showed initially the catheter had transited across the mediastinum up the opposite subclavian vein, then it was withdrawn and easily replaced in the superior vena cava.  The catheter insertion site was closed with one buried 5-0 Monocryl stitch and the same 5-0 Monocryl was used to tether the catheter at the exit site until fibrous ingrowth of the attached cuff has occurred.  Heparinized saline solution was used to flush the line.  A sterile occlusive dressing was applied, and the line was prepared for immediate use.  The patient was transported to the recovery room in good condition.  There were no intraoperative complications, and her blood loss was between 5 and 100mL during the line placement portion of the procedure"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "today.,DESCRIPTION OF OPERATION:  ,The patient came to the operating room and had an uneventful induction of general anesthesia.  We conducted a surgical time-out to reiterate all of the patient's important identifying information and to confirm that we were here to place the Broviac catheter.  Preparation and draping of her skin was performed with chlorhexidine based prep solution and then an infraclavicular approach to left subclavian vein was performed.  A flexible guidewire was inserted into the central location and then a 4-French Broviac catheter was tunneled through the subcutaneous tissues and exiting on the right anterolateral chest wall well below and lateral to the breast and pectoralis major margins.  The catheter was brought to the subclavian insertion site and trimmed so that the tip would lie at the junction of the superior vena cava and right atrium based on fluoroscopic guidelines.  The peel-away sheath was passed over the guidewire and then the 4-French catheter was deployed through the peel-away sheath.  There was easy blood return and fluoroscopic imaging showed initially the catheter had transited across the mediastinum up the opposite subclavian vein, then it was withdrawn and easily replaced in the superior vena cava.  The catheter insertion site was closed with one buried 5-0 Monocryl stitch and the same 5-0 Monocryl was used to tether the catheter at the exit site until fibrous ingrowth of the attached cuff has occurred.  Heparinized saline solution was used to flush the line.  A sterile occlusive dressing was applied, and the line was prepared for immediate use.  The patient was transported to the recovery room in good condition.  There were no intraoperative complications, and her blood loss was between 5 and 100mL during the line placement portion of the procedure"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "chlorhexidine"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "measurement",
+    "text": "100mL"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] Z452: Encounter for adjustment and management of vascular access device (score: 0.4003)\n[ICD-10-CM 2027] Z743: Need for continuous supervision (score: 0.3365)\n[ICD-10-CM 2027] Z741: Need for assistance with personal care (score: 0.3307)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] M4626: Osteomyelitis of vertebra, lumbar region (score: 0.7843)\n[ICD-10-CM 2027] M869: Osteomyelitis, unspecified (score: 0.7415)\n[ICD-10-CM 2027] M868X49: Other osteomyelitis, unspecified hand (score: 0.6468)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] T80218D: Other infection due to central venous catheter, subsequent encounter (score: 0.2339)\n[ICD-10-CM 2027] T80219D: Unspecified infection due to central venous catheter, subsequent encounter (score: 0.2339)\n[ICD-10-CM 2027] T80218A: Other infection due to central venous catheter, initial encounter (score: 0.2330)\n[ICD-10-CM 2027] Match unresolved (top score 0.2339 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Placement of left subclavian 4-French Broviac catheter.,INDICATIONS:  ,The patient is a toddler admitted with a limp and back pain, who was eventually found on bone scan and septic workup to have probable osteomyelitis of the lumbar spine at disk areas.  The patient needs prolonged IV antibiotic therapy, but attempt at a PICC line failed.  She has exhausted most of her easy peripheral IV access routes and referral was made to the Pediatric Surgery Service for Broviac placement.  I met with the patient's mom.  With the help of a Spanish interpreter' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'I explained the technique for Broviac placement.  We discussed the surgical risks and alternatives, most of which have been exhausted.  All their questions have been answered, and the patient is fit for operation today.,DESCRIPTION OF OPERATION:  ,The patient came to the operating room and had an uneventful induction of general anesthesia.  We conducted a surgical time-out to reiterate all of the patient's important identifying information and to confirm that we were here to place the Broviac catheter.  Preparation and draping of her skin was performed with chlorhexidine based prep solution and then an infraclavicular approach to left subclavian vein was performed.  A flexible guidewire was inserted into the central location and then a 4-French Broviac catheter was tunneled through the subcutaneous tissues and exiting on the right anterolateral chest wall well below and lateral to the breast and pectoralis major margins.  The catheter was brought to the subclavian insertion site and trimmed so that the tip would lie at the junction of the superior vena cava and right atrium based on fluoroscopic guidelines.  The peel-away sheath was passed over the guidewire and then the 4-French catheter was deployed through the peel-away sheath.  There was easy blood return and fluoroscopic imaging showed initially the catheter had transited across the mediastinum up the opposite subclavian vein, then it was withdrawn and easily replaced in the superior vena cava.  The catheter insertion site was closed with one buried 5-0 Monocryl stitch and the same 5-0 Monocryl was used to tether the catheter at the exit site until fibrous ingrowth of the attached cuff has occurred.  Heparinized saline solution was used to flush the line.  A sterile occlusive dressing was applied, and the line was prepared for immediate use.  The patient was transported to the recovery room in good condition.  There were no intraoperative complications, and her blood loss was between 5 and 100mL during the line placement portion of the procedure' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'today.,DESCRIPTION OF OPERATION:  ,The patient came to the operating room and had an uneventful induction of general anesthesia.  We conducted a surgical time-out to reiterate all of the patient's important identifying information and to confirm that we were here to place the Broviac catheter.  Preparation and draping of her skin was performed with chlorhexidine based prep solution and then an infraclavicular approach to left subclavian vein was performed.  A flexible guidewire was inserted into the central location and then a 4-French Broviac catheter was tunneled through the subcutaneous tissues and exiting on the right anterolateral chest wall well below and lateral to the breast and pectoralis major margins.  The catheter was brought to the subclavian insertion site and trimmed so that the tip would lie at the junction of the superior vena cava and right atrium based on fluoroscopic guidelines.  The peel-away sheath was passed over the guidewire and then the 4-French catheter was deployed through the peel-away sheath.  There was easy blood return and fluoroscopic imaging showed initially the catheter had transited across the mediastinum up the opposite subclavian vein, then it was withdrawn and easily replaced in the superior vena cava.  The catheter insertion site was closed with one buried 5-0 Monocryl stitch and the same 5-0 Monocryl was used to tether the catheter at the exit site until fibrous ingrowth of the attached cuff has occurred.  Heparinized saline solution was used to flush the line.  A sterile occlusive dressing was applied, and the line was prepared for immediate use.  The patient was transported to the recovery room in good condition.  There were no intraoperative complications, and her blood loss was between 5 and 100mL during the line placement portion of the procedure' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'chlorhexidine' \u2192 RXCUI 2358, canonical: chlorhexidine, match: exact\n[RxNorm] Ingredient: chlorhexidine (RXCUI 2358)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): chlorhexidine gluconate 2 MG/ML / lidocaine hydrochloride 0.5 MG/ML Oral Spray; chlorhexidine gluconate 3.5 MG/ML / didecyldimethylammonium chloride 2 MG/ML Topical Solution; chlorhexidine gluconate 10 MG/ML Topical Solution; chlorhexidine gluconate 10 MG/ML / ethanol 0.61 ML/ML Topical Lotion; chlorhexidine gluconate 40 MG/ML Medicated Shampoo"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Measurement] 100.0ml \u2014 not associated with any medication"
+  }
+]

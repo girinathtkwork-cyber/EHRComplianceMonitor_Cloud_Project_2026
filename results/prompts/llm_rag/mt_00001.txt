@@ -1,0 +1,213 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:,1.  Hyperpyrexia/leukocytosis.,2.  Ventilator-dependent respiratory failure.,3.  Acute pancreatitis.,POSTOPERATIVE DIAGNOSES:,1.  Hyperpyrexia/leukocytosis.,2.  Ventilator-dependent respiratory failure.,3.  Acute pancreatitis.,PROCEDURE PERFORMED:,1.  Insertion of a right brachial artery arterial catheter.,2.  Insertion of a right subclavian vein triple lumen catheter.,ANESTHESIA: , Local, 1% lidocaine.,BLOOD LOSS:,  Less than 5 cc.,COMPLICATIONS: , None.,INDICATIONS: , The patient is a 46-year-old Caucasian female admitted with severe pancreatitis.  She was severely dehydrated and necessitated some fluid boluses.  The patient became hypotensive, required many fluid boluses, became very anasarcic and had difficulty with breathing and became hypoxic.  She required intubation and has been ventilator-dependent in the Intensive Care since that time.  The patient developed very high temperatures as well as leukocytosis.  Her lines required being changed.,PROCEDURE:,1.  RIGHT BRACHIAL ARTERIAL LINE:  ,The patient's right arm was prepped and draped in the usual sterile fashion.  There was a good brachial pulse palpated.  The artery was cannulated with the provided needle and the kit.  There was good arterial blood return noted immediately.  On the first stick, the Seldinger wire was inserted through the needle to cannulate the right brachial artery without difficulty.  The needle was removed and a catheter was inserted over the Seldinger wire to cannulate the brachial artery.  The femoral catheter was used in this case secondary to the patient's severe edema and anasarca.  We did not feel that the shorter catheter would provide enough length.  The catheter was connected to the system and flushed without difficulty.  A good waveform was noted.  The catheter was sutured into place with #3-0 silk suture and OpSite dressing was placed over this.,2.  RIGHT SUBCLAVIAN TRIPLE LUMEN CATHETER:  ,The patient was prepped and draped in the usual sterile fashion.  1% Xylocaine was used to anesthetize an area just inferior and lateral to the angle of the clavicle.  Using the anesthetic needle, we checked down to the soft tissues anesthetizing, as we proceeded to the angle of the clavicle, this was also anesthetized.  Next, a #18 gauge thin walled needle was used following the same track to the angle of clavicle.  We roughed the needle down off the clavicle and directed it towards the sternal notch.  There was good venous return noted immediately.  The syringe was removed and a Seldinger guidewire was inserted through the needle to cannulate the vein.  The needle was then removed.  A small skin nick was made with a #11 blade scalpel and the provided dilator was used to dilate the skin, soft tissue and vein.  Next, the triple lumen catheter was inserted over the guidewire without difficulty.  The guidewire was removed.  All the ports aspirated and flushed without difficulty.  The catheter was sutured into place with #3-0 silk suture and a sterile OpSite dressing was also applied.  The patient tolerated the above procedures well.  A chest x-ray has been ordered, however, it has not been completed at this time, this will be checked and documented in the progress notes.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Acute pancreatitis.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Hyperpyrexia/leukocytosis"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Ventilator-dependent respiratory failure"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Acute pancreatitis.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Insertion of a right brachial artery arterial catheter"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Insertion of a right brachial artery arterial catheter"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Insertion of a right subclavian vein triple lumen catheter.,ANESTHESIA: , Local, 1% lidocaine.,BLOOD LOSS:,  Less than 5 cc.,COMPLICATIONS: , None.,INDICATIONS: , The patient is a 46-year-old Caucasian female admitted with severe pancreatitis.  She was severely dehydrated and necessitated some fluid boluses.  The patient became hypotensive, required many fluid boluses, became very anasarcic and had difficulty with breathing and became hypoxic.  She required intubation and has been ventilator-dependent in the Intensive Care since that time.  The patient developed very high temperatures as well as leukocytosis.  Her lines required being changed.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Insertion of a right subclavian vein triple lumen catheter.,ANESTHESIA: , Local, 1% lidocaine.,BLOOD LOSS:,  Less than 5 cc.,COMPLICATIONS: , None.,INDICATIONS: , The patient is a 46-year-old Caucasian female admitted with severe pancreatitis.  She was severely dehydrated and necessitated some fluid boluses.  The patient became hypotensive, required many fluid boluses, became very anasarcic and had difficulty with breathing and became hypoxic.  She required intubation and has been ventilator-dependent in the Intensive Care since that time.  The patient developed very high temperatures as well as leukocytosis.  Her lines required being changed.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "dosage",
+    "text": "5 cc"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "RIGHT BRACHIAL ARTERIAL LINE:  ,The patient's right arm was prepped and draped in the usual sterile fashion.  There was a good brachial pulse palpated.  The artery was cannulated with the provided needle and the kit.  There was good arterial blood return noted immediately.  On the first stick, the Seldinger wire was inserted through the needle to cannulate the right brachial artery without difficulty.  The needle was removed and a catheter was inserted over the Seldinger wire to cannulate the brachial artery.  The femoral catheter was used in this case secondary to the patient's severe edema and anasarca.  We did not feel that the shorter catheter would provide enough length.  The catheter was connected to the system and flushed without difficulty.  A good waveform was noted.  The catheter was sutured into place with #3-0 silk suture and OpSite dressing was placed over this"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "RIGHT BRACHIAL ARTERIAL LINE:  ,The patient's right arm was prepped and draped in the usual sterile fashion.  There was a good brachial pulse palpated.  The artery was cannulated with the provided needle and the kit.  There was good arterial blood return noted immediately.  On the first stick, the Seldinger wire was inserted through the needle to cannulate the right brachial artery without difficulty.  The needle was removed and a catheter was inserted over the Seldinger wire to cannulate the brachial artery.  The femoral catheter was used in this case secondary to the patient's severe edema and anasarca.  We did not feel that the shorter catheter would provide enough length.  The catheter was connected to the system and flushed without difficulty.  A good waveform was noted.  The catheter was sutured into place with #3-0 silk suture and OpSite dressing was placed over this"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "RIGHT SUBCLAVIAN TRIPLE LUMEN CATHETER:  ,The patient was prepped and draped in the usual sterile fashion.  1% Xylocaine was used to anesthetize an area just inferior and lateral to the angle of the clavicle.  Using the anesthetic needle, we checked down to the soft tissues anesthetizing, as we proceeded to the angle of the clavicle, this was also anesthetized.  Next, a #18 gauge thin walled needle was used following the same track to the angle of clavicle.  We roughed the needle down off the clavicle and directed it towards the sternal notch.  There was good venous return noted immediately.  The syringe was removed and a Seldinger guidewire was inserted through the needle to cannulate the vein.  The needle was then removed.  A small skin nick was made with a #11 blade scalpel and the provided dilator was used to dilate the skin, soft tissue and vein.  Next, the triple lumen catheter was inserted over the guidewire without difficulty.  The guidewire was removed.  All the ports aspirated and flushed without difficulty.  The catheter was sutured into place with #3-0 silk suture and a sterile OpSite dressing was also applied.  The patient tolerated the above procedures well.  A chest x-ray has been ordered, however, it has not been completed at this time, this will be checked and documented in the progress notes"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "RIGHT SUBCLAVIAN TRIPLE LUMEN CATHETER:  ,The patient was prepped and draped in the usual sterile fashion.  1% Xylocaine was used to anesthetize an area just inferior and lateral to the angle of the clavicle.  Using the anesthetic needle, we checked down to the soft tissues anesthetizing, as we proceeded to the angle of the clavicle, this was also anesthetized.  Next, a #18 gauge thin walled needle was used following the same track to the angle of clavicle.  We roughed the needle down off the clavicle and directed it towards the sternal notch.  There was good venous return noted immediately.  The syringe was removed and a Seldinger guidewire was inserted through the needle to cannulate the vein.  The needle was then removed.  A small skin nick was made with a #11 blade scalpel and the provided dilator was used to dilate the skin, soft tissue and vein.  Next, the triple lumen catheter was inserted over the guidewire without difficulty.  The guidewire was removed.  All the ports aspirated and flushed without difficulty.  The catheter was sutured into place with #3-0 silk suture and a sterile OpSite dressing was also applied.  The patient tolerated the above procedures well.  A chest x-ray has been ordered, however, it has not been completed at this time, this will be checked and documented in the progress notes"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "Xylocaine"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "well.  A chest x-ray has been ordered, however, it has not been completed at this time, this will be checked and documented in the progress notes"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] K8580: Other acute pancreatitis without necrosis or infection (score: 0.7860)\n[ICD-10-CM 2027] K8590: Acute pancreatitis without necrosis or infection, unspecified (score: 0.7860)\n[ICD-10-CM 2027] K861: Other chronic pancreatitis (score: 0.7741)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] No matches found for 'Hyperpyrexia/leukocytosis' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] P285: Respiratory failure of newborn (score: 0.4545)\n[ICD-10-CM 2027] J95851: Ventilator associated pneumonia (score: 0.4522)\n[ICD-10-CM 2027] Z9912: Encounter for respirator [ventilator] dependence during power failure (score: 0.4361)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] K8580: Other acute pancreatitis without necrosis or infection (score: 0.6749)\n[ICD-10-CM 2027] K8590: Acute pancreatitis without necrosis or infection, unspecified (score: 0.6749)\n[ICD-10-CM 2027] K861: Other chronic pancreatitis (score: 0.6647)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] S45101D: Unspecified injury of brachial artery, right side, subsequent encounter (score: 0.4679)\n[ICD-10-CM 2027] S45191D: Other specified injury of brachial artery, right side, subsequent encounter (score: 0.4679)\n[ICD-10-CM 2027] S45101A: Unspecified injury of brachial artery, right side, initial encounter (score: 0.4652)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Insertion of a right brachial artery arterial catheter' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Y844: Aspiration of fluid as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.2469)\n[ICD-10-CM 2027] R460: Very low level of personal hygiene (score: 0.2343)\n[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.2252)\n[ICD-10-CM 2027] Match unresolved (top score 0.2469 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Insertion of a right subclavian vein triple lumen catheter.,ANESTHESIA: , Local, 1% lidocaine.,BLOOD LOSS:,  Less than 5 cc.,COMPLICATIONS: , None.,INDICATIONS: , The patient is a 46-year-old Caucasian female admitted with severe pancreatitis.  She was severely dehydrated and necessitated some fluid boluses.  The patient became hypotensive, required many fluid boluses, became very anasarcic and had difficulty with breathing and became hypoxic.  She required intubation and has been ventilator-dependent in the Intensive Care since that time.  The patient developed very high temperatures as well as leukocytosis.  Her lines required being changed.,PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "Dose 1.0% associated with lidocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "Dose 5.0cc associated with lidocaine \u2014 dose 5.0cc not among known product strengths"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] S45101D: Unspecified injury of brachial artery, right side, subsequent encounter (score: 0.3438)\n[ICD-10-CM 2027] S45191D: Other specified injury of brachial artery, right side, subsequent encounter (score: 0.3438)\n[ICD-10-CM 2027] S45101A: Unspecified injury of brachial artery, right side, initial encounter (score: 0.3419)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'RIGHT BRACHIAL ARTERIAL LINE:  ,The patient's right arm was prepped and draped in the usual sterile fashion.  There was a good brachial pulse palpated.  The artery was cannulated with the provided needle and the kit.  There was good arterial blood return noted immediately.  On the first stick, the Seldinger wire was inserted through the needle to cannulate the right brachial artery without difficulty.  The needle was removed and a catheter was inserted over the Seldinger wire to cannulate the brachial artery.  The femoral catheter was used in this case secondary to the patient's severe edema and anasarca.  We did not feel that the shorter catheter would provide enough length.  The catheter was connected to the system and flushed without difficulty.  A good waveform was noted.  The catheter was sutured into place with #3-0 silk suture and OpSite dressing was placed over this' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] W460XXD: Contact with hypodermic needle, subsequent encounter (score: 0.2795)\n[ICD-10-CM 2027] W44H1XD: Needle entering into or through a natural orifice, subsequent encounter (score: 0.2793)\n[ICD-10-CM 2027] W44H1XA: Needle entering into or through a natural orifice, initial encounter (score: 0.2786)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'RIGHT SUBCLAVIAN TRIPLE LUMEN CATHETER:  ,The patient was prepped and draped in the usual sterile fashion.  1% Xylocaine was used to anesthetize an area just inferior and lateral to the angle of the clavicle.  Using the anesthetic needle, we checked down to the soft tissues anesthetizing, as we proceeded to the angle of the clavicle, this was also anesthetized.  Next, a #18 gauge thin walled needle was used following the same track to the angle of clavicle.  We roughed the needle down off the clavicle and directed it towards the sternal notch.  There was good venous return noted immediately.  The syringe was removed and a Seldinger guidewire was inserted through the needle to cannulate the vein.  The needle was then removed.  A small skin nick was made with a #11 blade scalpel and the provided dilator was used to dilate the skin, soft tissue and vein.  Next, the triple lumen catheter was inserted over the guidewire without difficulty.  The guidewire was removed.  All the ports aspirated and flushed without difficulty.  The catheter was sutured into place with #3-0 silk suture and a sterile OpSite dressing was also applied.  The patient tolerated the above procedures well.  A chest x-ray has been ordered, however, it has not been completed at this time, this will be checked and documented in the progress notes' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "Dose 1.0% associated with Xylocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'Xylocaine' \u2192 RXCUI 202398, canonical: Xylocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'well.  A chest x-ray has been ordered, however, it has not been completed at this time, this will be checked and documented in the progress notes' \u2014 extracted from header, not verified against any coding system"
+  }
+]

@@ -1,0 +1,123 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:,  Carpal tunnel syndrome.,POSTOPERATIVE DIAGNOSIS:,  Carpal tunnel syndrome.,PROCEDURE: , Endoscopic release of left transverse carpal ligament.,ANESTHESIA:,  Monitored anesthesia care with regional anesthesia provided by surgeon.  ,TOURNIQUET TIME: , 12 minutes.,OPERATIVE PROCEDURE IN DETAIL: , With the patient under adequate monitored anesthesia, the left upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated.  The tourniquet was elevated at 290 mmHg.  Construction lines were made on the left palm to identify the ring ray.  A transverse incision was made in the palm between FCR and FCU, one finger breadth proximal to the interval between the glabrous skin of the palm and normal forearm skin.  Blunt dissection exposed the antebrachial fascia.  Hemostasis was obtained with bipolar cautery.  A distal based window in the antebrachial fascia was then fashioned.  Care was taken to protect the underlying contents.  A synovial elevator was used to palpate the undersurface of the transverse carpal ligament, and synovium was elevated off this undersurface.,Hamate sounds were then used to palpate the Hood of Hamate.  The Agee Inside Job was then inserted into the proximal incision.  The transverse carpal ligament was easily visualized through the portal.  Using palmar pressure, transverse carpal ligament was held against the portal as the instrument was inserted down the transverse carpal ligament to the distal end.  The distal end of the transverse carpal ligament was then identified in the window.  The blade was then elevated, and the Agee Inside Job was withdrawn, dividing transverse carpal ligament under direct vision.  After complete division of transverse carpal ligament, the Agee Inside Job was reinserted.  Radial and ulnar edges of the transverse carpal ligament were identified and complete release was accomplished.  One cc of Celestone was then introduced into the carpal tunnel and irrigated free.  ,The wound was then closed with a running 3-0 Prolene subcuticular stitch.  Steri-strips were applied and a sterile dressing was applied over the Steri-strips.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well. Patient also underwent MRI-guided biopsy during this visit.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Carpal tunnel syndrome.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Carpal tunnel syndrome.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Endoscopic release of left transverse carpal ligament.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Endoscopic release of left transverse carpal ligament.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Monitored anesthesia care with regional anesthesia provided by surgeon.  ,TOURNIQUET TIME:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Monitored anesthesia care with regional anesthesia provided by surgeon.  ,TOURNIQUET TIME:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "12 minutes.,OPERATIVE PROCEDURE IN DETAIL:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "12 minutes.,OPERATIVE PROCEDURE IN DETAIL:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "With the patient under adequate monitored anesthesia, the left upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated.  The tourniquet was elevated at 290 mmHg.  Construction lines were made on the left palm to identify the ring ray.  A transverse incision was made in the palm between FCR and FCU, one finger breadth proximal to the interval between the glabrous skin of the palm and normal forearm skin.  Blunt dissection exposed the antebrachial fascia.  Hemostasis was obtained with bipolar cautery.  A distal based window in the antebrachial fascia was then fashioned.  Care was taken to protect the underlying contents.  A synovial elevator was used to palpate the undersurface of the transverse carpal ligament, and synovium was elevated off this undersurface.,Hamate sounds were then used to palpate the Hood of Hamate.  The Agee Inside Job was then inserted into the proximal incision.  The transverse carpal ligament was easily visualized through the portal.  Using palmar pressure, transverse carpal ligament was held against the portal as the instrument was inserted down the transverse carpal ligament to the distal end.  The distal end of the transverse carpal ligament was then identified in the window.  The blade was then elevated, and the Agee Inside Job was withdrawn, dividing transverse carpal ligament under direct vision.  After complete division of transverse carpal ligament, the Agee Inside Job was reinserted.  Radial and ulnar edges of the transverse carpal ligament were identified and complete release was accomplished.  One cc of Celestone was then introduced into the carpal tunnel and irrigated free.  ,The wound was then closed with a running 3-0 Prolene subcuticular stitch.  Steri-strips were applied and a sterile dressing was applied over the Steri-strips.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well. Patient also underwent MRI-guided biopsy during this visit"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "With the patient under adequate monitored anesthesia, the left upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated.  The tourniquet was elevated at 290 mmHg.  Construction lines were made on the left palm to identify the ring ray.  A transverse incision was made in the palm between FCR and FCU, one finger breadth proximal to the interval between the glabrous skin of the palm and normal forearm skin.  Blunt dissection exposed the antebrachial fascia.  Hemostasis was obtained with bipolar cautery.  A distal based window in the antebrachial fascia was then fashioned.  Care was taken to protect the underlying contents.  A synovial elevator was used to palpate the undersurface of the transverse carpal ligament, and synovium was elevated off this undersurface.,Hamate sounds were then used to palpate the Hood of Hamate.  The Agee Inside Job was then inserted into the proximal incision.  The transverse carpal ligament was easily visualized through the portal.  Using palmar pressure, transverse carpal ligament was held against the portal as the instrument was inserted down the transverse carpal ligament to the distal end.  The distal end of the transverse carpal ligament was then identified in the window.  The blade was then elevated, and the Agee Inside Job was withdrawn, dividing transverse carpal ligament under direct vision.  After complete division of transverse carpal ligament, the Agee Inside Job was reinserted.  Radial and ulnar edges of the transverse carpal ligament were identified and complete release was accomplished.  One cc of Celestone was then introduced into the carpal tunnel and irrigated free.  ,The wound was then closed with a running 3-0 Prolene subcuticular stitch.  Steri-strips were applied and a sterile dressing was applied over the Steri-strips.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well. Patient also underwent MRI-guided biopsy during this visit"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] G5600: Carpal tunnel syndrome, unspecified upper limb (score: 0.7030)\n[ICD-10-CM 2027] G5602: Carpal tunnel syndrome, left upper limb (score: 0.6978)\n[ICD-10-CM 2027] G5601: Carpal tunnel syndrome, right upper limb (score: 0.6978)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] G5600: Carpal tunnel syndrome, unspecified upper limb (score: 0.8345)\n[ICD-10-CM 2027] G5602: Carpal tunnel syndrome, left upper limb (score: 0.8284)\n[ICD-10-CM 2027] G5601: Carpal tunnel syndrome, right upper limb (score: 0.8283)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] S62102S: Fracture of unspecified carpal bone, left wrist, sequela (score: 0.3596)\n[ICD-10-CM 2027] S62109S: Fracture of unspecified carpal bone, unspecified wrist, sequela (score: 0.3479)\n[ICD-10-CM 2027] S62101S: Fracture of unspecified carpal bone, right wrist, sequela (score: 0.3423)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Endoscopic release of left transverse carpal ligament.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] T8859XD: Other complications of anesthesia, subsequent encounter (score: 0.5908)\n[ICD-10-CM 2027] T8859XA: Other complications of anesthesia, initial encounter (score: 0.5856)\n[ICD-10-CM 2027] T8859XS: Other complications of anesthesia, sequela (score: 0.5854)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Monitored anesthesia care with regional anesthesia provided by surgeon.  ,TOURNIQUET TIME:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] R467: Verbosity and circumstantial detail obscuring reason for contact (score: 0.3721)\n[ICD-10-CM 2027] S06892D: Other specified intracranial injury with loss of consciousness of 31 minutes to 59 minutes, subsequent encounter (score: 0.3420)\n[ICD-10-CM 2027] S069X2D: Unspecified intracranial injury with loss of consciousness of 31 minutes to 59 minutes, subsequent encounter (score: 0.3420)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] '12 minutes.,OPERATIVE PROCEDURE IN DETAIL:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] S62109S: Fracture of unspecified carpal bone, unspecified wrist, sequela (score: 0.4098)\n[ICD-10-CM 2027] S62102S: Fracture of unspecified carpal bone, left wrist, sequela (score: 0.4078)\n[ICD-10-CM 2027] S62101S: Fracture of unspecified carpal bone, right wrist, sequela (score: 0.4032)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'With the patient under adequate monitored anesthesia, the left upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated.  The tourniquet was elevated at 290 mmHg.  Construction lines were made on the left palm to identify the ring ray.  A transverse incision was made in the palm between FCR and FCU, one finger breadth proximal to the interval between the glabrous skin of the palm and normal forearm skin.  Blunt dissection exposed the antebrachial fascia.  Hemostasis was obtained with bipolar cautery.  A distal based window in the antebrachial fascia was then fashioned.  Care was taken to protect the underlying contents.  A synovial elevator was used to palpate the undersurface of the transverse carpal ligament, and synovium was elevated off this undersurface.,Hamate sounds were then used to palpate the Hood of Hamate.  The Agee Inside Job was then inserted into the proximal incision.  The transverse carpal ligament was easily visualized through the portal.  Using palmar pressure, transverse carpal ligament was held against the portal as the instrument was inserted down the transverse carpal ligament to the distal end.  The distal end of the transverse carpal ligament was then identified in the window.  The blade was then elevated, and the Agee Inside Job was withdrawn, dividing transverse carpal ligament under direct vision.  After complete division of transverse carpal ligament, the Agee Inside Job was reinserted.  Radial and ulnar edges of the transverse carpal ligament were identified and complete release was accomplished.  One cc of Celestone was then introduced into the carpal tunnel and irrigated free.  ,The wound was then closed with a running 3-0 Prolene subcuticular stitch.  Steri-strips were applied and a sterile dressing was applied over the Steri-strips.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well. Patient also underwent MRI-guided biopsy during this visit' \u2014 extracted from header, not verified against any coding system"
+  }
+]

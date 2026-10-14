@@ -1,0 +1,133 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Acute appendicitis.,POSTOPERATIVE DIAGNOSIS: , Acute appendicitis.,PROCEDURE: , Laparoscopic appendectomy.,ANESTHESIA: , General endotracheal.,INDICATIONS: , Patient is a pleasant 31-year-old gentleman who presented to the hospital with acute onset of right lower quadrant pain.  History as well as signs and symptoms are consistent with acute appendicitis as was his CAT scan.  I evaluated the patient in the emergency room and recommended that he undergo the above-named procedure.  The procedure, purpose, risks, expected benefits, potential complications, alternative forms of therapy were discussed with him and he was agreeable with surgery.,FINDINGS: , Patient was found to have acute appendicitis with an inflamed appendix, which was edematous, but essentially no suppuration.,TECHNIQUE:  ,The patient was identified and then taken into the operating room, where after induction of general endotracheal anesthesia, the abdomen was prepped with Betadine solution and draped in sterile fashion.  An infraumbilical incision was made and carried down by blunt dissection to the level of the fascia, which was grasped with an Allis clamp and two stay sutures of 2-0 Vicryl were placed on either side of the midline.  The fascia was tented and incised and the peritoneum entered by blunt finger dissection.  A Hasson cannula was placed and a pneumoperitoneum to 15 mmHg pressure was obtained.  Patient was placed in the Trendelenburg position, rotated to his left, whereupon under direct vision, the 12-mm midline as well as 5-mm midclavicular and anterior axillary ports were placed.  The appendix was easily visualized, grasped with a Babcock's.  A window was created in the mesoappendix between the appendix and the cecum and the Endo GIA was introduced and the appendix was amputated from the base of the cecum.  The mesoappendix was divided using the Endo GIA with vascular staples.  The appendix was placed within an Endo bag and delivered from the abdominal cavity.  The intra-abdominal cavity was irrigated.  Hemostasis was assured within the mesentery and at the base of the cecum.  All ports were removed under direct vision and then wounds were irrigated with saline antibiotic solution.  The infraumbilical defect was closed with a figure-of-eight 0 Vicryl suture.  The remaining wounds were irrigated and then everything was closed subcuticular with 4-0 Vicryl suture and Steri-Strips.  Patient tolerated the procedure well, dressings were applied, and he was taken to recovery room in stable condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Acute appendicitis.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Acute appendicitis.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Laparoscopic appendectomy.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Laparoscopic appendectomy.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "General endotracheal.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "General endotracheal.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Patient is a pleasant 31-year-old gentleman who presented to the hospital with acute onset of right lower quadrant pain.  History as well as signs and symptoms are consistent with acute appendicitis as was his CAT scan.  I evaluated the patient in the emergency room and recommended that he undergo the above-named procedure.  The procedure, purpose, risks, expected benefits, potential complications, alternative forms of therapy were discussed with him and he was agreeable with surgery.,FINDINGS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Patient is a pleasant 31-year-old gentleman who presented to the hospital with acute onset of right lower quadrant pain.  History as well as signs and symptoms are consistent with acute appendicitis as was his CAT scan.  I evaluated the patient in the emergency room and recommended that he undergo the above-named procedure.  The procedure, purpose, risks, expected benefits, potential complications, alternative forms of therapy were discussed with him and he was agreeable with surgery.,FINDINGS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Patient was found to have acute appendicitis with an inflamed appendix, which was edematous, but essentially no suppuration.,TECHNIQUE:  ,The patient was identified and then taken into the operating room, where after induction of general endotracheal anesthesia, the abdomen was prepped with Betadine solution and draped in sterile fashion.  An infraumbilical incision was made and carried down by blunt dissection to the level of the fascia, which was grasped with an Allis clamp and two stay sutures of 2-0 Vicryl were placed on either side of the midline.  The fascia was tented and incised and the peritoneum entered by blunt finger dissection.  A Hasson cannula was placed and a pneumoperitoneum to 15 mmHg pressure was obtained.  Patient was placed in the Trendelenburg position, rotated to his left, whereupon under direct vision, the 12-mm midline as well as 5-mm midclavicular and anterior axillary ports were placed.  The appendix was easily visualized, grasped with a Babcock's.  A window was created in the mesoappendix between the appendix and the cecum and the Endo GIA was introduced and the appendix was amputated from the base of the cecum.  The mesoappendix was divided using the Endo GIA with vascular staples.  The appendix was placed within an Endo bag and delivered from the abdominal cavity.  The intra-abdominal cavity was irrigated.  Hemostasis was assured within the mesentery and at the base of the cecum.  All ports were removed under direct vision and then wounds were irrigated with saline antibiotic solution.  The infraumbilical defect was closed with a figure-of-eight 0 Vicryl suture.  The remaining wounds were irrigated and then everything was closed subcuticular with 4-0 Vicryl suture and Steri-Strips.  Patient tolerated the procedure well, dressings were applied, and he was taken to recovery room in stable condition"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Patient was found to have acute appendicitis with an inflamed appendix, which was edematous, but essentially no suppuration.,TECHNIQUE:  ,The patient was identified and then taken into the operating room, where after induction of general endotracheal anesthesia, the abdomen was prepped with Betadine solution and draped in sterile fashion.  An infraumbilical incision was made and carried down by blunt dissection to the level of the fascia, which was grasped with an Allis clamp and two stay sutures of 2-0 Vicryl were placed on either side of the midline.  The fascia was tented and incised and the peritoneum entered by blunt finger dissection.  A Hasson cannula was placed and a pneumoperitoneum to 15 mmHg pressure was obtained.  Patient was placed in the Trendelenburg position, rotated to his left, whereupon under direct vision, the 12-mm midline as well as 5-mm midclavicular and anterior axillary ports were placed.  The appendix was easily visualized, grasped with a Babcock's.  A window was created in the mesoappendix between the appendix and the cecum and the Endo GIA was introduced and the appendix was amputated from the base of the cecum.  The mesoappendix was divided using the Endo GIA with vascular staples.  The appendix was placed within an Endo bag and delivered from the abdominal cavity.  The intra-abdominal cavity was irrigated.  Hemostasis was assured within the mesentery and at the base of the cecum.  All ports were removed under direct vision and then wounds were irrigated with saline antibiotic solution.  The infraumbilical defect was closed with a figure-of-eight 0 Vicryl suture.  The remaining wounds were irrigated and then everything was closed subcuticular with 4-0 Vicryl suture and Steri-Strips.  Patient tolerated the procedure well, dressings were applied, and he was taken to recovery room in stable condition"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Betadine"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] K3580: Unspecified acute appendicitis (score: 0.6776)\n[ICD-10-CM 2027] K36: Other appendicitis (score: 0.5947)\n[ICD-10-CM 2027] K37: Unspecified appendicitis (score: 0.5947)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] K3580: Unspecified acute appendicitis (score: 0.8664)\n[ICD-10-CM 2027] K36: Other appendicitis (score: 0.7604)\n[ICD-10-CM 2027] K37: Unspecified appendicitis (score: 0.7604)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Z5331: Laparoscopic surgical procedure converted to open procedure (score: 0.4909)\n[ICD-10-CM 2027] T8859XD: Other complications of anesthesia, subsequent encounter (score: 0.4120)\n[ICD-10-CM 2027] T8859XA: Other complications of anesthesia, initial encounter (score: 0.4083)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Laparoscopic appendectomy.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] O82: Encounter for cesarean delivery without indication (score: 0.4760)\n[ICD-10-CM 2027] Y653: Endotracheal tube wrongly placed during anesthetic procedure (score: 0.3313)\n[ICD-10-CM 2027] Z008: Encounter for other general examination (score: 0.2920)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'General endotracheal.,INDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] Y92230: Patient room in hospital as the place of occurrence of the external cause (score: 0.2852)\n[ICD-10-CM 2027] K3580: Unspecified acute appendicitis (score: 0.2704)\n[ICD-10-CM 2027] T819XXD: Unspecified complication of procedure, subsequent encounter (score: 0.2572)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Patient is a pleasant 31-year-old gentleman who presented to the hospital with acute onset of right lower quadrant pain.  History as well as signs and symptoms are consistent with acute appendicitis as was his CAT scan.  I evaluated the patient in the emergency room and recommended that he undergo the above-named procedure.  The procedure, purpose, risks, expected benefits, potential complications, alternative forms of therapy were discussed with him and he was agreeable with surgery.,FINDINGS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] K389: Disease of appendix, unspecified (score: 0.3441)\n[ICD-10-CM 2027] K388: Other specified diseases of appendix (score: 0.3327)\n[ICD-10-CM 2027] K383: Fistula of appendix (score: 0.3091)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'Patient was found to have acute appendicitis with an inflamed appendix, which was edematous, but essentially no suppuration.,TECHNIQUE:  ,The patient was identified and then taken into the operating room, where after induction of general endotracheal anesthesia, the abdomen was prepped with Betadine solution and draped in sterile fashion.  An infraumbilical incision was made and carried down by blunt dissection to the level of the fascia, which was grasped with an Allis clamp and two stay sutures of 2-0 Vicryl were placed on either side of the midline.  The fascia was tented and incised and the peritoneum entered by blunt finger dissection.  A Hasson cannula was placed and a pneumoperitoneum to 15 mmHg pressure was obtained.  Patient was placed in the Trendelenburg position, rotated to his left, whereupon under direct vision, the 12-mm midline as well as 5-mm midclavicular and anterior axillary ports were placed.  The appendix was easily visualized, grasped with a Babcock's.  A window was created in the mesoappendix between the appendix and the cecum and the Endo GIA was introduced and the appendix was amputated from the base of the cecum.  The mesoappendix was divided using the Endo GIA with vascular staples.  The appendix was placed within an Endo bag and delivered from the abdominal cavity.  The intra-abdominal cavity was irrigated.  Hemostasis was assured within the mesentery and at the base of the cecum.  All ports were removed under direct vision and then wounds were irrigated with saline antibiotic solution.  The infraumbilical defect was closed with a figure-of-eight 0 Vicryl suture.  The remaining wounds were irrigated and then everything was closed subcuticular with 4-0 Vicryl suture and Steri-Strips.  Patient tolerated the procedure well, dressings were applied, and he was taken to recovery room in stable condition' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Betadine' \u2192 RXCUI 202750, canonical: Betadine, match: exact\n[RxNorm] Ingredient: povidone-iodine (RXCUI 8611)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): povidone-iodine 75 MG/ML Medicated Pad; povidone-iodine 10 MG/ML Medicated Pad; povidone-iodine 50 MG/ML Medicated Pad; isopropyl alcohol 0.725 ML/ML / povidone-iodine 83 MG/ML Topical Solution; povidone-iodine 40 MG/ML Medicated Shampoo"
+  }
+]

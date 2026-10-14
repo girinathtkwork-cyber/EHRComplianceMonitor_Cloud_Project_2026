@@ -1,0 +1,393 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PRIMARY DISCHARGE DIAGNOSES:,1.  Urinary tract infection.,2.  Gastroenteritis with nausea and vomiting.,3.  Upper gastrointestinal bleed likely secondary to gastritis.,4.  Right hip osteoarthritic pain.,SECONDARY DISCHARGE DIAGNOSES:,1.  Hypertension.,2.  Gastroesophageal reflux disease.,3.  Chronic atrial fibrillation.,4.  Osteoporosis.,5.  Valvular heart disease.,HOSPITAL COURSE SUMMARY: , The patient is 93-year-old Caucasian female with a past medical history of hypertension, chronic atrial fibrillation, gastroesophageal reflux disease, osteoporosis and chronic right hip pain after total hip arthroplasty was admitted to our hospital for complaints of nausea and vomiting and urinary tract infection.  Over the course of her hospitalization, the patient was started on antibiotic regimen and proton pump inhibitors for an episode of coffee-ground emesis.  The patient was managed conservatively and was also provided with physical therapy for chronic right hip pain.,At the time of discharge, the patient continues to complain of right hip pain impairing ability to walk.  The patient denies any chest pain, nausea, vomiting, fever, chills, shortness of breath, abdominal pain or any urine or bowel problems.,PAST MEDICAL HISTORY: , Can be referred to the H&P dictated in the chart.,PAST SURGICAL HISTORY: , Can be referred to the H&P dictated in the chart.,PHYSICAL EXAMINATION:  ,VITAL SIGNS:  At the time of discharge temperature 36.6 degree Celsius, pulse rate of 77 per minute, respiratory rate 20 per minute, blood pressure 115/63, and oxygen saturation of 94% on room air.,GENERAL:  The patient is a thin built Caucasian female with no pallor, cyanosis or icterus.  She is alert and oriented x3.,HEENT:  No carotid bruits, JVD, lymphadenopathy or thyromegaly.  Pupils are equally reactive to light and accommodation.,BACK AND EXTREMITY:  Bilateral pitting edema and peripheral pulses are palpable.  The patient has right hip brace/immobilizer.,HEART:  Irregularly irregular heart rhythm, grade 2-3/6 systolic ejection murmur best heard over the aortic area and normal S1 and S2.,CHEST:  Auscultation revealed bibasilar crackles.,ABDOMEN:  Soft, nontender, no organomegaly and bowel sounds are present.,CNS:  Nonfocal.,LABORATORY STUDIES: , WBC 6.5, hemoglobin 12.5, hematocrit 38.9, platelet count 177,000, INR 1.2, sodium 141, potassium 3.6 and serum creatinine of 0.8.  Liver function tests were normal.  The patient's troponin was elevated at 0.05 at the time or presentation, but it trended down to 0.04 on the third set.  Urinalysis revealed trace protein, trace blood, and 10-20 WBCs.  Blood culture showed no growth till date.  Urine culture grew 50-100,000 colonies of Enterococcus susceptible to ampicillin and nitrofurantoin.,Chest x-ray showed enlarged heart with large intrathoracic hiatal hernia.  Lung parenchyma was otherwise clear.,Right hip x-ray showed that the prosthesis was in satisfactory position.  There was small gap between the cancellous bone and the long stem femoral component of the prosthesis, which is within normal limits.,DISCHARGE MEDICATIONS:,1.  Aspirin 81 mg orally once daily.,2.  Calcium with vitamin D two tablets orally once daily.,3.  Nexium 40 mg orally once daily.,4.  Multivitamins with minerals one capsule once daily.,5.  Zoloft 25 mg orally once daily.,6.  Norco 325/10 mg every 6-8 hours as needed for pain.,7.  Systane ophthalmic solution two drops in both eyes every two hours as needed.,8.  Herbal __________ by mouth everyday.,9.  Macrodantin 100 mg orally every six hours for seven days.,ALLERGIES:,  Penicillin.,PROGNOSIS: , Improved.,ASSESSMENT AND DISCHARGE PLAN:  ,The patient is a 93-year-old Caucasian female with a past medical history of chronic right hip pain, osteoporosis, hypertension, depression, and chronic atrial fibrillation admitted for evaluation and management of severe nausea and vomiting and urinary tract infection.,PROBLEM #1:  Patient also underwent diagnostic laparoscopy during this visit.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Urinary tract infection"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Gastroenteritis with nausea and vomiting"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Upper gastrointestinal bleed likely secondary to gastritis"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Right hip osteoarthritic pain.,SECONDARY DISCHARGE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Hypertension"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Gastroesophageal reflux disease"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Chronic atrial fibrillation"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Osteoporosis"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Valvular heart disease.,HOSPITAL COURSE SUMMARY: , The patient is 93-year-old Caucasian female with a past medical history of hypertension, chronic atrial fibrillation, gastroesophageal reflux disease, osteoporosis and chronic right hip pain after total hip arthroplasty was admitted to our hospital for complaints of nausea and vomiting and urinary tract infection.  Over the course of her hospitalization, the patient was started on antibiotic regimen and proton pump inhibitors for an episode of coffee-ground emesis.  The patient was managed conservatively and was also provided with physical therapy for chronic right hip pain.,At the time of discharge, the patient continues to complain of right hip pain impairing ability to walk.  The patient denies any chest pain, nausea, vomiting, fever, chills, shortness of breath, abdominal pain or any urine or bowel problems.,PAST MEDICAL HISTORY: , Can be referred to the H&P dictated in the chart.,PAST SURGICAL HISTORY: , Can be referred to the H&P dictated in the chart.,PHYSICAL EXAMINATION:  ,VITAL SIGNS:  At the time of discharge temperature 36.6 degree Celsius, pulse rate of 77 per minute, respiratory rate 20 per minute, blood pressure 115/63, and oxygen saturation of 94% on room air.,GENERAL:  The patient is a thin built Caucasian female with no pallor, cyanosis or icterus.  She is alert and oriented x3.,HEENT:  No carotid bruits, JVD, lymphadenopathy or thyromegaly.  Pupils are equally reactive to light and accommodation.,BACK AND EXTREMITY:  Bilateral pitting edema and peripheral pulses are palpable.  The patient has right hip brace/immobilizer.,HEART:  Irregularly irregular heart rhythm, grade 2-3/6 systolic ejection murmur best heard over the aortic area and normal S1 and S2.,CHEST:  Auscultation revealed bibasilar crackles.,ABDOMEN:  Soft, nontender, no organomegaly and bowel sounds are present.,CNS:  Nonfocal.,LABORATORY STUDIES: , WBC 6.5, hemoglobin 12.5, hematocrit 38.9, platelet count 177,000, INR 1.2, sodium 141, potassium 3.6 and serum creatinine of 0"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "measurement",
+    "text": "94%"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "sodium"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "potassium"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Liver function tests were normal.  The patient's troponin was elevated at 0.05 at the time or presentation, but it trended down to 0.04 on the third set.  Urinalysis revealed trace protein, trace blood, and 10-20 WBCs.  Blood culture showed no growth till date.  Urine culture grew 50-100,000 colonies of Enterococcus susceptible to ampicillin and nitrofurantoin.,Chest x-ray showed enlarged heart with large intrathoracic hiatal hernia.  Lung parenchyma was otherwise clear.,Right hip x-ray showed that the prosthesis was in satisfactory position.  There was small gap between the cancellous bone and the long stem femoral component of the prosthesis, which is within normal limits.,DISCHARGE MEDICATIONS:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "ampicillin"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "nitrofurantoin"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Aspirin 81 mg orally once daily"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "Aspirin"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "dosage",
+    "text": "81 mg"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "Calcium with vitamin D two tablets orally once daily"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "vitamin D"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "Nexium 40 mg orally once daily"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "medication",
+    "text": "Nexium"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Multivitamins with minerals one capsule once daily"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "diagnosis",
+    "text": "Zoloft 25 mg orally once daily"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "medication",
+    "text": "Zoloft"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "dosage",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "diagnosis",
+    "text": "Norco 325/10 mg every 6-8 hours as needed for pain"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "medication",
+    "text": "Norco"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "diagnosis",
+    "text": "Systane ophthalmic solution two drops in both eyes every two hours as needed"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "diagnosis",
+    "text": "Herbal __________ by mouth everyday"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "diagnosis",
+    "text": "Macrodantin 100 mg orally every six hours for seven days.,ALLERGIES:,  Penicillin.,PROGNOSIS: , Improved.,ASSESSMENT AND DISCHARGE PLAN:  ,The patient is a 93-year-old Caucasian female with a past medical history of chronic right hip pain, osteoporosis, hypertension, depression, and chronic atrial fibrillation admitted for evaluation and management of severe nausea and vomiting and urinary tract infection.,PROBLEM #1:  Patient also underwent diagnostic laparoscopy during this visit"
+  },
+  {
+    "entity_id": "E35",
+    "entity_type": "medication",
+    "text": "Macrodantin"
+  },
+  {
+    "entity_id": "E36",
+    "entity_type": "dosage",
+    "text": "100 mg"
+  },
+  {
+    "entity_id": "E37",
+    "entity_type": "diagnosis",
+    "text": "AND DISCHARGE PLAN:  ,The patient is a 93-year-old Caucasian female with a past medical history of chronic right hip pain, osteoporosis, hypertension, depression, and chronic atrial fibrillation admitted for evaluation and management of severe nausea and vomiting and urinary tract infection.,PROBLEM #1:  Patient also underwent diagnostic laparoscopy during this visit"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] N390: Urinary tract infection, site not specified (score: 0.9064)\n[ICD-10-CM 2027] O2340: Unspecified infection of urinary tract in pregnancy, unspecified trimester (score: 0.8546)\n[ICD-10-CM 2027] P393: Neonatal urinary tract infection (score: 0.8257)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] R1111: Vomiting without nausea (score: 0.8187)\n[ICD-10-CM 2027] R112: Nausea with vomiting, unspecified (score: 0.8187)\n[ICD-10-CM 2027] R110: Nausea (score: 0.6266)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] K2960: Other gastritis without bleeding (score: 0.5252)\n[ICD-10-CM 2027] K2961: Other gastritis with bleeding (score: 0.5252)\n[ICD-10-CM 2027] K2970: Gastritis, unspecified, without bleeding (score: 0.5252)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] M25551: Pain in right hip (score: 0.6827)\n[ICD-10-CM 2027] M25559: Pain in unspecified hip (score: 0.6646)\n[ICD-10-CM 2027] M25552: Pain in left hip (score: 0.6472)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] I158: Other secondary hypertension (score: 0.7957)\n[ICD-10-CM 2027] I159: Secondary hypertension, unspecified (score: 0.7957)\n[ICD-10-CM 2027] O169: Unspecified maternal hypertension, unspecified trimester (score: 0.7538)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] N1371: Vesicoureteral-reflux without reflux nephropathy (score: 0.7105)\n[ICD-10-CM 2027] N13729: Vesicoureteral-reflux with reflux nephropathy without hydroureter, unspecified (score: 0.6437)\n[ICD-10-CM 2027] N13739: Vesicoureteral-reflux with reflux nephropathy with hydroureter, unspecified (score: 0.6437)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 1.0000)\n[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.9491)\n[ICD-10-CM 2027] I4819: Other persistent atrial fibrillation (score: 0.8224)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Z13820: Encounter for screening for osteoporosis (score: 0.6301)\n[ICD-10-CM 2027] M818: Other osteoporosis without current pathological fracture (score: 0.6243)\n[ICD-10-CM 2027] M80859S: Other osteoporosis with current pathological fracture, unspecified femur, sequela (score: 0.5735)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] M25551: Pain in right hip (score: 0.2852)\n[ICD-10-CM 2027] M25559: Pain in unspecified hip (score: 0.2805)\n[ICD-10-CM 2027] M25552: Pain in left hip (score: 0.2732)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Measurement] 94.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'sodium' \u2192 RXCUI 9853, canonical: sodium, match: exact\n[RxNorm] Ingredient: sodium (RXCUI 9853)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'potassium' \u2192 RXCUI 8588, canonical: potassium, match: exact\n[RxNorm] Ingredient: potassium (RXCUI 8588)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): potassium 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.3912)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.3900)\n[ICD-10-CM 2027] W880XXS: Exposure to X-rays, sequela (score: 0.3900)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'ampicillin' \u2192 RXCUI 733, canonical: ampicillin, match: exact\n[RxNorm] Ingredient: ampicillin (RXCUI 733)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): ampicillin 1000 MG / sulbactam 500 MG Injection; ampicillin 2000 MG / sulbactam 1000 MG Injection; ampicillin 400 MG/ML Injectable Suspension; ampicillin 250 MG Injection; ampicillin 500 MG Injection"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'nitrofurantoin' \u2192 RXCUI 7454, canonical: nitrofurantoin, match: exact\n[RxNorm] Ingredient: nitrofurantoin (RXCUI 7454)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): nitrofurantoin, macrocrystals 25 MG / nitrofurantoin, monohydrate 75 MG Oral Capsule; nitrofurantoin, macrocrystals 100 MG Oral Capsule; nitrofurantoin 100 MG Oral Tablet; nitrofurantoin 5 MG/ML Oral Suspension; nitrofurantoin 50 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] T39016D: Underdosing of aspirin, subsequent encounter (score: 0.4234)\n[ICD-10-CM 2027] T39016A: Underdosing of aspirin, initial encounter (score: 0.4208)\n[ICD-10-CM 2027] T39016S: Underdosing of aspirin, sequela (score: 0.4206)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'Aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "Dose 81.0mg associated with Aspirin \u2014 dose 81.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] E559: Vitamin D deficiency, unspecified (score: 0.4995)\n[ICD-10-CM 2027] E8332: Hereditary vitamin D-dependent rickets (type 1) (type 2) (score: 0.3218)\n[ICD-10-CM 2027] T452X6D: Underdosing of vitamins, subsequent encounter (score: 0.3208)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'vitamin D' \u2192 RXCUI 11253, canonical: vitamin D, match: exact\n[RxNorm] Ingredient: vitamin D (RXCUI 11253)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] G4452: New daily persistent headache (NDPH) (score: 0.3972)\n[ICD-10-CM 2027] Y901: Blood alcohol level of 20-39 mg/100 ml (score: 0.3680)\n[ICD-10-CM 2027] Y902: Blood alcohol level of 40-59 mg/100 ml (score: 0.3680)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[RxNorm] 'Nexium' \u2192 RXCUI 284799, canonical: Nexium, match: exact\n[RxNorm] Ingredient: esomeprazole (RXCUI 283742)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): esomeprazole 2.5 MG Granules for Oral Suspension; esomeprazole 5 MG Granules for Oral Suspension; esomeprazole strontium 49.3 MG Delayed Release Oral Capsule; esomeprazole strontium 24.65 MG Delayed Release Oral Capsule; esomeprazole 40 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "Dose 40.0mg associated with Nexium"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] E8389: Other disorders of mineral metabolism (score: 0.4171)\n[ICD-10-CM 2027] E839: Disorder of mineral metabolism, unspecified (score: 0.4171)\n[ICD-10-CM 2027] R790: Abnormal level of blood mineral (score: 0.4116)"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[ICD-10-CM 2027] G4452: New daily persistent headache (NDPH) (score: 0.3972)\n[ICD-10-CM 2027] Y901: Blood alcohol level of 20-39 mg/100 ml (score: 0.3680)\n[ICD-10-CM 2027] Y902: Blood alcohol level of 40-59 mg/100 ml (score: 0.3680)"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[RxNorm] 'Zoloft' \u2192 RXCUI 82728, canonical: Zoloft, match: exact\n[RxNorm] Ingredient: sertraline (RXCUI 36437)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): sertraline 200 MG Oral Capsule; sertraline 100 MG Oral Tablet; sertraline 25 MG Oral Tablet; sertraline 50 MG Oral Tablet; sertraline 150 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "Dose 25.0mg associated with Zoloft"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[ICD-10-CM 2027] R52: Pain, unspecified (score: 0.4889)\n[ICD-10-CM 2027] Y901: Blood alcohol level of 20-39 mg/100 ml (score: 0.4339)\n[ICD-10-CM 2027] Y902: Blood alcohol level of 40-59 mg/100 ml (score: 0.4339)"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[RxNorm] 'Norco' \u2192 RXCUI 218772, canonical: Norco, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "Dose 10.0mg associated with Norco"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "[ICD-10-CM 2027] M21379: Foot drop, unspecified foot (score: 0.3651)\n[ICD-10-CM 2027] M21339: Wrist drop, unspecified wrist (score: 0.3623)\n[ICD-10-CM 2027] M21372: Foot drop, left foot (score: 0.3612)"
+  },
+  {
+    "fact_id": "F33",
+    "entity_id": "E33",
+    "text": "[ICD-10-CM 2027] T180XXD: Foreign body in mouth, subsequent encounter (score: 0.4953)\n[ICD-10-CM 2027] T180XXA: Foreign body in mouth, initial encounter (score: 0.4919)\n[ICD-10-CM 2027] T180XXS: Foreign body in mouth, sequela (score: 0.4918)"
+  },
+  {
+    "fact_id": "F34",
+    "entity_id": "E34",
+    "text": "[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.3259)\n[ICD-10-CM 2027] R1111: Vomiting without nausea (score: 0.2994)\n[ICD-10-CM 2027] R112: Nausea with vomiting, unspecified (score: 0.2994)"
+  },
+  {
+    "fact_id": "F35",
+    "entity_id": "E35",
+    "text": "[RxNorm] 'Macrodantin' \u2192 RXCUI 203054, canonical: Macrodantin, match: exact\n[RxNorm] Ingredient: nitrofurantoin (RXCUI 7454)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): nitrofurantoin, macrocrystals 25 MG / nitrofurantoin, monohydrate 75 MG Oral Capsule; nitrofurantoin, macrocrystals 100 MG Oral Capsule; nitrofurantoin 100 MG Oral Tablet; nitrofurantoin 5 MG/ML Oral Suspension; nitrofurantoin 50 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F36",
+    "entity_id": "E36",
+    "text": "Dose 100.0mg associated with Macrodantin"
+  },
+  {
+    "fact_id": "F37",
+    "entity_id": "E37",
+    "text": "[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.3582)\n[ICD-10-CM 2027] R1111: Vomiting without nausea (score: 0.3291)\n[ICD-10-CM 2027] R112: Nausea with vomiting, unspecified (score: 0.3291)"
+  }
+]

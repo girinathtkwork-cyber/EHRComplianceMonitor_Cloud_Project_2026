@@ -1,0 +1,173 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT:, Intractable nausea and vomiting.,HISTORY OF PRESENT ILLNESS:, This is a 43-year-old black female who was recently admitted and discharged yesterday for the same complaint. She has a long history of gastroparesis dating back to 2000, diagnosed by gastroscopy. She also has had multiple endoscopies revealing gastritis and esophagitis. She has been noted in the past multiple times to be medically noncompliant with her medication regimen. She also has very poorly controlled hypertension, diabetes mellitus and she also underwent a laparoscopic right adrenalectomy due to an adrenal adenoma in January, 2006. She presents to the emergency room today with elevated blood pressure and extreme nausea and vomiting. She was discharged on Reglan and high-dose PPI yesterday, and was instructed to take all of her medications as prescribed. She states that she has been compliant, but her symptoms have not been controlled. It should be noted that on her hospital admission she would have times where she would feel extremely sick to her stomach, and then soon after she would be witnessed going outside to smoke.,PAST MEDICAL HISTORY:,1. Diabetes mellitus (poorly controlled).,2. Hypertension (poorly controlled).,3. Chronic renal insufficiency.,4. Adrenal mass.,5. Obstructive sleep apnea.,6. Arthritis.,7. Hyperlipidemia.,PAST SURGICAL HISTORY:,1. Removal of ovarian cyst.,2. Hysterectomy.,3. Multiple EGDs with biopsies over the last six years. Her last EGD was in June, 2005, which showed esophagitis and gastritis.,4. Colonoscopy in June, 2005, showing diverticular disease.,5. Cardiac catheterization in February, 2002, showing normal coronary arteries and no evidence of renal artery stenosis.,6. Laparoscopic adrenalectomy in January, 2006.,MEDICATIONS:,1. Reglan 10 mg orally every 6 hours.,2. Nexium 20 mg orally twice a day.,3. Labetalol.,4. hydroxyzine.,5. Clonidine.,6. Lantus 20 units at bedtime.,7. Humalog 30 units before meals.,8. Prozac 40 mg orally daily.,SOCIAL HISTORY:, She has a 27 pack year smoking history. She denies any alcohol use. She does have a history of chronic marijuana use.,FAMILY HISTORY:, Significant for diabetes and hypertension.,ALLERGIES:, NO KNOWN DRUG ALLERGIES.,REVIEW OF SYSTEMS:,HEENT: See has had headaches, and some dizziness. She denies any vision changes.,CARDIAC: She denies any chest pain or palpitations.,RESPIRATORY: She denies any shortness of breath.,GI: She has had persistent nausea and vomiting. She denies diarrhea, melena or hematemesis.,NEUROLOGICAL: She denies any neurological deficits.,All other systems were reviewed and were negative unless otherwise mentioned in HPI.,PHYSICAL EXAMINATION:,VITAL SIGNS: Blood pressure: 220/130. Heart rate: 113. Respiratory rate: 18. Temperature: 98.,GENERAL: This is a 43-year-old obese African-American female who appears in no acute distress. She has a depressed mood and flat affect, and does not answer questions elaborately. She will simply state that she does not feel well.,HEENT: Normocephalic, atraumatic, anicteric. PERRLA. EOMI. Mucous membranes moist. Oropharynx is clear.,NECK: Supple. No JVD. No lymphadenopathy.,LUNGS: Clear to auscultation bilaterally, nonlabored.,HEART: Regular rate and rhythm. S1 and S2. No murmurs, rubs, or gallops.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Reglan"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Reglan"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Nexium"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Labetalol"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "hydroxyzine"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Clonidine"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Lantus"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "20 units"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Humalog"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "30 units"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Prozac"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Reglan' \u2192 RXCUI 9230, canonical: Reglan, match: exact\n[RxNorm] Ingredient: metoclopramide (RXCUI 6915)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): metoclopramide 1 MG/ML Oral Solution; metoclopramide hydrochloride 5 MG/ML Oral Solution; metoclopramide 15 MG/ACTUAT Nasal Spray; metoclopramide 15 MG Extended Release Oral Tablet; acetaminophen 500 MG / metoclopramide 5 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Reglan' \u2192 RXCUI 9230, canonical: Reglan, match: exact\n[RxNorm] Ingredient: metoclopramide (RXCUI 6915)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): metoclopramide 1 MG/ML Oral Solution; metoclopramide hydrochloride 5 MG/ML Oral Solution; metoclopramide 15 MG/ACTUAT Nasal Spray; metoclopramide 15 MG Extended Release Oral Tablet; acetaminophen 500 MG / metoclopramide 5 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 10.0mg associated with Reglan"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Nexium' \u2192 RXCUI 284799, canonical: Nexium, match: exact\n[RxNorm] Ingredient: esomeprazole (RXCUI 283742)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): esomeprazole 2.5 MG Granules for Oral Suspension; esomeprazole 5 MG Granules for Oral Suspension; esomeprazole strontium 49.3 MG Delayed Release Oral Capsule; esomeprazole strontium 24.65 MG Delayed Release Oral Capsule; esomeprazole 40 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 20.0mg associated with Nexium"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Labetalol' \u2192 RXCUI 6185, canonical: labetalol, match: exact\n[RxNorm] Ingredient: labetalol (RXCUI 6185)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 4 ML labetalol hydrochloride 5 MG/ML Cartridge; 4 ML labetalol hydrochloride 5 MG/ML Injection; 200 ML labetalol hydrochloride 1 MG/ML Injection; 100 ML labetalol hydrochloride 1 MG/ML Injection; 300 ML labetalol hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'hydroxyzine' \u2192 RXCUI 5553, canonical: hydroxyzine, match: exact\n[RxNorm] Ingredient: hydroxyzine (RXCUI 5553)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML hydroxyzine hydrochloride 50 MG/ML Injection; 1 ML hydroxyzine hydrochloride 50 MG/ML Injection; hydroxyzine hydrochloride 10 MG Oral Tablet; hydroxyzine pamoate 100 MG Oral Capsule; hydroxyzine hydrochloride 100 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Clonidine' \u2192 RXCUI 2599, canonical: clonidine, match: exact\n[RxNorm] Ingredient: clonidine (RXCUI 2599)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 12 HR clonidine hydrochloride 0.1 MG Extended Release Oral Tablet; 24 HR clonidine hydrochloride 0.1 MG/ML Extended Release Suspension; clonidine hydrochloride 0.02 MG/ML Oral Solution; clonidine hydrochloride 0.05 MG Oral Tablet; clonidine hydrochloride 0.05 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Lantus' \u2192 RXCUI 261551, canonical: Lantus, match: exact\n[RxNorm] Ingredient: insulin glargine (RXCUI 274783)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1.5 ML insulin glargine 300 UNT/ML Pen Injector; 3 ML insulin glargine 100 UNT/ML / lixisenatide 0.033 MG/ML Pen Injector; 3 ML insulin glargine 300 UNT/ML Pen Injector; Sensor 3 ML insulin glargine 100 UNT/ML Pen Injector; 3 ML insulin glargine-yfgn 100 UNT/ML Pen Injector"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "Dose 20.0units associated with Lantus \u2014 dose 20.0units not among known product strengths"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Humalog' \u2192 RXCUI 135805, canonical: Humalog, match: exact\n[RxNorm] Ingredient: insulin lispro (RXCUI 86009)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 3 ML insulin lispro 200 UNT/ML Pen Injector; 3 ML insulin lispro 100 UNT/ML Pen Injector; 3 ML insulin lispro 100 UNT/ML Cartridge; 0.5 UNT Doses 3 ML insulin lispro 100 UNT/ML Pen Injector; insulin lispro-aabc 100 UNT/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "Dose 30.0units associated with Humalog \u2014 dose 30.0units not among known product strengths"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Prozac' \u2192 RXCUI 58827, canonical: Prozac, match: exact\n[RxNorm] Ingredient: fluoxetine (RXCUI 4493)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fluoxetine 60 MG Oral Tablet; fluoxetine 60 MG Oral Capsule; fluoxetine 20 MG Oral Tablet; PMDD fluoxetine 10 MG Oral Tablet; PMDD fluoxetine 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 40.0mg associated with Prozac"
+  }
+]

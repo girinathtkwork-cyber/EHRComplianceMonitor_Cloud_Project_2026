@@ -1,0 +1,102 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:,  Left little finger extensor tendon laceration.,POSTOPERATIVE DIAGNOSIS: , Left little finger extensor tendon laceration.,PROCEDURE PERFORMED:  ,Repair of left little extensor tendon.,COMPLICATIONS:,  None.,BLOOD LOSS: , Minimal.,ANESTHESIA: , Bier block.,INDICATIONS: , The patient is a 14-year-old right-hand dominant male who cut the back of his left little finger and had a small cut to his extensor tendon.,DESCRIPTION OF PROCEDURE: , The patient was taken to the operative room, laid supine, administered intervenous sedation with Bier block and prepped and draped in a sterile fashion.  The old laceration was opened and the extensor tendon was identified and there was a small longitudinal laceration in the tendon, which is essentially in line with the tendon fibers.  This was just proximal to the PIP joint and on complete flexion of the PIP joint, I did separate just a little bit that was not thought to be significantly dynamically unstable.  It was sutured with a single 4-0 Prolene interrupted figure-of-eight suture and on dynamic motion it did not separate at all.  The wound was irrigated and closed with 5-0 nylon interrupted sutures.  The patient tolerated the procedure well and was taken to the PCU in good condition. Patient also underwent diagnostic laparoscopy during this visit.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Left little finger extensor tendon laceration.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Left little finger extensor tendon laceration.,PROCEDURE PERFORMED:  ,Repair of left little extensor tendon.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:  ,Repair of left little extensor tendon.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Repair of left little extensor tendon.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "None.,BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "None.,BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Minimal.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Minimal.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Bier block.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Bier block.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "The patient is a 14-year-old right-hand dominant male who cut the back of his left little finger and had a small cut to his extensor tendon.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "The patient is a 14-year-old right-hand dominant male who cut the back of his left little finger and had a small cut to his extensor tendon.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "The patient was taken to the operative room, laid supine, administered intervenous sedation with Bier block and prepped and draped in a sterile fashion.  The old laceration was opened and the extensor tendon was identified and there was a small longitudinal laceration in the tendon, which is essentially in line with the tendon fibers.  This was just proximal to the PIP joint and on complete flexion of the PIP joint"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "The patient was taken to the operative room, laid supine, administered intervenous sedation with Bier block and prepped and draped in a sterile fashion.  The old laceration was opened and the extensor tendon was identified and there was a small longitudinal laceration in the tendon, which is essentially in line with the tendon fibers.  This was just proximal to the PIP joint and on complete flexion of the PIP joint"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "I did separate just a little bit that was not thought to be significantly dynamically unstable.  It was sutured with a single 4-0 Prolene interrupted figure-of-eight suture and on dynamic motion it did not separate at all.  The wound was irrigated and closed with 5-0 nylon interrupted sutures.  The patient tolerated the procedure well and was taken to the PCU in good condition. Patient also underwent diagnostic laparoscopy during this visit"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "I did separate just a little bit that was not thought to be significantly dynamically unstable.  It was sutured with a single 4-0 Prolene interrupted figure-of-eight suture and on dynamic motion it did not separate at all.  The wound was irrigated and closed with 5-0 nylon interrupted sutures.  The patient tolerated the procedure well and was taken to the PCU in good condition. Patient also underwent diagnostic laparoscopy during this visit"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

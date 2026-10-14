@@ -1,0 +1,93 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT: , Chest pain.,HISTORY OF PRESENT ILLNESS:,  The patient is a 40-year-old white male who presents with a chief complaint of "chest pain".,The patient is diabetic and has a prior history of coronary artery disease.  The patient presents today stating that his chest pain started yesterday evening and has been somewhat intermittent.  The severity of the pain has progressively increased.  He describes the pain as a sharp and heavy pain which radiates to his neck & left arm.  He ranks the pain a 7 on a scale of 1-10.  He admits some shortness of breath & diaphoresis.  He states that he has had nausea & 3 episodes of vomiting tonight.  He denies any fever or chills.  He admits prior episodes of similar pain prior to his PTCA in 1995.  He states the pain is somewhat worse with walking and seems to be relieved with rest.  There is no change in pain with positioning.  He states that he took 3 nitroglycerin tablets sublingually over the past 1 hour, which he states has partially relieved his pain.  The patient ranks his present pain a 4 on a scale of 1-10.  The most recent episode of pain has lasted one-hour.,The patient denies any history of recent surgery, head trauma, recent stroke, abnormal bleeding such as blood in urine or stool or nosebleed.,REVIEW OF SYSTEMS:,  All other systems reviewed & are negative.,PAST MEDICAL HISTORY:,  Diabetes mellitus type II, hypertension, coronary artery disease, atrial fibrillation, status post PTCA in 1995 by Dr. ABC.,SOCIAL HISTORY: , Denies alcohol or drugs.  Smokes 2 packs of cigarettes per day.  Works as a banker.,FAMILY HISTORY: , Positive for coronary artery disease (father & brother).,MEDICATIONS: , Aspirin 81 milligrams QDay.  Humulin N. insulin 50 units in a.m.  HCTZ 50 mg QDay.  Nitroglycerin 1/150 sublingually PRN chest pain.,ALLERGIES: , Penicillin.,PHYSICAL EXAM: , The patient is a 40-year-old white male.,General:  The patient is moderately obese but he is otherwise well developed & well nourished.  He appears in moderate discomfort but there is no evidence of distress.  He is alert, and oriented to person place and circumstance.  There is no evidence of respiratory distress.  The patient ambulates
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "nitroglycerin"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Aspirin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Humulin N"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "measurement",
+    "text": "50 units"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "measurement",
+    "text": "50 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Nitroglycerin"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'nitroglycerin' \u2192 RXCUI 4917, canonical: nitroglycerin, match: exact\n[RxNorm] Ingredient: nitroglycerin (RXCUI 4917)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): nitroglycerin 0.004 MG/MG Rectal Ointment; nitroglycerin 0.4 MG Sublingual Powder; 250 ML nitroglycerin 0.4 MG/ML Injection; 250 ML nitroglycerin 0.1 MG/ML Injection; nitroglycerin 0.3 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Humulin N' \u2192 RXCUI 92880, canonical: Humulin N, match: exact\n[RxNorm] Ingredient: insulin isophane (RXCUI 1605101)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 3 ML insulin isophane, human 100 UNT/ML Pen Injector; insulin isophane, human 85 UNT/ML / insulin, regular, human 15 UNT/ML Injectable Suspension; insulin isophane, human 50 UNT/ML / insulin, regular, human 50 UNT/ML Injectable Suspension; insulin isophane, human 90 UNT/ML / insulin, regular, human 10 UNT/ML Injectable Suspension; insulin isophane, human 80 UNT/ML / insulin, regular, human 20 UNT/ML Injectable Suspension"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Measurement] 50.0units \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Measurement] 50.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Nitroglycerin' \u2192 RXCUI 4917, canonical: nitroglycerin, match: exact\n[RxNorm] Ingredient: nitroglycerin (RXCUI 4917)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): nitroglycerin 0.004 MG/MG Rectal Ointment; nitroglycerin 0.4 MG Sublingual Powder; 250 ML nitroglycerin 0.4 MG/ML Injection; 250 ML nitroglycerin 0.1 MG/ML Injection; nitroglycerin 0.3 MG Sublingual Tablet"
+  }
+]

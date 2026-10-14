@@ -1,0 +1,83 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM:,  Echocardiogram.,INTERPRETATION: , Echocardiogram was performed including 2-D and M-mode imaging, Doppler analysis continuous wave and pulse echo outflow velocity mapping was all seen in M-mode.  Cardiac chamber dimensions, left atrial enlargement 4.4 cm.  Left ventricle, right ventricle, and right atrium are grossly normal.  LV wall thickness and wall motion appeared normal.  LV ejection fraction is estimated at 65%.  Aortic root and cardiac valves appeared normal.  No evidence of pericardial effusion.  No evidence of intracardiac mass or thrombus.  Doppler analysis outflow velocity through the aortic valve normal, inflow velocities through the mitral valve are normal.  There is mild tricuspid regurgitation.  Calculated pulmonary systolic pressure 42 mmHg.,ECHOCARDIOGRAPHIC DIAGNOSES:,1.  LV Ejection fraction, estimated at 65%.,2.  Mild left atrial enlargement.,3.  Mild tricuspid regurgitation.,4.  Mildly elevated pulmonary systolic pressure.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "measurement",
+    "text": "65%"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "LV Ejection fraction, estimated at 65%"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "measurement",
+    "text": "65%"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Mild left atrial enlargement"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Mild tricuspid regurgitation"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Mildly elevated pulmonary systolic pressure"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Measurement] 65.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] No matches found for 'LV Ejection fraction, estimated at 65%' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Measurement] 65.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] H05342: Enlargement of left orbit (score: 0.5378)\n[ICD-10-CM 2027] H05349: Enlargement of unspecified orbit (score: 0.5251)\n[ICD-10-CM 2027] H05341: Enlargement of right orbit (score: 0.5187)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] P921: Regurgitation and rumination of newborn (score: 0.5067)\n[ICD-10-CM 2027] Q224: Congenital tricuspid stenosis (score: 0.4058)\n[ICD-10-CM 2027] I070: Rheumatic tricuspid stenosis (score: 0.3625)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] E7841: Elevated Lipoprotein(a) (score: 0.4032)\n[ICD-10-CM 2027] I5020: Unspecified systolic (congestive) heart failure (score: 0.3673)\n[ICD-10-CM 2027] I5022: Chronic systolic (congestive) heart failure (score: 0.3545)"
+  }
+]

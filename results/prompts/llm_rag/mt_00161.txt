@@ -1,0 +1,133 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PROCEDURE NOTE:,  The patient was brought to the transesophageal echo laboratory after informed consent was obtained.  The patient was seen by Anesthesia for MAC anesthesia.  The patient's posterior pharynx was anesthetized with local Cetacaine spray.  The transesophageal probe was introduced into the posterior pharynx and esophagus without difficulty.,FINDINGS: ,1.  Left ventricle is normal in size and function; ejection fraction approximately 60%.,2.  Right ventricle is normal in size and function.,3.  Left atrium and right atrium are normal in size.,4.  Mitral valve, aortic valve, tricuspid valve, and pulmonic valve with no evidence of vegetation.  Aortic valve is only minimally thickened.,5.  Mild mitral regurgitation and mild tricuspid regurgitation.,6.  No left ventricular thrombus.,7.  No pericardial effusion.,8.  There is evidence of patent foramen ovale by contrast study.,The patient tolerated the procedure well and is sent to recovery in stable condition.  He should be n.p.o. x4 hours, then liquid, then increase as tolerated.  Once his infection is cleared, he should follow up with us with regard to followup of patent foramen ovale.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "NOTE:,  The patient was brought to the transesophageal echo laboratory after informed consent was obtained.  The patient was seen by Anesthesia for MAC anesthesia.  The patient's posterior pharynx was anesthetized with local Cetacaine spray.  The transesophageal probe was introduced into the posterior pharynx and esophagus without difficulty.,FINDINGS: "
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Cetacaine"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Left ventricle is normal in size and function; ejection fraction approximately 60%"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "measurement",
+    "text": "60%"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Right ventricle is normal in size and function"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Left atrium and right atrium are normal in size"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Mitral valve, aortic valve, tricuspid valve, and pulmonic valve with no evidence of vegetation.  Aortic valve is only minimally thickened"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Mild mitral regurgitation and mild tricuspid regurgitation"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "No left ventricular thrombus"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "No pericardial effusion"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "There is evidence of patent foramen ovale by contrast study.,The patient tolerated the procedure well and is sent to recovery in stable condition.  He should be n.p.o. x4 hours, then liquid, then increase as tolerated.  Once his infection is cleared, he should follow up with us with regard to followup of patent foramen ovale"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'NOTE:,  The patient was brought to the transesophageal echo laboratory after informed consent was obtained.  The patient was seen by Anesthesia for MAC anesthesia.  The patient's posterior pharynx was anesthetized with local Cetacaine spray.  The transesophageal probe was introduced into the posterior pharynx and esophagus without difficulty.,FINDINGS: ' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Cetacaine' \u2192 RXCUI 20604, canonical: Cetacaine, match: exact\n[RxNorm] Ingredient: tetracaine (RXCUI 10391)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): tetracaine hydrochloride 20 MG/ML Topical Cream; tetracaine hydrochloride 0.02 MG/MG Topical Gel; tetracaine hydrochloride 5 MG/ML Topical Solution; tetracaine hydrochloride 5 MG/ML Ophthalmic Solution; tetracaine hydrochloride 20 MG/ML Ophthalmic Solution"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'Left ventricle is normal in size and function; ejection fraction approximately 60%' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Measurement] 60.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Right ventricle is normal in size and function' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Left atrium and right atrium are normal in size' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Mitral valve, aortic valve, tricuspid valve, and pulmonic valve with no evidence of vegetation.  Aortic valve is only minimally thickened' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Mild mitral regurgitation and mild tricuspid regurgitation' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'No left ventricular thrombus' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'No pericardial effusion' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'There is evidence of patent foramen ovale by contrast study.,The patient tolerated the procedure well and is sent to recovery in stable condition.  He should be n.p.o. x4 hours, then liquid, then increase as tolerated.  Once his infection is cleared, he should follow up with us with regard to followup of patent foramen ovale' \u2014 extracted from header, not verified against any coding system"
+  }
+]

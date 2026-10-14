@@ -1,0 +1,283 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+DIAGNOSES:,1.  Pneumonia.,2.  Crohn disease.,3.  Anasarca.,4.  Anemia.,CHIEF COMPLAINT: , I have a lot of swelling in my legs.,HISTORY:  ,The patient is a 41-year-old gentleman with a long history of Crohn disease.  He has been followed by Dr. ABC, his primary care doctor, but he states that he has had multiple gastroenterology doctors and has not seen one in the past year to 18 months.  He has been treated with multiple different medications for his Crohn disease and most recently has been taking pulses of steroids off and on when he felt like he was having symptoms consistent with crampy abdominal pain, increased diarrhea, and low-grade fevers.  This has helped in the past, but now he developed symptoms consistent with pneumonia and was admitted to the hospital.  He has been treated with IV antibiotics and is growing Streptococcus.  At this time, he seems relatively stable although slightly dyspneic.  Other symptoms include lower extremity edema, pain in his ankles and knees, and actually symptoms of edema in his entire body including his face and upper extremities.  At this time, he continues to have symptoms consistent with diarrhea and malabsorption.  He also has some episodes of nausea and vomiting at times.  He currently has a cough and symptoms of dyspnea.  Further review of systems was not otherwise contributory.,MEDICATIONS:,1.  Prednisone.,2.  Effexor.,3.  Folic acid.,4.  Norco for pain.,PAST MEDICAL HISTORY: , As mentioned above, but he also has anxiety and depression.,PAST SURGICAL HISTORY:,1.  Small bowel resections.,2.  Appendectomy.,3.  A vasectomy.,ALLERGIES:  ,He has no known drug allergies.,SOCIAL HISTORY:  ,He does smoke two packs of cigarettes per day.  He has no alcohol or drug use.  He is a painter.,FAMILY HISTORY:  ,Significant for his father who died of IPF and irritable bowel syndrome.,REVIEW OF SYSTEMS: , As mentioned in the history of present illness and further review of systems is not otherwise contributory.,PHYSICAL EXAMINATION:,GENERAL:  He is a thin appearing man in very mild respiratory distress when his oxygen is off.,VITAL SIGNS:  His respiratory rate is approximately 18 to 20, his blood pressure is 100/70, his pulse is 90 and regular, he is afebrile currently at 96, and weight is approximately 163 pounds.,HEENT:  Sclerae anicteric.  Conjunctivae normal.  Nasal and oropharynx are clear.,NECK:  Supple.  No jugular venous pressure distention is noted.  There is no adenopathy in the cervical, supraclavicular or axillary areas.,CHEST:  Reveals some crackles in the right chest, in the base, and in the upper lung fields.  His left is relatively clear with decreased breath sounds.,HEART:  Regular rate and rhythm.,ABDOMEN:  Slightly protuberant.  Bowel sounds are present.  He is slightly tender and it is diffuse.  There is no organomegaly and no ascites appreciable.,EXTREMITIES:  There is a mild scrotal edema and in his lower extremities he has 2 to 3+ edema at pretibial and lateral feet.,DERMATOLOGIC:  Shows thin skin.  No ecchymosis or petechiae.,LABORATORY STUDIES: , Laboratory studies are pertinent for a total protein of 3 and albumin of 1.3.  There is no M-spike observed.  His B12 is 500 with a folic acid of 11.  His white count is 21 with a hemoglobin of 10, and a platelet count 204,000.,IMPRESSION AT THIS TIME:,1.  Pneumonia in the face of fairly severe Crohn disease with protein-losing enteropathy and severe malnutrition with anasarca.,2.  He also has anemia and leukocytosis, which may be related to his Crohn disease as well as his underlying pneumonia.,ASSESSMENT AND PLAN: , At this time, I believe evaluation of protein intake and dietary supplement will be most appropriate.  I believe that he needs a calorie count.  We will check on a sedimentation rate, C-reactive protein, LDH, prealbumin, thyroid, and iron studies in the morning with his laboratory studies that are already ordered.  I have recommended strongly to him that when he is out of the hospital, he return to the care of his gastroenterologist.  I will help in anyway that I can to improve the patient's laboratory abnormalities.  However, his lower extremity edema is primarily due to his marked hypoalbuminemia and I do not believe that diuretics will help him at this time.  I have explained this in detail to the patient and his family.  Everybody expresses understanding and all questions were answered.  At this time, follow him up during his hospital stay and plan to see him in the office as well.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Pneumonia"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Crohn disease"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Anasarca"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Anemia.,CHIEF COMPLAINT: , I have a lot of swelling in my legs.,HISTORY:  ,The patient is a 41-year-old gentleman with a long history of Crohn disease.  He has been followed by Dr. ABC, his primary care doctor, but he states that he has had multiple gastroenterology doctors and has not seen one in the past year to 18 months.  He has been treated with multiple different medications for his Crohn disease and most recently has been taking pulses of steroids off and on when he felt like he was having symptoms consistent with crampy abdominal pain, increased diarrhea, and low-grade fevers.  This has helped in the past, but now he developed symptoms consistent with pneumonia and was admitted to the hospital.  He has been treated with IV antibiotics and is growing Streptococcus.  At this time, he seems relatively stable although slightly dyspneic.  Other symptoms include lower extremity edema, pain in his ankles and knees, and actually symptoms of edema in his entire body including his face and upper extremities.  At this time, he continues to have symptoms consistent with diarrhea and malabsorption.  He also has some episodes of nausea and vomiting at times.  He currently has a cough and symptoms of dyspnea.  Further review of systems was not otherwise contributory.,MEDICATIONS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Prednisone"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Prednisone"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Effexor"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Effexor"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Folic acid"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Folic acid"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Norco for pain.,PAST MEDICAL HISTORY: , As mentioned above, but he also has anxiety and depression.,PAST SURGICAL HISTORY:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Norco"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Small bowel resections"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Appendectomy"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "A vasectomy.,ALLERGIES:  ,He has no known drug allergies.,SOCIAL HISTORY:  ,He does smoke two packs of cigarettes per day.  He has no alcohol or drug use.  He is a painter.,FAMILY HISTORY:  ,Significant for his father who died of IPF and irritable bowel syndrome.,REVIEW OF SYSTEMS: , As mentioned in the history of present illness and further review of systems is not otherwise contributory.,PHYSICAL EXAMINATION:,GENERAL:  He is a thin appearing man in very mild respiratory distress when his oxygen is off.,VITAL SIGNS:  His respiratory rate is approximately 18 to 20, his blood pressure is 100/70, his pulse is 90 and regular, he is afebrile currently at 96, and weight is approximately 163 pounds.,HEENT:  Sclerae anicteric.  Conjunctivae normal.  Nasal and oropharynx are clear.,NECK:  Supple.  No jugular venous pressure distention is noted.  There is no adenopathy in the cervical, supraclavicular or axillary areas.,CHEST:  Reveals some crackles in the right chest, in the base, and in the upper lung fields.  His left is relatively clear with decreased breath sounds.,HEART:  Regular rate and rhythm.,ABDOMEN:  Slightly protuberant.  Bowel sounds are present.  He is slightly tender and it is diffuse.  There is no organomegaly and no ascites appreciable.,EXTREMITIES:  There is a mild scrotal edema and in his lower extremities he has 2 to 3+ edema at pretibial and lateral feet.,DERMATOLOGIC:  Shows thin skin.  No ecchymosis or petechiae.,LABORATORY STUDIES: , Laboratory studies are pertinent for a total protein of 3 and albumin of 1"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "There is no M-spike observed.  His B12 is 500 with a folic acid of"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "folic acid"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "His white count is 21 with a hemoglobin of 10, and a platelet count 204,000.,IMPRESSION AT THIS TIME:"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "AT THIS TIME:"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "Pneumonia in the face of fairly severe Crohn disease with protein-losing enteropathy and severe malnutrition with anasarca"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "He also has anemia and leukocytosis, which may be related to his Crohn disease as well as his underlying pneumonia.,ASSESSMENT AND PLAN: , At this time, I believe evaluation of protein intake and dietary supplement will be most appropriate.  I believe that he needs a calorie count.  We will check on a sedimentation rate, C-reactive protein, LDH, prealbumin, thyroid, and iron studies in the morning with his laboratory studies that are already ordered.  I have recommended strongly to him that when he is out of the hospital, he return to the care of his gastroenterologist.  I will help in anyway that I can to improve the patient's laboratory abnormalities.  However, his lower extremity edema is primarily due to his marked hypoalbuminemia and I do not believe that diuretics will help him at this time.  I have explained this in detail to the patient and his family.  Everybody expresses understanding and all questions were answered.  At this time, follow him up during his hospital stay and plan to see him in the office as well"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "AND PLAN:"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "At this time"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "I believe evaluation of protein intake and dietary supplement will be most appropriate.  I believe that he needs a calorie count.  We will check on a sedimentation rate"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "C-reactive protein"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "diagnosis",
+    "text": "LDH, prealbumin, thyroid, and iron studies in the morning with his laboratory studies that are already ordered.  I have recommended strongly to him that when he is out of the hospital, he return to the care of his gastroenterologist.  I will help in anyway that I can to improve the patient's laboratory abnormalities.  However, his lower extremity edema is primarily due to his marked hypoalbuminemia and I do not believe that diuretics will help him at this time.  I have explained this in detail to the patient and his family.  Everybody expresses understanding and all questions were answered.  At this time, follow him up during his hospital stay and plan to see him in the office as well"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] P239: Congenital pneumonia, unspecified (score: 0.8072)\n[ICD-10-CM 2027] J1289: Other viral pneumonia (score: 0.7240)\n[ICD-10-CM 2027] J129: Viral pneumonia, unspecified (score: 0.7240)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] K5090: Crohn's disease, unspecified, without complications (score: 0.8906)\n[ICD-10-CM 2027] K50918: Crohn's disease, unspecified, with other complication (score: 0.8906)\n[ICD-10-CM 2027] K50919: Crohn's disease, unspecified, with unspecified complications (score: 0.8906)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] No matches found for 'Anasarca' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] F4329: Adjustment disorder with other symptoms (score: 0.3262)\n[ICD-10-CM 2027] N6459: Other signs and symptoms in breast (score: 0.2968)\n[ICD-10-CM 2027] R29818: Other symptoms and signs involving the nervous system (score: 0.2784)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Prednisone' \u2192 RXCUI 8640, canonical: prednisone, match: exact\n[RxNorm] Ingredient: prednisone (RXCUI 8640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): prednisone 1 MG Delayed Release Oral Tablet; prednisone 2 MG Delayed Release Oral Tablet; prednisone 5 MG Delayed Release Oral Tablet; prednisone 1 MG Oral Tablet; prednisone 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] No matches found for 'Prednisone' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Effexor' \u2192 RXCUI 151692, canonical: Effexor, match: exact\n[RxNorm] Ingredient: venlafaxine (RXCUI 39786)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR venlafaxine 112.5 MG Extended Release Oral Tablet; venlafaxine 100 MG Oral Tablet; 24 HR venlafaxine 150 MG Extended Release Oral Capsule; venlafaxine 25 MG Oral Tablet; 24 HR venlafaxine 37.5 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] No matches found for 'Effexor' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Folic acid' \u2192 RXCUI 4511, canonical: folic acid, match: exact\n[RxNorm] Ingredient: folic acid (RXCUI 4511)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alpha tocopherol 30 UNT / ascorbic acid 28 MG / cholecalciferol 400 UNT / docosahexaenoic acid 300 MG / docusate sodium 55 MG / ferrous fumarate 27 MG / folic acid 1.25 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; ferrous sulfate 150 MG / folic acid 0.5 MG Extended Release Oral Capsule; ferrous fumarate 305 MG / folic acid 0.35 MG Oral Capsule; ascorbic acid 10 MG / ferrous gluconate 250 MG / folic acid 5 MG Oral Tablet; folic acid 0.08 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] T542X3D: Toxic effect of corrosive acids and acid-like substances, assault, subsequent encounter (score: 0.6966)\n[ICD-10-CM 2027] T542X4D: Toxic effect of corrosive acids and acid-like substances, undetermined, subsequent encounter (score: 0.6963)\n[ICD-10-CM 2027] T542X3A: Toxic effect of corrosive acids and acid-like substances, assault, initial encounter (score: 0.6956)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] Z59812: Housing instability, housed, homelessness in past 12 months (score: 0.3206)\n[ICD-10-CM 2027] F32A: Depression, unspecified (score: 0.2957)\n[ICD-10-CM 2027] Z9289: Personal history of other medical treatment (score: 0.2735)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Norco' \u2192 RXCUI 218772, canonical: Norco, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] K90829: Short bowel syndrome, unspecified (score: 0.5610)\n[ICD-10-CM 2027] R1915: Other abnormal bowel sounds (score: 0.5070)\n[ICD-10-CM 2027] K588: Other irritable bowel syndrome (score: 0.5053)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] No matches found for 'Appendectomy' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2351)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.2279)\n[ICD-10-CM 2027] R1915: Other abnormal bowel sounds (score: 0.1868)\n[ICD-10-CM 2027] Match unresolved (top score 0.2351 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] D68022: Von Willebrand disease, type 2M (score: 0.3648)\n[ICD-10-CM 2027] D804: Selective deficiency of immunoglobulin M [IgM] (score: 0.3174)\n[ICD-10-CM 2027] D805: Immunodeficiency with increased immunoglobulin M [IgM] (score: 0.2991)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'folic acid' \u2192 RXCUI 4511, canonical: folic acid, match: exact\n[RxNorm] Ingredient: folic acid (RXCUI 4511)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alpha tocopherol 30 UNT / ascorbic acid 28 MG / cholecalciferol 400 UNT / docosahexaenoic acid 300 MG / docusate sodium 55 MG / ferrous fumarate 27 MG / folic acid 1.25 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; ferrous sulfate 150 MG / folic acid 0.5 MG Extended Release Oral Capsule; ferrous fumarate 305 MG / folic acid 0.35 MG Oral Capsule; ascorbic acid 10 MG / ferrous gluconate 250 MG / folic acid 5 MG Oral Tablet; folic acid 0.08 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] D72818: Other decreased white blood cell count (score: 0.5891)\n[ICD-10-CM 2027] D72819: Decreased white blood cell count, unspecified (score: 0.5891)\n[ICD-10-CM 2027] D72828: Other elevated white blood cell count (score: 0.5757)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] O159: Eclampsia, unspecified as to time period (score: 0.5475)\n[ICD-10-CM 2027] R402120: Coma scale, eyes open, to pain, unspecified time (score: 0.4737)\n[ICD-10-CM 2027] R402140: Coma scale, eyes open, spontaneous, unspecified time (score: 0.4728)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] E43: Unspecified severe protein-calorie malnutrition (score: 0.5620)\n[ICD-10-CM 2027] K5222: Food protein-induced enteropathy (score: 0.4677)\n[ICD-10-CM 2027] E46: Unspecified protein-calorie malnutrition (score: 0.3911)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.2097)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.2088)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.2088)\n[ICD-10-CM 2027] Match unresolved (top score 0.2097 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] No matches found for 'AND PLAN:' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] O159: Eclampsia, unspecified as to time period (score: 0.5475)\n[ICD-10-CM 2027] R402120: Coma scale, eyes open, to pain, unspecified time (score: 0.4737)\n[ICD-10-CM 2027] R402140: Coma scale, eyes open, spontaneous, unspecified time (score: 0.4728)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] E46: Unspecified protein-calorie malnutrition (score: 0.3285)\n[ICD-10-CM 2027] E440: Moderate protein-calorie malnutrition (score: 0.3047)\n[ICD-10-CM 2027] E43: Unspecified severe protein-calorie malnutrition (score: 0.3037)"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] R7982: Elevated C-reactive protein (CRP) (score: 0.6636)\n[ICD-10-CM 2027] D6851: Activated protein C resistance (score: 0.4783)\n[ICD-10-CM 2027] M029: Reactive arthropathy, unspecified (score: 0.4753)"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[ICD-10-CM 2027] Z01812: Encounter for preprocedural laboratory examination (score: 0.2395)\n[ICD-10-CM 2027] R94113: Abnormal oculomotor study (score: 0.2258)\n[ICD-10-CM 2027] R94120: Abnormal auditory function study (score: 0.2017)\n[ICD-10-CM 2027] Match unresolved (top score 0.2395 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  }
+]

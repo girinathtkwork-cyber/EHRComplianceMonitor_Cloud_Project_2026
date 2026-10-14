@@ -1,0 +1,283 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+REASON FOR CONSULT: , A patient with non-Q-wave myocardial infarction.,HISTORY OF PRESENT ILLNESS: , The patient is a pleasant 52-year-old gentleman with a history of diabetes mellitus, hypertension, and renal failure, on dialysis, who presented with emesis, dizziness, and nausea for the last few weeks.  The patient reports having worsening emesis and emesis a few times.  No definite chest pains.  The patient is breathing okay.  The patient denies orthopnea or PND.,PAST MEDICAL HISTORY:,1.  Diabetes mellitus.,2.  Hypertension.,3.  Renal failure, on dialysis.,MEDICATIONS:,  Aspirin, Coreg, doxazosin, insulin, metoclopramide, simvastatin, and Starlix.,ALLERGIES:  ,NO KNOWN DRUG ALLERGIES.,SOCIAL HISTORY: , The patient denies tobacco, alcohol or drug use.,FAMILY HISTORY: , Negative for early atherosclerotic heart disease.,REVIEW OF SYSTEMS: , General:  The patient denies fever or chills.  Pulmonary:  The patient denies hemoptysis.  Cardiovascular:  Refer to HPI.  GI:  The patient denies hematemesis or melena.  The rest of systems review is negative.,PHYSICAL EXAMINATION:,VITAL SIGNS:  Pulse 71, blood pressure 120/70, and respiratory rate 18.,GENERAL:  A well-nourished, well-developed male in no acute distress.,HEENT:  Normocephalic, atraumatic.  Pupils seem to be equal, round, and reactive.  Extraocular muscles are full, but the patient has left eye ptosis.,NECK:  Supple without JVD or lymphadenopathy.,LUNGS:  Clear to auscultation bilaterally.,CARDIOVASCULAR:  PMI is displaced 0.5 cm lateral to the midclavicular line.  Regular rate and rhythm, S1, S2.  No definite S3, 2/6 holosystolic murmur at the apex radiating to the axilla.,ABDOMEN:  Positive bowel sounds, nondistended and nontender.  No hepatosplenomegaly.,EXTREMITIES:  Trace pedal edema.,EKG shows atrial fibrillation with rapid ventricular response at 164 with old anteroseptal myocardial infarction and old inferior wall myocardial infarction.  Subsequent EKG in sinus rhythm shows sinus rhythm with old inferior wall myocardial infarction and probable anteroseptal myocardial infarction with Q-waves in V1, V2, and up to V3.,LABORATORY EXAM: , WBC 28,800, hemoglobin 13.6, hematocrit 40, and platelets 266,000.  PT 11.3, INR 1.1, and PTT 24.1.  Sodium 126, potassium 4.3, chloride 86, CO2 26, glucose 371, BUN 80, and creatinine 8.4.  CK was 261, then 315, and then 529 with CK-MB of 8.06, then 8.69, and then 24.6.  Troponin was 0.051, then 0.46, and then 19.8 this morning.,IMPRESSION:,1.  Paroxysmal atrial fibrillation.  The heart rate was slowed down with IV Cardizem, the patient converted to sinus rhythm.  The patient is currently in sinus rhythm.,2.  Emesis.  The etiology is unclear.  The patient reports that the emesis is better.  The patient is just having some nausea.,3.  Non-Q-wave myocardial infarction.  EKG shows atrial fibrillation with old anteroseptal myocardial infarction and old inferior wall myocardial infarction.,4.  Diabetes mellitus.,5.  Renal failure.,6.  Hypertension.,7.  Hypercholesterolemia.,PLAN:,1.  We will start amiodarone to keep from going back into atrial fibrillation.,2.  Echocardiogram.,3.  Aspirin and IV heparin.,4.  Serial CK-MB and troponin.,5.  Cardiac catheterization, possible percutaneous coronary intervention.  The risks, benefits, and alternatives were explained to the patient through a translator.  The patient understands and wishes to proceed.,6.  IV Integrilin.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Aspirin"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Coreg"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "doxazosin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "metoclopramide"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "simvastatin"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Sodium"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "potassium"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "glucose"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Paroxysmal atrial fibrillation.  The heart rate was slowed down with IV Cardizem, the patient converted to sinus rhythm.  The patient is currently in sinus rhythm"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Cardizem"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Emesis.  The etiology is unclear.  The patient reports that the emesis is better.  The patient is just having some nausea"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Non-Q-wave myocardial infarction.  EKG shows atrial fibrillation with old anteroseptal myocardial infarction and old inferior wall myocardial infarction"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Diabetes mellitus"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Renal failure"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Hypertension"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Hypercholesterolemia.,PLAN:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "We will start amiodarone to keep from going back into atrial fibrillation"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "amiodarone"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "Echocardiogram"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "Aspirin and IV heparin"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "Aspirin"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "medication",
+    "text": "heparin"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "Serial CK-MB and troponin"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Cardiac catheterization, possible percutaneous coronary intervention.  The risks, benefits, and alternatives were explained to the patient through a translator.  The patient understands and wishes to proceed"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "diagnosis",
+    "text": "IV Integrilin"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Coreg' \u2192 RXCUI 216221, canonical: Coreg, match: exact\n[RxNorm] Ingredient: carvedilol (RXCUI 20352)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): carvedilol 6.25 MG Oral Tablet; carvedilol 12.5 MG Oral Tablet; carvedilol 25 MG Oral Tablet; carvedilol 3.125 MG Oral Tablet; 24 HR carvedilol phosphate 10 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'doxazosin' \u2192 RXCUI 49276, canonical: doxazosin, match: exact\n[RxNorm] Ingredient: doxazosin (RXCUI 49276)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): doxazosin 1 MG Oral Tablet; doxazosin 2 MG Oral Tablet; doxazosin 4 MG Oral Tablet; doxazosin 8 MG Oral Tablet; 24 HR doxazosin 4 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'metoclopramide' \u2192 RXCUI 6915, canonical: metoclopramide, match: exact\n[RxNorm] Ingredient: metoclopramide (RXCUI 6915)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): metoclopramide 1 MG/ML Oral Solution; metoclopramide hydrochloride 5 MG/ML Oral Solution; metoclopramide 15 MG/ACTUAT Nasal Spray; metoclopramide 15 MG Extended Release Oral Tablet; acetaminophen 500 MG / metoclopramide 5 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'simvastatin' \u2192 RXCUI 36567, canonical: simvastatin, match: exact\n[RxNorm] Ingredient: simvastatin (RXCUI 36567)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): simvastatin 4 MG/ML Oral Suspension; simvastatin 8 MG/ML Oral Suspension; simvastatin 40 MG Oral Tablet; simvastatin 80 MG Oral Tablet; simvastatin 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Sodium' \u2192 RXCUI 9853, canonical: sodium, match: exact\n[RxNorm] Ingredient: sodium (RXCUI 9853)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'potassium' \u2192 RXCUI 8588, canonical: potassium, match: exact\n[RxNorm] Ingredient: potassium (RXCUI 8588)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): potassium 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] I480: Paroxysmal atrial fibrillation (score: 0.4262)\n[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.3487)\n[ICD-10-CM 2027] O368391: Maternal care for abnormalities of the fetal heart rate or rhythm, unspecified trimester, fetus 1 (score: 0.3311)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Cardizem' \u2192 RXCUI 203494, canonical: Cardizem, match: exact\n[RxNorm] Ingredient: diltiazem (RXCUI 3443)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 5 ML diltiazem hydrochloride 5 MG/ML Injection; 10 ML diltiazem hydrochloride 5 MG/ML Injection; 25 ML diltiazem hydrochloride 5 MG/ML Injection; diltiazem hydrochloride 100 MG Injection; 250 ML diltiazem hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] R110: Nausea (score: 0.4383)\n[ICD-10-CM 2027] R1111: Vomiting without nausea (score: 0.3354)\n[ICD-10-CM 2027] R112: Nausea with vomiting, unspecified (score: 0.3354)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] I252: Old myocardial infarction (score: 0.7964)\n[ICD-10-CM 2027] I21A1: Myocardial infarction type 2 (score: 0.7126)\n[ICD-10-CM 2027] I21A9: Other myocardial infarction type (score: 0.7126)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] E1369: Other specified diabetes mellitus with other specified complication (score: 0.8415)\n[ICD-10-CM 2027] E138: Other specified diabetes mellitus with unspecified complications (score: 0.8415)\n[ICD-10-CM 2027] E139: Other specified diabetes mellitus without complications (score: 0.8415)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] P960: Congenital renal failure (score: 0.8650)\n[ICD-10-CM 2027] O0482: Renal failure following (induced) termination of pregnancy (score: 0.6130)\n[ICD-10-CM 2027] O0382: Renal failure following complete or unspecified spontaneous abortion (score: 0.6031)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] I158: Other secondary hypertension (score: 0.7957)\n[ICD-10-CM 2027] I159: Secondary hypertension, unspecified (score: 0.7957)\n[ICD-10-CM 2027] O169: Unspecified maternal hypertension, unspecified trimester (score: 0.7538)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] E78019: Familial hypercholesterolemia, unspecified (score: 0.7871)\n[ICD-10-CM 2027] E7800: Pure hypercholesterolemia, unspecified (score: 0.7290)\n[ICD-10-CM 2027] Z8342: Family history of familial hypercholesterolemia (score: 0.6398)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.8823)\n[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.8373)\n[ICD-10-CM 2027] I4819: Other persistent atrial fibrillation (score: 0.7645)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'amiodarone' \u2192 RXCUI 703, canonical: amiodarone, match: exact\n[RxNorm] Ingredient: amiodarone (RXCUI 703)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 100 ML amiodarone hydrochloride 1.5 MG/ML Injection; 3 ML amiodarone hydrochloride 50 MG/ML Injection; 9 ML amiodarone hydrochloride 50 MG/ML Injection; 18 ML amiodarone hydrochloride 50 MG/ML Injection; amiodarone hydrochloride 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] No matches found for 'Echocardiogram' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] D75829: Heparin-induced thrombocytopenia, unspecified (score: 0.5133)\n[ICD-10-CM 2027] T39016D: Underdosing of aspirin, subsequent encounter (score: 0.4981)\n[ICD-10-CM 2027] T39016A: Underdosing of aspirin, initial encounter (score: 0.4950)"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[RxNorm] 'Aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[RxNorm] 'heparin' \u2192 RXCUI 235473, canonical: heparin, porcine, match: exact\n[RxNorm] Ingredient: heparin, porcine (RXCUI 235473)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] No matches found for 'Serial CK-MB and troponin' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] Y840: Cardiac catheterization as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.3666)\n[ICD-10-CM 2027] Y846: Urinary catheterization as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.2913)\n[ICD-10-CM 2027] O2620: Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester (score: 0.2672)"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[ICD-10-CM 2027] S99049S: Salter-Harris Type IV physeal fracture of unspecified calcaneus, sequela (score: 0.5185)\n[ICD-10-CM 2027] S99149S: Salter-Harris Type IV physeal fracture of unspecified metatarsal, sequela (score: 0.5161)\n[ICD-10-CM 2027] S99042S: Salter-Harris Type IV physeal fracture of left calcaneus, sequela (score: 0.5126)"
+  }
+]

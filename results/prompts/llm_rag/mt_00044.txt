@@ -1,0 +1,173 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:,  Bilateral upper eyelid dermatochalasis.,POSTOPERATIVE DIAGNOSIS: , Same.,PROCEDURE: , Bilateral upper lid blepharoplasty, (CPT 15822).,ANESTHESIA: , Lidocaine with 1:100,000 epinephrine.,DESCRIPTION OF PROCEDURE: , This 65-year-old female demonstrates conditions described above of excess and redundant eyelid skin with puffiness and has requested surgical correction.  The procedure, alternatives, risks and limitations in this individual case have been very carefully discussed with the patient.  All questions have been thoroughly answered, and the patient understands the surgery indicated.  She has requested this corrective repair be undertaken, and a consent was signed.,The patient was brought into the operating room and placed in the supine position on the operating table.  An intravenous line was started, and sedation and sedation anesthesia was administered IV after preoperative p.o. sedation.  The patient was monitored for cardiac rate, blood pressure, and oxygen saturation continuously.  The excess and redundant skin of the upper lids producing redundancy and impairment of lateral vision was carefully measured, and the incisions were marked for fusiform excision with a marking pen.  The surgical calipers were used to measure the supratarsal incisions so that the incision was symmetrical from the ciliary margin bilaterally.,The upper eyelid areas were bilaterally injected with 1% Lidocaine with 1:100,000 Epinephrine for anesthesia and vasoconstriction.  The plane of injection was superficial and external to the orbital septum of the upper and lower eyelids bilaterally.,The face was prepped and draped in the usual sterile manner.,After waiting a period of approximately ten minutes for adequate vasoconstriction, the previously outlined excessive skin of the right upper eyelid was excised with blunt dissection.  Hemostasis was obtained with a bipolar cautery.  A thin strip of orbicularis oculi muscle was excised in order to expose the orbital septum on the right.  The defect in the orbital septum was identified, and herniated orbital fat was exposed.  The abnormally protruding positions in the medial pocket were carefully excised and the stalk meticulously cauterized with the bipolar cautery unit.  A similar procedure was performed exposing herniated portion of the nasal pocket.  Great care was taken to obtain perfect hemostasis with this maneuver.  A similar procedure of removing skin and taking care of the herniated fat was performed on the left upper eyelid in the same fashion.  Careful hemostasis had been obtained on the upper lid areas.  The lateral aspects of the upper eyelid incisions were closed with a couple of interrupted 7-0 blue Prolene sutures.,At the end of the operation the patient's vision and extraocular muscle movements were checked and found to be intact.  There was no diplopia, no ptosis, no ectropion.  Wounds were reexamined for hemostasis, and no hematomas were noted.  Cooled saline compresses were placed over the upper and lower eyelid regions bilaterally.,The procedures were completed without complication and tolerated well.  The patient left the operating room in satisfactory condition.  A follow-up appointment was scheduled, routine post-op medications prescribed, and post-op instructions given to the responsible party.,The patient was released to return home in satisfactory condition. Patient also underwent cardiac catheterization during this visit.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Bilateral upper eyelid dermatochalasis.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Same.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Bilateral upper lid blepharoplasty, (CPT 15822).,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Bilateral upper lid blepharoplasty, (CPT 15822).,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Lidocaine with 1:100,000 epinephrine.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Lidocaine with 1:100,000 epinephrine.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Lidocaine"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "This 65-year-old female demonstrates conditions described above of excess and redundant eyelid skin with puffiness and has requested surgical correction.  The procedure, alternatives, risks and limitations in this individual case have been very carefully discussed with the patient.  All questions have been thoroughly answered, and the patient understands the surgery indicated.  She has requested this corrective repair be undertaken, and a consent was signed.,The patient was brought into the operating room and placed in the supine position on the operating table.  An intravenous line was started, and sedation and sedation anesthesia was administered IV after preoperative p.o. sedation.  The patient was monitored for cardiac rate, blood pressure, and oxygen saturation continuously.  The excess and redundant skin of the upper lids producing redundancy and impairment of lateral vision was carefully measured, and the incisions were marked for fusiform excision with a marking pen.  The surgical calipers were used to measure the supratarsal incisions so that the incision was symmetrical from the ciliary margin bilaterally.,The upper eyelid areas were bilaterally injected with 1% Lidocaine with 1:100,000 Epinephrine for anesthesia and vasoconstriction.  The plane of injection was superficial and external to the orbital septum of the upper and lower eyelids bilaterally.,The face was prepped and draped in the usual sterile manner.,After waiting a period of approximately ten minutes for adequate vasoconstriction, the previously outlined excessive skin of the right upper eyelid was excised with blunt dissection.  Hemostasis was obtained with a bipolar cautery.  A thin strip of orbicularis oculi muscle was excised in order to expose the orbital septum on the right.  The defect in the orbital septum was identified, and herniated orbital fat was exposed.  The abnormally protruding positions in the medial pocket were carefully excised and the stalk meticulously cauterized with the bipolar cautery unit.  A similar procedure was performed exposing herniated portion of the nasal pocket.  Great care was taken to obtain perfect hemostasis with this maneuver.  A similar procedure of removing skin and taking care of the herniated fat was performed on the left upper eyelid in the same fashion.  Careful hemostasis had been obtained on the upper lid areas.  The lateral aspects of the upper eyelid incisions were closed with a couple of interrupted 7-0 blue Prolene sutures.,At the end of the operation the patient's vision and extraocular muscle movements were checked and found to be intact.  There was no diplopia, no ptosis, no ectropion.  Wounds were reexamined for hemostasis, and no hematomas were noted.  Cooled saline compresses were placed over the upper and lower eyelid regions bilaterally.,The procedures were completed without complication and tolerated well.  The patient left the operating room in satisfactory condition.  A follow-up appointment was scheduled, routine post-op medications prescribed, and post-op instructions given to the responsible party.,The patient was released to return home in satisfactory condition. Patient also underwent cardiac catheterization during this visit"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "This 65-year-old female demonstrates conditions described above of excess and redundant eyelid skin with puffiness and has requested surgical correction.  The procedure, alternatives, risks and limitations in this individual case have been very carefully discussed with the patient.  All questions have been thoroughly answered, and the patient understands the surgery indicated.  She has requested this corrective repair be undertaken, and a consent was signed.,The patient was brought into the operating room and placed in the supine position on the operating table.  An intravenous line was started, and sedation and sedation anesthesia was administered IV after preoperative p.o. sedation.  The patient was monitored for cardiac rate, blood pressure, and oxygen saturation continuously.  The excess and redundant skin of the upper lids producing redundancy and impairment of lateral vision was carefully measured, and the incisions were marked for fusiform excision with a marking pen.  The surgical calipers were used to measure the supratarsal incisions so that the incision was symmetrical from the ciliary margin bilaterally.,The upper eyelid areas were bilaterally injected with 1% Lidocaine with 1:100,000 Epinephrine for anesthesia and vasoconstriction.  The plane of injection was superficial and external to the orbital septum of the upper and lower eyelids bilaterally.,The face was prepped and draped in the usual sterile manner.,After waiting a period of approximately ten minutes for adequate vasoconstriction, the previously outlined excessive skin of the right upper eyelid was excised with blunt dissection.  Hemostasis was obtained with a bipolar cautery.  A thin strip of orbicularis oculi muscle was excised in order to expose the orbital septum on the right.  The defect in the orbital septum was identified, and herniated orbital fat was exposed.  The abnormally protruding positions in the medial pocket were carefully excised and the stalk meticulously cauterized with the bipolar cautery unit.  A similar procedure was performed exposing herniated portion of the nasal pocket.  Great care was taken to obtain perfect hemostasis with this maneuver.  A similar procedure of removing skin and taking care of the herniated fat was performed on the left upper eyelid in the same fashion.  Careful hemostasis had been obtained on the upper lid areas.  The lateral aspects of the upper eyelid incisions were closed with a couple of interrupted 7-0 blue Prolene sutures.,At the end of the operation the patient's vision and extraocular muscle movements were checked and found to be intact.  There was no diplopia, no ptosis, no ectropion.  Wounds were reexamined for hemostasis, and no hematomas were noted.  Cooled saline compresses were placed over the upper and lower eyelid regions bilaterally.,The procedures were completed without complication and tolerated well.  The patient left the operating room in satisfactory condition.  A follow-up appointment was scheduled, routine post-op medications prescribed, and post-op instructions given to the responsible party.,The patient was released to return home in satisfactory condition. Patient also underwent cardiac catheterization during this visit"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Lidocaine"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Epinephrine"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "the patient's vision and extraocular muscle movements were checked and found to be intact.  There was no diplopia, no ptosis, no ectropion.  Wounds were reexamined for hemostasis, and no hematomas were noted.  Cooled saline compresses were placed over the upper and lower eyelid regions bilaterally.,The procedures were completed without complication and tolerated well.  The patient left the operating room in satisfactory condition.  A follow-up appointment was scheduled, routine post-op medications prescribed, and post-op instructions given to the responsible party.,The patient was released to return home in satisfactory condition. Patient also underwent cardiac catheterization during this visit"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "were completed without complication and tolerated well.  The patient left the operating room in satisfactory condition.  A follow-up appointment was scheduled, routine post-op medications prescribed, and post-op instructions given to the responsible party.,The patient was released to return home in satisfactory condition. Patient also underwent cardiac catheterization during this visit"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] H02834: Dermatochalasis of left upper eyelid (score: 0.6898)\n[ICD-10-CM 2027] H02831: Dermatochalasis of right upper eyelid (score: 0.6897)\n[ICD-10-CM 2027] H02835: Dermatochalasis of left lower eyelid (score: 0.6301)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] W1830XD: Fall on same level, unspecified, subsequent encounter (score: 0.6194)\n[ICD-10-CM 2027] W1839XD: Other fall on same level, subsequent encounter (score: 0.6194)\n[ICD-10-CM 2027] W1830XA: Fall on same level, unspecified, initial encounter (score: 0.6156)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] H02529: Blepharophimosis unspecified eye, unspecified lid (score: 0.5635)\n[ICD-10-CM 2027] H02539: Eyelid retraction unspecified eye, unspecified lid (score: 0.5365)\n[ICD-10-CM 2027] T8859XD: Other complications of anesthesia, subsequent encounter (score: 0.3952)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Bilateral upper lid blepharoplasty, (CPT 15822).,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] T819XXD: Unspecified complication of procedure, subsequent encounter (score: 0.7590)\n[ICD-10-CM 2027] T819XXA: Unspecified complication of procedure, initial encounter (score: 0.7508)\n[ICD-10-CM 2027] T819XXS: Unspecified complication of procedure, sequela (score: 0.7504)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Lidocaine with 1:100,000 epinephrine.,DESCRIPTION OF PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] H02101: Unspecified ectropion of right upper eyelid (score: 0.2225)\n[ICD-10-CM 2027] H02104: Unspecified ectropion of left upper eyelid (score: 0.2225)\n[ICD-10-CM 2027] H02841: Edema of right upper eyelid (score: 0.2153)\n[ICD-10-CM 2027] Match unresolved (top score 0.2225 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'This 65-year-old female demonstrates conditions described above of excess and redundant eyelid skin with puffiness and has requested surgical correction.  The procedure, alternatives, risks and limitations in this individual case have been very carefully discussed with the patient.  All questions have been thoroughly answered, and the patient understands the surgery indicated.  She has requested this corrective repair be undertaken, and a consent was signed.,The patient was brought into the operating room and placed in the supine position on the operating table.  An intravenous line was started, and sedation and sedation anesthesia was administered IV after preoperative p.o. sedation.  The patient was monitored for cardiac rate, blood pressure, and oxygen saturation continuously.  The excess and redundant skin of the upper lids producing redundancy and impairment of lateral vision was carefully measured, and the incisions were marked for fusiform excision with a marking pen.  The surgical calipers were used to measure the supratarsal incisions so that the incision was symmetrical from the ciliary margin bilaterally.,The upper eyelid areas were bilaterally injected with 1% Lidocaine with 1:100,000 Epinephrine for anesthesia and vasoconstriction.  The plane of injection was superficial and external to the orbital septum of the upper and lower eyelids bilaterally.,The face was prepped and draped in the usual sterile manner.,After waiting a period of approximately ten minutes for adequate vasoconstriction, the previously outlined excessive skin of the right upper eyelid was excised with blunt dissection.  Hemostasis was obtained with a bipolar cautery.  A thin strip of orbicularis oculi muscle was excised in order to expose the orbital septum on the right.  The defect in the orbital septum was identified, and herniated orbital fat was exposed.  The abnormally protruding positions in the medial pocket were carefully excised and the stalk meticulously cauterized with the bipolar cautery unit.  A similar procedure was performed exposing herniated portion of the nasal pocket.  Great care was taken to obtain perfect hemostasis with this maneuver.  A similar procedure of removing skin and taking care of the herniated fat was performed on the left upper eyelid in the same fashion.  Careful hemostasis had been obtained on the upper lid areas.  The lateral aspects of the upper eyelid incisions were closed with a couple of interrupted 7-0 blue Prolene sutures.,At the end of the operation the patient's vision and extraocular muscle movements were checked and found to be intact.  There was no diplopia, no ptosis, no ectropion.  Wounds were reexamined for hemostasis, and no hematomas were noted.  Cooled saline compresses were placed over the upper and lower eyelid regions bilaterally.,The procedures were completed without complication and tolerated well.  The patient left the operating room in satisfactory condition.  A follow-up appointment was scheduled, routine post-op medications prescribed, and post-op instructions given to the responsible party.,The patient was released to return home in satisfactory condition. Patient also underwent cardiac catheterization during this visit' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "Dose 1.0% associated with Lidocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'the patient's vision and extraocular muscle movements were checked and found to be intact.  There was no diplopia, no ptosis, no ectropion.  Wounds were reexamined for hemostasis, and no hematomas were noted.  Cooled saline compresses were placed over the upper and lower eyelid regions bilaterally.,The procedures were completed without complication and tolerated well.  The patient left the operating room in satisfactory condition.  A follow-up appointment was scheduled, routine post-op medications prescribed, and post-op instructions given to the responsible party.,The patient was released to return home in satisfactory condition. Patient also underwent cardiac catheterization during this visit' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'were completed without complication and tolerated well.  The patient left the operating room in satisfactory condition.  A follow-up appointment was scheduled, routine post-op medications prescribed, and post-op instructions given to the responsible party.,The patient was released to return home in satisfactory condition. Patient also underwent cardiac catheterization during this visit' \u2014 extracted from header, not verified against any coding system"
+  }
+]

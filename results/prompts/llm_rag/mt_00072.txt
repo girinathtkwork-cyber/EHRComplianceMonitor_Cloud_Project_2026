@@ -1,0 +1,203 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:,1.  Status post multiple trauma/motor vehicle accident.,2.  Acute respiratory failure.,3.  Acute respiratory distress/ventilator asynchrony.,4.  Hypoxemia.,5.  Complete atelectasis of left lung.,POSTOPERATIVE DIAGNOSES:,1.  Status post multiple trauma/motor vehicle accident.,2.  Acute respiratory failure.,3.  Acute respiratory distress/ventilator asynchrony.,4.  Hypoxemia.,5.  Complete atelectasis of left lung.,6.  Clots partially obstructing the endotracheal tube and completely obstructing the entire left main stem and entire left bronchial system.,PROCEDURE PERFORMED: ,Emergent fiberoptic plus bronchoscopy with lavage.,LOCATION OF PROCEDURE:  ,ICU.  Room #164.,ANESTHESIA/SEDATION:,  Propofol drip, Brevital 750mg, morphine 5 mg, and Versed 8 mg.,HISTORY,:  The patient is a 44-year-old male who was admitted to ABCD Hospital on 09/04/03 status post MVA with multiple trauma and subsequently diagnosed with multiple spine fractures as well as bilateral pulmonary contusions, requiring ventilatory assistance.  The patient was noted with acute respiratory distress on ventilator support with both ventilator asynchrony and progressive desaturation.  Chest x-ray as noted above revealed complete atelectasis of the left lung.  The patient was subsequently sedated and received one dose of paralytic as noted above followed by emergent fiberoptic flexible bronchoscopy.,PROCEDURE DETAIL,:  A bronchoscope was inserted through the oroendotracheal tube, which was partially obstructed with blood clots.  These were lavaged with several aliquots of normal saline until cleared.  The bronchoscope required removal because the tissue/clots were obstructing the bronchoscope.  The bronchoscope was reinserted on several occasions until cleared and advanced to the main carina.  The endotracheal tube was noted to be in good position.  The bronchoscope was advanced through the distal trachea.  There was a white tissue completely obstructing the left main stem at the carina.  The bronchoscope was advanced to this region and several aliquots of normal saline lavage were instilled and suctioned.  Again this partially obstructed the bronchoscope requiring several times removing the bronchoscope to clear the lumen.  The bronchoscope subsequently was advanced into the left mainstem and subsequently left upper and lower lobes.  There was diffuse mucus impactions/tissue as well as intermittent clots.  There was no evidence of any active bleeding noted.  Bronchoscope was adjusted and the left lung lavaged until no evidence of any endobronchial obstruction is noted.  Bronchoscope was then withdrawn to the main carina and advanced into the right bronchial system.  There is no plugging or obstruction of the right bronchial system.  The bronchoscope was then withdrawn to the main carina and slowly withdrawn as the position of endotracheal tube was verified, approximately 4 cm above the main carina.  The bronchoscope was then completely withdrawn as the patient was maintained on ventilator support during and postprocedure.  Throughout the procedure, pulse oximetry was greater than 95% throughout.  There is no hemodynamic instability or variability noted during the procedure.  Postprocedure chest x-ray is pending at this time.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Complete atelectasis of left lung.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Status post multiple trauma/motor vehicle accident"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Acute respiratory failure"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Acute respiratory distress/ventilator asynchrony"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Hypoxemia"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Complete atelectasis of left lung"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Clots partially obstructing the endotracheal tube and completely obstructing the entire left main stem and entire left bronchial system.,PROCEDURE PERFORMED: ,Emergent fiberoptic plus bronchoscopy with lavage.,LOCATION OF PROCEDURE:  ,ICU.  Room #164.,ANESTHESIA/SEDATION:,  Propofol drip, Brevital 750mg, morphine 5 mg, and Versed 8 mg.,HISTORY,:  The patient is a 44-year-old male who was admitted to ABCD Hospital on 09/04/03 status post MVA with multiple trauma and subsequently diagnosed with multiple spine fractures as well as bilateral pulmonary contusions, requiring ventilatory assistance.  The patient was noted with acute respiratory distress on ventilator support with both ventilator asynchrony and progressive desaturation.  Chest x-ray as noted above revealed complete atelectasis of the left lung.  The patient was subsequently sedated and received one dose of paralytic as noted above followed by emergent fiberoptic flexible bronchoscopy.,PROCEDURE DETAIL,:  A bronchoscope was inserted through the oroendotracheal tube, which was partially obstructed with blood clots.  These were lavaged with several aliquots of normal saline until cleared.  The bronchoscope required removal because the tissue/clots were obstructing the bronchoscope.  The bronchoscope was reinserted on several occasions until cleared and advanced to the main carina.  The endotracheal tube was noted to be in good position.  The bronchoscope was advanced through the distal trachea.  There was a white tissue completely obstructing the left main stem at the carina.  The bronchoscope was advanced to this region and several aliquots of normal saline lavage were instilled and suctioned.  Again this partially obstructed the bronchoscope requiring several times removing the bronchoscope to clear the lumen.  The bronchoscope subsequently was advanced into the left mainstem and subsequently left upper and lower lobes.  There was diffuse mucus impactions/tissue as well as intermittent clots.  There was no evidence of any active bleeding noted.  Bronchoscope was adjusted and the left lung lavaged until no evidence of any endobronchial obstruction is noted.  Bronchoscope was then withdrawn to the main carina and advanced into the right bronchial system.  There is no plugging or obstruction of the right bronchial system.  The bronchoscope was then withdrawn to the main carina and slowly withdrawn as the position of endotracheal tube was verified, approximately 4 cm above the main carina.  The bronchoscope was then completely withdrawn as the patient was maintained on ventilator support during and postprocedure.  Throughout the procedure, pulse oximetry was greater than 95% throughout.  There is no hemodynamic instability or variability noted during the procedure.  Postprocedure chest x-ray is pending at this time"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "PERFORMED: ,Emergent fiberoptic plus bronchoscopy with lavage.,LOCATION OF PROCEDURE:  ,ICU.  Room #164.,ANESTHESIA/SEDATION:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Emergent fiberoptic plus bronchoscopy with lavage.,LOCATION OF PROCEDURE:  ,ICU.  Room #164.,ANESTHESIA/SEDATION:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Propofol drip"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Propofol"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Brevital 750mg, morphine 5 mg, and Versed 8 mg.,HISTORY,:  The patient is a 44-year-old male who was admitted to ABCD Hospital on 09/04/03 status post MVA with multiple trauma and subsequently diagnosed with multiple spine fractures as well as bilateral pulmonary contusions, requiring ventilatory assistance.  The patient was noted with acute respiratory distress on ventilator support with both ventilator asynchrony and progressive desaturation.  Chest x-ray as noted above revealed complete atelectasis of the left lung.  The patient was subsequently sedated and received one dose of paralytic as noted above followed by emergent fiberoptic flexible bronchoscopy.,PROCEDURE DETAIL,:  A bronchoscope was inserted through the oroendotracheal tube, which was partially obstructed with blood clots.  These were lavaged with several aliquots of normal saline until cleared.  The bronchoscope required removal because the tissue/clots were obstructing the bronchoscope.  The bronchoscope was reinserted on several occasions until cleared and advanced to the main carina.  The endotracheal tube was noted to be in good position.  The bronchoscope was advanced through the distal trachea.  There was a white tissue completely obstructing the left main stem at the carina.  The bronchoscope was advanced to this region and several aliquots of normal saline lavage were instilled and suctioned.  Again this partially obstructed the bronchoscope requiring several times removing the bronchoscope to clear the lumen.  The bronchoscope subsequently was advanced into the left mainstem and subsequently left upper and lower lobes.  There was diffuse mucus impactions/tissue as well as intermittent clots.  There was no evidence of any active bleeding noted.  Bronchoscope was adjusted and the left lung lavaged until no evidence of any endobronchial obstruction is noted.  Bronchoscope was then withdrawn to the main carina and advanced into the right bronchial system.  There is no plugging or obstruction of the right bronchial system.  The bronchoscope was then withdrawn to the main carina and slowly withdrawn as the position of endotracheal tube was verified, approximately 4 cm above the main carina.  The bronchoscope was then completely withdrawn as the patient was maintained on ventilator support during and postprocedure.  Throughout the procedure, pulse oximetry was greater than 95% throughout.  There is no hemodynamic instability or variability noted during the procedure.  Postprocedure chest x-ray is pending at this time"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Brevital"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "dosage",
+    "text": "750mg"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "morphine"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "dosage",
+    "text": "5 mg"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "8 mg"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "measurement",
+    "text": "95%"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] J9811: Atelectasis (score: 0.7658)\n[ICD-10-CM 2027] P2810: Unspecified atelectasis of newborn (score: 0.6606)\n[ICD-10-CM 2027] P2819: Other atelectasis of newborn (score: 0.6606)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] Z983: Post therapeutic collapse of lung status (score: 0.3845)\n[ICD-10-CM 2027] X820XXD: Intentional collision of motor vehicle with other motor vehicle, subsequent encounter (score: 0.3760)\n[ICD-10-CM 2027] X820XXA: Intentional collision of motor vehicle with other motor vehicle, initial encounter (score: 0.3746)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] J95821: Acute postprocedural respiratory failure (score: 0.8518)\n[ICD-10-CM 2027] J95822: Acute and chronic postprocedural respiratory failure (score: 0.8021)\n[ICD-10-CM 2027] P285: Respiratory failure of newborn (score: 0.7387)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] R0603: Acute respiratory distress (score: 0.7704)\n[ICD-10-CM 2027] J80: Acute respiratory distress syndrome (score: 0.7172)\n[ICD-10-CM 2027] P228: Other respiratory distress of newborn (score: 0.6302)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] R0902: Hypoxemia (score: 1.0000)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] J9811: Atelectasis (score: 0.7658)\n[ICD-10-CM 2027] P2810: Unspecified atelectasis of newborn (score: 0.6606)\n[ICD-10-CM 2027] P2819: Other atelectasis of newborn (score: 0.6606)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] C3402: Malignant neoplasm of left main bronchus (score: 0.2645)\n[ICD-10-CM 2027] C3401: Malignant neoplasm of right main bronchus (score: 0.2581)\n[ICD-10-CM 2027] C3400: Malignant neoplasm of unspecified main bronchus (score: 0.2576)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'PERFORMED: ,Emergent fiberoptic plus bronchoscopy with lavage.,LOCATION OF PROCEDURE:  ,ICU.  Room #164.,ANESTHESIA/SEDATION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Emergent fiberoptic plus bronchoscopy with lavage.,LOCATION OF PROCEDURE:  ,ICU.  Room #164.,ANESTHESIA/SEDATION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'Propofol drip' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Propofol' \u2192 RXCUI 8782, canonical: propofol, match: exact\n[RxNorm] Ingredient: propofol (RXCUI 8782)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 100 ML propofol 10 MG/ML Injection; 50 ML propofol 10 MG/ML Injection; 20 ML propofol 10 MG/ML Injection; 10 ML propofol 10 MG/ML Injection; 100 ML propofol lipid emulsion 20 MG/ML Injection"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Brevital 750mg, morphine 5 mg, and Versed 8 mg.,HISTORY,:  The patient is a 44-year-old male who was admitted to ABCD Hospital on 09/04/03 status post MVA with multiple trauma and subsequently diagnosed with multiple spine fractures as well as bilateral pulmonary contusions, requiring ventilatory assistance.  The patient was noted with acute respiratory distress on ventilator support with both ventilator asynchrony and progressive desaturation.  Chest x-ray as noted above revealed complete atelectasis of the left lung.  The patient was subsequently sedated and received one dose of paralytic as noted above followed by emergent fiberoptic flexible bronchoscopy.,PROCEDURE DETAIL,:  A bronchoscope was inserted through the oroendotracheal tube, which was partially obstructed with blood clots.  These were lavaged with several aliquots of normal saline until cleared.  The bronchoscope required removal because the tissue/clots were obstructing the bronchoscope.  The bronchoscope was reinserted on several occasions until cleared and advanced to the main carina.  The endotracheal tube was noted to be in good position.  The bronchoscope was advanced through the distal trachea.  There was a white tissue completely obstructing the left main stem at the carina.  The bronchoscope was advanced to this region and several aliquots of normal saline lavage were instilled and suctioned.  Again this partially obstructed the bronchoscope requiring several times removing the bronchoscope to clear the lumen.  The bronchoscope subsequently was advanced into the left mainstem and subsequently left upper and lower lobes.  There was diffuse mucus impactions/tissue as well as intermittent clots.  There was no evidence of any active bleeding noted.  Bronchoscope was adjusted and the left lung lavaged until no evidence of any endobronchial obstruction is noted.  Bronchoscope was then withdrawn to the main carina and advanced into the right bronchial system.  There is no plugging or obstruction of the right bronchial system.  The bronchoscope was then withdrawn to the main carina and slowly withdrawn as the position of endotracheal tube was verified, approximately 4 cm above the main carina.  The bronchoscope was then completely withdrawn as the patient was maintained on ventilator support during and postprocedure.  Throughout the procedure, pulse oximetry was greater than 95% throughout.  There is no hemodynamic instability or variability noted during the procedure.  Postprocedure chest x-ray is pending at this time' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Brevital' \u2192 RXCUI 227282, canonical: Brevital, match: exact\n[RxNorm] Ingredient: methohexital (RXCUI 6847)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methohexital sodium 50 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "Dose 750.0mg associated with Brevital \u2014 dose 750.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'morphine' \u2192 RXCUI 7052, canonical: morphine, match: exact\n[RxNorm] Ingredient: morphine (RXCUI 7052)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): morphine sulfate 40 MG Extended Release Oral Capsule; 1 ML morphine sulfate 5 MG/ML Prefilled Syringe; 10 ML morphine sulfate 0.5 MG/ML Injection; 2 ML morphine sulfate 0.5 MG/ML Injection; 10 ML morphine sulfate 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "Dose 5.0mg associated with morphine"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "Dose 8.0mg associated with morphine"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[Measurement] 95.0% \u2014 not associated with any medication"
+  }
+]

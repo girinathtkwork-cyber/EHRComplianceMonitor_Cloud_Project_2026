@@ -1,0 +1,93 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT: , Left elbow pain.,HISTORY OF PRESENT ILLNESS:  ,This 17-year-old male was fighting with some other kids in Juvenile Hall when he felt some pain in his left elbow, causing sudden pain.  He also has pain in his left ankle, but he is able to walk normally.  He has had previous pain in his left knee.  He denies any passing out, any neck pain at this time even though he did get hit in the head.  He has no chest or abdominal pain.  Apparently, no knives or guns were involved.,PAST MEDICAL HISTORY: , He has had toe problems and left knee pain in the past.,REVIEW OF SYSTEMS: , No coughing, sputum production, dyspnea or chest pain.  No vomiting or abdominal pain.  No visual changes.  No neurologic deficits other than some numbness in his left hand.,SOCIAL HISTORY: , He is in Juvenile Hall for about 25 more days.  He is a nonsmoker.,ALLERGIES: , hydromorphone.,CURRENT MEDICATIONS:  ,Abilify.,PHYSICAL EXAMINATION: , VITAL SIGNS:  Stable.  HEENT:  PERRLA.  EOMI.  Conjunctivae anicteric.  Skull is normocephalic.  He is not complaining of bruising.  HEENT:  TMs and canals are normal.  There is no Battle sign.  NECK:  Supple.  He has good range of motion.  Spinal processes are normal to palpation.  LUNGS:  Clear.  CARDIAC:  Regular rate.  No murmurs or rubs.  EXTREMITIES:  Left elbow is tender.  He does not wish to move it at all.  Shoulder and clavicle are within normal limits.  Wrist is normal to inspection.  He does have some pain to palpation.  Hand has good capillary refill.  He seems to have decreased sensation in all three dermatomes.  He has moderately good abduction of all fingers.  He has moderate opponens strength with his thumb.  He has very good extension of all of his fingers with good strength.,We did an x-ray of his elbow.  He has a spiral fracture of the distal one-third of the humerus, about 13 cm in length.  The proximal part looks like it is in good position.  The distal part has about 6 mm of displacement.  There is no significant angulation.  The joint itself appears to be intact.  The fracture line ends where it appears above the joint.  I do not see any extra blood in the joint.  I do not see any anterior or posterior Siegert sign.,I spoke with Dr. X.  He suggests we go ahead and splint him up and he will follow the patient up.  At this point, it does not seem like there needs to be any surgical revision.  The chance of a compartment syndrome seems very low at this time.,Using 4-inch Ortho-Glass and two assistants, we applied a posterior splint to immobilize his fingers, hand, and wrist all the way up to his elbow to well above the elbow.,He had much better comfort once this was applied.  There was good color to his fingers and again, much better comfort.,Once that was on, I took some 5-inch Ortho-Glass and put in extra reinforcement around the elbow so he would not be moving it, straightening it or breaking the fiberglass.,We then gave him a sling.,We gave him #2 Vicodin p.o. and #4 to go.  Gave him a prescription for #15 more and warned him to take it only at nighttime and use Tylenol or Motrin, and ice in the daytime.,I gave him the name and telephone number of Dr. X whom they can follow up with.  They were warned to come back here if he has increasing neurologic deficits in his hands or any new problems.,DIAGNOSES:,1.  Fracture of the humerus, spiral.,2.  Possible nerve injuries to the radial and median nerve, possibly neurapraxia.,3.  Psychiatric disorder, unspecified.,DISPOSITION:  The patient will follow up as mentioned above.  They can return here anytime as needed.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "hydromorphone"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Abilify"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Tylenol"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Motrin"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Fracture of the humerus, spiral"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Possible nerve injuries to the radial and median nerve, possibly neurapraxia"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Psychiatric disorder, unspecified.,DISPOSITION:  The patient will follow up as mentioned above.  They can return here anytime as needed"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'hydromorphone' \u2192 RXCUI 3423, canonical: hydromorphone, match: exact\n[RxNorm] Ingredient: hydromorphone (RXCUI 3423)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR hydromorphone hydrochloride 32 MG Extended Release Oral Tablet; 0.5 ML hydromorphone hydrochloride 1 MG/ML Prefilled Syringe; 1 ML hydromorphone hydrochloride 2 MG/ML Injection; 1 ML hydromorphone hydrochloride 10 MG/ML Injection; 5 ML hydromorphone hydrochloride 10 MG/ML Injection"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Abilify' \u2192 RXCUI 352393, canonical: Abilify, match: exact\n[RxNorm] Ingredient: aripiprazole (RXCUI 89013)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1.5 ML aripiprazole 200 MG/ML Prefilled Syringe; 2 ML aripiprazole 200 MG/ML Prefilled Syringe; aripiprazole 400 MG Injection; aripiprazole 300 MG Injection; Sensor aripiprazole 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Tylenol' \u2192 RXCUI 202433, canonical: Tylenol, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Motrin' \u2192 RXCUI 202488, canonical: Motrin, match: exact\n[RxNorm] Ingredient: ibuprofen (RXCUI 5640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): ibuprofen 400 MG / oxycodone hydrochloride 5 MG Oral Tablet; famotidine 26.6 MG / ibuprofen 800 MG Oral Tablet; chlorpheniramine maleate 2 MG / ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Tablet; ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Capsule; ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] S42343S: Displaced spiral fracture of shaft of humerus, unspecified arm, sequela (score: 0.7618)\n[ICD-10-CM 2027] S42346S: Nondisplaced spiral fracture of shaft of humerus, unspecified arm, sequela (score: 0.7615)\n[ICD-10-CM 2027] S42342S: Displaced spiral fracture of shaft of humerus, left arm, sequela (score: 0.7470)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] S5410XD: Injury of median nerve at forearm level, unspecified arm, subsequent encounter (score: 0.7233)\n[ICD-10-CM 2027] S5410XA: Injury of median nerve at forearm level, unspecified arm, initial encounter (score: 0.7200)\n[ICD-10-CM 2027] S5410XS: Injury of median nerve at forearm level, unspecified arm, sequela (score: 0.7199)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] Z392: Encounter for routine postpartum follow-up (score: 0.3582)\n[ICD-10-CM 2027] Z362: Encounter for other antenatal screening follow-up (score: 0.3464)\n[ICD-10-CM 2027] Z89619: Acquired absence of unspecified leg above knee (score: 0.2759)"
+  }
+]

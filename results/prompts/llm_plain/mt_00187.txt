@@ -1,0 +1,117 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+REASON FOR CONSULTATION: , Syncope. Additional diagnosis noted: Type 2 Diabetes Mellitus.,HISTORY OF PRESENT ILLNESS:  ,The patient is a 69-year-old gentleman, a good historian, who relates that he was brought in the Emergency Room following an episode of syncope.  The patient relates that he may have had a seizure activity prior to that.  Prior to the episode, he denies having any symptoms of chest pain or shortness of breath.  No palpitation.  Presently, he is comfortable, lying in the bed.  As per the patient, no prior cardiac history.,CORONARY RISK FACTORS: , History of hypertension.  No history of diabetes mellitus.  Nonsmoker.  Cholesterol status is borderline elevated.  No history of established coronary artery disease.  Family history noncontributory.,PAST MEDICAL HISTORY:  ,Hypertension, hyperlipidemia, recently diagnosed with Parkinson's, as a Parkinson's tremor, admitted for syncopal evaluation.,PAST SURGICAL HISTORY: ,Back surgery, shoulder surgery, and appendicectomy.,FAMILY HISTORY: , Nonsignificant.,MEDICATIONS:,1.  Pain medications.,2.  Thyroid supplementation.,3.  Lovastatin 20 mg daily.,4.  Propranolol 20 b.i.d.,5.  Protonix.,6.  Flomax.,ALLERGIES:,  None.,PERSONAL HISTORY:,  He is married.  Nonsmoker.  Does not consume alcohol.  No history of recreational drug use.,REVIEW OF SYSTEMS,CONSTITUTIONAL:  No weakness, fatigue, or tiredness.,HEENT:  No history of cataract or glaucoma.,CARDIOVASCULAR:  No congestive heart failure.  No arrhythmias.,RESPIRATORY:  No history of pneumonia or valley fever.,GASTROINTESTINAL:  No nausea, vomiting, hematemesis, or melena.,UROLOGICAL:  No frequency or urgency.,MUSCULOSKELETAL:  Arthritis and muscle weakness.,SKIN:  Nonsignificant.,NEUROLOGIC:  No TIA or CVA.  No seizure disorder.,ENDOCRINE/HEMATOLOGIC:  Nonsignificant.,PHYSICAL EXAMINATION,VITAL SIGNS:  Pulse of 93, blood pressure of 158/93, afebrile, and respiratory rate 16 per minute.,HEENT:  Atraumatic and normocephalic.,NECK:  Neck veins are flat.  No significant carotid bruits.,LUNGS:  Air entry is bilaterally decreased.,HEART:  PMI is displaced.  S1 and S2 are regular.,ABDOMEN:  Soft and nontender.  Bowel sounds are present.,EXTREMITIES:  No edema.  Pulses are palpable.  No clubbing or cyanosis.  The patient is moving all extremities; however, the patient has tremors.,RADIOLOGICAL DATA: , EKG reveals normal sinus rhythm with underlying nonspecific ST-T changes secondary to tremors.,LABORATORY DATA: , H&H stable.  White count of 14.  BUN and creatinine are within normal limits.  Cardiac enzyme profile is negative.  Ammonia level is elevated at 69.  CT angiogram of the chest, no evidence of pulmonary embolism.  Chest x-ray is negative for acute changes.  CT of the head, unremarkable, chronic skin changes.  Liver enzymes are within normal limits.,IMPRESSION:,1.  The patient is a 69-year-old gentleman, admitted with syncopal episode and possible seizure disorder.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.,HISTORY OF PRESENT ILLNESS:  ,The patient is a 69-year-old gentleman, a good historian, who relates that he was brought in the Emergency Room following an episode of syncope.  The patient relates that he may have had a seizure activity prior to that.  Prior to the episode, he denies having any symptoms of chest pain or shortness of breath.  No palpitation.  Presently, he is comfortable, lying in the bed.  As per the patient, no prior cardiac history.,CORONARY RISK FACTORS: , History of hypertension.  No history of diabetes mellitus.  Nonsmoker.  Cholesterol status is borderline elevated.  No history of established coronary artery disease.  Family history noncontributory.,PAST MEDICAL HISTORY:  ,Hypertension, hyperlipidemia, recently diagnosed with Parkinson's, as a Parkinson's tremor, admitted for syncopal evaluation.,PAST SURGICAL HISTORY: ,Back surgery, shoulder surgery, and appendicectomy.,FAMILY HISTORY: , Nonsignificant.,MEDICATIONS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Cholesterol"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Pain medications"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Thyroid supplementation"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Lovastatin 20 mg daily"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Lovastatin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Propranolol 20 b.i.d"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Propranolol"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Protonix"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Protonix"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Flomax.,ALLERGIES:,  None.,PERSONAL HISTORY:,  He is married.  Nonsmoker.  Does not consume alcohol.  No history of recreational drug use.,REVIEW OF SYSTEMS,CONSTITUTIONAL:  No weakness, fatigue, or tiredness.,HEENT:  No history of cataract or glaucoma.,CARDIOVASCULAR:  No congestive heart failure.  No arrhythmias.,RESPIRATORY:  No history of pneumonia or valley fever.,GASTROINTESTINAL:  No nausea, vomiting, hematemesis, or melena.,UROLOGICAL:  No frequency or urgency.,MUSCULOSKELETAL:  Arthritis and muscle weakness.,SKIN:  Nonsignificant.,NEUROLOGIC:  No TIA or CVA.  No seizure disorder.,ENDOCRINE/HEMATOLOGIC:  Nonsignificant.,PHYSICAL EXAMINATION,VITAL SIGNS:  Pulse of 93, blood pressure of 158/93, afebrile, and respiratory rate 16 per minute.,HEENT:  Atraumatic and normocephalic.,NECK:  Neck veins are flat.  No significant carotid bruits.,LUNGS:  Air entry is bilaterally decreased.,HEART:  PMI is displaced.  S1 and S2 are regular.,ABDOMEN:  Soft and nontender.  Bowel sounds are present.,EXTREMITIES:  No edema.  Pulses are palpable.  No clubbing or cyanosis.  The patient is moving all extremities; however, the patient has tremors.,RADIOLOGICAL DATA: , EKG reveals normal sinus rhythm with underlying nonspecific ST-T changes secondary to tremors.,LABORATORY DATA: , H&H stable.  White count of"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Flomax"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "BUN and creatinine are within normal limits.  Cardiac enzyme profile is negative.  Ammonia level is elevated at"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Ammonia"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "CT angiogram of the chest, no evidence of pulmonary embolism.  Chest x-ray is negative for acute changes.  CT of the head, unremarkable, chronic skin changes.  Liver enzymes are within normal limits.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "1.  The patient is a 69-year-old gentleman, admitted with syncopal episode and possible seizure disorder"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "The patient is a 69-year-old gentleman, admitted with syncopal episode and possible seizure disorder"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

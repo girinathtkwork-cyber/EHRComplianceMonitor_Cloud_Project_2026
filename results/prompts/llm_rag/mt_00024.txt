@@ -1,0 +1,113 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Cataract, right eye.,POSTOPERATIVE DIAGNOSIS:,  Cataract, right eye.,TITLE OF OPERATION:  ,Phacoemulsification with intraocular lens insertion, right eye.,ANESTHESIA: , Retrobulbar block.,COMPLICATIONS: , None.,PROCEDURE IN DETAIL:  ,The patient was brought to the operating room where retrobulbar anesthesia was induced.  The patient was then prepped and draped using standard procedure.  A wire lid speculum was inserted to keep the eye open and the eye rotated downward with a 0.12.  The anterior chamber was entered by making a small superior limbal incision with a crescent blade and then entering the anterior chamber with a keratome.  The chamber was then filled with viscoelastic and a continuous-tear capsulorrhexis performed.  The phacoemulsification was then instilled in the eye and a linear incision made in the lens.  The lens was then cracked with a McPherson forceps, and the remaining lens material removed with the phacoemulsification tip.  The remaining cortex was removed with an I&A.  The capsular bag was then inflated with viscoelastic and the wound extended slightly with the keratome.  The folding posterior chamber lens was then inserted in the capsular bag and rotated into position.  The remaining viscoelastic was removed from the eye with the I&A.  The wound was checked for watertightness and found to be watertight.  Tobramycin drops were instilled in the eye and a shield placed over it.  The patient tolerated the procedure well.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Cataract, right eye.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Cataract, right eye.,TITLE OF OPERATION:  ,Phacoemulsification with intraocular lens insertion, right eye.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Phacoemulsification with intraocular lens insertion, right eye.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Retrobulbar block.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Retrobulbar block.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "None.,PROCEDURE IN DETAIL:  ,The patient was brought to the operating room where retrobulbar anesthesia was induced.  The patient was then prepped and draped using standard procedure.  A wire lid speculum was inserted to keep the eye open and the eye rotated downward with a 0.12.  The anterior chamber was entered by making a small superior limbal incision with a crescent blade and then entering the anterior chamber with a keratome.  The chamber was then filled with viscoelastic and a continuous-tear capsulorrhexis performed.  The phacoemulsification was then instilled in the eye and a linear incision made in the lens.  The lens was then cracked with a McPherson forceps, and the remaining lens material removed with the phacoemulsification tip.  The remaining cortex was removed with an I&A.  The capsular bag was then inflated with viscoelastic and the wound extended slightly with the keratome.  The folding posterior chamber lens was then inserted in the capsular bag and rotated into position.  The remaining viscoelastic was removed from the eye with the I&A.  The wound was checked for watertightness and found to be watertight.  Tobramycin drops were instilled in the eye and a shield placed over it.  The patient tolerated the procedure well"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "None.,PROCEDURE IN DETAIL:  ,The patient was brought to the operating room where retrobulbar anesthesia was induced.  The patient was then prepped and draped using standard procedure.  A wire lid speculum was inserted to keep the eye open and the eye rotated downward with a 0.12.  The anterior chamber was entered by making a small superior limbal incision with a crescent blade and then entering the anterior chamber with a keratome.  The chamber was then filled with viscoelastic and a continuous-tear capsulorrhexis performed.  The phacoemulsification was then instilled in the eye and a linear incision made in the lens.  The lens was then cracked with a McPherson forceps, and the remaining lens material removed with the phacoemulsification tip.  The remaining cortex was removed with an I&A.  The capsular bag was then inflated with viscoelastic and the wound extended slightly with the keratome.  The folding posterior chamber lens was then inserted in the capsular bag and rotated into position.  The remaining viscoelastic was removed from the eye with the I&A.  The wound was checked for watertightness and found to be watertight.  Tobramycin drops were instilled in the eye and a shield placed over it.  The patient tolerated the procedure well"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "IN DETAIL:  ,The patient was brought to the operating room where retrobulbar anesthesia was induced.  The patient was then prepped and draped using standard procedure.  A wire lid speculum was inserted to keep the eye open and the eye rotated downward with a 0.12.  The anterior chamber was entered by making a small superior limbal incision with a crescent blade and then entering the anterior chamber with a keratome.  The chamber was then filled with viscoelastic and a continuous-tear capsulorrhexis performed.  The phacoemulsification was then instilled in the eye and a linear incision made in the lens.  The lens was then cracked with a McPherson forceps, and the remaining lens material removed with the phacoemulsification tip.  The remaining cortex was removed with an I&A.  The capsular bag was then inflated with viscoelastic and the wound extended slightly with the keratome.  The folding posterior chamber lens was then inserted in the capsular bag and rotated into position.  The remaining viscoelastic was removed from the eye with the I&A.  The wound was checked for watertightness and found to be watertight.  Tobramycin drops were instilled in the eye and a shield placed over it.  The patient tolerated the procedure well"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Tobramycin"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] H26101: Unspecified traumatic cataract, right eye (score: 0.5195)\n[ICD-10-CM 2027] H26109: Unspecified traumatic cataract, unspecified eye (score: 0.5032)\n[ICD-10-CM 2027] H268: Other specified cataract (score: 0.4999)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] H59021: Cataract (lens) fragments in eye following cataract surgery, right eye (score: 0.5226)\n[ICD-10-CM 2027] H59029: Cataract (lens) fragments in eye following cataract surgery, unspecified eye (score: 0.5082)\n[ICD-10-CM 2027] H59022: Cataract (lens) fragments in eye following cataract surgery, left eye (score: 0.5063)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'Phacoemulsification with intraocular lens insertion, right eye.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] H4610: Retrobulbar neuritis, unspecified eye (score: 0.5157)\n[ICD-10-CM 2027] H4612: Retrobulbar neuritis, left eye (score: 0.5115)\n[ICD-10-CM 2027] H4611: Retrobulbar neuritis, right eye (score: 0.5114)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Retrobulbar block.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] H27129: Anterior dislocation of lens, unspecified eye (score: 0.3234)\n[ICD-10-CM 2027] H27122: Anterior dislocation of lens, left eye (score: 0.3190)\n[ICD-10-CM 2027] H27121: Anterior dislocation of lens, right eye (score: 0.3190)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'None.,PROCEDURE IN DETAIL:  ,The patient was brought to the operating room where retrobulbar anesthesia was induced.  The patient was then prepped and draped using standard procedure.  A wire lid speculum was inserted to keep the eye open and the eye rotated downward with a 0.12.  The anterior chamber was entered by making a small superior limbal incision with a crescent blade and then entering the anterior chamber with a keratome.  The chamber was then filled with viscoelastic and a continuous-tear capsulorrhexis performed.  The phacoemulsification was then instilled in the eye and a linear incision made in the lens.  The lens was then cracked with a McPherson forceps, and the remaining lens material removed with the phacoemulsification tip.  The remaining cortex was removed with an I&A.  The capsular bag was then inflated with viscoelastic and the wound extended slightly with the keratome.  The folding posterior chamber lens was then inserted in the capsular bag and rotated into position.  The remaining viscoelastic was removed from the eye with the I&A.  The wound was checked for watertightness and found to be watertight.  Tobramycin drops were instilled in the eye and a shield placed over it.  The patient tolerated the procedure well' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'IN DETAIL:  ,The patient was brought to the operating room where retrobulbar anesthesia was induced.  The patient was then prepped and draped using standard procedure.  A wire lid speculum was inserted to keep the eye open and the eye rotated downward with a 0.12.  The anterior chamber was entered by making a small superior limbal incision with a crescent blade and then entering the anterior chamber with a keratome.  The chamber was then filled with viscoelastic and a continuous-tear capsulorrhexis performed.  The phacoemulsification was then instilled in the eye and a linear incision made in the lens.  The lens was then cracked with a McPherson forceps, and the remaining lens material removed with the phacoemulsification tip.  The remaining cortex was removed with an I&A.  The capsular bag was then inflated with viscoelastic and the wound extended slightly with the keratome.  The folding posterior chamber lens was then inserted in the capsular bag and rotated into position.  The remaining viscoelastic was removed from the eye with the I&A.  The wound was checked for watertightness and found to be watertight.  Tobramycin drops were instilled in the eye and a shield placed over it.  The patient tolerated the procedure well' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Tobramycin' \u2192 RXCUI 10627, canonical: tobramycin, match: exact\n[RxNorm] Ingredient: tobramycin (RXCUI 10627)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fluorometholone acetate 1 MG/ML / tobramycin 3 MG/ML Ophthalmic Suspension; tobramycin 75 MG/ML Inhalation Solution; tobramycin 28 MG Inhalation Powder; dexamethasone 0.001 MG/MG / tobramycin 0.003 MG/MG Ophthalmic Ointment; dexamethasone 1 MG/ML / tobramycin 3 MG/ML Ophthalmic Suspension"
+  }
+]

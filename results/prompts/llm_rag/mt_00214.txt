@@ -1,0 +1,223 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+REASON FOR ADMISSION: , Sepsis.,HISTORY OF PRESENT ILLNESS:  ,The patient is a pleasant but demented 80-year-old male, who lives in board and care, who presented with acute onset of abdominal pain.  In the emergency room, the patient was found to have a CT scan with dilated bladder with thick wall suggesting an outlet obstruction as well as bilateral hydronephrosis and hydroureter.  The patient is unable to provide further history.  The patient's son is at the bedside and confirmed his history.  The patient was given IV antibiotics in the emergency room.  He was also given some hydration.,PAST MEDICAL HISTORY:,1.  History of CAD.,2.  History of dementia.,3.  History of CVA.,4.  History of nephrolithiasis.,ALLERGIES: , NONE.,MEDICATIONS:,1.  Ambien.,2.  Milk of magnesia.,3.  Tylenol.,4.  Tramadol.,5.  Soma.,6.  Coumadin.,7.  Zoloft.,8.  Allopurinol.,9.  Digoxin.,10.  Namenda.,11.  Zocor.,12.  BuSpar.,13.  Detrol.,14.  Coreg.,15.  Colace.,16.  Calcium.,17.  Xanax.,18.  Lasix.,19.  Seroquel.,20.  Aldactone.,21.  Amoxicillin.,FAMILY HISTORY:  ,Noncontributory.,SOCIAL HISTORY: , The patient lives in a board and care.  No tobacco, alcohol or IV drug use.,REVIEW OF SYSTEMS: , As per the history of present illness, otherwise unremarkable.,PHYSICAL EXAMINATION:,VITAL SIGNS:  The patient is currently afebrile.  Pulse 52, respirations 20, blood pressure 104/41, and saturating 98% on room air.,GENERAL:  The patient is awake.  Not oriented x3, in no acute distress.,HEENT:  Pupils are equal, round, and reactive to light and accommodation.  Extraocular movements are intact.  Mucous membranes are dry.,NECK:  Supple.  No thyromegaly.  No jugular venous distention.,HEART:  Irregularly irregular, brady.,LUNGS:  Clear to auscultation bilaterally anteriorly.,ABDOMEN:  Positive normoactive bowel sounds.  Soft.  Tenderness in the suprapubic region without rebound.,EXTREMITIES:  No clubbing, cyanosis or edema in upper and lower extremities.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Ambien"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Tylenol"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Tramadol"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Soma"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Zoloft"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Allopurinol"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Digoxin"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Namenda"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Zocor"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "BuSpar"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Detrol"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Coreg"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Colace"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "Xanax"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Lasix"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "Seroquel"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "Aldactone"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "Amoxicillin"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "measurement",
+    "text": "98%"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Ambien' \u2192 RXCUI 131725, canonical: Ambien, match: exact\n[RxNorm] Ingredient: zolpidem (RXCUI 39993)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): zolpidem tartrate 1.75 MG Sublingual Tablet; zolpidem tartrate 3.5 MG Sublingual Tablet; zolpidem tartrate 7.5 MG Oral Capsule; zolpidem tartrate 10 MG Sublingual Tablet; zolpidem tartrate 5 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Tylenol' \u2192 RXCUI 202433, canonical: Tylenol, match: exact\n[RxNorm] Ingredient: acetaminophen (RXCUI 161)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 300 MG / oxycodone hydrochloride 10 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 7.5 MG Oral Tablet; acetaminophen 300 MG / oxycodone hydrochloride 2.5 MG Oral Tablet; acetaminophen 300 MG / phenyltoloxamine citrate 20 MG / salicylamide 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Tramadol' \u2192 RXCUI 10689, canonical: tramadol, match: exact\n[RxNorm] Ingredient: tramadol (RXCUI 10689)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR tramadol hydrochloride 100 MG Extended Release Oral Capsule; 24 HR tramadol hydrochloride 200 MG Extended Release Oral Capsule; 24 HR tramadol hydrochloride 300 MG Extended Release Oral Capsule; 24 HR tramadol hydrochloride 150 MG Extended Release Oral Capsule; Matrix Delivery 24 HR tramadol hydrochloride 300 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Soma' \u2192 RXCUI 204362, canonical: Soma, match: exact\n[RxNorm] Ingredient: carisoprodol (RXCUI 2101)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): carisoprodol 125 MG Oral Tablet; carisoprodol 350 MG Oral Tablet; aspirin 325 MG / carisoprodol 200 MG Oral Tablet; carisoprodol 250 MG Oral Tablet; aspirin 325 MG / carisoprodol 200 MG / codeine phosphate 16 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Zoloft' \u2192 RXCUI 82728, canonical: Zoloft, match: exact\n[RxNorm] Ingredient: sertraline (RXCUI 36437)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): sertraline 200 MG Oral Capsule; sertraline 100 MG Oral Tablet; sertraline 25 MG Oral Tablet; sertraline 50 MG Oral Tablet; sertraline 150 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Allopurinol' \u2192 RXCUI 519, canonical: allopurinol, match: exact\n[RxNorm] Ingredient: allopurinol (RXCUI 519)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): allopurinol 300 MG / lesinurad 200 MG Oral Tablet; allopurinol 200 MG / lesinurad 200 MG Oral Tablet; allopurinol 100 MG Oral Tablet; allopurinol 300 MG Oral Tablet; allopurinol 200 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Digoxin' \u2192 RXCUI 3407, canonical: digoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Namenda' \u2192 RXCUI 405206, canonical: Namenda, match: exact\n[RxNorm] Ingredient: memantine (RXCUI 6719)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 28 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 14 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 21 MG Extended Release Oral Capsule; 24 HR donepezil hydrochloride 10 MG / memantine hydrochloride 7 MG Extended Release Oral Capsule; memantine hydrochloride 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Zocor' \u2192 RXCUI 196503, canonical: Zocor, match: exact\n[RxNorm] Ingredient: simvastatin (RXCUI 36567)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): simvastatin 4 MG/ML Oral Suspension; simvastatin 8 MG/ML Oral Suspension; simvastatin 40 MG Oral Tablet; simvastatin 80 MG Oral Tablet; simvastatin 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'BuSpar' \u2192 RXCUI 154990, canonical: Buspar, match: exact\n[RxNorm] Ingredient: buspirone (RXCUI 1827)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): buspirone hydrochloride 10 MG Oral Capsule; buspirone hydrochloride 15 MG Oral Capsule; buspirone hydrochloride 7.5 MG Oral Capsule; buspirone hydrochloride 2.5 MG Oral Tablet; buspirone hydrochloride 12.5 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Detrol' \u2192 RXCUI 216511, canonical: Detrol, match: exact\n[RxNorm] Ingredient: tolterodine (RXCUI 119565)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): tolterodine tartrate 1 MG Oral Tablet; 24 HR tolterodine tartrate 2 MG Extended Release Oral Capsule; 24 HR tolterodine tartrate 4 MG Extended Release Oral Capsule; tolterodine tartrate 2 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Coreg' \u2192 RXCUI 216221, canonical: Coreg, match: exact\n[RxNorm] Ingredient: carvedilol (RXCUI 20352)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): carvedilol 6.25 MG Oral Tablet; carvedilol 12.5 MG Oral Tablet; carvedilol 25 MG Oral Tablet; carvedilol 3.125 MG Oral Tablet; 24 HR carvedilol phosphate 10 MG Extended Release Oral Capsule"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Colace' \u2192 RXCUI 82000, canonical: Colace, match: exact\n[RxNorm] Ingredient: docusate (RXCUI 82003)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alpha tocopherol 30 UNT / ascorbic acid 28 MG / cholecalciferol 400 UNT / docosahexaenoic acid 300 MG / docusate sodium 55 MG / ferrous fumarate 27 MG / folic acid 1.25 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; 24 HR ascorbic acid 500 MG / biotin 0.15 MG / copper sulfate 3 MG / dl-alpha tocopheryl acetate 30 UNT / docusate sodium 50 MG / folic acid 1 MG / iron carbonyl 150 MG / vitamin B12 0.06 MG Extended Release Oral Tablet; docusate sodium 3.33 MG/ML Oral Solution; docusate sodium 100 MG Oral Tablet; docusate sodium 100 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'Xanax' \u2192 RXCUI 202363, canonical: Xanax, match: exact\n[RxNorm] Ingredient: alprazolam (RXCUI 596)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alprazolam 1 MG Oral Tablet; alprazolam 2 MG Oral Tablet; alprazolam 0.25 MG Oral Tablet; alprazolam 0.5 MG Oral Tablet; alprazolam 0.1 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Lasix' \u2192 RXCUI 202991, canonical: Lasix, match: exact\n[RxNorm] Ingredient: furosemide (RXCUI 4603)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): furosemide 4 MG/ML Oral Solution; 10 ML furosemide 10 MG/ML Injection; 2 ML furosemide 10 MG/ML Injection; 4 ML furosemide 10 MG/ML Injection; furosemide 10 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'Seroquel' \u2192 RXCUI 83553, canonical: Seroquel, match: exact\n[RxNorm] Ingredient: quetiapine (RXCUI 51272)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): quetiapine 100 MG Oral Tablet; quetiapine 25 MG Oral Tablet; quetiapine 300 MG Oral Tablet; quetiapine 200 MG Oral Tablet; quetiapine 150 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'Aldactone' \u2192 RXCUI 151317, canonical: Aldactone, match: exact\n[RxNorm] Ingredient: spironolactone (RXCUI 9997)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): spironolactone 1 MG/ML Oral Suspension; spironolactone 2 MG/ML Oral Suspension; spironolactone 5 MG/ML Oral Suspension; spironolactone 10 MG/ML Oral Suspension; spironolactone 100 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'Amoxicillin' \u2192 RXCUI 723, canonical: amoxicillin, match: exact\n[RxNorm] Ingredient: amoxicillin (RXCUI 723)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amoxicillin 60 MG/ML Oral Suspension; amoxicillin 50 MG / clavulanate 12.5 MG Oral Tablet; amoxicillin 200 MG / clavulanate 50 MG Oral Tablet; amoxicillin 300 MG / clavulanate 75 MG Oral Tablet; amoxicillin 100 MG / clavulanate 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Measurement] 98.0% \u2014 not associated with any medication"
+  }
+]

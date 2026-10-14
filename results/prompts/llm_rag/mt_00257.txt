@@ -1,0 +1,273 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+REASON FOR ADMISSION: , Rectal bleeding. Additional diagnosis noted: Hyperlipidemia.,HISTORY OF PRESENT ILLNESS:  ,The patient is a very pleasant 68-year-old male with history of bilateral hernia repair, who presents with 3 weeks of diarrhea and 1 week of rectal bleeding.  He states that he had some stomach discomfort in the last 4 weeks.  He has had some physical therapy for his lower back secondary to pain after hernia repair.  He states that the pain worsened after this.  He has had previous history of rectal bleeding and a colonoscopy approximately 8 years ago that was normal.  He denies any dysuria.  He denies any hematemesis.  He denies any pleuritic chest pain.  He denies any hemoptysis.,PAST MEDICAL HISTORY:,1.  History of bilateral hernia repair by Dr. X in 8/2008.,2.  History of rectal bleeding.,ALLERGIES: , NONE.,MEDICATIONS:,1.  Cipro.,2.  Lomotil.,FAMILY HISTORY: , Noncontributory.,SOCIAL HISTORY: , No tobacco, alcohol or IV drug use.,REVIEW OF SYSTEMS: , As per the history of present illness otherwise unremarkable.,PHYSICAL EXAMINATION:,VITAL SIGNS:  The patient is afebrile.  Pulse 117, respirations 18, and blood pressure 117/55.  Saturating 98% on room air.,GENERAL:  The patient is alert and oriented x3.,HEENT:  Pupils are equal, round, and reactive to light and accommodation.  Extraocular movements are intact.  Oropharynx is clear without exudates.,NECK:  Supple.  No thyromegaly.  No jugular venous distention.,HEART:  Tachycardic.  Regular rhythm without murmurs, rubs or gallops.,LUNGS:  Clear to auscultation bilaterally both anteriorly and posteriorly.,ABDOMEN:  Positive bowel sounds.  Soft and nontender with no guarding.,EXTREMITIES:  No clubbing, cyanosis or edema in the upper or lower extremities.,NEUROLOGIC:  Nonfocal.,LABORATORY STUDIES:,  Sodium 131, potassium 3.9, chloride 94, CO2 25, BUN 15, creatinine 0.9, glucose 124, INR 1.2, troponin less than 0.04, white count 17.5, hemoglobin 12.3, and platelet count 278 with 91% neutrophils.  EKG shows sinus tachycardia.,PROBLEM LIST:,1.  Colitis.,2.  Sepsis.,3.  Rectal bleeding.,RECOMMENDATIONS:,1.  GI consult with Dr. Y's group.,2.  Continue Levaquin and Flagyl.,3.  IV fluids.,4.  Send for fecal WBCs, O&P, and C. diff.,5.  CT of the abdomen and pelvis to rule out abdominal pathology.,6.  PPI for PUD prophylaxis.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Hyperlipidemia.,HISTORY OF PRESENT ILLNESS:  ,The patient is a very pleasant 68-year-old male with history of bilateral hernia repair, who presents with 3 weeks of diarrhea and 1 week of rectal bleeding.  He states that he had some stomach discomfort in the last 4 weeks.  He has had some physical therapy for his lower back secondary to pain after hernia repair.  He states that the pain worsened after this.  He has had previous history of rectal bleeding and a colonoscopy approximately 8 years ago that was normal.  He denies any dysuria.  He denies any hematemesis.  He denies any pleuritic chest pain.  He denies any hemoptysis.,PAST MEDICAL HISTORY:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "History of bilateral hernia repair by Dr. X in 8/2008"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "History of rectal bleeding.,ALLERGIES: , NONE.,MEDICATIONS:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Cipro"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Cipro"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Lomotil.,FAMILY HISTORY: , Noncontributory.,SOCIAL HISTORY: , No tobacco, alcohol or IV drug use.,REVIEW OF SYSTEMS: , As per the history of present illness otherwise unremarkable.,PHYSICAL EXAMINATION:,VITAL SIGNS:  The patient is afebrile.  Pulse 117, respirations 18, and blood pressure 117/"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Lomotil"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Saturating 98% on room air.,GENERAL:  The patient is alert and oriented x3.,HEENT:  Pupils are equal, round, and reactive to light and accommodation.  Extraocular movements are intact.  Oropharynx is clear without exudates.,NECK:  Supple.  No thyromegaly.  No jugular venous distention.,HEART:  Tachycardic.  Regular rhythm without murmurs, rubs or gallops.,LUNGS:  Clear to auscultation bilaterally both anteriorly and posteriorly.,ABDOMEN:  Positive bowel sounds.  Soft and nontender with no guarding.,EXTREMITIES:  No clubbing, cyanosis or edema in the upper or lower extremities.,NEUROLOGIC:  Nonfocal.,LABORATORY STUDIES:,  Sodium 131, potassium 3.9, chloride 94, CO2 25, BUN 15, creatinine 0.9, glucose 124, INR 1.2, troponin less than 0.04, white count 17.5, hemoglobin 12.3, and platelet count 278 with 91% neutrophils.  EKG shows sinus tachycardia.,PROBLEM LIST:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "measurement",
+    "text": "98%"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Sodium"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "potassium"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "glucose"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "measurement",
+    "text": "91%"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "Colitis"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Sepsis"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "Rectal bleeding.,RECOMMENDATIONS:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "GI consult with Dr. Y's group"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Continue Levaquin and Flagyl"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "Levaquin"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "Flagyl"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "IV fluids"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "Send for fecal WBCs, O&P, and C. diff"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "CT of the abdomen and pelvis to rule out abdominal pathology"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "PPI for PUD prophylaxis"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.2461)\n[ICD-10-CM 2027] Z98890: Other specified postprocedural states (score: 0.2168)\n[ICD-10-CM 2027] R52: Pain, unspecified (score: 0.2127)\n[ICD-10-CM 2027] Match unresolved (top score 0.2461 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] T8133XD: Disruption of traumatic injury wound repair, subsequent encounter (score: 0.4023)\n[ICD-10-CM 2027] T8133XA: Disruption of traumatic injury wound repair, initial encounter (score: 0.4010)\n[ICD-10-CM 2027] T8133XS: Disruption of traumatic injury wound repair, sequela (score: 0.4009)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] K50911: Crohn's disease, unspecified, with rectal bleeding (score: 0.4285)\n[ICD-10-CM 2027] T7840XD: Allergy, unspecified, subsequent encounter (score: 0.3980)\n[ICD-10-CM 2027] T7849XD: Other allergy, subsequent encounter (score: 0.3980)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Cipro' \u2192 RXCUI 203563, canonical: Cipro, match: exact\n[RxNorm] Ingredient: ciprofloxacin (RXCUI 2551)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 100 ML ciprofloxacin 2 MG/ML Injection; 200 ML ciprofloxacin 2 MG/ML Injection; 40 ML ciprofloxacin 10 MG/ML Injection; ciprofloxacin 3 MG/ML / fluocinolone acetonide 0.25 MG/ML Otic Solution; ciprofloxacin 250 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] No matches found for 'Cipro' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Z8261: Family history of arthritis (score: 0.3831)\n[ICD-10-CM 2027] Z83518: Family history of other specified eye disorder (score: 0.3776)\n[ICD-10-CM 2027] Z812: Family history of tobacco abuse and dependence (score: 0.3764)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Lomotil' \u2192 RXCUI 28874, canonical: Lomotil, match: exact\n[RxNorm] Ingredient: atropine (RXCUI 1223)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): atropine sulfate 0.00388 MG/ML / hyoscyamine sulfate 0.0207 MG/ML / phenobarbital 3.24 MG/ML / scopolamine hydrobromide 0.0013 MG/ML Oral Solution; atropine sulfate 0.0194 MG / hyoscyamine sulfate 0.1037 MG / phenobarbital 16.2 MG / scopolamine hydrobromide 0.0065 MG Oral Tablet; atropine sulfate 0.0582 MG / hyoscyamine sulfate 0.311 MG / phenobarbital 48.6 MG / scopolamine hydrobromide 0.0195 MG Extended Release Oral Tablet; atropine sulfate 0.0194 MG / hyoscyamine sulfate 0.1037 MG / scopolamine hydrobromide 0.0065 MG Oral Tablet; 12 HR atropine sulfate 0.04 MG / chlorpheniramine maleate 8 MG / hyoscyamine sulfate 0.19 MG / pseudoephedrine hydrochloride 90 MG / scopolamine hydrobromide 0.01 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.2010)\n[ICD-10-CM 2027] D72818: Other decreased white blood cell count (score: 0.1992)\n[ICD-10-CM 2027] D72819: Decreased white blood cell count, unspecified (score: 0.1992)\n[ICD-10-CM 2027] Match unresolved (top score 0.2010 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Measurement] 98.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Sodium' \u2192 RXCUI 9853, canonical: sodium, match: exact\n[RxNorm] Ingredient: sodium (RXCUI 9853)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'potassium' \u2192 RXCUI 8588, canonical: potassium, match: exact\n[RxNorm] Ingredient: potassium (RXCUI 8588)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): potassium 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Measurement] 91.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] K523: Indeterminate colitis (score: 0.7158)\n[ICD-10-CM 2027] K5180: Other ulcerative colitis without complications (score: 0.6677)\n[ICD-10-CM 2027] K51818: Other ulcerative colitis with other complication (score: 0.6677)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] A4189: Other specified sepsis (score: 1.0000)\n[ICD-10-CM 2027] T8144XD: Sepsis following a procedure, subsequent encounter (score: 0.7045)\n[ICD-10-CM 2027] T8144XA: Sepsis following a procedure, initial encounter (score: 0.7007)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] K50911: Crohn's disease, unspecified, with rectal bleeding (score: 0.7630)\n[ICD-10-CM 2027] K51811: Other ulcerative colitis with rectal bleeding (score: 0.7080)\n[ICD-10-CM 2027] K51911: Ulcerative colitis, unspecified with rectal bleeding (score: 0.7080)"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] Z710: Person encountering health services to consult on behalf of another person (score: 0.3929)\n[ICD-10-CM 2027] T362X6D: Underdosing of chloramphenicol group, subsequent encounter (score: 0.2482)\n[ICD-10-CM 2027] T362X6A: Underdosing of chloramphenicol group, initial encounter (score: 0.2471)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] No matches found for 'Continue Levaquin and Flagyl' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'Levaquin' \u2192 RXCUI 217992, canonical: Levaquin, match: exact\n[RxNorm] Ingredient: levofloxacin (RXCUI 82122)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 50 ML levofloxacin 5 MG/ML Injection; 100 ML levofloxacin 5 MG/ML Injection; 150 ML levofloxacin 5 MG/ML Injection; 20 ML levofloxacin 25 MG/ML Injection; 30 ML levofloxacin 25 MG/ML Injection"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'Flagyl' \u2192 RXCUI 202866, canonical: Flagyl, match: exact\n[RxNorm] Ingredient: metronidazole (RXCUI 6922)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): metronidazole 0.25 MG/MG Oral Gel; metronidazole 40 MG/ML Oral Suspension; diloxanide 250 MG / metronidazole 200 MG Oral Tablet; bismuth subcitrate 140 MG / metronidazole 125 MG / tetracycline hydrochloride 125 MG Oral Capsule; metronidazole 0.0075 MG/MG Vaginal Gel"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] X982XXD: Assault by hot fluids, subsequent encounter (score: 0.4826)\n[ICD-10-CM 2027] X982XXA: Assault by hot fluids, initial encounter (score: 0.4798)\n[ICD-10-CM 2027] X982XXS: Assault by hot fluids, sequela (score: 0.4797)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] R195: Other fecal abnormalities (score: 0.4683)\n[ICD-10-CM 2027] R152: Fecal urgency (score: 0.3950)\n[ICD-10-CM 2027] K5641: Fecal impaction (score: 0.3865)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] S381XXD: Crushing injury of abdomen, lower back, and pelvis, subsequent encounter (score: 0.3783)\n[ICD-10-CM 2027] S381XXA: Crushing injury of abdomen, lower back, and pelvis, initial encounter (score: 0.3769)\n[ICD-10-CM 2027] S381XXS: Crushing injury of abdomen, lower back, and pelvis, sequela (score: 0.3768)"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] Z2981: Encounter for HIV pre-exposure prophylaxis (score: 0.6930)"
+  }
+]

@@ -1,0 +1,333 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Lumbar stenosis.,POSTOPERATIVE DIAGNOSES:,  Lumbar stenosis and cerebrospinal fluid fistula.,TITLE OF THE OPERATION,1.  Lumbar laminectomy for decompression with foraminotomies L3-L4, L4-L5, L5-S1 microtechniques.,2.  Repair of CSF fistula, microtechniques L5-S1, application of DuraSeal.,INDICATIONS:,  The patient is an 82-year-old woman who has about a four-month history now of urinary incontinence and numbness in her legs and hands, and difficulty ambulating.  She was evaluated with an MRI scan, which showed a very high-grade stenosis in her lumbar spine, and subsequent evaluation included a myelogram, which demonstrated cervical stenosis at C4-C5, C5-C6, and C6-C7 as well as a complete block of the contrast at L4-L5 and no contrast at L5-S1 either and stenosis at L3-L4 and all the way up, but worse at L3-L4, L4-L5, and L5-S1.  Yesterday, she underwent an anterior cervical discectomy and fusions C4-C5, C5-C6, C6-C7 and had some improvement of her symptoms and increased strength, even in the recovery room.  She was kept in the ICU because of her age and the need to bring her back to the operating room today for decompressive lumbar laminectomy.  The rationale for putting the surgery is close together that she is normally on Cardura for atrial fibrillation, though she has been cardioverted.  She and her son understand the nature, indications, and risks of the surgery, and agreed to go ahead.,PROCEDURE: , The patient was brought from the Neuro ICU to the operating room, where general endotracheal anesthesia was obtained.  She was rolled in a prone position on the Wilson frame.  The back was prepared in the usual manner with Betadine soak, followed by Betadine paint.  Markings were applied.  Sterile drapes were applied.  Using the usual anatomical landmarks, linear midline incision was made presumed over L4-L5 and L5-S1.  Sharp dissection was carried down into subcutaneous tissue, then Bovie electrocautery was used to isolate the spinous processes.  A Kocher clamp was placed in the anterior spinous ligament and this turned out to be L5-S1.  The incision was extended rostrally and deep Gelpi's were inserted to expose the spinous processes and lamina of L3, L4, L5, and S1.  Using the Leksell rongeur, the spinous processes of L4 and L5 were removed completely, and the caudal part of L3.  A high-speed drill was then used to thin the caudal lamina of L3, all of the lamina of L4 and of L5.  Then using various Kerrison punches, I proceeded to perform a laminectomy.  Removing the L5 lamina, there was a dural band attached to the ligamentum flavum and this caused about a 3-mm tear in the dura.  There was CSF leak.  The lamina removal was continued, ligamentum flavum was removed to expose all the dura.  Then using 4-0 Nurolon suture, a running-locking suture was used to close the approximate 3-mm long dural fistula.  There was no CSF leak with Valsalva.,I then continued the laminectomy removing all of the lamina of L5 and of L4, removing the ligamentum flavum between L3-L4, L4-L5 and L5-S1.  Foraminotomies were accomplished bilaterally.  The caudal aspect of the lamina of L3 also was removed.  The dura came up quite nicely.  I explored out along the L4, L5, and S1 nerve roots after completing the foraminotomies, the roots were quite free.  Further more, the thecal sac came up quite nicely.  In order to ensure no CSF leak, we would follow the patient out of the operating room.  The dural closure was covered with a small piece of fat.  This was all then covered with DuraSeal glue.  Gelfoam was placed on top of this, then the muscle was closed with interrupted 0 Ethibond.  The lumbodorsal fascia was closed with multiple sutures of interrupted 0 Ethibond in a watertight fashion.  Scarpa's fascia was closed with a running 0 Vicryl, and finally the skin was closed with a running-locking 3-0 nylon.  The wound was blocked with 0.5% plain Marcaine.,ESTIMATED BLOOD LOSS:  Estimated blood loss for the case was about 100 mL.,SPONGE AND NEEDLE COUNTS:  Correct.,FINDINGS:  A very tight high-grade stenosis at L3-L4, L4-L5, and L5-S1.  There were adhesions between the dura and the ligamentum flavum owing to the severity and length of the stenosis.,The patient tolerated the procedure well with stable vitals throughout.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Lumbar stenosis.,POSTOPERATIVE DIAGNOSES:,  Lumbar stenosis and cerebrospinal fluid fistula.,TITLE OF THE OPERATION"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Lumbar stenosis and cerebrospinal fluid fistula.,TITLE OF THE OPERATION"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Lumbar laminectomy for decompression with foraminotomies L3-L4, L4-L5, L5-S1 microtechniques"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Lumbar laminectomy for decompression with foraminotomies L3-L4, L4-L5, L5-S1 microtechniques"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Repair of CSF fistula, microtechniques L5-S1, application of DuraSeal.,INDICATIONS:,  The patient is an 82-year-old woman who has about a four-month history now of urinary incontinence and numbness in her legs and hands, and difficulty ambulating.  She was evaluated with an MRI scan, which showed a very high-grade stenosis in her lumbar spine, and subsequent evaluation included a myelogram, which demonstrated cervical stenosis at C4-C5, C5-C6, and C6-C7 as well as a complete block of the contrast at L4-L5 and no contrast at L5-S1 either and stenosis at L3-L4 and all the way up, but worse at L3-L4, L4-L5, and L5-S"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Repair of CSF fistula, microtechniques L5-S1, application of DuraSeal.,INDICATIONS:,  The patient is an 82-year-old woman who has about a four-month history now of urinary incontinence and numbness in her legs and hands, and difficulty ambulating.  She was evaluated with an MRI scan, which showed a very high-grade stenosis in her lumbar spine, and subsequent evaluation included a myelogram, which demonstrated cervical stenosis at C4-C5, C5-C6, and C6-C7 as well as a complete block of the contrast at L4-L5 and no contrast at L5-S1 either and stenosis at L3-L4 and all the way up, but worse at L3-L4, L4-L5, and L5-S"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Yesterday, she underwent an anterior cervical discectomy and fusions C4-C5, C5-C6, C6-C7 and had some improvement of her symptoms and increased strength, even in the recovery room.  She was kept in the ICU because of her age and the need to bring her back to the operating room today for decompressive lumbar laminectomy.  The rationale for putting the surgery is close together that she is normally on Cardura for atrial fibrillation, though she has been cardioverted.  She and her son understand the nature, indications, and risks of the surgery, and agreed to go ahead.,PROCEDURE: , The patient was brought from the Neuro ICU to the operating room, where general endotracheal anesthesia was obtained.  She was rolled in a prone position on the Wilson frame.  The back was prepared in the usual manner with Betadine soak, followed by Betadine paint.  Markings were applied.  Sterile drapes were applied.  Using the usual anatomical landmarks, linear midline incision was made presumed over L4-L5 and L5-S"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Yesterday, she underwent an anterior cervical discectomy and fusions C4-C5, C5-C6, C6-C7 and had some improvement of her symptoms and increased strength, even in the recovery room.  She was kept in the ICU because of her age and the need to bring her back to the operating room today for decompressive lumbar laminectomy.  The rationale for putting the surgery is close together that she is normally on Cardura for atrial fibrillation, though she has been cardioverted.  She and her son understand the nature, indications, and risks of the surgery, and agreed to go ahead.,PROCEDURE: , The patient was brought from the Neuro ICU to the operating room, where general endotracheal anesthesia was obtained.  She was rolled in a prone position on the Wilson frame.  The back was prepared in the usual manner with Betadine soak, followed by Betadine paint.  Markings were applied.  Sterile drapes were applied.  Using the usual anatomical landmarks, linear midline incision was made presumed over L4-L5 and L5-S"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Cardura"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "The patient was brought from the Neuro ICU to the operating room, where general endotracheal anesthesia was obtained.  She was rolled in a prone position on the Wilson frame.  The back was prepared in the usual manner with Betadine soak, followed by Betadine paint.  Markings were applied.  Sterile drapes were applied.  Using the usual anatomical landmarks, linear midline incision was made presumed over L4-L5 and L5-S"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Betadine"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "Betadine"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Sharp dissection was carried down into subcutaneous tissue, then Bovie electrocautery was used to isolate the spinous processes.  A Kocher clamp was placed in the anterior spinous ligament and this turned out to be L5-S"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "Sharp dissection was carried down into subcutaneous tissue, then Bovie electrocautery was used to isolate the spinous processes.  A Kocher clamp was placed in the anterior spinous ligament and this turned out to be L5-S"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "The incision was extended rostrally and deep Gelpi's were inserted to expose the spinous processes and lamina of L3, L4, L5, and S"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "The incision was extended rostrally and deep Gelpi's were inserted to expose the spinous processes and lamina of L3, L4, L5, and S"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Using the Leksell rongeur, the spinous processes of L4 and L5 were removed completely, and the caudal part of L"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "Using the Leksell rongeur, the spinous processes of L4 and L5 were removed completely, and the caudal part of L"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "A high-speed drill was then used to thin the caudal lamina of L3, all of the lamina of L4 and of L"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "procedure",
+    "text": "A high-speed drill was then used to thin the caudal lamina of L3, all of the lamina of L4 and of L"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "Then using various Kerrison punches, I proceeded to perform a laminectomy.  Removing the L5 lamina, there was a dural band attached to the ligamentum flavum and this caused about a 3-mm tear in the dura.  There was CSF leak.  The lamina removal was continued, ligamentum flavum was removed to expose all the dura.  Then using 4-0 Nurolon suture, a running-locking suture was used to close the approximate 3-mm long dural fistula.  There was no CSF leak with Valsalva.,I then continued the laminectomy removing all of the lamina of L5 and of L4, removing the ligamentum flavum between L3-L4, L4-L5 and L5-S"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "procedure",
+    "text": "Then using various Kerrison punches, I proceeded to perform a laminectomy.  Removing the L5 lamina, there was a dural band attached to the ligamentum flavum and this caused about a 3-mm tear in the dura.  There was CSF leak.  The lamina removal was continued, ligamentum flavum was removed to expose all the dura.  Then using 4-0 Nurolon suture, a running-locking suture was used to close the approximate 3-mm long dural fistula.  There was no CSF leak with Valsalva.,I then continued the laminectomy removing all of the lamina of L5 and of L4, removing the ligamentum flavum between L3-L4, L4-L5 and L5-S"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "medication",
+    "text": "perform"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Foraminotomies were accomplished bilaterally.  The caudal aspect of the lamina of L3 also was removed.  The dura came up quite nicely.  I explored out along the L4, L5, and S1 nerve roots after completing the foraminotomies, the roots were quite free.  Further more, the thecal sac came up quite nicely.  In order to ensure no CSF leak, we would follow the patient out of the operating room.  The dural closure was covered with a small piece of fat.  This was all then covered with DuraSeal glue.  Gelfoam was placed on top of this, then the muscle was closed with interrupted 0 Ethibond.  The lumbodorsal fascia was closed with multiple sutures of interrupted 0 Ethibond in a watertight fashion.  Scarpa's fascia was closed with a running 0 Vicryl, and finally the skin was closed with a running-locking 3-0 nylon.  The wound was blocked with 0.5% plain Marcaine.,ESTIMATED BLOOD LOSS:  Estimated blood loss for the case was about 100 mL.,SPONGE AND NEEDLE COUNTS:  Correct.,FINDINGS:  A very tight high-grade stenosis at L3-L4, L4-L5, and L5-S"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "procedure",
+    "text": "Foraminotomies were accomplished bilaterally.  The caudal aspect of the lamina of L3 also was removed.  The dura came up quite nicely.  I explored out along the L4, L5, and S1 nerve roots after completing the foraminotomies, the roots were quite free.  Further more, the thecal sac came up quite nicely.  In order to ensure no CSF leak, we would follow the patient out of the operating room.  The dural closure was covered with a small piece of fat.  This was all then covered with DuraSeal glue.  Gelfoam was placed on top of this, then the muscle was closed with interrupted 0 Ethibond.  The lumbodorsal fascia was closed with multiple sutures of interrupted 0 Ethibond in a watertight fashion.  Scarpa's fascia was closed with a running 0 Vicryl, and finally the skin was closed with a running-locking 3-0 nylon.  The wound was blocked with 0.5% plain Marcaine.,ESTIMATED BLOOD LOSS:  Estimated blood loss for the case was about 100 mL.,SPONGE AND NEEDLE COUNTS:  Correct.,FINDINGS:  A very tight high-grade stenosis at L3-L4, L4-L5, and L5-S"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "dosage",
+    "text": "0.5%"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "medication",
+    "text": "Marcaine"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "measurement",
+    "text": "100 mL"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "diagnosis",
+    "text": "There were adhesions between the dura and the ligamentum flavum owing to the severity and length of the stenosis.,The patient tolerated the procedure well with stable vitals throughout"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "procedure",
+    "text": "There were adhesions between the dura and the ligamentum flavum owing to the severity and length of the stenosis.,The patient tolerated the procedure well with stable vitals throughout"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] G9783: Intracranial hypotension following lumbar cerebrospinal fluid shunting (score: 0.4209)\n[ICD-10-CM 2027] M9923: Subluxation stenosis of neural canal of lumbar region (score: 0.4202)\n[ICD-10-CM 2027] R838: Other abnormal findings in cerebrospinal fluid (score: 0.3982)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] R838: Other abnormal findings in cerebrospinal fluid (score: 0.5313)\n[ICD-10-CM 2027] R839: Unspecified abnormal finding in cerebrospinal fluid (score: 0.5313)\n[ICD-10-CM 2027] G9600: Cerebrospinal fluid leak, unspecified (score: 0.5184)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] T703XXD: Caisson disease [decompression sickness], subsequent encounter (score: 0.5118)\n[ICD-10-CM 2027] T703XXA: Caisson disease [decompression sickness], initial encounter (score: 0.5108)\n[ICD-10-CM 2027] T703XXS: Caisson disease [decompression sickness], sequela (score: 0.5107)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Lumbar laminectomy for decompression with foraminotomies L3-L4, L4-L5, L5-S1 microtechniques' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] N1411: Contrast-induced nephropathy (score: 0.3224)\n[ICD-10-CM 2027] H5372: Impaired contrast sensitivity (score: 0.2559)\n[ICD-10-CM 2027] M4802: Spinal stenosis, cervical region (score: 0.2382)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Repair of CSF fistula, microtechniques L5-S1, application of DuraSeal.,INDICATIONS:,  The patient is an 82-year-old woman who has about a four-month history now of urinary incontinence and numbness in her legs and hands, and difficulty ambulating.  She was evaluated with an MRI scan, which showed a very high-grade stenosis in her lumbar spine, and subsequent evaluation included a myelogram, which demonstrated cervical stenosis at C4-C5, C5-C6, and C6-C7 as well as a complete block of the contrast at L4-L5 and no contrast at L5-S1 either and stenosis at L3-L4 and all the way up, but worse at L3-L4, L4-L5, and L5-S' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] Y92234: Operating room of hospital as the place of occurrence of the external cause (score: 0.3901)\n[ICD-10-CM 2027] Y92230: Patient room in hospital as the place of occurrence of the external cause (score: 0.2546)\n[ICD-10-CM 2027] Y92141: Dining room in prison as the place of occurrence of the external cause (score: 0.1949)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Yesterday, she underwent an anterior cervical discectomy and fusions C4-C5, C5-C6, C6-C7 and had some improvement of her symptoms and increased strength, even in the recovery room.  She was kept in the ICU because of her age and the need to bring her back to the operating room today for decompressive lumbar laminectomy.  The rationale for putting the surgery is close together that she is normally on Cardura for atrial fibrillation, though she has been cardioverted.  She and her son understand the nature, indications, and risks of the surgery, and agreed to go ahead.,PROCEDURE: , The patient was brought from the Neuro ICU to the operating room, where general endotracheal anesthesia was obtained.  She was rolled in a prone position on the Wilson frame.  The back was prepared in the usual manner with Betadine soak, followed by Betadine paint.  Markings were applied.  Sterile drapes were applied.  Using the usual anatomical landmarks, linear midline incision was made presumed over L4-L5 and L5-S' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Cardura' \u2192 RXCUI 196468, canonical: Cardura, match: exact\n[RxNorm] Ingredient: doxazosin (RXCUI 49276)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): doxazosin 1 MG Oral Tablet; doxazosin 2 MG Oral Tablet; doxazosin 4 MG Oral Tablet; doxazosin 8 MG Oral Tablet; 24 HR doxazosin 4 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'The patient was brought from the Neuro ICU to the operating room, where general endotracheal anesthesia was obtained.  She was rolled in a prone position on the Wilson frame.  The back was prepared in the usual manner with Betadine soak, followed by Betadine paint.  Markings were applied.  Sterile drapes were applied.  Using the usual anatomical landmarks, linear midline incision was made presumed over L4-L5 and L5-S' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Betadine' \u2192 RXCUI 202750, canonical: Betadine, match: exact\n[RxNorm] Ingredient: povidone-iodine (RXCUI 8611)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): povidone-iodine 75 MG/ML Medicated Pad; povidone-iodine 10 MG/ML Medicated Pad; povidone-iodine 50 MG/ML Medicated Pad; isopropyl alcohol 0.725 ML/ML / povidone-iodine 83 MG/ML Topical Solution; povidone-iodine 40 MG/ML Medicated Shampoo"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'Betadine' \u2192 RXCUI 202750, canonical: Betadine, match: exact\n[RxNorm] Ingredient: povidone-iodine (RXCUI 8611)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): povidone-iodine 75 MG/ML Medicated Pad; povidone-iodine 10 MG/ML Medicated Pad; povidone-iodine 50 MG/ML Medicated Pad; isopropyl alcohol 0.725 ML/ML / povidone-iodine 83 MG/ML Topical Solution; povidone-iodine 40 MG/ML Medicated Shampoo"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] Q909: Down syndrome, unspecified (score: 0.3379)\n[ICD-10-CM 2027] N80C10: Endometriosis of the anterior abdominal wall, subcutaneous tissue (score: 0.2897)\n[ICD-10-CM 2027] I7770: Dissection of unspecified artery (score: 0.2797)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'Sharp dissection was carried down into subcutaneous tissue, then Bovie electrocautery was used to isolate the spinous processes.  A Kocher clamp was placed in the anterior spinous ligament and this turned out to be L5-S' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] Z03823: Encounter for observation for suspected inserted (injected) foreign body ruled out (score: 0.3473)\n[ICD-10-CM 2027] Z1612: Extended spectrum beta lactamase (ESBL) resistance (score: 0.2986)\n[ICD-10-CM 2027] N8002: Deep endometriosis of the uterus (score: 0.1954)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'The incision was extended rostrally and deep Gelpi's were inserted to expose the spinous processes and lamina of L3, L4, L5, and S' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] Z87821: Personal history of retained foreign body fully removed (score: 0.4216)\n[ICD-10-CM 2027] S33111D: Dislocation of L1/L2 lumbar vertebra, subsequent encounter (score: 0.3628)\n[ICD-10-CM 2027] S33121D: Dislocation of L2/L3 lumbar vertebra, subsequent encounter (score: 0.3628)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'Using the Leksell rongeur, the spinous processes of L4 and L5 were removed completely, and the caudal part of L' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[ICD-10-CM 2027] Y93A6: Activity, grass drills (score: 0.4018)\n[ICD-10-CM 2027] S33111D: Dislocation of L1/L2 lumbar vertebra, subsequent encounter (score: 0.3230)\n[ICD-10-CM 2027] S33121D: Dislocation of L2/L3 lumbar vertebra, subsequent encounter (score: 0.3230)"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[Procedure] 'A high-speed drill was then used to thin the caudal lamina of L3, all of the lamina of L4 and of L' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] G9611: Dural tear (score: 0.4076)\n[ICD-10-CM 2027] G9741: Accidental puncture or laceration of dura during a procedure (score: 0.2920)\n[ICD-10-CM 2027] J9382: Other air leak (score: 0.2685)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[Procedure] 'Then using various Kerrison punches, I proceeded to perform a laminectomy.  Removing the L5 lamina, there was a dural band attached to the ligamentum flavum and this caused about a 3-mm tear in the dura.  There was CSF leak.  The lamina removal was continued, ligamentum flavum was removed to expose all the dura.  Then using 4-0 Nurolon suture, a running-locking suture was used to close the approximate 3-mm long dural fistula.  There was no CSF leak with Valsalva.,I then continued the laminectomy removing all of the lamina of L5 and of L4, removing the ligamentum flavum between L3-L4, L4-L5 and L5-S' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[RxNorm] 'perform' \u2192 RXCUI 1043225, canonical: Perform, match: exact\n[RxNorm] Ingredient: menthol (RXCUI 6750)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): benzocaine 0.2 MG/MG / menthol 0.02 MG/MG Oral Gel; menthol 0.075 MG/MG Medicated Patch; capsaicin 0.25 MG/ML / lidocaine hydrochloride 25 MG/ML / menthol 100 MG/ML / methyl salicylate 250 MG/ML Topical Lotion; menthol 5 MG/ML Oral Cream; benzocaine 200 MG/ML / menthol 10 MG/ML Medicated Pad"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] Y9302: Activity, running (score: 0.2411)\n[ICD-10-CM 2027] G4724: Circadian rhythm sleep disorder, free running type (score: 0.2243)\n[ICD-10-CM 2027] S142XXD: Injury of nerve root of cervical spine, subsequent encounter (score: 0.2047)\n[ICD-10-CM 2027] Match unresolved (top score 0.2411 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "[Procedure] 'Foraminotomies were accomplished bilaterally.  The caudal aspect of the lamina of L3 also was removed.  The dura came up quite nicely.  I explored out along the L4, L5, and S1 nerve roots after completing the foraminotomies, the roots were quite free.  Further more, the thecal sac came up quite nicely.  In order to ensure no CSF leak, we would follow the patient out of the operating room.  The dural closure was covered with a small piece of fat.  This was all then covered with DuraSeal glue.  Gelfoam was placed on top of this, then the muscle was closed with interrupted 0 Ethibond.  The lumbodorsal fascia was closed with multiple sutures of interrupted 0 Ethibond in a watertight fashion.  Scarpa's fascia was closed with a running 0 Vicryl, and finally the skin was closed with a running-locking 3-0 nylon.  The wound was blocked with 0.5% plain Marcaine.,ESTIMATED BLOOD LOSS:  Estimated blood loss for the case was about 100 mL.,SPONGE AND NEEDLE COUNTS:  Correct.,FINDINGS:  A very tight high-grade stenosis at L3-L4, L4-L5, and L5-S' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "Dose 0.5% associated with Marcaine \u2014 dose 0.5% not among known product strengths"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "[RxNorm] 'Marcaine' \u2192 RXCUI 1012397, canonical: Marcaine, match: exact\n[RxNorm] Ingredient: bupivacaine (RXCUI 1815)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bupivacaine hydrochloride 3.75 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; bupivacaine hydrochloride 2.5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; bupivacaine hydrochloride 5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; 30 ML bupivacaine hydrochloride 7.5 MG/ML / epinephrine 0.005 MG/ML Injection; bupivacaine hydrochloride 2.5 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[Measurement] 100.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "[ICD-10-CM 2027] G9741: Accidental puncture or laceration of dura during a procedure (score: 0.4264)\n[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.3390)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.3376)"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[Procedure] 'There were adhesions between the dura and the ligamentum flavum owing to the severity and length of the stenosis.,The patient tolerated the procedure well with stable vitals throughout' \u2014 extracted from header, not verified against any coding system"
+  }
+]

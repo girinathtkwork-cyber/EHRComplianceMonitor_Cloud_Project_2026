@@ -1,0 +1,123 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+INDICATIONS:,  Atrial fibrillation, coronary disease. Additional diagnosis noted: Major Depressive Disorder.,STRESS TECHNIQUE:, The patient was infused with dobutamine to a maximum heart rate of 142.  ECG exhibits atrial fibrillation.,IMAGE TECHNIQUE:,  The patient was injected with 5.2 millicuries of thallous chloride and subsequently imaged on the gated tomographic SPECT system.,IMAGE ANALYSIS:,  It should be noted that the images are limited slightly by the patient's obesity with a weight of 263 pounds.  There is normal LV myocardial perfusion.  The LV systolic ejection fraction is normal at 65%.  There is normal global and regional wall motion.,CONCLUSIONS:,1.  Basic rhythm of atrial fibrillation with no change during dobutamine stress, maximum heart rate of 142.,2.  Normal LV myocardial perfusion.,3.  Normal LV systolic ejection fraction of 65%.,4.  Normal global and regional wall motion.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Major Depressive Disorder.,STRESS TECHNIQUE:, The patient was infused with dobutamine to a maximum heart rate of"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "dobutamine"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "ECG exhibits atrial fibrillation.,IMAGE TECHNIQUE:,  The patient was injected with 5.2 millicuries of thallous chloride and subsequently imaged on the gated tomographic SPECT system.,IMAGE ANALYSIS:,  It should be noted that the images are limited slightly by the patient's obesity with a weight of 263 pounds.  There is normal LV myocardial perfusion.  The LV systolic ejection fraction is normal at 65%.  There is normal global and regional wall motion.,CONCLUSIONS:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "measurement",
+    "text": "65%"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Basic rhythm of atrial fibrillation with no change during dobutamine stress, maximum heart rate of 142"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "dobutamine"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Normal LV myocardial perfusion"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Normal LV systolic ejection fraction of 65%"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "measurement",
+    "text": "65%"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Normal global and regional wall motion"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] F339: Major depressive disorder, recurrent, unspecified (score: 0.3749)\n[ICD-10-CM 2027] F3340: Major depressive disorder, recurrent, in remission, unspecified (score: 0.3377)\n[ICD-10-CM 2027] F331: Major depressive disorder, recurrent, moderate (score: 0.3365)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'dobutamine' \u2192 RXCUI 3616, canonical: dobutamine, match: exact\n[RxNorm] Ingredient: dobutamine (RXCUI 3616)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML dobutamine 12.5 MG/ML Injection; dobutamine 12.5 MG/ML Injectable Solution; dobutamine 50 MG/ML Injectable Solution; 250 ML dobutamine 1 MG/ML Injection; 250 ML dobutamine 2 MG/ML Injection"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Z3480: Encounter for supervision of other normal pregnancy, unspecified trimester (score: 0.3214)\n[ICD-10-CM 2027] Z3490: Encounter for supervision of normal pregnancy, unspecified, unspecified trimester (score: 0.3214)\n[ICD-10-CM 2027] Z3483: Encounter for supervision of other normal pregnancy, third trimester (score: 0.3052)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Measurement] 65.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.4383)\n[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.4159)\n[ICD-10-CM 2027] I4819: Other persistent atrial fibrillation (score: 0.3798)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'dobutamine' \u2192 RXCUI 3616, canonical: dobutamine, match: exact\n[RxNorm] Ingredient: dobutamine (RXCUI 3616)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML dobutamine 12.5 MG/ML Injection; dobutamine 12.5 MG/ML Injectable Solution; dobutamine 50 MG/ML Injectable Solution; 250 ML dobutamine 1 MG/ML Injection; 250 ML dobutamine 2 MG/ML Injection"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] I21A1: Myocardial infarction type 2 (score: 0.3836)\n[ICD-10-CM 2027] I21A9: Other myocardial infarction type (score: 0.3836)\n[ICD-10-CM 2027] I515: Myocardial degeneration (score: 0.3827)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] I5020: Unspecified systolic (congestive) heart failure (score: 0.4596)\n[ICD-10-CM 2027] I5022: Chronic systolic (congestive) heart failure (score: 0.4436)\n[ICD-10-CM 2027] I5021: Acute systolic (congestive) heart failure (score: 0.4396)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Measurement] 65.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] G454: Transient global amnesia (score: 0.3826)\n[ICD-10-CM 2027] G9050: Complex regional pain syndrome I, unspecified (score: 0.3120)\n[ICD-10-CM 2027] G9059: Complex regional pain syndrome I of other specified site (score: 0.2968)"
+  }
+]

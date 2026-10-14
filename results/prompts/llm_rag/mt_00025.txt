@@ -1,0 +1,143 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:,1.  Right spontaneous pneumothorax secondary to barometric trauma.,2.  Respiratory failure.,3.  Pneumonia with sepsis.,POSTOPERATIVE DIAGNOSES:,1.  Right spontaneous pneumothorax secondary to barometric trauma.,2.  Respiratory failure.,3.  Pneumonia with sepsis.,INFORMED CONSENT: , Not obtained.  This patient is obtunded, intubated, and septic.  This is an emergent procedure with 2-physician emergency consent signed and on the chart.,PROCEDURE: , The patient's right chest was prepped and draped in sterile fashion.  The site of insertion was anesthetized with 1% Xylocaine, and an incision was made.  Blunt dissection was carried out 2 intercostal spaces above the initial incision site.  The chest wall was opened, and a 32-French chest tube was placed into the thoracic cavity, after examination with the finger, making sure that the thoracic cavity had been entered correctly.  The chest tube was placed.,A postoperative chest x-ray is pending at this time.,The patient tolerated the procedure well and was taken to the recovery room in stable condition.,ESTIMATED BLOOD LOSS:,  10 mL,COMPLICATIONS:,  None.,SPONGE COUNT: , Correct x2.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Pneumonia with sepsis.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Right spontaneous pneumothorax secondary to barometric trauma"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Respiratory failure"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Pneumonia with sepsis.,INFORMED CONSENT: , Not obtained.  This patient is obtunded, intubated, and septic.  This is an emergent procedure with 2-physician emergency consent signed and on the chart.,PROCEDURE: , The patient's right chest was prepped and draped in sterile fashion.  The site of insertion was anesthetized with 1% Xylocaine, and an incision was made.  Blunt dissection was carried out 2 intercostal spaces above the initial incision site.  The chest wall was opened, and a 32-French chest tube was placed into the thoracic cavity, after examination with the finger, making sure that the thoracic cavity had been entered correctly.  The chest tube was placed.,A postoperative chest x-ray is pending at this time.,The patient tolerated the procedure well and was taken to the recovery room in stable condition.,ESTIMATED BLOOD LOSS:,  10 mL,COMPLICATIONS:,  None.,SPONGE COUNT: , Correct x2"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "with 2-physician emergency consent signed and on the chart.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "The patient's right chest was prepped and draped in sterile fashion.  The site of insertion was anesthetized with 1% Xylocaine, and an incision was made.  Blunt dissection was carried out 2 intercostal spaces above the initial incision site.  The chest wall was opened, and a 32-French chest tube was placed into the thoracic cavity, after examination with the finger, making sure that the thoracic cavity had been entered correctly.  The chest tube was placed.,A postoperative chest x-ray is pending at this time.,The patient tolerated the procedure well and was taken to the recovery room in stable condition.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Xylocaine"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "10 mL,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "measurement",
+    "text": "10 mL"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "None.,SPONGE COUNT:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Correct x2"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] A4189: Other specified sepsis (score: 0.7250)\n[ICD-10-CM 2027] P239: Congenital pneumonia, unspecified (score: 0.5560)\n[ICD-10-CM 2027] T8144XD: Sepsis following a procedure, subsequent encounter (score: 0.5108)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] J9312: Secondary spontaneous pneumothorax (score: 0.8676)\n[ICD-10-CM 2027] J9311: Primary spontaneous pneumothorax (score: 0.6875)\n[ICD-10-CM 2027] J9383: Other pneumothorax (score: 0.6435)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] P285: Respiratory failure of newborn (score: 0.8383)\n[ICD-10-CM 2027] J95821: Acute postprocedural respiratory failure (score: 0.7506)\n[ICD-10-CM 2027] J95822: Acute and chronic postprocedural respiratory failure (score: 0.7068)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] T2101XA: Burn of unspecified degree of chest wall, initial encounter (score: 0.3971)\n[ICD-10-CM 2027] T2141XA: Corrosion of unspecified degree of chest wall, initial encounter (score: 0.3960)\n[ICD-10-CM 2027] T2101XD: Burn of unspecified degree of chest wall, subsequent encounter (score: 0.3956)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'with 2-physician emergency consent signed and on the chart.,PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'The patient's right chest was prepped and draped in sterile fashion.  The site of insertion was anesthetized with 1% Xylocaine, and an incision was made.  Blunt dissection was carried out 2 intercostal spaces above the initial incision site.  The chest wall was opened, and a 32-French chest tube was placed into the thoracic cavity, after examination with the finger, making sure that the thoracic cavity had been entered correctly.  The chest tube was placed.,A postoperative chest x-ray is pending at this time.,The patient tolerated the procedure well and was taken to the recovery room in stable condition.,ESTIMATED BLOOD LOSS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 1.0% associated with Xylocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Xylocaine' \u2192 RXCUI 202398, canonical: Xylocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] '10 mL,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Measurement] 10.0ml \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'None.,SPONGE COUNT:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Correct x2' \u2014 extracted from header, not verified against any coding system"
+  }
+]

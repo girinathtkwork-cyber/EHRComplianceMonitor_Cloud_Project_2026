@@ -1,0 +1,123 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:,  Chronic otitis media with effusion, conductive hearing loss, and recurrent acute otitis media.,POSTOPERATIVE DIAGNOSES:,  Chronic otitis media with effusion, conductive hearing loss, and recurrent acute otitis media.,OPERATION: , Bilateral myringotomies, insertion of PE tubes, and pharyngeal anesthesia.,ANESTHESIA:  ,General via facemask.,ESTIMATED BLOOD LOSS: , None.,COMPLICATIONS: , None.,INDICATIONS:  ,The patient is a one-year-old with history of chronic and recurrent episodes of otitis media with persistent middle ear effusions resistant to medical therapy.,PROCEDURE: , The patient was brought to the operating room, was placed in supine position.  General anesthesia was begun via face mask technique.  Once an adequate level of anesthesia was obtained, the operating microscope was brought, positioned and visualized the right ear canal.  A small amount of wax was removed with a loop.  A 4-mm operating speculum was then introduced.  An anteroinferior quadrant radial myringotomy was then performed.  A large amount of mucoid middle ear effusion was aspirated from the middle ear cleft.  Reuter bobbin PE tube was then inserted, followed by Floxin otic drops and a cotton ball in the external meatus.  Head was then turned to the opposite side, where similar procedure was performed.  Once again, the middle ear cleft had a mucoid effusion.  A tube was inserted to an anteroinferior quadrant radial myringotomy.,Anesthesia was then reversed and the patient was transported to the recovery room having tolerated the procedure well with stable signs.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Chronic otitis media with effusion, conductive hearing loss, and recurrent acute otitis media.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Chronic otitis media with effusion, conductive hearing loss, and recurrent acute otitis media.,OPERATION:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Bilateral myringotomies, insertion of PE tubes, and pharyngeal anesthesia.,ANESTHESIA:  ,General via facemask.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Bilateral myringotomies, insertion of PE tubes, and pharyngeal anesthesia.,ANESTHESIA:  ,General via facemask.,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "None.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "None.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "None.,INDICATIONS:  ,The patient is a one-year-old with history of chronic and recurrent episodes of otitis media with persistent middle ear effusions resistant to medical therapy.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "None.,INDICATIONS:  ,The patient is a one-year-old with history of chronic and recurrent episodes of otitis media with persistent middle ear effusions resistant to medical therapy.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "The patient was brought to the operating room, was placed in supine position.  General anesthesia was begun via face mask technique.  Once an adequate level of anesthesia was obtained, the operating microscope was brought, positioned and visualized the right ear canal.  A small amount of wax was removed with a loop.  A 4-mm operating speculum was then introduced.  An anteroinferior quadrant radial myringotomy was then performed.  A large amount of mucoid middle ear effusion was aspirated from the middle ear cleft.  Reuter bobbin PE tube was then inserted, followed by Floxin otic drops and a cotton ball in the external meatus.  Head was then turned to the opposite side, where similar procedure was performed.  Once again, the middle ear cleft had a mucoid effusion.  A tube was inserted to an anteroinferior quadrant radial myringotomy.,Anesthesia was then reversed and the patient was transported to the recovery room having tolerated the procedure well with stable signs"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "The patient was brought to the operating room, was placed in supine position.  General anesthesia was begun via face mask technique.  Once an adequate level of anesthesia was obtained, the operating microscope was brought, positioned and visualized the right ear canal.  A small amount of wax was removed with a loop.  A 4-mm operating speculum was then introduced.  An anteroinferior quadrant radial myringotomy was then performed.  A large amount of mucoid middle ear effusion was aspirated from the middle ear cleft.  Reuter bobbin PE tube was then inserted, followed by Floxin otic drops and a cotton ball in the external meatus.  Head was then turned to the opposite side, where similar procedure was performed.  Once again, the middle ear cleft had a mucoid effusion.  A tube was inserted to an anteroinferior quadrant radial myringotomy.,Anesthesia was then reversed and the patient was transported to the recovery room having tolerated the procedure well with stable signs"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] H6693: Otitis media, unspecified, bilateral (score: 0.6665)\n[ICD-10-CM 2027] H6690: Otitis media, unspecified, unspecified ear (score: 0.6602)\n[ICD-10-CM 2027] H6692: Otitis media, unspecified, left ear (score: 0.6512)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] H6693: Otitis media, unspecified, bilateral (score: 0.6545)\n[ICD-10-CM 2027] H6690: Otitis media, unspecified, unspecified ear (score: 0.6483)\n[ICD-10-CM 2027] H6692: Otitis media, unspecified, left ear (score: 0.6394)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] T8859XD: Other complications of anesthesia, subsequent encounter (score: 0.4222)\n[ICD-10-CM 2027] T8859XA: Other complications of anesthesia, initial encounter (score: 0.4185)\n[ICD-10-CM 2027] T8859XS: Other complications of anesthesia, sequela (score: 0.4183)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Bilateral myringotomies, insertion of PE tubes, and pharyngeal anesthesia.,ANESTHESIA:  ,General via facemask.,ESTIMATED BLOOD LOSS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] R402310: Coma scale, best motor response, none, unspecified time (score: 0.4319)\n[ICD-10-CM 2027] R402210: Coma scale, best verbal response, none, unspecified time (score: 0.4056)\n[ICD-10-CM 2027] R402313: Coma scale, best motor response, none, at hospital admission (score: 0.4007)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'None.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] H6690: Otitis media, unspecified, unspecified ear (score: 0.3244)\n[ICD-10-CM 2027] H6692: Otitis media, unspecified, left ear (score: 0.3199)\n[ICD-10-CM 2027] H6691: Otitis media, unspecified, right ear (score: 0.3199)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'None.,INDICATIONS:  ,The patient is a one-year-old with history of chronic and recurrent episodes of otitis media with persistent middle ear effusions resistant to medical therapy.,PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] Y92234: Operating room of hospital as the place of occurrence of the external cause (score: 0.3463)\n[ICD-10-CM 2027] Z9622: Myringotomy tube(s) status (score: 0.2702)\n[ICD-10-CM 2027] H7440: Polyp of middle ear, unspecified ear (score: 0.2095)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'The patient was brought to the operating room, was placed in supine position.  General anesthesia was begun via face mask technique.  Once an adequate level of anesthesia was obtained, the operating microscope was brought, positioned and visualized the right ear canal.  A small amount of wax was removed with a loop.  A 4-mm operating speculum was then introduced.  An anteroinferior quadrant radial myringotomy was then performed.  A large amount of mucoid middle ear effusion was aspirated from the middle ear cleft.  Reuter bobbin PE tube was then inserted, followed by Floxin otic drops and a cotton ball in the external meatus.  Head was then turned to the opposite side, where similar procedure was performed.  Once again, the middle ear cleft had a mucoid effusion.  A tube was inserted to an anteroinferior quadrant radial myringotomy.,Anesthesia was then reversed and the patient was transported to the recovery room having tolerated the procedure well with stable signs' \u2014 extracted from header, not verified against any coding system"
+  }
+]

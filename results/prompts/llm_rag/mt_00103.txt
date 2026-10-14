@@ -1,0 +1,133 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:,1.  Chondromalacia patella.,2.  Patellofemoral malalignment syndrome.,POSTOPERATIVE DIAGNOSES:,1.  Grade-IV chondromalacia patella.,2.  Patellofemoral malalignment syndrome.,PROCEDURE PERFORMED:,1.  Diagnostic arthroscopy with partial chondroplasty of patella.,2.  Lateral retinacular release.,3.  Open tibial tubercle transfer with fixation of two 4.5 mm cannulated screws.,ANESTHESIA:,  General.,COMPLICATIONS: , None.,TOURNIQUET TIME: , Approximately 70 minutes at 325 mmHg.,INTRAOPERATIVE FINDINGS: , Grade-IV chondromalacia noted to the central and lateral facet of the patella.  There was a grade II to III chondral changes to the patellar groove.  The patella was noted to be displaced laterally riding on the edge of the lateral femoral condyle.  The medial lateral meniscus showed small amounts of degeneration, but no frank tears were seen.  The articular surfaces and the remainder of the knee appeared intact.  Cruciate ligaments also appeared intact to direct stress testing.,HISTORY:  ,This is a 36-year-old Caucasian female with a long-standing history of right knee pain.  She has been diagnosed in the past with chondromalacia patella.  She has failed conservative therapy.  It was discussed with her the possibility of a arthroscopy lateral release and a tubercle transfer (anterior medialization of the tibial tubercle) to release stress from her femoral patellofemoral joint.  She elected to proceed with the surgical intervention.  All risks and benefits of the surgery were discussed with her.  She was in agreement with the treatment plan.,PROCEDURE: , On 09/04/03, she was taken to Operating Room at ABCD General Hospital.  She was placed supine on the operating table with the general anesthesia administered by the Anesthesia Department.  Her leg was placed in a Johnson knee holder and sterilely prepped and draped in the usual fashion.  A stab incision was made in inferolateral and parapatellar regions.  Through this the cannula was placed and the knee was inflated with saline solution.  Intraoperative pictures were obtained.  The above findings were noted.  Second portal site was initiated in the inferomedial parapatellar region.  Through this, a arthroscopic shaver was placed and the chondroplasty in the patella was performed and removed the loose articular debris.  Next, the camera was placed through the inferomedial portal.  An arthroscopic Bovie was placed through the inferolateral portal.  A release of lateral retinaculum was then performed using the Bovie.  Hemostasis was controlled with electrocautery.  Next, the knee was suctioned dry.  An Esmarch was used to exsanguinate the lower extremity.  Tourniquet was inflated to 325 mmHg.  An oblique incision was made along the medial parapatellar region of the knee.  The subcuticular tissues were carefully dissected and the hemostasis was again controlled with electrocautery.  The retinaculum was then incised in line with the incision.  The patellar tendon was identified.  The lateral and medial border of the tibial tubercle were cleared of all soft tissue debris.  Next, an osteotome was then used to cut the tibial tubercle to 45 degree angle leaving the base of the bone incision intact.  The tubercle was then pushed anteriorly and medially decreasing her Q-angle and anteriorizing the tibial tubercle.  It was then held in place with a Steinmann pin.  Following this, a two 4.5 mm cannulated screws, partially threaded, were drilled in place using standard technique to help fixate the tibial tubercle.  There was excellent fixation noted.  The Q-angle was noted to be decreased to approximately 15 degrees.  She was transferred approximately 1 cm in length.  The wound was copiously irrigated and suctioned dry.  The medial retinaculum was then plicated causing further medialization of the patella.  The retinaculum was reapproximated using #0 Vicryl.  Subcuticular tissue were reapproximated with #2-0 Vicryl.  Skin was closed with #4-0 Vicryl running PDS suture.  Sterile dressing was applied to the lower extremities.  She was placed in a Donjoy knee immobilizer locked in extension.  It was noted that the lower extremity was warm and pink with good capillary refill following deflation of the tourniquet.  She was transferred to recovery room in apparent stable and satisfactory condition.,Prognosis of this patient is poor secondary to the advanced degenerative changes to the patellofemoral joint.  She will remain in the immobilizer approximately six weeks allowing the tubercle to reapproximate itself to the proximal tibia.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Chondromalacia patella"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Patellofemoral malalignment syndrome.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Grade-IV chondromalacia patella"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Patellofemoral malalignment syndrome.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Diagnostic arthroscopy with partial chondroplasty of patella"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Diagnostic arthroscopy with partial chondroplasty of patella"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Lateral retinacular release"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Lateral retinacular release"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Open tibial tubercle transfer with fixation of two 4.5 mm cannulated screws.,ANESTHESIA:,  General.,COMPLICATIONS: , None.,TOURNIQUET TIME: , Approximately 70 minutes at 325 mmHg.,INTRAOPERATIVE FINDINGS: , Grade-IV chondromalacia noted to the central and lateral facet of the patella.  There was a grade II to III chondral changes to the patellar groove.  The patella was noted to be displaced laterally riding on the edge of the lateral femoral condyle.  The medial lateral meniscus showed small amounts of degeneration, but no frank tears were seen.  The articular surfaces and the remainder of the knee appeared intact.  Cruciate ligaments also appeared intact to direct stress testing.,HISTORY:  ,This is a 36-year-old Caucasian female with a long-standing history of right knee pain.  She has been diagnosed in the past with chondromalacia patella.  She has failed conservative therapy.  It was discussed with her the possibility of a arthroscopy lateral release and a tubercle transfer (anterior medialization of the tibial tubercle) to release stress from her femoral patellofemoral joint.  She elected to proceed with the surgical intervention.  All risks and benefits of the surgery were discussed with her.  She was in agreement with the treatment plan.,PROCEDURE: , On 09/04/03, she was taken to Operating Room at ABCD General Hospital.  She was placed supine on the operating table with the general anesthesia administered by the Anesthesia Department.  Her leg was placed in a Johnson knee holder and sterilely prepped and draped in the usual fashion.  A stab incision was made in inferolateral and parapatellar regions.  Through this the cannula was placed and the knee was inflated with saline solution.  Intraoperative pictures were obtained.  The above findings were noted.  Second portal site was initiated in the inferomedial parapatellar region.  Through this, a arthroscopic shaver was placed and the chondroplasty in the patella was performed and removed the loose articular debris.  Next, the camera was placed through the inferomedial portal.  An arthroscopic Bovie was placed through the inferolateral portal.  A release of lateral retinaculum was then performed using the Bovie.  Hemostasis was controlled with electrocautery.  Next, the knee was suctioned dry.  An Esmarch was used to exsanguinate the lower extremity.  Tourniquet was inflated to 325 mmHg.  An oblique incision was made along the medial parapatellar region of the knee.  The subcuticular tissues were carefully dissected and the hemostasis was again controlled with electrocautery.  The retinaculum was then incised in line with the incision.  The patellar tendon was identified.  The lateral and medial border of the tibial tubercle were cleared of all soft tissue debris.  Next, an osteotome was then used to cut the tibial tubercle to 45 degree angle leaving the base of the bone incision intact.  The tubercle was then pushed anteriorly and medially decreasing her Q-angle and anteriorizing the tibial tubercle.  It was then held in place with a Steinmann pin.  Following this, a two 4.5 mm cannulated screws, partially threaded, were drilled in place using standard technique to help fixate the tibial tubercle.  There was excellent fixation noted.  The Q-angle was noted to be decreased to approximately 15 degrees.  She was transferred approximately 1 cm in length.  The wound was copiously irrigated and suctioned dry.  The medial retinaculum was then plicated causing further medialization of the patella.  The retinaculum was reapproximated using #0 Vicryl.  Subcuticular tissue were reapproximated with #2-0 Vicryl.  Skin was closed with #4-0 Vicryl running PDS suture.  Sterile dressing was applied to the lower extremities.  She was placed in a Donjoy knee immobilizer locked in extension.  It was noted that the lower extremity was warm and pink with good capillary refill following deflation of the tourniquet.  She was transferred to recovery room in apparent stable and satisfactory condition.,Prognosis of this patient is poor secondary to the advanced degenerative changes to the patellofemoral joint.  She will remain in the immobilizer approximately six weeks allowing the tubercle to reapproximate itself to the proximal tibia"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Open tibial tubercle transfer with fixation of two 4.5 mm cannulated screws.,ANESTHESIA:,  General.,COMPLICATIONS: , None.,TOURNIQUET TIME: , Approximately 70 minutes at 325 mmHg.,INTRAOPERATIVE FINDINGS: , Grade-IV chondromalacia noted to the central and lateral facet of the patella.  There was a grade II to III chondral changes to the patellar groove.  The patella was noted to be displaced laterally riding on the edge of the lateral femoral condyle.  The medial lateral meniscus showed small amounts of degeneration, but no frank tears were seen.  The articular surfaces and the remainder of the knee appeared intact.  Cruciate ligaments also appeared intact to direct stress testing.,HISTORY:  ,This is a 36-year-old Caucasian female with a long-standing history of right knee pain.  She has been diagnosed in the past with chondromalacia patella.  She has failed conservative therapy.  It was discussed with her the possibility of a arthroscopy lateral release and a tubercle transfer (anterior medialization of the tibial tubercle) to release stress from her femoral patellofemoral joint.  She elected to proceed with the surgical intervention.  All risks and benefits of the surgery were discussed with her.  She was in agreement with the treatment plan.,PROCEDURE: , On 09/04/03, she was taken to Operating Room at ABCD General Hospital.  She was placed supine on the operating table with the general anesthesia administered by the Anesthesia Department.  Her leg was placed in a Johnson knee holder and sterilely prepped and draped in the usual fashion.  A stab incision was made in inferolateral and parapatellar regions.  Through this the cannula was placed and the knee was inflated with saline solution.  Intraoperative pictures were obtained.  The above findings were noted.  Second portal site was initiated in the inferomedial parapatellar region.  Through this, a arthroscopic shaver was placed and the chondroplasty in the patella was performed and removed the loose articular debris.  Next, the camera was placed through the inferomedial portal.  An arthroscopic Bovie was placed through the inferolateral portal.  A release of lateral retinaculum was then performed using the Bovie.  Hemostasis was controlled with electrocautery.  Next, the knee was suctioned dry.  An Esmarch was used to exsanguinate the lower extremity.  Tourniquet was inflated to 325 mmHg.  An oblique incision was made along the medial parapatellar region of the knee.  The subcuticular tissues were carefully dissected and the hemostasis was again controlled with electrocautery.  The retinaculum was then incised in line with the incision.  The patellar tendon was identified.  The lateral and medial border of the tibial tubercle were cleared of all soft tissue debris.  Next, an osteotome was then used to cut the tibial tubercle to 45 degree angle leaving the base of the bone incision intact.  The tubercle was then pushed anteriorly and medially decreasing her Q-angle and anteriorizing the tibial tubercle.  It was then held in place with a Steinmann pin.  Following this, a two 4.5 mm cannulated screws, partially threaded, were drilled in place using standard technique to help fixate the tibial tubercle.  There was excellent fixation noted.  The Q-angle was noted to be decreased to approximately 15 degrees.  She was transferred approximately 1 cm in length.  The wound was copiously irrigated and suctioned dry.  The medial retinaculum was then plicated causing further medialization of the patella.  The retinaculum was reapproximated using #0 Vicryl.  Subcuticular tissue were reapproximated with #2-0 Vicryl.  Skin was closed with #4-0 Vicryl running PDS suture.  Sterile dressing was applied to the lower extremities.  She was placed in a Donjoy knee immobilizer locked in extension.  It was noted that the lower extremity was warm and pink with good capillary refill following deflation of the tourniquet.  She was transferred to recovery room in apparent stable and satisfactory condition.,Prognosis of this patient is poor secondary to the advanced degenerative changes to the patellofemoral joint.  She will remain in the immobilizer approximately six weeks allowing the tubercle to reapproximate itself to the proximal tibia"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M94239: Chondromalacia, unspecified wrist (score: 0.7755)\n[ICD-10-CM 2027] M94219: Chondromalacia, unspecified shoulder (score: 0.7658)\n[ICD-10-CM 2027] M94232: Chondromalacia, left wrist (score: 0.7610)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] M222X9: Patellofemoral disorders, unspecified knee (score: 0.7891)\n[ICD-10-CM 2027] M222X2: Patellofemoral disorders, left knee (score: 0.7808)\n[ICD-10-CM 2027] M222X1: Patellofemoral disorders, right knee (score: 0.7807)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] M94239: Chondromalacia, unspecified wrist (score: 0.5593)\n[ICD-10-CM 2027] M94219: Chondromalacia, unspecified shoulder (score: 0.5523)\n[ICD-10-CM 2027] M94232: Chondromalacia, left wrist (score: 0.5488)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] M222X9: Patellofemoral disorders, unspecified knee (score: 0.7053)\n[ICD-10-CM 2027] M222X2: Patellofemoral disorders, left knee (score: 0.6979)\n[ICD-10-CM 2027] M222X1: Patellofemoral disorders, right knee (score: 0.6978)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] T508X6D: Underdosing of diagnostic agents, subsequent encounter (score: 0.4978)\n[ICD-10-CM 2027] T508X6A: Underdosing of diagnostic agents, initial encounter (score: 0.4950)\n[ICD-10-CM 2027] T508X6S: Underdosing of diagnostic agents, sequela (score: 0.4949)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Diagnostic arthroscopy with partial chondroplasty of patella' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Z652: Problems related to release from prison (score: 0.5352)\n[ICD-10-CM 2027] D89831: Cytokine release syndrome, grade 1 (score: 0.5302)\n[ICD-10-CM 2027] D89832: Cytokine release syndrome, grade 2 (score: 0.5302)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Lateral retinacular release' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] M92529: Juvenile osteochondrosis of tibia tubercle, unspecified leg (score: 0.3256)\n[ICD-10-CM 2027] M92521: Juvenile osteochondrosis of tibia tubercle, right leg (score: 0.3243)\n[ICD-10-CM 2027] M92522: Juvenile osteochondrosis of tibia tubercle, left leg (score: 0.3233)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Open tibial tubercle transfer with fixation of two 4.5 mm cannulated screws.,ANESTHESIA:,  General.,COMPLICATIONS: , None.,TOURNIQUET TIME: , Approximately 70 minutes at 325 mmHg.,INTRAOPERATIVE FINDINGS: , Grade-IV chondromalacia noted to the central and lateral facet of the patella.  There was a grade II to III chondral changes to the patellar groove.  The patella was noted to be displaced laterally riding on the edge of the lateral femoral condyle.  The medial lateral meniscus showed small amounts of degeneration, but no frank tears were seen.  The articular surfaces and the remainder of the knee appeared intact.  Cruciate ligaments also appeared intact to direct stress testing.,HISTORY:  ,This is a 36-year-old Caucasian female with a long-standing history of right knee pain.  She has been diagnosed in the past with chondromalacia patella.  She has failed conservative therapy.  It was discussed with her the possibility of a arthroscopy lateral release and a tubercle transfer (anterior medialization of the tibial tubercle) to release stress from her femoral patellofemoral joint.  She elected to proceed with the surgical intervention.  All risks and benefits of the surgery were discussed with her.  She was in agreement with the treatment plan.,PROCEDURE: , On 09/04/03, she was taken to Operating Room at ABCD General Hospital.  She was placed supine on the operating table with the general anesthesia administered by the Anesthesia Department.  Her leg was placed in a Johnson knee holder and sterilely prepped and draped in the usual fashion.  A stab incision was made in inferolateral and parapatellar regions.  Through this the cannula was placed and the knee was inflated with saline solution.  Intraoperative pictures were obtained.  The above findings were noted.  Second portal site was initiated in the inferomedial parapatellar region.  Through this, a arthroscopic shaver was placed and the chondroplasty in the patella was performed and removed the loose articular debris.  Next, the camera was placed through the inferomedial portal.  An arthroscopic Bovie was placed through the inferolateral portal.  A release of lateral retinaculum was then performed using the Bovie.  Hemostasis was controlled with electrocautery.  Next, the knee was suctioned dry.  An Esmarch was used to exsanguinate the lower extremity.  Tourniquet was inflated to 325 mmHg.  An oblique incision was made along the medial parapatellar region of the knee.  The subcuticular tissues were carefully dissected and the hemostasis was again controlled with electrocautery.  The retinaculum was then incised in line with the incision.  The patellar tendon was identified.  The lateral and medial border of the tibial tubercle were cleared of all soft tissue debris.  Next, an osteotome was then used to cut the tibial tubercle to 45 degree angle leaving the base of the bone incision intact.  The tubercle was then pushed anteriorly and medially decreasing her Q-angle and anteriorizing the tibial tubercle.  It was then held in place with a Steinmann pin.  Following this, a two 4.5 mm cannulated screws, partially threaded, were drilled in place using standard technique to help fixate the tibial tubercle.  There was excellent fixation noted.  The Q-angle was noted to be decreased to approximately 15 degrees.  She was transferred approximately 1 cm in length.  The wound was copiously irrigated and suctioned dry.  The medial retinaculum was then plicated causing further medialization of the patella.  The retinaculum was reapproximated using #0 Vicryl.  Subcuticular tissue were reapproximated with #2-0 Vicryl.  Skin was closed with #4-0 Vicryl running PDS suture.  Sterile dressing was applied to the lower extremities.  She was placed in a Donjoy knee immobilizer locked in extension.  It was noted that the lower extremity was warm and pink with good capillary refill following deflation of the tourniquet.  She was transferred to recovery room in apparent stable and satisfactory condition.,Prognosis of this patient is poor secondary to the advanced degenerative changes to the patellofemoral joint.  She will remain in the immobilizer approximately six weeks allowing the tubercle to reapproximate itself to the proximal tibia' \u2014 extracted from header, not verified against any coding system"
+  }
+]

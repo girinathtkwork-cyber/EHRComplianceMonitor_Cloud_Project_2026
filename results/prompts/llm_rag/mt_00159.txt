@@ -1,0 +1,133 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CC: ,Left hand numbness on presentation; then developed lethargy later that day.,HX: ,On the day of presentation, this 72 y/o RHM suddenly developed generalized weakness and lightheadedness, and could not rise from a chair. Four hours later he experienced sudden left hand numbness lasting two hours. There were no other associated symptoms except for the generalized weakness and lightheadedness. He denied vertigo.,He had been experiencing falling spells without associated LOC up to several times a month for the past year.,MEDS:, procardia SR, Lasix, Ecotrin, KCL, Digoxin, Colace, Coumadin.,PMH: ,1)8/92 evaluation for presyncope (Echocardiogram showed: AV fibrosis/calcification, AV stenosis/insufficiency, MV stenosis with annular calcification and regurgitation, moderate TR, Decreased LV systolic function, severe LAE. MRI brain: focal areas of increased T2 signal in the left cerebellum and in the brainstem probably representing microvascular ischemic disease. IVG (MUGA scan)revealed: global hypokinesis of the LV and biventricular dysfunction, RV ejection Fx 45% and LV ejection Fx 39%. He was subsequently placed on coumadin severe valvular heart disease), 2)HTN, 3)Rheumatic fever and heart disease, 4)COPD, 5)ETOH abuse, 6)colonic polyps, 7)CAD, 8)CHF, 9)Appendectomy, 10)Junctional tachycardia.,FHX:, stroke, bone cancer, dementia.,SHX: ,2ppd smoker since his teens; quit 2 years ago. 6-pack beer plus 2 drinks per day for many years: now claims he has been dry for 2 years. Denies illicit drug use.,EXAM: ,36.8C, 90BPM, BP138/56.,MS: Alert and oriented to person, place, but not date. Hypophonic and dysarthric speech. 2/3 recall. Followed commands.,CN: Left homonymous hemianopia and left CN7 nerve palsy (old).,MOTOR: full strength throughout.,SENSORY: unremarkable.,COORDINATION: dysmetric FNF and HKS movements (left worse than right).,STATION: RUE pronator drift and Romberg sign present.,GAIT: shuffling and bradykinetic.,REFLEXES: 1+/1+ to 2+/2+ and symmetric throughout. Plantar responses were flexor bilaterally.,HEENT: Neck supple and no carotid bruits.,CV: RRR with 3/6 SEM and diastolic murmurs throughout the precordium.,Lungs: bibasilar crackles.,LABS:, PT 19 (elevated) and PTT 46 (elevated).,COURSE:, Coumadin was discontinued on admission as he was felt to have suffered a right hemispheric stroke. The initial HCT revealed a subtle low density area in the right occipital lobe and no evidence of hemorrhage. He was scheduled to undergo an MRI Brain scan the same day, and shortly before the procedure became lethargic. By the time the scan was complete he was stuporous. MRI Scan then revealed a hypointense area of T1 signal in the right temporal lobe with a small foci of hyperintensity within it. The hyperintense area seen on T1 weighted images appeared hypointense on T2 weighted images. There was edema surrounding the lesion The findings were consistent with a hematoma. A CT scan performed 4 hours later confirmed a large hematoma with surrounding edema involving the right temporal/parietal/occipital lobes. The patient subsequently died.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "procardia"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Lasix"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Ecotrin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Digoxin"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Colace"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "measurement",
+    "text": "45%"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "measurement",
+    "text": "39%"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "coumadin"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "became lethargic. By the time the scan was complete he was stuporous. MRI Scan then revealed a hypointense area of T1 signal in the right temporal lobe with a small foci of hyperintensity within it. The hyperintense area seen on T1 weighted images appeared hypointense on T2 weighted images. There was edema surrounding the lesion The findings were consistent with a hematoma. A CT scan performed 4 hours later confirmed a large hematoma with surrounding edema involving the right temporal/parietal/occipital lobes. The patient subsequently died"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'procardia' \u2192 RXCUI 203423, canonical: Procardia, match: exact\n[RxNorm] Ingredient: nifedipine (RXCUI 7417)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): Osmotic 24 HR nifedipine 30 MG Extended Release Oral Tablet; Osmotic 24 HR nifedipine 60 MG Extended Release Oral Tablet; Osmotic 24 HR nifedipine 90 MG Extended Release Oral Tablet; nifedipine 10 MG Oral Capsule; nifedipine 20 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Lasix' \u2192 RXCUI 202991, canonical: Lasix, match: exact\n[RxNorm] Ingredient: furosemide (RXCUI 4603)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): furosemide 4 MG/ML Oral Solution; 10 ML furosemide 10 MG/ML Injection; 2 ML furosemide 10 MG/ML Injection; 4 ML furosemide 10 MG/ML Injection; furosemide 10 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Ecotrin' \u2192 RXCUI 202554, canonical: Ecotrin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Digoxin' \u2192 RXCUI 3407, canonical: digoxin, match: exact\n[RxNorm] Ingredient: digoxin (RXCUI 3407)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 2 ML digoxin 0.25 MG/ML Injection; digoxin 0.125 MG Oral Tablet; digoxin 0.2 MG Oral Capsule; digoxin 0.25 MG Oral Tablet; 1 ML digoxin 0.1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Colace' \u2192 RXCUI 82000, canonical: Colace, match: exact\n[RxNorm] Ingredient: docusate (RXCUI 82003)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alpha tocopherol 30 UNT / ascorbic acid 28 MG / cholecalciferol 400 UNT / docosahexaenoic acid 300 MG / docusate sodium 55 MG / ferrous fumarate 27 MG / folic acid 1.25 MG / pyridoxine hydrochloride 25 MG / tricalcium phosphate 160 MG Oral Capsule; 24 HR ascorbic acid 500 MG / biotin 0.15 MG / copper sulfate 3 MG / dl-alpha tocopheryl acetate 30 UNT / docusate sodium 50 MG / folic acid 1 MG / iron carbonyl 150 MG / vitamin B12 0.06 MG Extended Release Oral Tablet; docusate sodium 3.33 MG/ML Oral Solution; docusate sodium 100 MG Oral Tablet; docusate sodium 100 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Measurement] 45.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Measurement] 39.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'became lethargic. By the time the scan was complete he was stuporous. MRI Scan then revealed a hypointense area of T1 signal in the right temporal lobe with a small foci of hyperintensity within it. The hyperintense area seen on T1 weighted images appeared hypointense on T2 weighted images. There was edema surrounding the lesion The findings were consistent with a hematoma. A CT scan performed 4 hours later confirmed a large hematoma with surrounding edema involving the right temporal/parietal/occipital lobes. The patient subsequently died' \u2014 extracted from header, not verified against any coding system"
+  }
+]

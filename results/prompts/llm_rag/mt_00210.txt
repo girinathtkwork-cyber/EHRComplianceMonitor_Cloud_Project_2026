@@ -1,0 +1,133 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+IDENTIFYING DATA:,  This is a 40-year-old male seen today for a 90-day revocation admission. Additional diagnosis noted: Chronic Kidney Disease, Stage 3.  He had been reported by his case manager as being noncompliant with medications, refusing oral or IM medications, became agitated, had to be taken to ABCD for evaluation, admitted at that time to auditory hallucinations and confusion and was committed for admission at this time.  He has a psychiatric history of schizophrenia, was previously admitted here at XYZ on 12/19/2009, had another voluntary admission in ABCD in 1998.,MEDICATIONS: , Listed as Invega and Risperdal.,ALLERGIES: , None known to medications.,PAST MEDICAL HISTORY:  ,The only identified problem in his chart is that he is being treated for hyperlipidemia with gemfibrozil.  The patient is unaware and cannot remember what medications he had been taking or whether he had been taking them at all as an outpatient.,FAMILY HISTORY: , Listed as unknown in the chart as far as other psychiatric illnesses.  The patient himself states that his parents are deceased and that he raised himself in the Philippines.,SOCIAL HISTORY:,  He immigrated to this country in 1984, although he lists himself as having a green card still at this time.  He states he lives on his own.  He is a single male with no history of marriage or children and that he had high school education.  His recreational drug use in the chart indicates that he has had a history of methamphetamines.  The patient denies this at this time.  He also denies current alcohol use.  He does smoke.  He is unable to tell me of any PCP.  He is in counseling service with his case manager being XYZ.,LEGAL HISTORY:  ,  He had an assault in December 2009, which led to his previous detention.  It is unknown whether he is under legal constraints at this time.,OBJECTIVE FINDINGS:  ,VITAL SIGNS: , Blood pressure is 125/75.  His weight is 197 with height 5 feet 4 inches.,GENERAL:,  He is cooperative, although disorganized and focusing entirely and telling me that he is here because there was some confusion in how he took his medications.  He does not endorse any voices at this time.,HEENT: , His head exam is normal with normal scalp.  HEENT is unremarkable.  Pupils equal and reactive to light and accommodation.  TMs are normal.,NECK:,  Unremarkable with no masses or tenderness.,CARDIOVASCULAR:,  Normal S1 and S2.  No murmurs.,LUNGS:,  Clear.,ABDOMEN:  ,Negative with no scars.,GU:  ,Not done.,RECTAL:,  Not done.,DERM:,  He does have a scarring of acne lesions, both face and back.,EXTREMITIES:,  Otherwise negative.,NEUROLOGIC: , Cranial nerves II through X normal.  Reflexes are normal and gait is unremarkable.,LABORATORY DATA: , His labs done at ABCD showed his CMP to be normal with an elevated white count of 17.2.  Chest x-ray was indicated as being done and normal as was a UA and he did apparently receive hydration in the hospital with IV fluids.,ASSESSMENT: , History of hyperlipidemia with elevated triglycerides.  We will maintain his gemfibrozil 600 b.i.d. and for health maintenance issues, we will also maintain just a vitamin daily and we will obtain recheck on his labs and lipid levels in one week after treatment is initiated.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "noted: Chronic Kidney Disease, Stage"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "He had been reported by his case manager as being noncompliant with medications, refusing oral or IM medications, became agitated, had to be taken to ABCD for evaluation, admitted at that time to auditory hallucinations and confusion and was committed for admission at this time.  He has a psychiatric history of schizophrenia, was previously admitted here at XYZ on 12/19/2009, had another voluntary admission in ABCD in 1998.,MEDICATIONS: , Listed as Invega and Risperdal.,ALLERGIES: , None known to medications.,PAST MEDICAL HISTORY:  ,The only identified problem in his chart is that he is being treated for hyperlipidemia with gemfibrozil.  The patient is unaware and cannot remember what medications he had been taking or whether he had been taking them at all as an outpatient.,FAMILY HISTORY: , Listed as unknown in the chart as far as other psychiatric illnesses.  The patient himself states that his parents are deceased and that he raised himself in the Philippines.,SOCIAL HISTORY:,  He immigrated to this country in 1984, although he lists himself as having a green card still at this time.  He states he lives on his own.  He is a single male with no history of marriage or children and that he had high school education.  His recreational drug use in the chart indicates that he has had a history of methamphetamines.  The patient denies this at this time.  He also denies current alcohol use.  He does smoke.  He is unable to tell me of any PCP.  He is in counseling service with his case manager being XYZ.,LEGAL HISTORY:  ,  He had an assault in December 2009, which led to his previous detention.  It is unknown whether he is under legal constraints at this time.,OBJECTIVE FINDINGS:  ,VITAL SIGNS: , Blood pressure is 125/"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Invega"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Risperdal"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "gemfibrozil"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "His weight is 197 with height 5 feet 4 inches.,GENERAL:,  He is cooperative, although disorganized and focusing entirely and telling me that he is here because there was some confusion in how he took his medications.  He does not endorse any voices at this time.,HEENT: , His head exam is normal with normal scalp.  HEENT is unremarkable.  Pupils equal and reactive to light and accommodation.  TMs are normal.,NECK:,  Unremarkable with no masses or tenderness.,CARDIOVASCULAR:,  Normal S1 and S"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "No murmurs.,LUNGS:,  Clear.,ABDOMEN:  ,Negative with no scars.,GU:  ,Not done.,RECTAL:,  Not done.,DERM:,  He does have a scarring of acne lesions, both face and back.,EXTREMITIES:,  Otherwise negative.,NEUROLOGIC: , Cranial nerves II through X normal.  Reflexes are normal and gait is unremarkable.,LABORATORY DATA: , His labs done at ABCD showed his CMP to be normal with an elevated white count of 17"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Chest x-ray was indicated as being done and normal as was a UA and he did apparently receive hydration in the hospital with IV fluids.,ASSESSMENT: , History of hyperlipidemia with elevated triglycerides.  We will maintain his gemfibrozil 600 b.i.d. and for health maintenance issues, we will also maintain just a vitamin daily and we will obtain recheck on his labs and lipid levels in one week after treatment is initiated"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "History of hyperlipidemia with elevated triglycerides.  We will maintain his gemfibrozil 600 b.i.d. and for health maintenance issues, we will also maintain just a vitamin daily and we will obtain recheck on his labs and lipid levels in one week after treatment is initiated"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "gemfibrozil"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] N181: Chronic kidney disease, stage 1 (score: 0.6986)\n[ICD-10-CM 2027] N1830: Chronic kidney disease, stage 3 unspecified (score: 0.6986)\n[ICD-10-CM 2027] N1831: Chronic kidney disease, stage 3a (score: 0.6986)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.4223)\n[ICD-10-CM 2027] P0419: Newborn affected by maternal use of unspecified medication (score: 0.2201)\n[ICD-10-CM 2027] Z91128: Patient's intentional underdosing of medication regimen for other reason (score: 0.2110)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Invega' \u2192 RXCUI 686438, canonical: Invega, match: exact\n[RxNorm] Ingredient: paliperidone (RXCUI 679314)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 0.88 ML paliperidone palmitate 310 MG/ML Prefilled Syringe; 1.32 ML paliperidone palmitate 311 MG/ML Prefilled Syringe; 1.75 ML paliperidone palmitate 312 MG/ML Prefilled Syringe; 2.63 ML paliperidone palmitate 311 MG/ML Prefilled Syringe; 3.5 ML paliperidone palmitate 312 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Risperdal' \u2192 RXCUI 152318, canonical: Risperdal, match: exact\n[RxNorm] Ingredient: risperidone (RXCUI 35636)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): risperidone 6 MG Oral Tablet; risperidone 1 MG/ML Oral Solution; 0.8 ML risperidone 150 MG/ML Prefilled Syringe; 0.6 ML risperidone 150 MG/ML Prefilled Syringe; 0.28 ML risperidone 357 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'gemfibrozil' \u2192 RXCUI 4719, canonical: gemfibrozil, match: exact\n[RxNorm] Ingredient: gemfibrozil (RXCUI 4719)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): gemfibrozil 600 MG Oral Tablet; gemfibrozil 300 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] Z3480: Encounter for supervision of other normal pregnancy, unspecified trimester (score: 0.3771)\n[ICD-10-CM 2027] Z3490: Encounter for supervision of normal pregnancy, unspecified, unspecified trimester (score: 0.3771)\n[ICD-10-CM 2027] Z3483: Encounter for supervision of other normal pregnancy, third trimester (score: 0.3580)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] Y990: Civilian activity done for income or pay (score: 0.2726)\n[ICD-10-CM 2027] Z3480: Encounter for supervision of other normal pregnancy, unspecified trimester (score: 0.2244)\n[ICD-10-CM 2027] Z3490: Encounter for supervision of normal pregnancy, unspecified, unspecified trimester (score: 0.2244)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.3068)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.3059)\n[ICD-10-CM 2027] W880XXS: Exposure to X-rays, sequela (score: 0.3058)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] E7849: Other hyperlipidemia (score: 0.3271)\n[ICD-10-CM 2027] E785: Hyperlipidemia, unspecified (score: 0.3271)\n[ICD-10-CM 2027] E559: Vitamin D deficiency, unspecified (score: 0.2891)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'gemfibrozil' \u2192 RXCUI 4719, canonical: gemfibrozil, match: exact\n[RxNorm] Ingredient: gemfibrozil (RXCUI 4719)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): gemfibrozil 600 MG Oral Tablet; gemfibrozil 300 MG Oral Capsule"
+  }
+]

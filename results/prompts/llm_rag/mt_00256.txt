@@ -1,0 +1,383 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT:,  GI bleed.,HISTORY OF PRESENT ILLNESS:,  The patient is an 80-year-old white female with history of atrial fibrillation, on Coumadin, who presented as outpatient, complaining of increasing fatigue.  CBC revealed microcytic anemia with hemoglobin of 8.9.  Stool dark brown, strongly OB positive.  The patient denied any shortness of breath.  No chest pain.  No GI complaints.  The patient was admitted to ABCD for further evaluation.,PAST MEDICAL HISTORY:  ,Significant for atrial fibrillation, hypertension, osteoarthritis of the knees, hypercholesterolemia, non-insulin-dependent diabetes mellitus, asthma, and hypothyroidism.,PHYSICAL EXAMINATION:,GENERAL:  The patient is in no acute distress.,VITAL SIGNS:  Stable.,HEENT:  Benign.,NECK:  Supple.  No adenopathy.,LUNGS:  Clear with good air movement.,HEART:  Irregularly regular.  No gallops.,ABDOMEN:  Positive bowel sounds, soft, and nontender.  No masses or organomegaly.,EXTREMITIES:  1+ lower extremity edema bilaterally.,HOSPITAL COURSE: , The patient underwent upper endoscopy performed by Dr. A, which revealed erosive gastritis.  Colonoscopy did reveal diverticulosis as well as polyp, which was resected.  The patient tolerated the procedure well.  She was transfused, and prior to discharge hemoglobin was stable at 10.7.  The patient was without further GI complaints.  Coumadin was held during hospital stay and recommendations were given by GI to hold Coumadin for an additional three days after discharge then resume.  The patient was discharged with outpatient PMD, GI, and Cardiology followup.,DISCHARGE DIAGNOSES:,1.  Upper gastrointestinal bleed.,2.  Anemia.,3.  Atrial fibrillation.,4.  Non-insulin-dependent diabetes mellitus.,5.  Hypertension.,6.  Hypothyroidism.,7.  Asthma.,CONDITION UPON DISCHARGE: , Stable.,MEDICATIONS: , Feosol 325 mg daily, multivitamins one daily, Protonix 40 mg b.i.d., KCl 20 mEq daily, Lasix 40 mg b.i.d., atenolol 50 mg daily, Synthroid 80 mcg daily, Actos 30 mg daily, Mevacor 40 mg daily, and lisinopril 20 mg daily.,ALLERGIES:,  None.,DIET: , 1800-calorie ADA.,ACTIVITY: , As tolerated.,FOLLOWUP: , The patient to hold Coumadin through weekend.  Followup CBC and INR were ordered.  Outpatient followup as arranged.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "well.  She was transfused, and prior to discharge hemoglobin was stable at 10"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "The patient was without further GI complaints.  Coumadin was held during hospital stay and recommendations were given by GI to hold Coumadin for an additional three days after discharge then resume.  The patient was discharged with outpatient PMD, GI, and Cardiology followup.,DISCHARGE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Upper gastrointestinal bleed"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Upper gastrointestinal bleed"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Anemia"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Anemia"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Atrial fibrillation"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Atrial fibrillation"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Non-insulin-dependent diabetes mellitus"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "procedure",
+    "text": "Non-insulin-dependent diabetes mellitus"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "Hypertension"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "Hypertension"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "Hypothyroidism"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "Hypothyroidism"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "Asthma.,CONDITION UPON DISCHARGE: , Stable.,MEDICATIONS: , Feosol 325 mg daily, multivitamins one daily, Protonix 40 mg b.i.d., KCl 20 mEq daily, Lasix 40 mg b.i.d., atenolol 50 mg daily, Synthroid 80 mcg daily, Actos 30 mg daily, Mevacor 40 mg daily, and lisinopril 20 mg daily.,ALLERGIES:,  None.,DIET: , 1800-calorie ADA.,ACTIVITY: , As tolerated.,FOLLOWUP: , The patient to hold Coumadin through weekend.  Followup CBC and INR were ordered.  Outpatient followup as arranged"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "Asthma.,CONDITION UPON DISCHARGE: , Stable.,MEDICATIONS: , Feosol 325 mg daily, multivitamins one daily, Protonix 40 mg b.i.d., KCl 20 mEq daily, Lasix 40 mg b.i.d., atenolol 50 mg daily, Synthroid 80 mcg daily, Actos 30 mg daily, Mevacor 40 mg daily, and lisinopril 20 mg daily.,ALLERGIES:,  None.,DIET: , 1800-calorie ADA.,ACTIVITY: , As tolerated.,FOLLOWUP: , The patient to hold Coumadin through weekend.  Followup CBC and INR were ordered.  Outpatient followup as arranged"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "Feosol"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "dosage",
+    "text": "325 mg"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "Protonix"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "dosage",
+    "text": "20 mEq"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "medication",
+    "text": "Lasix"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "medication",
+    "text": "atenolol"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "dosage",
+    "text": "50 mg"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "medication",
+    "text": "Synthroid"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "dosage",
+    "text": "80 mcg"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "medication",
+    "text": "Actos"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "dosage",
+    "text": "30 mg"
+  },
+  {
+    "entity_id": "E33",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E34",
+    "entity_type": "medication",
+    "text": "lisinopril"
+  },
+  {
+    "entity_id": "E35",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E36",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'well.  She was transfused, and prior to discharge hemoglobin was stable at 10' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'The patient was without further GI complaints.  Coumadin was held during hospital stay and recommendations were given by GI to hold Coumadin for an additional three days after discharge then resume.  The patient was discharged with outpatient PMD, GI, and Cardiology followup.,DISCHARGE DIAGNOSES:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] K922: Gastrointestinal hemorrhage, unspecified (score: 0.7326)\n[ICD-10-CM 2027] Z13810: Encounter for screening for upper gastrointestinal disorder (score: 0.7043)\n[ICD-10-CM 2027] P543: Other neonatal gastrointestinal hemorrhage (score: 0.5717)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Upper gastrointestinal bleed' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] D6489: Other specified anemias (score: 1.0000)\n[ICD-10-CM 2027] D649: Anemia, unspecified (score: 1.0000)\n[ICD-10-CM 2027] O9081: Anemia of the puerperium (score: 0.7049)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Anemia' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 1.0000)\n[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.9491)\n[ICD-10-CM 2027] I4819: Other persistent atrial fibrillation (score: 0.8665)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'Atrial fibrillation' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] O24414: Gestational diabetes mellitus in pregnancy, insulin controlled (score: 0.4782)\n[ICD-10-CM 2027] O24434: Gestational diabetes mellitus in the puerperium, insulin controlled (score: 0.4551)\n[ICD-10-CM 2027] O24424: Gestational diabetes mellitus in childbirth, insulin controlled (score: 0.4515)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[Procedure] 'Non-insulin-dependent diabetes mellitus' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] I158: Other secondary hypertension (score: 0.7957)\n[ICD-10-CM 2027] I159: Secondary hypertension, unspecified (score: 0.7957)\n[ICD-10-CM 2027] O169: Unspecified maternal hypertension, unspecified trimester (score: 0.7538)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'Hypertension' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] E038: Other specified hypothyroidism (score: 1.0000)\n[ICD-10-CM 2027] E039: Hypothyroidism, unspecified (score: 1.0000)\n[ICD-10-CM 2027] E890: Postprocedural hypothyroidism (score: 0.8341)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'Hypothyroidism' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] G4452: New daily persistent headache (NDPH) (score: 0.3976)\n[ICD-10-CM 2027] Y901: Blood alcohol level of 20-39 mg/100 ml (score: 0.3223)\n[ICD-10-CM 2027] Y902: Blood alcohol level of 40-59 mg/100 ml (score: 0.3223)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'Asthma.,CONDITION UPON DISCHARGE: , Stable.,MEDICATIONS: , Feosol 325 mg daily, multivitamins one daily, Protonix 40 mg b.i.d., KCl 20 mEq daily, Lasix 40 mg b.i.d., atenolol 50 mg daily, Synthroid 80 mcg daily, Actos 30 mg daily, Mevacor 40 mg daily, and lisinopril 20 mg daily.,ALLERGIES:,  None.,DIET: , 1800-calorie ADA.,ACTIVITY: , As tolerated.,FOLLOWUP: , The patient to hold Coumadin through weekend.  Followup CBC and INR were ordered.  Outpatient followup as arranged' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'Feosol' \u2192 RXCUI 217091, canonical: Feosol, match: exact\n[RxNorm] Ingredient: ferrous sulfate (RXCUI 24947)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): ferrous sulfate 116 MG/ML Oral Solution; ferrous sulfate 150 MG / folic acid 0.5 MG Extended Release Oral Capsule; ferrous sulfate 140 MG Extended Release Oral Tablet; ferrous sulfate 88 MG Oral Tablet; ferrous sulfate 143 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "Dose 325.0mg associated with Feosol"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[RxNorm] 'Protonix' \u2192 RXCUI 261624, canonical: Protonix, match: exact\n[RxNorm] Ingredient: pantoprazole (RXCUI 40790)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pantoprazole 20 MG Delayed Release Oral Tablet; 100 ML pantoprazole 0.4 MG/ML Injection; 50 ML pantoprazole 0.8 MG/ML Injection; 100 ML pantoprazole 0.8 MG/ML Injection; pantoprazole 40 MG Injection"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "Dose 40.0mg associated with Protonix"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "Dose 20.0meq associated with Lasix \u2014 dose 20.0meq not among known product strengths"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[RxNorm] 'Lasix' \u2192 RXCUI 202991, canonical: Lasix, match: exact\n[RxNorm] Ingredient: furosemide (RXCUI 4603)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): furosemide 4 MG/ML Oral Solution; 10 ML furosemide 10 MG/ML Injection; 2 ML furosemide 10 MG/ML Injection; 4 ML furosemide 10 MG/ML Injection; furosemide 10 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F26",
+    "entity_id": "E26",
+    "text": "Dose 40.0mg associated with Lasix"
+  },
+  {
+    "fact_id": "F27",
+    "entity_id": "E27",
+    "text": "[RxNorm] 'atenolol' \u2192 RXCUI 1202, canonical: atenolol, match: exact\n[RxNorm] Ingredient: atenolol (RXCUI 1202)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): atenolol 0.5 MG/ML Injectable Solution; atenolol 50 MG / chlorthalidone 12.5 MG Oral Tablet; atenolol 25 MG / bendroflumethiazide 1.25 MG Oral Capsule; atenolol 100 MG Oral Tablet; atenolol 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F28",
+    "entity_id": "E28",
+    "text": "Dose 50.0mg associated with atenolol"
+  },
+  {
+    "fact_id": "F29",
+    "entity_id": "E29",
+    "text": "[RxNorm] 'Synthroid' \u2192 RXCUI 224920, canonical: Synthroid, match: exact\n[RxNorm] Ingredient: levothyroxine (RXCUI 10582)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): levothyroxine sodium 0.1 MG Injection; levothyroxine sodium 0.2 MG Injection; levothyroxine sodium 0.0022 MG/MG Oral Powder; levothyroxine sodium 0.175 MG Oral Capsule; levothyroxine sodium 0.2 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F30",
+    "entity_id": "E30",
+    "text": "Dose 80.0mcg associated with Synthroid \u2014 dose 80.0mcg not among known product strengths"
+  },
+  {
+    "fact_id": "F31",
+    "entity_id": "E31",
+    "text": "[RxNorm] 'Actos' \u2192 RXCUI 261442, canonical: Actos, match: exact\n[RxNorm] Ingredient: pioglitazone (RXCUI 33738)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): alogliptin 12.5 MG / pioglitazone 15 MG Oral Tablet; alogliptin 12.5 MG / pioglitazone 30 MG Oral Tablet; alogliptin 12.5 MG / pioglitazone 45 MG Oral Tablet; alogliptin 25 MG / pioglitazone 15 MG Oral Tablet; alogliptin 25 MG / pioglitazone 30 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F32",
+    "entity_id": "E32",
+    "text": "Dose 30.0mg associated with Actos"
+  },
+  {
+    "fact_id": "F33",
+    "entity_id": "E33",
+    "text": "Dose 40.0mg associated with lisinopril"
+  },
+  {
+    "fact_id": "F34",
+    "entity_id": "E34",
+    "text": "[RxNorm] 'lisinopril' \u2192 RXCUI 29046, canonical: lisinopril, match: exact\n[RxNorm] Ingredient: lisinopril (RXCUI 29046)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lisinopril 1 MG/ML Oral Solution; lisinopril 40 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 10 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 20 MG Oral Tablet; hydrochlorothiazide 25 MG / lisinopril 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F35",
+    "entity_id": "E35",
+    "text": "Dose 20.0mg associated with lisinopril"
+  },
+  {
+    "fact_id": "F36",
+    "entity_id": "E36",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  }
+]

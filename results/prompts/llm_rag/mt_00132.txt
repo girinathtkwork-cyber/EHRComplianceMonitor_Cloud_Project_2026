@@ -1,0 +1,143 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES: , Erythema of the right knee and leg, possible septic knee.,POSTOPERATIVE DIAGNOSES:,  Erythema of the right knee superficial and leg, right septic knee ruled out.,INDICATIONS: , Mr. ABC is a 52-year-old male who has had approximately eight days of erythema over his knee.  He has been to multiple institutions as an outpatient for this complaint.  He has had what appears to be prepatellar bursa aspirated with little to no success.  He has been treated with Kefzol and 1 g of Rocephin one point.  He also reports, in the emergency department today, an attempt was made to aspirate his actual knee joint which was unsuccessful.  Orthopedic Surgery was consulted at this time.  Considering the patient's physical exam, there is a portal that would prove to be outside of the erythema that would be useful for aspiration of the knee.  After discussion of risks and benefits, the patient elected to proceed with aspiration through the anterolateral portal of his knee joint.,PROCEDURE:  ,The patient's right anterolateral knee area was prepped with Betadine times two and a 20-gauge spinal needle was used to approach the knee joint approximately 3 cm anterior and 2 cm lateral to the superolateral pole of the patella.  The 20-gauge spinal needle was inserted and entered the knee joint.  Approximately, 4 cc of clear yellow fluid was aspirated.  The patient tolerated the procedure well.,DISPOSITION: , Based upon the appearance of this synovial fluid, we have a very low clinical suspicion of a septic joint.  We will send this fluid to the lab for cell count, crystal exam, as well as culture and Gram stain.  We will follow these results.  After discussion with the emergency department staff, it appears that they tend to try to treat his erythema which appears to be cellulitis with IV antibiotics.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Erythema of the right knee and leg, possible septic knee.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Erythema of the right knee superficial and leg, right septic knee ruled out.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Mr. ABC is a 52-year-old male who has had approximately eight days of erythema over his knee.  He has been to multiple institutions as an outpatient for this complaint.  He has had what appears to be prepatellar bursa aspirated with little to no success.  He has been treated with Kefzol and 1 g of Rocephin one point.  He also reports, in the emergency department today, an attempt was made to aspirate his actual knee joint which was unsuccessful.  Orthopedic Surgery was consulted at this time.  Considering the patient's physical exam, there is a portal that would prove to be outside of the erythema that would be useful for aspiration of the knee.  After discussion of risks and benefits, the patient elected to proceed with aspiration through the anterolateral portal of his knee joint.,PROCEDURE:  ,The patient's right anterolateral knee area was prepped with Betadine times two and a 20-gauge spinal needle was used to approach the knee joint approximately 3 cm anterior and 2 cm lateral to the superolateral pole of the patella.  The 20-gauge spinal needle was inserted and entered the knee joint.  Approximately"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "measurement",
+    "text": "1 g"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "The patient's right anterolateral knee area was prepped with Betadine times two and a 20-gauge spinal needle was used to approach the knee joint approximately 3 cm anterior and 2 cm lateral to the superolateral pole of the patella.  The 20-gauge spinal needle was inserted and entered the knee joint.  Approximately"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Betadine"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "4 cc of clear yellow fluid was aspirated.  The patient tolerated the procedure well.,DISPOSITION:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "4 cc of clear yellow fluid was aspirated.  The patient tolerated the procedure well.,DISPOSITION:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "measurement",
+    "text": "4 cc"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Based upon the appearance of this synovial fluid, we have a very low clinical suspicion of a septic joint.  We will send this fluid to the lab for cell count, crystal exam, as well as culture and Gram stain.  We will follow these results.  After discussion with the emergency department staff, it appears that they tend to try to treat his erythema which appears to be cellulitis with IV antibiotics"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Based upon the appearance of this synovial fluid, we have a very low clinical suspicion of a septic joint.  We will send this fluid to the lab for cell count, crystal exam, as well as culture and Gram stain.  We will follow these results.  After discussion with the emergency department staff, it appears that they tend to try to treat his erythema which appears to be cellulitis with IV antibiotics"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] L530: Toxic erythema (score: 0.5126)\n[ICD-10-CM 2027] M7051: Other bursitis of knee, right knee (score: 0.4498)\n[ICD-10-CM 2027] M7050: Other bursitis of knee, unspecified knee (score: 0.4376)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] S80911D: Unspecified superficial injury of right knee, subsequent encounter (score: 0.3849)\n[ICD-10-CM 2027] S80911A: Unspecified superficial injury of right knee, initial encounter (score: 0.3803)\n[ICD-10-CM 2027] S80911S: Unspecified superficial injury of right knee, sequela (score: 0.3801)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] M25869: Other specified joint disorders, unspecified knee (score: 0.3394)\n[ICD-10-CM 2027] M25861: Other specified joint disorders, right knee (score: 0.3347)\n[ICD-10-CM 2027] M25862: Other specified joint disorders, left knee (score: 0.3296)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Measurement] 1.0g \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'The patient's right anterolateral knee area was prepped with Betadine times two and a 20-gauge spinal needle was used to approach the knee joint approximately 3 cm anterior and 2 cm lateral to the superolateral pole of the patella.  The 20-gauge spinal needle was inserted and entered the knee joint.  Approximately' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Betadine' \u2192 RXCUI 202750, canonical: Betadine, match: exact\n[RxNorm] Ingredient: povidone-iodine (RXCUI 8611)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): povidone-iodine 75 MG/ML Medicated Pad; povidone-iodine 10 MG/ML Medicated Pad; povidone-iodine 50 MG/ML Medicated Pad; isopropyl alcohol 0.725 ML/ML / povidone-iodine 83 MG/ML Topical Solution; povidone-iodine 40 MG/ML Medicated Shampoo"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] L605: Yellow nail syndrome (score: 0.3563)\n[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.3447)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.3432)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] '4 cc of clear yellow fluid was aspirated.  The patient tolerated the procedure well.,DISPOSITION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Measurement] 4.0cc \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] L983: Eosinophilic cellulitis [Wells] (score: 0.2228)\n[ICD-10-CM 2027] R460: Very low level of personal hygiene (score: 0.1973)\n[ICD-10-CM 2027] X982XXD: Assault by hot fluids, subsequent encounter (score: 0.1878)\n[ICD-10-CM 2027] Match unresolved (top score 0.2228 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Based upon the appearance of this synovial fluid, we have a very low clinical suspicion of a septic joint.  We will send this fluid to the lab for cell count, crystal exam, as well as culture and Gram stain.  We will follow these results.  After discussion with the emergency department staff, it appears that they tend to try to treat his erythema which appears to be cellulitis with IV antibiotics' \u2014 extracted from header, not verified against any coding system"
+  }
+]

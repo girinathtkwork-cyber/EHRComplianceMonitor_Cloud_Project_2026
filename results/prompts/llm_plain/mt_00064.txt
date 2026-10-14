@@ -1,0 +1,182 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+REASON FOR VISIT:,  Six-month follow-up visit for paroxysmal atrial fibrillation (PAF).,She reports that she is getting occasional chest pains with activity.  Sometimes she feels that at night when she is lying in bed and it concerns her.,She is frustrated by her inability to lose weight even though she is hyperthyroid.,MEDICATIONS: , Tapazole 10 mg b.i.d., atenolol/chlorthalidone 50/25 mg b.i.d., Micro-K 10 mEq q.d., Lanoxin 0.125 mg q.d., spironolactone 25 mg q.d., Crestor 10 mg q.h.s., famotidine 20 mg, Bayer Aspirin 81 mg q.d., Vicodin p.r.n., and Nexium 40 mg-given samples of this today.,REVIEW OF SYSTEMS:,  No palpitations.  No lightheadedness or presyncope.  She is having mild pedal edema, but she drinks a lot of fluid.,PEX: , BP:  112/74.  PR:  70.  WT:  223 pounds (up three pounds).  Cardiac:  Regular rate and rhythm with a 1/6 murmur at the upper sternal border.  Chest:  Nontender.  Lungs:  Clear.  Abdomen:  Moderately overweight.  Extremities:  Trace edema.,EKG: , Sinus bradycardia at 58 beats per minute, mild inferolateral ST abnormalities.,IMPRESSION:,1.  Chest pain-Mild.  Her EKG is mildly abnormal.  Her last stress echo was in 2001.  I am going to have her return for one just to make sure it is nothing serious.  I suspect; however, that is more likely due to her weight and acid reflux.  I gave her samples of Nexium.,2.  Mild pedal edema-Has to cut down on fluid intake, weight loss will help as well, continue with the chlorthalidone.,3.  PAF-Due to hypertension, hyperthyroidism and hypokalemia.  Staying in sinus rhythm.,4.  Hyperthyroidism-Last TSH was mildly suppressed, she had been out of her Tapazole for a while, now back on it.,5.  Dyslipidemia-Samples of Crestor given.,6.  LVH.,7.  Menometrorrhagia.,PLAN:,1.  Return for stress echo.,2.  Reduce the fluid intake to help with pedal edema.,3.  Nexium trial.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "atenolol"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "chlorthalidone"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "10 mEq"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Lanoxin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "0.125 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "spironolactone"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "Crestor"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "famotidine"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Bayer Aspirin"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "81 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Nexium"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Chest pain-Mild.  Her EKG is mildly abnormal.  Her last stress echo was in"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "diagnosis",
+    "text": "I am going to have her return for one just to make sure it is nothing serious.  I suspect; however, that is more likely due to her weight and acid reflux.  I gave her samples of Nexium"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "Nexium"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "Mild pedal edema-Has to cut down on fluid intake, weight loss will help as well, continue with the chlorthalidone"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "medication",
+    "text": "chlorthalidone"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "PAF-Due to hypertension, hyperthyroidism and hypokalemia.  Staying in sinus rhythm"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Hyperthyroidism-Last TSH was mildly suppressed, she had been out of her Tapazole for a while, now back on it"
+  },
+  {
+    "entity_id": "E26",
+    "entity_type": "diagnosis",
+    "text": "Dyslipidemia-Samples of Crestor given"
+  },
+  {
+    "entity_id": "E27",
+    "entity_type": "medication",
+    "text": "Crestor"
+  },
+  {
+    "entity_id": "E28",
+    "entity_type": "diagnosis",
+    "text": "Menometrorrhagia.,PLAN:"
+  },
+  {
+    "entity_id": "E29",
+    "entity_type": "diagnosis",
+    "text": "Return for stress echo"
+  },
+  {
+    "entity_id": "E30",
+    "entity_type": "diagnosis",
+    "text": "Reduce the fluid intake to help with pedal edema"
+  },
+  {
+    "entity_id": "E31",
+    "entity_type": "diagnosis",
+    "text": "Nexium trial"
+  },
+  {
+    "entity_id": "E32",
+    "entity_type": "medication",
+    "text": "Nexium"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

@@ -1,0 +1,53 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+DELIVERY NOTE: , This is a 30-year-old G7, P5 female at 39-4/7th weeks who presents to Labor and Delivery for induction for history of large babies and living far away.  She was admitted and started on Pitocin.  Her cervix is 3 cm, 50% effaced and -2 station.  Artificial rupture of membrane was performed for clear fluid.  She did receive epidural anesthesia.  She progressed to complete and pushing.  She pushed to approximately one contraction and delivered a live-born female infant at 1524 hours.  Apgars were 8 at 1 minute and 9 at 5 minutes.  Placenta was delivered intact with three-vessel cord.  The cervix was visualized.  No lacerations were noted.  Perineum remained intact.  Estimated blood loss is 30mL.  Complications were none.  Mother and baby remained in the birthing room in good condition.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Pitocin"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "measurement",
+    "text": "50%"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "measurement",
+    "text": "30mL"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Pitocin' \u2192 RXCUI 227199, canonical: Pitocin, match: exact\n[RxNorm] Ingredient: oxytocin (RXCUI 7824)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML oxytocin 10 UNT/ML Injection; oxytocin 10 UNT/ML Injectable Solution; oxytocin 5 UNT/ML Injectable Solution; ergonovine 0.5 MG/ML / oxytocin 5 UNT/ML Injectable Solution; oxytocin 20 UNT/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Measurement] 50.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Measurement] 30.0ml \u2014 not associated with any medication"
+  }
+]

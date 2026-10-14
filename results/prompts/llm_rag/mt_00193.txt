@@ -1,0 +1,83 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CHIEF COMPLAINT: , Jaw pain.,HISTORY OF PRESENT ILLNESS:  ,This is a 58-year-old male who started out having toothache in the left lower side of the mouth that is now radiating into his jaw and towards his left ear.  Triage nurse reported that he does not believe it is his tooth because he has regular dental appointments, but has not seen a dentist since this new toothache began.  The patient denies any facial swelling.  No headache.  No swelling to the throat.  No sore throat.  No difficulty swallowing liquids or solids.  No neck pain.  No lymph node swelling.  The patient denies any fever or chills.  Denies any other problems or complaints.,REVIEW OF SYSTEMS:,  CONSTITUTIONAL:  No fever or chills.  No fatigue or weakness.  HEENT:  No headache.  No neck pain.  No eye pain or vision change.  No rhinorrhea.  No sinus congestion, pressure, or pain.  No sore throat.  No throat swelling.  The patient does have the toothache on the left lower side that radiates towards his left ear as previously described.  The patient does not have ear pain or hearing change.  No pressure in the ear.  CARDIOVASCULAR:  No chest pain.  RESPIRATIONS:  No shortness of breath.  GASTROINTESTINAL:  No nausea or vomiting.  No abdominal pain.  MUSCULOSKELETAL:  No back pain.  SKIN:  No rashes or lesions.  NEUROLOGIC:  No vision or hearing change.  No speech change.  HEMATOLOGIC/LYMPHATIC:  No lymph node swelling.,PAST MEDICAL HISTORY: , None.,PAST SURGICAL HISTORY:,  None.,CURRENT MEDICATIONS: , None.,ALLERGIES: , NO KNOWN DRUG ALLERGIES.,SOCIAL HISTORY: , The patient smokes marijuana.  The patient does not smoke cigarettes.,PHYSICAL EXAMINATION: , VITAL SIGNS:  Temperature 98.2 oral, blood pressure is 168/84, pulse is 87, respirations 16, and oxygen saturation is 100% on room air and interpreted as normal.  CONSTITUTIONAL:  The patient is well nourished, well developed.  The patient appears to be healthy.  The patient is calm, comfortable in no acute distress, looks well.  The patient is pleasant and cooperative.  HEENT:  Head is atraumatic, normocephalic, and nontender.  Eyes are normal with clear cornea and conjunctivae bilaterally.  Nose, normal without rhinorrhea or audible congestion.  There is no tenderness over the sinuses.  Ears are normal without any sign of infection.  No erythema or swelling of the canals.  Tympanic membranes are intact and normal without any erythema, bulging, air fluid levels, or bubbles behind it.  MOUTH:  The patient has a dental fracture at tooth #18.  The patient states that the fracture is a couple of months old.  The patient does not have any obvious dental caries.  The gums are normal without any erythema, swelling, or evidence of infection.  There is no fluctuance or suggestion of abscess.  There is slight tenderness of the tooth #18.  The oropharynx is normal without any sign of infection.  There is no erythema, exudate, lesion, or swelling.  Mucous membranes are moist.  Floor of the mouth is normal without any tenderness or swelling.  No suggestion of abscess.  There is no pre or post auricular lymphadenopathy either.  NECK:  Supple.  Nontender.  Full range of motion.  No meningismus.  No cervical lymphadenopathy.  No JVD.  No carotid artery or vertebral artery bruits.  CARDIOVASCULAR:  Heart is regular rate and rhythm without murmur, rub, or gallop.  RESPIRATIONS:  Clear to auscultation bilaterally.  No shortness of breath.  GASTROINTESTINAL:  Abdomen is normal and nontender.  MUSCULOSKELETAL:  No abnormalities are noted to the back, arms, or legs.  The patient has normal use of the extremities.  SKIN:  No rashes or lesions.  NEUROLOGIC:  Cranial nerves II through XII are intact.  The patient has normal speech and normal ambulation.  PSYCHIATRIC:  The patient is alert and oriented x4.  Normal mood and affect.  No evidence of clinical intoxification.  HEMATOLOGIC/LYMPHATIC:  No lymphadenitis is palpated.,DIAGNOSES:,1.  ACUTE LEFT JAW PAIN.,2.  #18 DENTAL FRACTURE, WHICH IS AN ELLIS TYPE II FRACTURE.,3.  ELEVATED BLOOD PRESSURE.,CONDITION UPON DISPOSITION: , Stable.,DISPOSITION:,  Home.,PLAN: , We will have the patient follow up with his dentist Dr. X in three to five days for reevaluation.  The patient was encouraged to take Motrin 400 mg q.6h. as needed for pain.  The patient was given prescription for Vicodin for any breakthrough or uncontrolled pain.  He was given precautions for drowsiness and driving with the use of this medication.  The patient was also given a prescription for pen V.  The patient was given discharge instructions on toothache and asked to return to emergency room should he have any worsening of his condition, develop any other problems or symptoms of concern.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "ACUTE LEFT JAW PAIN"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "#18 DENTAL FRACTURE, WHICH IS AN ELLIS TYPE II FRACTURE"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "ELEVATED BLOOD PRESSURE.,CONDITION UPON DISPOSITION: , Stable.,DISPOSITION:,  Home.,PLAN: , We will have the patient follow up with his dentist Dr. X in three to five days for reevaluation.  The patient was encouraged to take Motrin 400 mg q.6h. as needed for pain.  The patient was given prescription for Vicodin for any breakthrough or uncontrolled pain.  He was given precautions for drowsiness and driving with the use of this medication.  The patient was also given a prescription for pen V.  The patient was given discharge instructions on toothache and asked to return to emergency room should he have any worsening of his condition, develop any other problems or symptoms of concern"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Motrin"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "400 mg"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Measurement] 100.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] R6884: Jaw pain (score: 0.8882)\n[ICD-10-CM 2027] M279: Disease of jaws, unspecified (score: 0.6023)\n[ICD-10-CM 2027] M278: Other specified diseases of jaws (score: 0.5784)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Z1384: Encounter for screening for dental disorders (score: 0.5640)\n[ICD-10-CM 2027] Z98818: Other dental procedure status (score: 0.5562)\n[ICD-10-CM 2027] K029: Dental caries, unspecified (score: 0.5508)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] P5842: Neonatal jaundice due to drugs or toxins given to newborn (score: 0.3038)\n[ICD-10-CM 2027] Y632: Overdose of radiation given during therapy (score: 0.2880)\n[ICD-10-CM 2027] Y630: Excessive amount of blood or other fluid given during transfusion or infusion (score: 0.2707)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Motrin' \u2192 RXCUI 202488, canonical: Motrin, match: exact\n[RxNorm] Ingredient: ibuprofen (RXCUI 5640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): ibuprofen 400 MG / oxycodone hydrochloride 5 MG Oral Tablet; famotidine 26.6 MG / ibuprofen 800 MG Oral Tablet; chlorpheniramine maleate 2 MG / ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Tablet; ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Capsule; ibuprofen 200 MG / pseudoephedrine hydrochloride 30 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 400.0mg associated with Motrin"
+  }
+]

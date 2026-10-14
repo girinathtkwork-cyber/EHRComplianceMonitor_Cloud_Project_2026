@@ -1,0 +1,163 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+SUBJECTIVE:,  Overall, she has been doing well. Additional diagnosis noted: Atrial Fibrillation.  Her blood sugars have usually been less than or equal to 135 by home glucose monitoring.  Her fasting blood sugar today is 120 by our Accu-Chek.  She is exercising three times per week.  Review of systems is otherwise unremarkable. ,OBJECTIVE:,  Her blood pressure is 110/60.  Other vitals are stable.  HEENT:  Unremarkable.  Neck:  Unremarkable.  Lungs:  Clear.  Heart:  Regular.  Abdomen:  Unchanged.  Extremities:  Unchanged.  Neurologic:  Unchanged. ,ASSESSMENT:,  ,1.  NIDDM with improved control. ,2.  Hypertension. ,3.  Coronary artery disease status post coronary artery bypass graft. ,4.  Degenerative arthritis. ,5.  Hyperlipidemia. ,6.  Hyperuricemia. ,7.  Renal azotemia. ,8.  Anemia. ,9.  Fibroglandular breasts. ,PLAN:,  We will get follow-up labs today.  We will continue with current medications and treatment.  We will arrange for a follow-up mammogram as recommended by the radiologist in six months, which will be approximately Month DD, YYYY.  The patient is advised to proceed with previous recommendations.  She is to follow-up with Ophthalmology and Podiatry for diabetic evaluation and to return for follow-up as directed.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Atrial Fibrillation.  Her blood sugars have usually been less than or equal to 135 by home glucose monitoring.  Her fasting blood sugar today is 120 by our Accu-Chek.  She is exercising three times per week.  Review of systems is otherwise unremarkable. ,OBJECTIVE:,  Her blood pressure is 110/"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "glucose"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Other vitals are stable.  HEENT:  Unremarkable.  Neck:  Unremarkable.  Lungs:  Clear.  Heart:  Regular.  Abdomen:  Unchanged.  Extremities:  Unchanged.  Neurologic:  Unchanged. ,ASSESSMENT:,  "
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "NIDDM with improved control. "
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Hypertension. "
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Coronary artery disease status post coronary artery bypass graft. "
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Degenerative arthritis. "
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Hyperlipidemia. "
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Hyperuricemia. "
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Renal azotemia. "
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "diagnosis",
+    "text": "Anemia. "
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Fibroglandular breasts. ,PLAN:,  We will get follow-up labs today.  We will continue with current medications and treatment.  We will arrange for a follow-up mammogram as recommended by the radiologist in six months, which will be approximately Month DD, YYYY.  The patient is advised to proceed with previous recommendations.  She is to follow-up with Ophthalmology and Podiatry for diabetic evaluation and to return for follow-up as directed"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "today"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.3462)\n[ICD-10-CM 2027] R7301: Impaired fasting glucose (score: 0.3334)\n[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.3286)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] R414: Neurologic neglect syndrome (score: 0.3162)\n[ICD-10-CM 2027] H52229: Regular astigmatism, unspecified eye (score: 0.2788)\n[ICD-10-CM 2027] H52222: Regular astigmatism, left eye (score: 0.2766)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] O24419: Gestational diabetes mellitus in pregnancy, unspecified control (score: 0.6616)\n[ICD-10-CM 2027] O24439: Gestational diabetes mellitus in the puerperium, unspecified control (score: 0.6272)\n[ICD-10-CM 2027] O24429: Gestational diabetes mellitus in childbirth, unspecified control (score: 0.6218)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] I158: Other secondary hypertension (score: 0.7957)\n[ICD-10-CM 2027] I159: Secondary hypertension, unspecified (score: 0.7957)\n[ICD-10-CM 2027] O169: Unspecified maternal hypertension, unspecified trimester (score: 0.7538)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] T82212D: Displacement of coronary artery bypass graft, subsequent encounter (score: 0.7283)\n[ICD-10-CM 2027] T82212A: Displacement of coronary artery bypass graft, initial encounter (score: 0.7254)\n[ICD-10-CM 2027] T82212S: Displacement of coronary artery bypass graft, sequela (score: 0.7253)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] H93099: Unspecified degenerative and vascular disorders of unspecified ear (score: 0.5429)\n[ICD-10-CM 2027] H93092: Unspecified degenerative and vascular disorders of left ear (score: 0.5367)\n[ICD-10-CM 2027] H93091: Unspecified degenerative and vascular disorders of right ear (score: 0.5366)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] E7849: Other hyperlipidemia (score: 1.0000)\n[ICD-10-CM 2027] E785: Hyperlipidemia, unspecified (score: 1.0000)\n[ICD-10-CM 2027] E782: Mixed hyperlipidemia (score: 0.8313)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] E790: Hyperuricemia without signs of inflammatory arthritis and tophaceous disease (score: 0.5703)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] S35403D: Unspecified injury of unspecified renal artery, subsequent encounter (score: 0.7360)\n[ICD-10-CM 2027] S35493D: Other specified injury of unspecified renal artery, subsequent encounter (score: 0.7360)\n[ICD-10-CM 2027] S35403A: Unspecified injury of unspecified renal artery, initial encounter (score: 0.7293)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[ICD-10-CM 2027] D6489: Other specified anemias (score: 1.0000)\n[ICD-10-CM 2027] D649: Anemia, unspecified (score: 1.0000)\n[ICD-10-CM 2027] O9081: Anemia of the puerperium (score: 0.7049)"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] Z392: Encounter for routine postpartum follow-up (score: 0.5914)\n[ICD-10-CM 2027] Z362: Encounter for other antenatal screening follow-up (score: 0.5720)\n[ICD-10-CM 2027] Z08: Encounter for follow-up examination after completed treatment for malignant neoplasm (score: 0.5025)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  }
+]

@@ -1,0 +1,63 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+EXAM:,  CT Abdomen & Pelvis W&WO Contrast, ,REASON FOR EXAM: , Status post aortobiiliac graft repair. , ,TECHNIQUE: , 5 mm spiral thick spiral CT scanning was performed through the entire abdomen and pelvis utilizing intravenous dynamic bolus contrast enhancement.  No oral or rectal contrast was utilized.  Comparison is made with the prior CT abdomen and pelvis dated 10/20/05.  There has been no significant change in size of the abdominal aortic aneurysm centered roughly at the renal artery origin level which has dimensions of 3.7 cm transversely x 3.4 AP.  Just below this level is the top of the endoluminal graft repair with numerous surrounding surgical clips.  The size of the native aneurysm component at this level is stable at 5.5 cm in diameter with mural thrombus surrounding the enhancing endolumen.  There is no abnormal entrance of contrast agent into the mural thrombus to indicate an endoluminal leak.  Further distally, there is extension of the graft into both proximal common iliac arteries without evidence for endoluminal leak at this level either.  No exoluminal leakage is identified at any level.  There is no retroperitoneal hematoma present.  The findings are unchanged from the prior exam.  ,The liver, spleen, pancreas, adrenals and right kidney are unremarkable with moderate diffuse atrophy of the pancreas present.  There is advanced atrophy of the left kidney.  No hydronephrosis is present.  No acute findings are identified elsewhere in the abdomen. ,The lung bases are clear. ,Concerning the remainder of the pelvis, no acute pathology is identified.  There is prominent streak artifact from the left total hip replacement.  There is diffuse moderate sigmoid diverticulosis without evidence for diverticulitis.  The bladder grossly appears normal.  A hysterectomy has been performed.  ,IMPRESSION:,1.  No complications identified regarding endoluminal aortoiliac graft repair as described.  The findings are stable compared to the study of 10/20/04.  ,2.  Stable mild aneurysm of aortic aneurysm, centered roughly at renal artery level.  ,3.  No other acute findings noted. ,4.  Advanced left renal atrophy.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "No complications identified regarding endoluminal aortoiliac graft repair as described.  The findings are stable compared to the study of 10/20/"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Stable mild aneurysm of aortic aneurysm, centered roughly at renal artery level.  "
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "No other acute findings noted. "
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Advanced left renal atrophy"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] R94113: Abnormal oculomotor study (score: 0.2454)\n[ICD-10-CM 2027] T8133XD: Disruption of traumatic injury wound repair, subsequent encounter (score: 0.2415)\n[ICD-10-CM 2027] T8133XA: Disruption of traumatic injury wound repair, initial encounter (score: 0.2407)\n[ICD-10-CM 2027] Match unresolved (top score 0.2454 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] I722: Aneurysm of renal artery (score: 0.7734)\n[ICD-10-CM 2027] I719: Aortic aneurysm of unspecified site, without rupture (score: 0.6416)\n[ICD-10-CM 2027] I7120: Thoracic aortic aneurysm, without rupture, unspecified (score: 0.6384)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] P192: Metabolic acidemia noted at birth (score: 0.3575)\n[ICD-10-CM 2027] P191: Metabolic acidemia in newborn first noted during labor (score: 0.3241)\n[ICD-10-CM 2027] P190: Metabolic acidemia in newborn first noted before onset of labor (score: 0.2914)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] N642: Atrophy of breast (score: 0.3995)\n[ICD-10-CM 2027] H05312: Atrophy of left orbit (score: 0.3885)\n[ICD-10-CM 2027] H05319: Atrophy of unspecified orbit (score: 0.3700)"
+  }
+]

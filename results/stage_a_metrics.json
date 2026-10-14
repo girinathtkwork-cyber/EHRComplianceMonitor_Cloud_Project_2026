@@ -1,0 +1,368 @@
+{
+  "headline_metrics": {
+    "localized_detection_recall_strict": 0.0,
+    "localized_detection_recall_strict_ci": [
+      0.0,
+      0.0409
+    ],
+    "localized_detection_recall_soft": 0.2333,
+    "localized_detection_recall_soft_ci": [
+      0.158,
+      0.3305
+    ],
+    "clean_record_fpr_strict": 0.0,
+    "clean_record_fpr_strict_ci": [
+      0.0,
+      0.0209
+    ],
+    "clean_record_fpr_soft": 0.4444,
+    "clean_record_fpr_soft_ci": [
+      0.3738,
+      0.5174
+    ]
+  },
+  "record_level": {
+    "strict": {
+      "TP": 0,
+      "FP": 0,
+      "FN": 90,
+      "TN": 180,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fpr": 0.0,
+      "recall_95ci": [
+        0.0,
+        0.0409
+      ],
+      "fpr_95ci": [
+        0.0,
+        0.0209
+      ]
+    },
+    "soft": {
+      "TP": 51,
+      "FP": 80,
+      "FN": 39,
+      "TN": 100,
+      "precision": 0.3893,
+      "recall": 0.5667,
+      "f1": 0.4615,
+      "fpr": 0.4444,
+      "recall_95ci": [
+        0.4636,
+        0.6642
+      ],
+      "fpr_95ci": [
+        0.3738,
+        0.5174
+      ]
+    }
+  },
+  "per_error_type": {
+    "wrong_dosage": {
+      "n": 18,
+      "detected_strict": 0,
+      "detected_strict_rate": 0.0,
+      "detected_soft": 12,
+      "detected_soft_rate": 0.6666666666666666,
+      "funnel_coverage": 18,
+      "funnel_coverage_rate": 1.0
+    },
+    "fabricated_diagnosis": {
+      "n": 38,
+      "detected_strict": 0,
+      "detected_strict_rate": 0.0,
+      "detected_soft": 3,
+      "detected_soft_rate": 0.07894736842105263,
+      "funnel_coverage": 34,
+      "funnel_coverage_rate": 0.8947368421052632
+    },
+    "fabricated_procedure": {
+      "n": 23,
+      "detected_strict": 0,
+      "detected_strict_rate": 0.0,
+      "detected_soft": 6,
+      "detected_soft_rate": 0.2608695652173913,
+      "funnel_coverage": 20,
+      "funnel_coverage_rate": 0.8695652173913043
+    },
+    "wrong_medication": {
+      "n": 11,
+      "detected_strict": 0,
+      "detected_strict_rate": 0.0,
+      "detected_soft": 0,
+      "detected_soft_rate": 0.0,
+      "funnel_coverage": 10,
+      "funnel_coverage_rate": 0.9090909090909091
+    }
+  },
+  "funnel_and_throughput": {
+    "total_records": 270,
+    "clean_records": 180,
+    "injected_records": 90,
+    "transcripts_forwarded_to_stage_b": 258,
+    "transcripts_forwarded_ratio": 0.9556,
+    "transcripts_zero_forwarded": 12,
+    "transcripts_zero_forwarded_ratio": 0.0444,
+    "total_entities": 3625,
+    "forwarded_entities": 3625,
+    "forwarded_entities_ratio": 1.0,
+    "invalid_entities": 0,
+    "unresolved_entities": 122
+  },
+  "wrong_dosage_breakdown": {
+    "total_injected_wrong_dosage": 18,
+    "drug_associated_count": 11,
+    "non_drug_measurement_count": 7,
+    "misses_count": 0,
+    "drug_associated": [
+      {
+        "transcript_id": "mt_00072",
+        "injected_entity": "750mg",
+        "correct_value": "75mg",
+        "in_funnel": true,
+        "associated_medication": "Brevital",
+        "flags": [
+          {
+            "flag_type": "dose_not_a_known_strength",
+            "severity_hint": "soft",
+            "detail": "dose 750.0mg not among known product strengths"
+          }
+        ]
+      },
+      {
+        "transcript_id": "mt_00135",
+        "injected_entity": "30mg",
+        "correct_value": "3mg",
+        "in_funnel": true,
+        "associated_medication": "fentanyl",
+        "flags": [
+          {
+            "flag_type": "dose_not_a_known_strength",
+            "severity_hint": "soft",
+            "detail": "dose 30.0mg not among known product strengths"
+          }
+        ]
+      },
+      {
+        "transcript_id": "mt_00139",
+        "injected_entity": "30mg",
+        "correct_value": "300mg",
+        "in_funnel": true,
+        "associated_medication": "Lithium",
+        "flags": [
+          {
+            "flag_type": "dose_not_a_known_strength",
+            "severity_hint": "soft",
+            "detail": "dose 30.0mg not among known product strengths"
+          }
+        ]
+      },
+      {
+        "transcript_id": "mt_00153",
+        "injected_entity": "550mg",
+        "correct_value": "55mg",
+        "in_funnel": true,
+        "associated_medication": "Glucose",
+        "flags": [
+          {
+            "flag_type": "dose_not_a_known_strength",
+            "severity_hint": "soft",
+            "detail": "dose 550.0mg not among known product strengths"
+          }
+        ]
+      },
+      {
+        "transcript_id": "mt_00182",
+        "injected_entity": "32mg",
+        "correct_value": "325mg",
+        "in_funnel": true,
+        "associated_medication": "hydrocodone",
+        "flags": [
+          {
+            "flag_type": "dose_not_a_known_strength",
+            "severity_hint": "soft",
+            "detail": "dose 32.0mg not among known product strengths"
+          }
+        ]
+      },
+      {
+        "transcript_id": "mt_00184",
+        "injected_entity": "12mg",
+        "correct_value": "125mg",
+        "in_funnel": true,
+        "associated_medication": "Digoxin",
+        "flags": [
+          {
+            "flag_type": "dose_not_a_known_strength",
+            "severity_hint": "soft",
+            "detail": "dose 0.12mg not among known product strengths"
+          }
+        ]
+      },
+      {
+        "transcript_id": "mt_00188",
+        "injected_entity": "40mg",
+        "correct_value": "400mg",
+        "in_funnel": true,
+        "associated_medication": "Dilantin",
+        "flags": [
+          {
+            "flag_type": "dose_not_a_known_strength",
+            "severity_hint": "soft",
+            "detail": "dose 40.0mg not among known product strengths"
+          }
+        ]
+      },
+      {
+        "transcript_id": "mt_00203",
+        "injected_entity": "50mg",
+        "correct_value": "500mg",
+        "in_funnel": true,
+        "associated_medication": "cephalexin",
+        "flags": []
+      },
+      {
+        "transcript_id": "mt_00205",
+        "injected_entity": "87mg",
+        "correct_value": "875mg",
+        "in_funnel": true,
+        "associated_medication": "Augmentin",
+        "flags": [
+          {
+            "flag_type": "dose_not_a_known_strength",
+            "severity_hint": "soft",
+            "detail": "dose 87.0mg not among known product strengths"
+          }
+        ]
+      },
+      {
+        "transcript_id": "mt_00224",
+        "injected_entity": "50mg",
+        "correct_value": "500mg",
+        "in_funnel": true,
+        "associated_medication": "vitamin D",
+        "flags": []
+      },
+      {
+        "transcript_id": "mt_00269",
+        "injected_entity": "17mcg",
+        "correct_value": "175mcg",
+        "in_funnel": true,
+        "associated_medication": "fentanyl",
+        "flags": [
+          {
+            "flag_type": "dose_not_a_known_strength",
+            "severity_hint": "soft",
+            "detail": "dose 17.0mcg not among known product strengths"
+          }
+        ]
+      }
+    ],
+    "non_drug_measurement": [
+      {
+        "transcript_id": "mt_00004",
+        "injected_entity": "30mL",
+        "correct_value": "300mL",
+        "in_funnel": true,
+        "type": "measurement"
+      },
+      {
+        "transcript_id": "mt_00045",
+        "injected_entity": "100mL",
+        "correct_value": "10mL",
+        "in_funnel": true,
+        "type": "measurement"
+      },
+      {
+        "transcript_id": "mt_00068",
+        "injected_entity": "10mL",
+        "correct_value": "100mL",
+        "in_funnel": true,
+        "type": "measurement"
+      },
+      {
+        "transcript_id": "mt_00076",
+        "injected_entity": "50mg",
+        "correct_value": "5mg",
+        "in_funnel": true,
+        "type": "measurement"
+      },
+      {
+        "transcript_id": "mt_00097",
+        "injected_entity": "100mL",
+        "correct_value": "10mL",
+        "in_funnel": true,
+        "type": "measurement"
+      },
+      {
+        "transcript_id": "mt_00136",
+        "injected_entity": "32mg",
+        "correct_value": "325mg",
+        "in_funnel": true,
+        "type": "measurement"
+      },
+      {
+        "transcript_id": "mt_00244",
+        "injected_entity": "50mL",
+        "correct_value": "5mL",
+        "in_funnel": true,
+        "type": "measurement"
+      }
+    ]
+  },
+  "audit_misses": {
+    "total_misses": 8,
+    "misses": [
+      {
+        "transcript_id": "mt_00014",
+        "error_type": "fabricated_diagnosis",
+        "injected_entity": "Chronic Kidney Disease, Stage 3",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00029",
+        "error_type": "fabricated_diagnosis",
+        "injected_entity": "Chronic Kidney Disease, Stage 3",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00053",
+        "error_type": "wrong_medication",
+        "injected_entity": "Navane",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00091",
+        "error_type": "fabricated_diagnosis",
+        "injected_entity": "Chronic Kidney Disease, Stage 3",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00143",
+        "error_type": "fabricated_procedure",
+        "injected_entity": "upper endoscopy",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00209",
+        "error_type": "fabricated_procedure",
+        "injected_entity": "diagnostic laparoscopy",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00210",
+        "error_type": "fabricated_diagnosis",
+        "injected_entity": "Chronic Kidney Disease, Stage 3",
+        "reason": "not_extracted"
+      },
+      {
+        "transcript_id": "mt_00216",
+        "error_type": "fabricated_procedure",
+        "injected_entity": "cardiac catheterization",
+        "reason": "not_extracted"
+      }
+    ]
+  }
+}

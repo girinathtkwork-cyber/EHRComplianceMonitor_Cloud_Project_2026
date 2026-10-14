@@ -1,0 +1,62 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+ADMISSION DIAGNOSIS: , Bilateral l5 spondylolysis with pars defects and spinal instability with radiculopathy. Additional diagnosis noted: Atrial Fibrillation.,SECONDARY DIAGNOSIS:,  Chronic pain syndrome.,PRINCIPAL PROCEDURE: , L5 Gill procedure with interbody and posterolateral (360 degrees circumferential) arthrodesis using cages, bone graft, recombinant bone morphogenic protein, and pedicle fixation.  This was performed by Dr. X on 01/08/08.,BRIEF HISTORY OF HOSPITAL COURSE: , The patient is a man with a history of longstanding back, buttock, and bilateral leg pain.  He was evaluated and found to have bilateral pars defects at L5-S1 with spondylolysis and instability.  He was admitted and underwent an uncomplicated surgical procedure as noted above.  In the postoperative period, he was up and ambulatory.  He was taking p.o. fluids and diet well.  He was afebrile.  His wounds were healing well.  Subsequently, the patient was discharged home.,DISCHARGE MEDICATIONS: , Discharge medications included his usual preoperative pain medication as well as other medications.,FOLLOWUP:  ,At this time, the patient will follow up with me in the office in six weeks' time.  The patient understands discharge plans and is in agreement with the discharge plan.  He will follow up as noted
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Bilateral l5 spondylolysis with pars defects and spinal instability with radiculopathy. Additional diagnosis noted: Atrial Fibrillation.,SECONDARY DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Chronic pain syndrome.,PRINCIPAL PROCEDURE:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "L5 Gill procedure with interbody and posterolateral (360 degrees circumferential) arthrodesis using cages, bone graft, recombinant bone morphogenic protein, and pedicle fixation.  This was performed by Dr. X on 01/08/08.,BRIEF HISTORY OF HOSPITAL COURSE:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "L5 Gill procedure with interbody and posterolateral (360 degrees circumferential) arthrodesis using cages, bone graft, recombinant bone morphogenic protein, and pedicle fixation.  This was performed by Dr. X on 01/08/08.,BRIEF HISTORY OF HOSPITAL COURSE:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "The patient is a man with a history of longstanding back, buttock, and bilateral leg pain.  He was evaluated and found to have bilateral pars defects at L5-S1 with spondylolysis and instability.  He was admitted and underwent an uncomplicated surgical procedure as noted above.  In the postoperative period, he was up and ambulatory.  He was taking p.o. fluids and diet well.  He was afebrile.  His wounds were healing well.  Subsequently, the patient was discharged home.,DISCHARGE MEDICATIONS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "The patient is a man with a history of longstanding back, buttock, and bilateral leg pain.  He was evaluated and found to have bilateral pars defects at L5-S1 with spondylolysis and instability.  He was admitted and underwent an uncomplicated surgical procedure as noted above.  In the postoperative period, he was up and ambulatory.  He was taking p.o. fluids and diet well.  He was afebrile.  His wounds were healing well.  Subsequently, the patient was discharged home.,DISCHARGE MEDICATIONS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Discharge medications included his usual preoperative pain medication as well as other medications.,FOLLOWUP:  ,At this time, the patient will follow up with me in the office in six weeks' time.  The patient understands discharge plans and is in agreement with the discharge plan.  He will follow up as noted"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Discharge medications included his usual preoperative pain medication as well as other medications.,FOLLOWUP:  ,At this time, the patient will follow up with me in the office in six weeks' time.  The patient understands discharge plans and is in agreement with the discharge plan.  He will follow up as noted"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

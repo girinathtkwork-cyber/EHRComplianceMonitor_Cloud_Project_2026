@@ -1,0 +1,123 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:,1.  Dysphagia.,2.  Right parapharyngeal hemorrhagic lesion.,POSTOPERATIVE DIAGNOSES:,1.  Dysphagia with no signs of piriform sinus pooling or aspiration.,2.  No parapharyngeal hemorrhagic lesion noted.,3.  Right parapharyngeal lesion, likely thyroid cartilage, nonhemorrhagic.,PROCEDURE PERFORMED: ,Fiberoptic nasolaryngoscopy.,ANESTHESIA: , None.,COMPLICATIONS: , None.,INDICATIONS FOR PROCEDURE: , The patient is a 93-year-old Caucasian male who was admitted to ABCD General Hospital on 08/07/2003 secondary to ischemic ulcer on the right foot.  ENT was asked to see the patient regarding postop dysphagia with findings at that time of the consultation on 08/17/03 with a fiberoptic nasolaryngoscopy, a right parapharyngeal hemorrhagic lesion possibly secondary to LMA intubation.  The patient subsequently resolved with his dysphagia and workup of Speech was obtained, which showed no aspiration, no pooling, minimal premature spillage with solids, but good protection of the airway.  This is a reevaluation of the right parapharyngeal hemorrhagic lesion that was noted prior.,PROCEDURE DETAILS: ,The patient was brought in the semi-Fowler's position, a fiberoptic nasal laryngoscope was then passed into the patient's right nasal passage, all the way to the nasopharynx.  The scope was then flexed caudally and advanced slowly through the nasopharynx into the oropharynx, and down to the hypopharynx.  The patient's oro and nasopharynx all appeared normal with no signs of any gross lesions, edema, or ecchymosis.,Within the hypopharynx although there was an area of fullness and on the right side around the level of the thyroid cartilage cornu that seemed to be prominent and within the lumen of the hypopharynx.  There were no signs of any obstruction.  The epiglottis, piriform sinuses, vallecula, and base of tongue all appeared normal with no signs of any gross lesions.  The patient with excellent phonation with good glottic closure upon phonation and no signs of any aspiration or pooling of secretions.  The scope was then pulled out and the patient tolerated the procedure well.  At this time, we will follow up as an outpatient and possibly there is a need for a microscopic suspension direct laryngoscopy for evaluation of this right parapharyngeal lesion.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Dysphagia"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Right parapharyngeal hemorrhagic lesion.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Dysphagia with no signs of piriform sinus pooling or aspiration"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "No parapharyngeal hemorrhagic lesion noted"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Right parapharyngeal lesion, likely thyroid cartilage, nonhemorrhagic.,PROCEDURE PERFORMED: ,Fiberoptic nasolaryngoscopy.,ANESTHESIA: , None.,COMPLICATIONS: , None.,INDICATIONS FOR PROCEDURE: , The patient is a 93-year-old Caucasian male who was admitted to ABCD General Hospital on 08/07/2003 secondary to ischemic ulcer on the right foot.  ENT was asked to see the patient regarding postop dysphagia with findings at that time of the consultation on 08/17/03 with a fiberoptic nasolaryngoscopy, a right parapharyngeal hemorrhagic lesion possibly secondary to LMA intubation.  The patient subsequently resolved with his dysphagia and workup of Speech was obtained, which showed no aspiration, no pooling, minimal premature spillage with solids, but good protection of the airway.  This is a reevaluation of the right parapharyngeal hemorrhagic lesion that was noted prior.,PROCEDURE DETAILS: ,The patient was brought in the semi-Fowler's position, a fiberoptic nasal laryngoscope was then passed into the patient's right nasal passage, all the way to the nasopharynx.  The scope was then flexed caudally and advanced slowly through the nasopharynx into the oropharynx, and down to the hypopharynx.  The patient's oro and nasopharynx all appeared normal with no signs of any gross lesions, edema, or ecchymosis.,Within the hypopharynx although there was an area of fullness and on the right side around the level of the thyroid cartilage cornu that seemed to be prominent and within the lumen of the hypopharynx.  There were no signs of any obstruction.  The epiglottis, piriform sinuses, vallecula, and base of tongue all appeared normal with no signs of any gross lesions.  The patient with excellent phonation with good glottic closure upon phonation and no signs of any aspiration or pooling of secretions.  The scope was then pulled out and the patient tolerated the procedure well.  At this time, we will follow up as an outpatient and possibly there is a need for a microscopic suspension direct laryngoscopy for evaluation of this right parapharyngeal lesion"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "PERFORMED: ,Fiberoptic nasolaryngoscopy.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Fiberoptic nasolaryngoscopy.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "None.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "None.,INDICATIONS FOR PROCEDURE:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "The patient is a 93-year-old Caucasian male who was admitted to ABCD General Hospital on 08/07/2003 secondary to ischemic ulcer on the right foot.  ENT was asked to see the patient regarding postop dysphagia with findings at that time of the consultation on 08/17/03 with a fiberoptic nasolaryngoscopy, a right parapharyngeal hemorrhagic lesion possibly secondary to LMA intubation.  The patient subsequently resolved with his dysphagia and workup of Speech was obtained, which showed no aspiration, no pooling, minimal premature spillage with solids, but good protection of the airway.  This is a reevaluation of the right parapharyngeal hemorrhagic lesion that was noted prior.,PROCEDURE DETAILS: ,The patient was brought in the semi-Fowler's position, a fiberoptic nasal laryngoscope was then passed into the patient's right nasal passage, all the way to the nasopharynx.  The scope was then flexed caudally and advanced slowly through the nasopharynx into the oropharynx, and down to the hypopharynx.  The patient's oro and nasopharynx all appeared normal with no signs of any gross lesions, edema, or ecchymosis.,Within the hypopharynx although there was an area of fullness and on the right side around the level of the thyroid cartilage cornu that seemed to be prominent and within the lumen of the hypopharynx.  There were no signs of any obstruction.  The epiglottis, piriform sinuses, vallecula, and base of tongue all appeared normal with no signs of any gross lesions.  The patient with excellent phonation with good glottic closure upon phonation and no signs of any aspiration or pooling of secretions.  The scope was then pulled out and the patient tolerated the procedure well.  At this time, we will follow up as an outpatient and possibly there is a need for a microscopic suspension direct laryngoscopy for evaluation of this right parapharyngeal lesion"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] R1310: Dysphagia, unspecified (score: 1.0000)\n[ICD-10-CM 2027] R1319: Other dysphagia (score: 1.0000)\n[ICD-10-CM 2027] I69891: Dysphagia following other cerebrovascular disease (score: 0.6863)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] J390: Retropharyngeal and parapharyngeal abscess (score: 0.5013)\n[ICD-10-CM 2027] D698: Other specified hemorrhagic conditions (score: 0.4054)\n[ICD-10-CM 2027] D699: Hemorrhagic condition, unspecified (score: 0.4054)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] R1310: Dysphagia, unspecified (score: 0.4585)\n[ICD-10-CM 2027] R1319: Other dysphagia (score: 0.4585)\n[ICD-10-CM 2027] I69891: Dysphagia following other cerebrovascular disease (score: 0.3147)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] J390: Retropharyngeal and parapharyngeal abscess (score: 0.3583)\n[ICD-10-CM 2027] D698: Other specified hemorrhagic conditions (score: 0.2898)\n[ICD-10-CM 2027] D699: Hemorrhagic condition, unspecified (score: 0.2898)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] Y844: Aspiration of fluid as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.2074)\n[ICD-10-CM 2027] J390: Retropharyngeal and parapharyngeal abscess (score: 0.2057)\n[ICD-10-CM 2027] Y839: Surgical procedure, unspecified as the cause of abnormal reaction of the patient, or of later complication, without mention of misadventure at the time of the procedure (score: 0.2044)\n[ICD-10-CM 2027] Match unresolved (top score 0.2074 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'PERFORMED: ,Fiberoptic nasolaryngoscopy.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'Fiberoptic nasolaryngoscopy.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'None.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'None.,INDICATIONS FOR PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'The patient is a 93-year-old Caucasian male who was admitted to ABCD General Hospital on 08/07/2003 secondary to ischemic ulcer on the right foot.  ENT was asked to see the patient regarding postop dysphagia with findings at that time of the consultation on 08/17/03 with a fiberoptic nasolaryngoscopy, a right parapharyngeal hemorrhagic lesion possibly secondary to LMA intubation.  The patient subsequently resolved with his dysphagia and workup of Speech was obtained, which showed no aspiration, no pooling, minimal premature spillage with solids, but good protection of the airway.  This is a reevaluation of the right parapharyngeal hemorrhagic lesion that was noted prior.,PROCEDURE DETAILS: ,The patient was brought in the semi-Fowler's position, a fiberoptic nasal laryngoscope was then passed into the patient's right nasal passage, all the way to the nasopharynx.  The scope was then flexed caudally and advanced slowly through the nasopharynx into the oropharynx, and down to the hypopharynx.  The patient's oro and nasopharynx all appeared normal with no signs of any gross lesions, edema, or ecchymosis.,Within the hypopharynx although there was an area of fullness and on the right side around the level of the thyroid cartilage cornu that seemed to be prominent and within the lumen of the hypopharynx.  There were no signs of any obstruction.  The epiglottis, piriform sinuses, vallecula, and base of tongue all appeared normal with no signs of any gross lesions.  The patient with excellent phonation with good glottic closure upon phonation and no signs of any aspiration or pooling of secretions.  The scope was then pulled out and the patient tolerated the procedure well.  At this time, we will follow up as an outpatient and possibly there is a need for a microscopic suspension direct laryngoscopy for evaluation of this right parapharyngeal lesion' \u2014 extracted from header, not verified against any coding system"
+  }
+]

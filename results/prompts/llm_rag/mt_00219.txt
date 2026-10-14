@@ -1,0 +1,273 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+REASON FOR CONSULTATION:,  Perioperative elevated blood pressure.,PAST MEDICAL HISTORY:,1.  Graves disease.,2.  Paroxysmal atrial fibrillation, has been in normal sinus rhythm for several months, off medication.,3.  Diverticulosis.,4.  GERD.,5.  High blood pressure.,6.  Prostatic hypertrophy, status post transurethral resection of the prostate.,PAST SURGICAL HISTORY: , Bilateral inguinal hernia repair, right shoulder surgery with reconstruction, both shoulders rotator cuff repair, left knee arthroplasty, and transurethral resection of prostate.,HISTORY OF PRESENTING COMPLAINT:  ,This 71-year-old gentleman with the above history, underwent laser surgery for the prostate earlier today.  Before surgery, the patient's blood pressure was 181/107.  The patient received IV labetalol.  Blood pressure improved, but postsurgery, the patient's blood pressure went up again to 180/100.  Currently, blood pressure is 158/100, goes up to 155 systolic when he is talking.  On further questioning, the patient denies shortness of breath, chest pain, palpitations, or dizziness.,REVIEW OF SYSTEMS:,CONSTITUTIONAL:  No recent fever or general malaise.,ENT:  Unremarkable.,RESPIRATORY:  No cough or shortness of breath.,CARDIOVASCULAR:  No chest pain.,GASTROINTESTINAL:  No nausea or vomiting.,GENITOURINARY:  The patient has prostatic hypertrophy, had laser surgery earlier today.,ENDOCRINE:  Negative for diabetes, but positive for Graves disease.,MEDICATIONS:  ,The patient takes Synthroid and aspirin.  Aspirin had been discontinued about 1 week ago.  He used to be on atenolol, lisinopril, and terazosin, both of which have been discontinued by his cardiologist, Dr. X several months ago.,PHYSICAL EXAMINATION:,GENERAL:  A 71-year-old gentleman, not in acute distress.,CHEST:  Clear to auscultation.,CARDIOVASCULAR:  First and second heart sounds were heard.  No murmur was appreciated.,ABDOMEN:  Benign.,EXTREMITIES:  There is no swelling.,NEUROLOGICAL:  The patient is alert and oriented x3.  Examination is nonfocal.,ASSESSMENT AND PLAN:,1.  Perioperative hypertension.  We will restart lisinopril at half the previous dose.  He will be on 20 mg p.o. daily.  If blood pressure remains above systolic of 150 within 3 days, the patient should increase lisinopril to 40 mg p.o. daily.  The patient should see his primary physician, Dr. Y in 2 weeks' time.  If blood pressure, however, remains above 150 systolic despite 40 mg of lisinopril, the patient should make an appointment to see his primary physician in a week's time.,2.  Prostatic hypertrophy, status post laser surgery.  The patient tolerated the procedure well.,3.  History of Graves disease.,4.  History of atrial fibrillation.  The patient is in normal sinus rhythm.,DISPOSITION:  ,The patient is stable to be discharged to home.  Nurse should observe for 1 hour after lisinopril to make sure the blood pressure does not go too low.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "labetalol"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Synthroid"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "aspirin"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Aspirin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "atenolol"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "lisinopril"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "terazosin"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "AND PLAN:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Perioperative hypertension.  We will restart lisinopril at half the previous dose.  He will be on 20 mg p.o. daily.  If blood pressure remains above systolic of 150 within 3 days, the patient should increase lisinopril to 40 mg p.o. daily.  The patient should see his primary physician, Dr. Y in 2 weeks' time.  If blood pressure, however, remains above 150 systolic despite 40 mg of lisinopril, the patient should make an appointment to see his primary physician in a week's time"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "restart"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "lisinopril"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "measurement",
+    "text": "20 mg"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "lisinopril"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "40 mg"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "lisinopril"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "diagnosis",
+    "text": "Prostatic hypertrophy, status post laser surgery.  The patient tolerated the procedure well"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "well"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "diagnosis",
+    "text": "History of Graves disease"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "procedure",
+    "text": "History of Graves disease"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "History of atrial fibrillation.  The patient is in normal sinus rhythm.,DISPOSITION:  ,The patient is stable to be discharged to home.  Nurse should observe for 1 hour after lisinopril to make sure the blood pressure does not go too low"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "procedure",
+    "text": "History of atrial fibrillation.  The patient is in normal sinus rhythm.,DISPOSITION:  ,The patient is stable to be discharged to home.  Nurse should observe for 1 hour after lisinopril to make sure the blood pressure does not go too low"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "medication",
+    "text": "lisinopril"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'labetalol' \u2192 RXCUI 6185, canonical: labetalol, match: exact\n[RxNorm] Ingredient: labetalol (RXCUI 6185)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 4 ML labetalol hydrochloride 5 MG/ML Cartridge; 4 ML labetalol hydrochloride 5 MG/ML Injection; 200 ML labetalol hydrochloride 1 MG/ML Injection; 100 ML labetalol hydrochloride 1 MG/ML Injection; 300 ML labetalol hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Synthroid' \u2192 RXCUI 224920, canonical: Synthroid, match: exact\n[RxNorm] Ingredient: levothyroxine (RXCUI 10582)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): levothyroxine sodium 0.1 MG Injection; levothyroxine sodium 0.2 MG Injection; levothyroxine sodium 0.0022 MG/MG Oral Powder; levothyroxine sodium 0.175 MG Oral Capsule; levothyroxine sodium 0.2 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Aspirin' \u2192 RXCUI 1191, canonical: aspirin, match: exact\n[RxNorm] Ingredient: aspirin (RXCUI 1191)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): aspirin 150 MG Rectal Suppository; aspirin 75 MG Delayed Release Oral Tablet; aspirin 75 MG Oral Tablet; aspirin 75 MG Disintegrating Oral Tablet; aspirin 300 MG Delayed Release Oral Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'atenolol' \u2192 RXCUI 1202, canonical: atenolol, match: exact\n[RxNorm] Ingredient: atenolol (RXCUI 1202)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): atenolol 0.5 MG/ML Injectable Solution; atenolol 50 MG / chlorthalidone 12.5 MG Oral Tablet; atenolol 25 MG / bendroflumethiazide 1.25 MG Oral Capsule; atenolol 100 MG Oral Tablet; atenolol 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'lisinopril' \u2192 RXCUI 29046, canonical: lisinopril, match: exact\n[RxNorm] Ingredient: lisinopril (RXCUI 29046)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lisinopril 1 MG/ML Oral Solution; lisinopril 40 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 10 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 20 MG Oral Tablet; hydrochlorothiazide 25 MG / lisinopril 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'terazosin' \u2192 RXCUI 37798, canonical: terazosin, match: exact\n[RxNorm] Ingredient: terazosin (RXCUI 37798)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): terazosin 10 MG Oral Capsule; terazosin 1 MG/ML Oral Solution; terazosin 10 MG Oral Tablet; terazosin 1 MG Oral Capsule; terazosin 1 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] No matches found for 'AND PLAN:' (unresolved; forwarded to Stage B)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] Y901: Blood alcohol level of 20-39 mg/100 ml (score: 0.2996)\n[ICD-10-CM 2027] Y902: Blood alcohol level of 40-59 mg/100 ml (score: 0.2996)\n[ICD-10-CM 2027] Y903: Blood alcohol level of 60-79 mg/100 ml (score: 0.2996)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'restart' \u2192 RXCUI 2722265, canonical: Restart, match: exact\n[RxNorm] Ingredient: levonorgestrel (RXCUI 6373)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): levonorgestrel 0.03 MG Oral Tablet; levonorgestrel 0.0375 MG Oral Tablet; levonorgestrel 0.000583 MG/HR Intrauterine System; ethinyl estradiol 0.02 MG / levonorgestrel 0.15 MG Oral Tablet; ethinyl estradiol 0.025 MG / levonorgestrel 0.15 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'lisinopril' \u2192 RXCUI 29046, canonical: lisinopril, match: exact\n[RxNorm] Ingredient: lisinopril (RXCUI 29046)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lisinopril 1 MG/ML Oral Solution; lisinopril 40 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 10 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 20 MG Oral Tablet; hydrochlorothiazide 25 MG / lisinopril 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Measurement] 20.0mg \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'lisinopril' \u2192 RXCUI 29046, canonical: lisinopril, match: exact\n[RxNorm] Ingredient: lisinopril (RXCUI 29046)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lisinopril 1 MG/ML Oral Solution; lisinopril 40 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 10 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 20 MG Oral Tablet; hydrochlorothiazide 25 MG / lisinopril 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "Dose 40.0mg associated with lisinopril"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "Dose 40.0mg associated with lisinopril"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'lisinopril' \u2192 RXCUI 29046, canonical: lisinopril, match: exact\n[RxNorm] Ingredient: lisinopril (RXCUI 29046)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lisinopril 1 MG/ML Oral Solution; lisinopril 40 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 10 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 20 MG Oral Tablet; hydrochlorothiazide 25 MG / lisinopril 20 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.3462)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.3447)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.3447)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Procedure] 'well' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[ICD-10-CM 2027] Z9181: History of falling (score: 0.5288)\n[ICD-10-CM 2027] Z8711: Personal history of peptic ulcer disease (score: 0.5168)\n[ICD-10-CM 2027] Z8481: Family history of carrier of genetic disease (score: 0.4841)"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[Procedure] 'History of Graves disease' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] I4891: Unspecified atrial fibrillation (score: 0.3990)\n[ICD-10-CM 2027] I4820: Chronic atrial fibrillation, unspecified (score: 0.3787)\n[ICD-10-CM 2027] I4819: Other persistent atrial fibrillation (score: 0.3458)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[Procedure] 'History of atrial fibrillation.  The patient is in normal sinus rhythm.,DISPOSITION:  ,The patient is stable to be discharged to home.  Nurse should observe for 1 hour after lisinopril to make sure the blood pressure does not go too low' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[RxNorm] 'lisinopril' \u2192 RXCUI 29046, canonical: lisinopril, match: exact\n[RxNorm] Ingredient: lisinopril (RXCUI 29046)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lisinopril 1 MG/ML Oral Solution; lisinopril 40 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 10 MG Oral Tablet; hydrochlorothiazide 12.5 MG / lisinopril 20 MG Oral Tablet; hydrochlorothiazide 25 MG / lisinopril 20 MG Oral Tablet"
+  }
+]

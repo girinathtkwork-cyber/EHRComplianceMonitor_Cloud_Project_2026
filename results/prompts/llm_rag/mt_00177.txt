@@ -1,0 +1,93 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CARDIOLITE TREADMILL EXERCISE STRESS TEST,CLINICAL DATA:,  This is a 72-year-old female with history of diabetes mellitus, hypertension, and right bundle branch block.,PROCEDURE:,  The patient was exercised on the treadmill to maximum tolerance achieving after 5 minutes a peak heart rate of 137 beats per minute with a workload of 2.3 METS.  There was a normal blood pressure response.  The patient did not complain of any symptoms during the test and other than the right bundle branch block that was present at rest, no other significant electrographic abnormalities were observed.,Myocardial perfusion imaging was performed at rest following the injection of 10 mCi Tc-99 Cardiolite.  At peak pharmacological effect, the patient was injected with 30 mCi Tc-99 Cardiolite.,Gating poststress tomographic imaging was performed 30 minutes after the stress.,FINDINGS:,1.  The overall quality of the study is fair.,2.  The left ventricular cavity appears to be normal on the rest and stress studies.,3.  SPECT images demonstrate fairly homogeneous tracer distribution throughout the myocardium with no overt evidences of fixed and/or reperfusion defect.,4.  The left ventricular ejection fraction was normal and estimated to be 78%.,IMPRESSION: , Myocardial perfusion imaging is normal.  Result of this test suggests low probability for significant coronary artery disease.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "The patient was exercised on the treadmill to maximum tolerance achieving after 5 minutes a peak heart rate of 137 beats per minute with a workload of 2.3 METS.  There was a normal blood pressure response.  The patient did not complain of any symptoms during the test and other than the right bundle branch block that was present at rest, no other significant electrographic abnormalities were observed.,Myocardial perfusion imaging was performed at rest following the injection of 10 mCi Tc-99 Cardiolite.  At peak pharmacological effect, the patient was injected with 30 mCi Tc-99 Cardiolite.,Gating poststress tomographic imaging was performed 30 minutes after the stress.,FINDINGS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "The overall quality of the study is fair"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "The left ventricular cavity appears to be normal on the rest and stress studies"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "SPECT images demonstrate fairly homogeneous tracer distribution throughout the myocardium with no overt evidences of fixed and/or reperfusion defect"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "The left ventricular ejection fraction was normal and estimated to be 78%.,IMPRESSION: , Myocardial perfusion imaging is normal.  Result of this test suggests low probability for significant coronary artery disease"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "measurement",
+    "text": "78%"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Myocardial perfusion imaging is normal.  Result of this test suggests low probability for significant coronary artery disease"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'The patient was exercised on the treadmill to maximum tolerance achieving after 5 minutes a peak heart rate of 137 beats per minute with a workload of 2.3 METS.  There was a normal blood pressure response.  The patient did not complain of any symptoms during the test and other than the right bundle branch block that was present at rest, no other significant electrographic abnormalities were observed.,Myocardial perfusion imaging was performed at rest following the injection of 10 mCi Tc-99 Cardiolite.  At peak pharmacological effect, the patient was injected with 30 mCi Tc-99 Cardiolite.,Gating poststress tomographic imaging was performed 30 minutes after the stress.,FINDINGS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[Procedure] 'The overall quality of the study is fair' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'The left ventricular cavity appears to be normal on the rest and stress studies' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'SPECT images demonstrate fairly homogeneous tracer distribution throughout the myocardium with no overt evidences of fixed and/or reperfusion defect' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'The left ventricular ejection fraction was normal and estimated to be 78%.,IMPRESSION: , Myocardial perfusion imaging is normal.  Result of this test suggests low probability for significant coronary artery disease' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Measurement] 78.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] Z3200: Encounter for pregnancy test, result unknown (score: 0.3483)\n[ICD-10-CM 2027] Z3201: Encounter for pregnancy test, result positive (score: 0.3420)\n[ICD-10-CM 2027] Z3202: Encounter for pregnancy test, result negative (score: 0.3390)"
+  }
+]

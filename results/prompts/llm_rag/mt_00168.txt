@@ -1,0 +1,73 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CT ABDOMEN WITHOUT CONTRAST AND CT PELVIS WITHOUT CONTRAST,REASON FOR EXAM: , Evaluate for retroperitoneal hematoma, the patient has been following, is currently on Coumadin.,CT ABDOMEN: , There is no evidence for a retroperitoneal hematoma.,The liver, spleen, adrenal glands, and pancreas are unremarkable.  Within the superior pole of the left kidney, there is a 3.9 cm cystic lesion.  A 3.3 cm cystic lesion is also seen within the inferior pole of the left kidney.  No calcifications are noted.  The kidneys are small bilaterally.,CT PELVIS: , Evaluation of the bladder is limited due to the presence of a Foley catheter, the bladder is nondistended.  The large and small bowels are normal in course and caliber.  There is no obstruction.,Bibasilar pleural effusions are noted.,IMPRESSION:,1. No evidence for retroperitoneal bleed.,2. There are two left-sided cystic lesions within the kidney, correlation with a postcontrast study versus further characterization with an ultrasound is advised as the cystic lesions appear slightly larger as compared to the prior exam.,3. The kidneys are small in size bilaterally.,4. Bibasilar pleural effusions.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Coumadin"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "No evidence for retroperitoneal bleed"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "There are two left-sided cystic lesions within the kidney, correlation with a postcontrast study versus further characterization with an ultrasound is advised as the cystic lesions appear slightly larger as compared to the prior exam"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "The kidneys are small in size bilaterally"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Bibasilar pleural effusions"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Coumadin' \u2192 RXCUI 202421, canonical: Coumadin, match: exact\n[RxNorm] Ingredient: warfarin (RXCUI 11289)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): warfarin sodium 1 MG Oral Tablet; warfarin sodium 10 MG Oral Tablet; warfarin sodium 2 MG Oral Tablet; warfarin sodium 2.5 MG Oral Tablet; warfarin sodium 3 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] K6819: Other retroperitoneal abscess (score: 0.5174)\n[ICD-10-CM 2027] K683: Retroperitoneal hematoma (score: 0.4919)\n[ICD-10-CM 2027] A1839: Retroperitoneal tuberculosis (score: 0.4872)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Q619: Cystic kidney disease, unspecified (score: 0.4219)\n[ICD-10-CM 2027] Q618: Other cystic kidney diseases (score: 0.4101)\n[ICD-10-CM 2027] Q110: Cystic eyeball (score: 0.3189)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] N279: Small kidney, unspecified (score: 0.5491)\n[ICD-10-CM 2027] N271: Small kidney, bilateral (score: 0.4944)\n[ICD-10-CM 2027] N270: Small kidney, unilateral (score: 0.4454)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] J910: Malignant pleural effusion (score: 0.9332)\n[ICD-10-CM 2027] J90: Pleural effusion, not elsewhere classified (score: 0.8907)\n[ICD-10-CM 2027] J918: Pleural effusion in other conditions classified elsewhere (score: 0.8182)"
+  }
+]

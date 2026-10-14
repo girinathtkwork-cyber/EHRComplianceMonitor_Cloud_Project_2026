@@ -1,0 +1,97 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+DELIVERY NOTE:,  This G1, P0 with EDC 12/23/08 presented with SROM about 7. Additional diagnosis noted: Chronic Kidney Disease, Stage 3.30 this morning.  Her prenatal care complicated by GBS screen positive and a transfer of care at 34 weeks from Idaho.  Exam upon arrival 2 to 3 cm, 100% effaced, -1 station and by report pool of fluid was positive for Nitrazine and positive ferning.,She required augmentation with Pitocin to achieve a good active phase.  She achieved complete cervical dilation at 1900  At this time, a bulging bag was noted, which ruptured and thick meconium was present.  At 1937 hours, she delivered a viable male infant, left occiput, anterior.  Mouth and nares suctioned well with a DeLee on the perineum.  No nuchal cord present.  Shoulders and body followed easily.  Infant re-suctioned with the bulb and cord clamped x2 and cut and was taken to the warmer where the RN and RT were in attendance.  Apgars 9 and 9.  Pitocin 15 units infused via pump protocol.  Placenta followed complete and intact with fundal massage and general traction on the cord.  Three vessels are noted.  She sustained a bilateral periurethral lax on the left side, this extended down to the labia minora, became a second degree in the inferior portion and did have some significant bleeding in this area.  Therefore, this was repaired with #3-0 Vicryl after 1% lidocaine infiltrated approximately 5 mL.  The remainder of the lacerations was not at all bleeding and no other lacerations present.  Fundus required bimanual massage in a couple of occasions for recurrent atony with several larger clots; however, as the Pitocin infused and massage continued, this improved significantly.  EBL was about 500 mL.  Bleeding appears much better; however, Cytotec 400 mcg was placed per rectum apparently prophylactically.  Mom and baby currently doing very well.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Chronic Kidney Disease"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Stage 3.30 this morning.  Her prenatal care complicated by GBS screen positive and a transfer of care at 34 weeks from Idaho.  Exam upon arrival 2 to 3 cm"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "100% effaced, -1 station and by report pool of fluid was positive for Nitrazine and positive ferning.,She required augmentation with Pitocin to achieve a good active phase.  She achieved complete cervical dilation at 1900  At this time, a bulging bag was noted, which ruptured and thick meconium was present.  At 1937 hours, she delivered a viable male infant, left occiput, anterior.  Mouth and nares suctioned well with a DeLee on the perineum.  No nuchal cord present.  Shoulders and body followed easily.  Infant re-suctioned with the bulb and cord clamped x2 and cut and was taken to the warmer where the RN and RT were in attendance.  Apgars 9 and 9.  Pitocin 15 units infused via pump protocol.  Placenta followed complete and intact with fundal massage and general traction on the cord.  Three vessels are noted.  She sustained a bilateral periurethral lax on the left side, this extended down to the labia minora, became a second degree in the inferior portion and did have some significant bleeding in this area.  Therefore, this was repaired with #3-0 Vicryl after 1% lidocaine infiltrated approximately 5 mL.  The remainder of the lacerations was not at all bleeding and no other lacerations present.  Fundus required bimanual massage in a couple of occasions for recurrent atony with several larger clots; however, as the Pitocin infused and massage continued, this improved significantly.  EBL was about 500 mL.  Bleeding appears much better; however"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "measurement",
+    "text": "100%"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Pitocin"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Pitocin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "15 units"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "5 mL"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Pitocin"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "measurement",
+    "text": "500 mL"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "Cytotec 400 mcg was placed per rectum apparently prophylactically.  Mom and baby currently doing very well"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Cytotec"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "400 mcg"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

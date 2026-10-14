@@ -1,0 +1,143 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CLINICAL INDICATIONS: , MRSA bacteremia, rule out endocarditis.  The patient has aortic stenosis.,DESCRIPTION OF PROCEDURE: , The transesophageal echocardiogram was performed after getting verbal and a written consent signed.  Then a multiplane TEE probe was introduced into the upper esophagus, mid esophagus, lower esophagus, and stomach and multiple views were obtained.  There were no complications.  The patient's throat was numbed with Cetacaine spray and IV sedation was achieved with Versed and Sufenta.,FINDINGS:,1.  Aortic valve is thick and calcified, a severely restricted end opening and there is 0.6 x 8 mm vegetation attached to the right coronary cusp.  The peak velocity across the aortic valve was 4.6 m/sec and mean gradient was 53 mmHg and peak gradient 84 mmHg with calculated aortic valve area of 0.6 sq cm by planimetry.,2.  Mitral valve is calcified and thick.  No vegetation seen.  There is mild-to-moderate MR present.  There is mild AI present also.,3.  Tricuspid valve and pulmonary valve are structurally normal.,4.  There is a mild TR present.,5.  There is no clot seen in the left atrial appendage.  The velocity in the left atrial appendage was 0.6 m/sec.,6.  Intraatrial septum was intact.  There is no clot or mass seen.,7.  Normal LV and RV systolic function.,8.  There is thick raised calcified plaque seen in the thoracic aorta and arch.,SUMMARY:,1.  There is a 0.6 x 0.8 cm vegetation present in the aortic valve with severe aortic stenosis.  Calculated aortic valve area was 0.6 sq. cm.,2.  Normal LV systolic function.,
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "The transesophageal echocardiogram was performed after getting verbal and a written consent signed.  Then a multiplane TEE probe was introduced into the upper esophagus, mid esophagus, lower esophagus, and stomach and multiple views were obtained.  There were no complications.  The patient's throat was numbed with Cetacaine spray and IV sedation was achieved with Versed and Sufenta.,FINDINGS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Cetacaine"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Aortic valve is thick and calcified, a severely restricted end opening and there is 0.6 x 8 mm vegetation attached to the right coronary cusp.  The peak velocity across the aortic valve was 4.6 m/sec and mean gradient was 53 mmHg and peak gradient 84 mmHg with calculated aortic valve area of 0.6 sq cm by planimetry"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Mitral valve is calcified and thick.  No vegetation seen.  There is mild-to-moderate MR present.  There is mild AI present also"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Tricuspid valve and pulmonary valve are structurally normal"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "There is a mild TR present"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "There is no clot seen in the left atrial appendage.  The velocity in the left atrial appendage was 0.6 m/sec"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Intraatrial septum was intact.  There is no clot or mass seen"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Normal LV and RV systolic function"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "There is thick raised calcified plaque seen in the thoracic aorta and arch.,SUMMARY:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "There is a 0.6 x 0.8 cm vegetation present in the aortic valve with severe aortic stenosis.  Calculated aortic valve area was 0.6 sq. cm"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "Normal LV systolic function"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[Procedure] 'The transesophageal echocardiogram was performed after getting verbal and a written consent signed.  Then a multiplane TEE probe was introduced into the upper esophagus, mid esophagus, lower esophagus, and stomach and multiple views were obtained.  There were no complications.  The patient's throat was numbed with Cetacaine spray and IV sedation was achieved with Versed and Sufenta.,FINDINGS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Cetacaine' \u2192 RXCUI 20604, canonical: Cetacaine, match: exact\n[RxNorm] Ingredient: tetracaine (RXCUI 10391)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): tetracaine hydrochloride 20 MG/ML Topical Cream; tetracaine hydrochloride 0.02 MG/MG Topical Gel; tetracaine hydrochloride 5 MG/ML Topical Solution; tetracaine hydrochloride 5 MG/ML Ophthalmic Solution; tetracaine hydrochloride 20 MG/ML Ophthalmic Solution"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'Aortic valve is thick and calcified, a severely restricted end opening and there is 0.6 x 8 mm vegetation attached to the right coronary cusp.  The peak velocity across the aortic valve was 4.6 m/sec and mean gradient was 53 mmHg and peak gradient 84 mmHg with calculated aortic valve area of 0.6 sq cm by planimetry' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Mitral valve is calcified and thick.  No vegetation seen.  There is mild-to-moderate MR present.  There is mild AI present also' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Tricuspid valve and pulmonary valve are structurally normal' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'There is a mild TR present' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'There is no clot seen in the left atrial appendage.  The velocity in the left atrial appendage was 0.6 m/sec' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Intraatrial septum was intact.  There is no clot or mass seen' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Normal LV and RV systolic function' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'There is thick raised calcified plaque seen in the thoracic aorta and arch.,SUMMARY:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'There is a 0.6 x 0.8 cm vegetation present in the aortic valve with severe aortic stenosis.  Calculated aortic valve area was 0.6 sq. cm' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'Normal LV systolic function' \u2014 extracted from header, not verified against any coding system"
+  }
+]

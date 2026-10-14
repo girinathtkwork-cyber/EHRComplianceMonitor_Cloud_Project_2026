@@ -1,0 +1,77 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:,  Dorsal ganglion, right wrist.,POSTOPERATIVE DIAGNOSIS:,  Dorsal ganglion, right wrist.,OPERATIONS PERFORMED:,  Excision dorsal ganglion, right wrist.,ANESTHESIA:,  Monitored anesthesia care with regional anesthesia applied by surgeon.,TOURNIQUET TIME:,  minutes.,DESCRIPTION OF PROCEDURE: , With the patient under adequate anesthesia, the upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated and the tourniquet was elevated to 290 mm/Hg.  A transverse incision was made over the dorsal ganglion.  Using blunt dissection the dorsal ulnar sensory nerve branches and radial sensory nerve branches were dissected and retracted out of the operative field.  The extensor retinaculum was then incised and the extensor tendon was dissected and retracted out of the operative field.  The ganglion was then further dissected to its origin from the dorsal distal scapholunate interosseus ligament and excised in toto.  Care was taken to protect ligament integrity.  Reactive synovium was then removed using soft tissue rongeur technique.  The wound was then infiltrated with 0.25% Marcaine.  The tendons were allowed to resume their normal anatomical position.  The skin was closed with 3-0 Prolene subcuticular stitch.  Sterile dressings were applied.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Dorsal ganglion, right wrist.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Dorsal ganglion, right wrist.,OPERATIONS PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Excision dorsal ganglion, right wrist.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Excision dorsal ganglion, right wrist.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Monitored anesthesia care with regional anesthesia applied by surgeon.,TOURNIQUET TIME:,  minutes.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "Monitored anesthesia care with regional anesthesia applied by surgeon.,TOURNIQUET TIME:,  minutes.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "With the patient under adequate anesthesia, the upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated and the tourniquet was elevated to 290 mm/Hg.  A transverse incision was made over the dorsal ganglion.  Using blunt dissection the dorsal ulnar sensory nerve branches and radial sensory nerve branches were dissected and retracted out of the operative field.  The extensor retinaculum was then incised and the extensor tendon was dissected and retracted out of the operative field.  The ganglion was then further dissected to its origin from the dorsal distal scapholunate interosseus ligament and excised in toto.  Care was taken to protect ligament integrity.  Reactive synovium was then removed using soft tissue rongeur technique.  The wound was then infiltrated with 0.25% Marcaine.  The tendons were allowed to resume their normal anatomical position.  The skin was closed with 3-0 Prolene subcuticular stitch.  Sterile dressings were applied.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "With the patient under adequate anesthesia, the upper extremity was prepped and draped in a sterile manner.  The arm was exsanguinated and the tourniquet was elevated to 290 mm/Hg.  A transverse incision was made over the dorsal ganglion.  Using blunt dissection the dorsal ulnar sensory nerve branches and radial sensory nerve branches were dissected and retracted out of the operative field.  The extensor retinaculum was then incised and the extensor tendon was dissected and retracted out of the operative field.  The ganglion was then further dissected to its origin from the dorsal distal scapholunate interosseus ligament and excised in toto.  Care was taken to protect ligament integrity.  Reactive synovium was then removed using soft tissue rongeur technique.  The wound was then infiltrated with 0.25% Marcaine.  The tendons were allowed to resume their normal anatomical position.  The skin was closed with 3-0 Prolene subcuticular stitch.  Sterile dressings were applied.  The tourniquet was deflated.  The patient was awakened from anesthesia and returned to the recovery room in satisfactory condition having tolerated the procedure well"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "0.25%"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Marcaine"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

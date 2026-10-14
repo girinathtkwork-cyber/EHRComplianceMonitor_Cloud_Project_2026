@@ -1,0 +1,63 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CLINICAL HISTORY:,  A 48-year-old smoker found to have a right upper lobe mass on chest x-ray and is being evaluated for chest pain.  PET scan demonstrated a mass in the right upper lobe and also a mass in the right lower lobe, which were also identified by CT scan.  The lower lobe mass was approximately 1 cm in diameter and the upper lobe mass was 4 cm to 5 cm in diameter.  The patient was referred for surgical treatment.,SPECIMEN:,A.  Lung, wedge biopsy right lower lobe,B.  Lung, resection right upper lobe,C.  Lymph node, biopsy level 2 and 4,D.  Lymph node, biopsy level 7 subcarinal,FINAL DIAGNOSIS:,A.  Wedge biopsy of right lower lobe showing:  Adenocarcinoma, Grade 2, Measuring 1 cm in diameter with invasion of the overlying pleura and with free resection margin.,B.  Right upper lobe lung resection showing:  Adenocarcinoma, grade 2, measuring 4 cm in diameter with invasion of the overlying pleura and with free bronchial margin.  Two (2) hilar lymph nodes with no metastatic tumor.,C.  Lymph node biopsy at level 2 and 4 showing seven (7) lymph nodes with anthracosis and no metastatic tumor.,D.  Lymph node biopsy, level 7 subcarinal showing (5) lymph nodes with anthracosis and no metastatic tumor.,COMMENT:  ,The morphology of the tumor seen in both lobes is similar and we feel that the smaller tumor involving the right lower lobe is most likely secondary to transbronchial spread from the main tumor involving the right upper lobe.  This suggestion is supported by the fact that no obvious vascular or lymphatic invasion is demonstrated and adjacent to the smaller tumor, there is isolated nests of tumor cells within the air spaces.  Furthermore, immunoperoxidase stain for Ck-7, CK-20 and TTF are performed on both the right lower and right upper lobe nodule.  The immunohistochemical results confirm the lung origin of both tumors and we feel that the tumor involving the right lower lobe is due to transbronchial spread from the larger tumor nodule involving the right upper lobe.,
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "A.  Wedge biopsy of right lower lobe showing:  Adenocarcinoma"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Grade 2"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Measuring 1 cm in diameter with invasion of the overlying pleura and with free resection margin.,B.  Right upper lobe lung resection showing:  Adenocarcinoma, grade 2, measuring 4 cm in diameter with invasion of the overlying pleura and with free bronchial margin.  Two (2) hilar lymph nodes with no metastatic tumor.,C.  Lymph node biopsy at level 2 and 4 showing seven (7) lymph nodes with anthracosis and no metastatic tumor.,D.  Lymph node biopsy, level 7 subcarinal showing (5) lymph nodes with anthracosis and no metastatic tumor.,COMMENT:  ,The morphology of the tumor seen in both lobes is similar and we feel that the smaller tumor involving the right lower lobe is most likely secondary to transbronchial spread from the main tumor involving the right upper lobe.  This suggestion is supported by the fact that no obvious vascular or lymphatic invasion is demonstrated and adjacent to the smaller tumor, there is isolated nests of tumor cells within the air spaces.  Furthermore, immunoperoxidase stain for Ck-7"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "CK-20 and TTF are performed on both the right lower and right upper lobe nodule.  The immunohistochemical results confirm the lung origin of both tumors and we feel that the tumor involving the right lower lobe is due to transbronchial spread from the larger tumor nodule involving the right upper lobe"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] C3431: Malignant neoplasm of lower lobe, right bronchus or lung (score: 0.5050)\n[ICD-10-CM 2027] C3430: Malignant neoplasm of lower lobe, unspecified bronchus or lung (score: 0.4901)\n[ICD-10-CM 2027] C3432: Malignant neoplasm of lower lobe, left bronchus or lung (score: 0.4865)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] C8200: Follicular lymphoma grade I, unspecified site (score: 0.5594)\n[ICD-10-CM 2027] C8210: Follicular lymphoma grade II, unspecified site (score: 0.5594)\n[ICD-10-CM 2027] C8230: Follicular lymphoma grade IIIa, unspecified site (score: 0.5579)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] C7B01: Secondary carcinoid tumors of distant lymph nodes (score: 0.3741)\n[ICD-10-CM 2027] C7B03: Secondary carcinoid tumors of bone (score: 0.3437)\n[ICD-10-CM 2027] C7B00: Secondary carcinoid tumors, unspecified site (score: 0.3350)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] C3411: Malignant neoplasm of upper lobe, right bronchus or lung (score: 0.4220)\n[ICD-10-CM 2027] C3431: Malignant neoplasm of lower lobe, right bronchus or lung (score: 0.4156)\n[ICD-10-CM 2027] Q331: Accessory lobe of lung (score: 0.4103)"
+  }
+]

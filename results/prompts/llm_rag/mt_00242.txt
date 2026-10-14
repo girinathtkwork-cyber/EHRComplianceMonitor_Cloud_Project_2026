@@ -1,0 +1,113 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+Sample Address,Re:  Mrs. Additional diagnosis noted: Hyperlipidemia. Sample Patient,Dear Sample Doctor:,I had the pleasure of seeing your patient, Mrs. Sample Patient , in my office today.  Mrs. Sample Patient is a 48-year-old, African-American female with a past medical history of hypertension and glaucoma, who was referred to me to be evaluated for intermittent rectal bleeding.  The patient denies any weight loss, does have a good appetite, no nausea and no vomiting.,PAST MEDICAL HISTORY:,  Significant for hypertension and diabetes.,PAST SURGICAL HISTORY:,  The patient denies any past surgical history.,MEDICATIONS:,  The patient takes Cardizem CD 240-mg.  The patient also takes eye drops.,ALLERGIES:,  The patient denies any allergies.,SOCIAL HISTORY:,  The patient smokes about a pack a day for more than 25 years.  The patient drinks alcohol socially.,FAMILY HISTORY:,  Significant for hypertension and strokes.,REVIEW OF SYSTEMS:,  The patient does have a good appetite and no weight loss.  She does have intermittent rectal bleeding associated with irritation in the rectal area.  The patient denies any nausea, any vomiting, any night sweats, any fevers or any chills.,The patient denies any shortness of breath, any chest pain, any irregular heartbeat or chronic cough.,The patient is chronically constipated.,PHYSICAL EXAMINATION:,  This is a 48 year-old lady who is awake, alert and oriented x 3.  She does not seem to be in any acute distress.  Her vital signs are blood pressure is 130/70 with a heart rate of 75 and respirations of 16.  HEENT is normocephalic, atraumatic.  Sclerae are non-icteric.  Her neck is supple, no bruits, no lymph nodes.  Lungs are clear to auscultation bilaterally, no crackles, no rales and no wheezes.  The cardiovascular system has a regular rate and rhythm, no murmurs.  The abdomen is soft and non-tender.  Bowel sounds are positive and no organomegaly.  Extremities have no edema.,IMPRESSION:,  This is a 48-year-old female presenting with painless rectal bleeding not associated with any weight loss.  The patient is chronically constipated.,1.  Rule out colon cancer.,2.  Rule out colon polyps. ,3.  Rule out hemorrhoids, which is the most likely diagnosis.,RECOMMENDATIONS:,  Because of the patient's age, the patient will need to have a complete colonoscopy exam.,The patient will also need to have a CBC check and monitor.,The patient will be scheduled for the colonoscopy at Sample Hospital and the full report will be forwarded to your office.,Thank you very much for allowing me to participate in the care of your patient.,Sincerely yours,,Sample Doctor, MD
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Hyperlipidemia. Sample Patient,Dear Sample Doctor:,I had the pleasure of seeing your patient, Mrs. Sample Patient , in my office today.  Mrs. Sample Patient is a 48-year-old, African-American female with a past medical history of hypertension and glaucoma, who was referred to me to be evaluated for intermittent rectal bleeding.  The patient denies any weight loss, does have a good appetite, no nausea and no vomiting.,PAST MEDICAL HISTORY:,  Significant for hypertension and diabetes.,PAST SURGICAL HISTORY:,  The patient denies any past surgical history.,MEDICATIONS:,  The patient takes Cardizem CD 240-mg.  The patient also takes eye drops.,ALLERGIES:,  The patient denies any allergies.,SOCIAL HISTORY:,  The patient smokes about a pack a day for more than 25 years.  The patient drinks alcohol socially.,FAMILY HISTORY:,  Significant for hypertension and strokes.,REVIEW OF SYSTEMS:,  The patient does have a good appetite and no weight loss.  She does have intermittent rectal bleeding associated with irritation in the rectal area.  The patient denies any nausea, any vomiting, any night sweats, any fevers or any chills.,The patient denies any shortness of breath, any chest pain, any irregular heartbeat or chronic cough.,The patient is chronically constipated.,PHYSICAL EXAMINATION:,  This is a 48 year-old lady who is awake, alert and oriented x"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "Cardizem"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "She does not seem to be in any acute distress.  Her vital signs are blood pressure is 130/70 with a heart rate of 75 and respirations of"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "HEENT is normocephalic, atraumatic.  Sclerae are non-icteric.  Her neck is supple, no bruits, no lymph nodes.  Lungs are clear to auscultation bilaterally, no crackles, no rales and no wheezes.  The cardiovascular system has a regular rate and rhythm, no murmurs.  The abdomen is soft and non-tender.  Bowel sounds are positive and no organomegaly.  Extremities have no edema.,IMPRESSION:,  This is a 48-year-old female presenting with painless rectal bleeding not associated with any weight loss.  The patient is chronically constipated"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "This is a 48-year-old female presenting with painless rectal bleeding not associated with any weight loss.  The patient is chronically constipated"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Rule out colon cancer"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Rule out colon polyps. "
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Rule out hemorrhoids, which is the most likely diagnosis.,RECOMMENDATIONS:,  Because of the patient's age, the patient will need to have a complete colonoscopy exam.,The patient will also need to have a CBC check and monitor.,The patient will be scheduled for the colonoscopy at Sample Hospital and the full report will be forwarded to your office.,Thank you very much for allowing me to participate in the care of your patient.,Sincerely yours,,Sample Doctor, MD"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] O2620: Pregnancy care for patient with recurrent pregnancy loss, unspecified trimester (score: 0.2761)\n[ICD-10-CM 2027] O2623: Pregnancy care for patient with recurrent pregnancy loss, third trimester (score: 0.2668)\n[ICD-10-CM 2027] O2621: Pregnancy care for patient with recurrent pregnancy loss, first trimester (score: 0.2663)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'Cardizem' \u2192 RXCUI 203494, canonical: Cardizem, match: exact\n[RxNorm] Ingredient: diltiazem (RXCUI 3443)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 5 ML diltiazem hydrochloride 5 MG/ML Injection; 10 ML diltiazem hydrochloride 5 MG/ML Injection; 25 ML diltiazem hydrochloride 5 MG/ML Injection; diltiazem hydrochloride 100 MG Injection; 250 ML diltiazem hydrochloride 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] R0603: Acute respiratory distress (score: 0.3576)\n[ICD-10-CM 2027] J80: Acute respiratory distress syndrome (score: 0.3329)\n[ICD-10-CM 2027] Z66: Do not resuscitate (score: 0.3132)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] Z711: Person with feared health complaint in whom no diagnosis is made (score: 0.3315)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.3214)\n[ICD-10-CM 2027] R1915: Other abnormal bowel sounds (score: 0.1152)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] K50911: Crohn's disease, unspecified, with rectal bleeding (score: 0.3545)\n[ICD-10-CM 2027] R5081: Fever presenting with conditions classified elsewhere (score: 0.3502)\n[ICD-10-CM 2027] R634: Abnormal weight loss (score: 0.3480)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] Z730: Burn-out (score: 0.4480)\n[ICD-10-CM 2027] D701: Agranulocytosis secondary to cancer chemotherapy (score: 0.3956)\n[ICD-10-CM 2027] T184XXD: Foreign body in colon, subsequent encounter (score: 0.3688)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] K635: Polyp of colon (score: 0.8187)\n[ICD-10-CM 2027] K5140: Inflammatory polyps of colon without complications (score: 0.6587)\n[ICD-10-CM 2027] K51418: Inflammatory polyps of colon with other complication (score: 0.6587)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] Y6552: Performance of procedure (operation) on patient not scheduled for surgery (score: 0.3250)\n[ICD-10-CM 2027] Z2801: Immunization not carried out because of acute illness of patient (score: 0.3127)\n[ICD-10-CM 2027] Z2821: Immunization not carried out because of patient refusal (score: 0.3104)"
+  }
+]

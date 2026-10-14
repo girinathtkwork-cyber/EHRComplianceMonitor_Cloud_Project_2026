@@ -1,0 +1,243 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES:,1.  Plantar flex third metatarsal, right foot.,2.  Talus bunion, right foot.,POSTOPERATIVE DIAGNOSES:,1.  Plantar flex third metatarsal, right foot.,2.  Talus bunion, right foot.,PROCEDURE PERFORMED:,1.  Third metatarsal osteotomy, right foot.,2.  Talus bunionectomy, right foot.,3.  Application of short-leg cast, right foot.,ANESTHESIA: , TIVA/local.,HISTORY:  ,This 31-year-old female presents to ABCD Preoperative Holding Area after keeping herself n.p.o., since mid night for surgery on her painful right third plantar flex metatarsal.  In addition, she complains of a painful right talus bunion to the right foot.  She has tried conservative methods such as wide shoes and serial debridement and accommodative padding, all of which provided inadequate relief.  At this time she desires to attempt a surgical correction.  The risks versus benefits of the procedure have been explained to the patient by Dr. X and the consent is available on the chart for review.,PROCEDURE IN DETAIL:  ,After IV was established by the Department Of Anesthesia, the patient was taken to the operating room via cart.  She was placed on the operating table in supine position and a safety strap was placed across her waist for retraction.  Next, copious amounts of Webril were applied around the right ankle and a pneumatic ankle tourniquet was applied.,Next, after adequate IV sedation was administered by the Department Of Anesthesia, a total of 10 cc mixture of 4.5 cc of 1% lidocaine/4.5 cc of 0.5% Marcaine/1 cc of Kenalog was injected into the right foot in an infiltrative type block.  Next, the foot was prepped and draped in the usual aseptic fashion.  An Esmarch bandage was used to exsanguinate the foot and the pneumatic ankle tourniquet was elevated to 250 mmHg.  Next, the foot was lowered in the operative field and attention was directed to the dorsal third metatarsal area.  There was a plantar hyperkeratotic lesion and a plantar flex palpable third metatarsal head.  A previous cicatrix was noted with slight hypertrophic scarring.  Using a #10 blade, a lazy S-type incision was created over the dorsal aspect of the third metatarsal, approximately 3.5 cm in length.  Two semi-elliptical converging incisions were made over the hypertrophic scar and it was removed and passed off as a specimen.  Next, the #15 blade was used to deepen the incision down to the subcutaneous tissue.  Any small traversing veins were ligated with electrocautery.  Next, a combination of blunt and sharp dissection were used to undermine the long extensor tendon, which was tacked down with a moderate amount of fibrosis and fibrotic scar tissue.  Next, the extensor tendon was retracted laterally and the deep fascia over the metatarsals was identified.  A linear incision down to bone was made with a #15 blade to the capsuloperiosteal tissues.  Next, the capsuloperiosteal tissues were elevated using a sharp dissection with a #15 blade, off of the third metatarsal.  McGlamry elevator was carefully inserted around the head of the metatarsal and freed and all the plantar adhesions were freed.  A moderate amount of plantar adhesions were encountered.  The third toe was plantar flex and the third metatarsal was delivered into the wound.  Next, a V-shaped osteotomy with an apex distally was created using a sagittal saw.  The metatarsal head was allowed to float.  The wound was flushed with copious amounts of sterile saline.  #3-0 Vicryl was used to close the capsuloperiosteal tissues, which kept the metatarsal head contained.  Next, #4-0 Vicryl was used to close the subcutaneous layer in a simple interrupted suture technique.  Next, #4-0 nylon was used to close the skin in a simple interrupted technique.,Attention was directed to the right fifth metatarsal.  There was a large palpable hypertrophic prominence, which is the area of maximal pain, which the patient complained of preoperatively.  A #10 blade was used to make a 3 cm incision through the skin.  Next, a #15 blade was used to deepen the incision through the subcutaneous tissue.  Next, the medial and lateral aspects were undermined.  The abductor tendon was identified and retracted.  A capsuloperiosteal incision was made with a #15 blade in a linear fashion down to the bone.  The capsuloperiosteal tissues were elevated off the bone with a Freer elevator and a #15 blade.,Next, the sagittal saw was used to resect the large hypertrophic dorsal exostosis.  A reciprocating rasp was used to smooth all bony prominences.  The wound was flushed with copious amount of sterile saline.  #3-0 Vicryl was used to close the capsuloperiosteal tissues.  #4-0 Vicryl was used to close subcutaneous layer with a simple interrupted suture.  Next, #4-0 nylon was used to close the skin in a simple interrupted technique.  Next, attention was directed to the plantar aspect of the third metatarsal where a bursal sac was felt to be palpated under the plantar flex third metatarsal head.  A #15 blade was used to make a small linear incision under the third metatarsal head.  The incision was deepened through the dermal layer and curved hemostats and Metzenbaum scissors were used to undermine the skin from the underlying bursa.  The wound was flushed and two simple interrupted sutures with #4-0 nylon were applied.,Standard postoperative dressing was applied consisting of Xeroform, 4x4s, Kerlix, Kling, and Coban.  The pneumatic ankle tourniquet was released and immediate hyperemic flush was noted to the digits.,A sterile stockinet was placed on the toes just below the knee.  Copious amounts of Webril were placed on all bony prominences.  3 inch and 4 inch fiberglass cast tape was used to create a below the knee well-padded, well-moulded cast.  One was able to insert two fingers to the distal and proximal aspects of the _cast.  The capillary refill time to the digits was less than three seconds after cast application.  The patient tolerated the above anesthesia and procedures without complications.  She was transported via cart to the Postanesthesia Care Unit with vital signs stable and vascular status intact to the right foot.  She was given standard postoperative instructions to rest, ice and elevate her right foot.  She was counseled on smoking cessation.  She was given Vicoprofen #30 1 p.o. q.4-6h p.r.n., pain.  She was given Keflex #30 1 p.o. t.i.d.  She is to follow up with Dr. X on Monday.  She is to be full weightbearing with a cast boot.  She was given emergency contact numbers to call us if problem arises.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Talus bunion, right foot.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Plantar flex third metatarsal, right foot"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Talus bunion, right foot.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Third metatarsal osteotomy, right foot"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Third metatarsal osteotomy, right foot"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Talus bunionectomy, right foot"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Talus bunionectomy, right foot"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Application of short-leg cast, right foot.,ANESTHESIA: , TIVA/local.,HISTORY:  ,This 31-year-old female presents to ABCD Preoperative Holding Area after keeping herself n.p.o., since mid night for surgery on her painful right third plantar flex metatarsal.  In addition, she complains of a painful right talus bunion to the right foot.  She has tried conservative methods such as wide shoes and serial debridement and accommodative padding, all of which provided inadequate relief.  At this time she desires to attempt a surgical correction.  The risks versus benefits of the procedure have been explained to the patient by Dr. X and the consent is available on the chart for review.,PROCEDURE IN DETAIL:  ,After IV was established by the Department Of Anesthesia, the patient was taken to the operating room via cart.  She was placed on the operating table in supine position and a safety strap was placed across her waist for retraction.  Next, copious amounts of Webril were applied around the right ankle and a pneumatic ankle tourniquet was applied.,Next, after adequate IV sedation was administered by the Department Of Anesthesia, a total of 10 cc mixture of 4.5 cc of 1% lidocaine/4.5 cc of 0.5% Marcaine/1 cc of Kenalog was injected into the right foot in an infiltrative type block.  Next, the foot was prepped and draped in the usual aseptic fashion.  An Esmarch bandage was used to exsanguinate the foot and the pneumatic ankle tourniquet was elevated to 250 mmHg.  Next, the foot was lowered in the operative field and attention was directed to the dorsal third metatarsal area.  There was a plantar hyperkeratotic lesion and a plantar flex palpable third metatarsal head.  A previous cicatrix was noted with slight hypertrophic scarring.  Using a #10 blade, a lazy S-type incision was created over the dorsal aspect of the third metatarsal, approximately 3.5 cm in length.  Two semi-elliptical converging incisions were made over the hypertrophic scar and it was removed and passed off as a specimen.  Next, the #15 blade was used to deepen the incision down to the subcutaneous tissue.  Any small traversing veins were ligated with electrocautery.  Next, a combination of blunt and sharp dissection were used to undermine the long extensor tendon, which was tacked down with a moderate amount of fibrosis and fibrotic scar tissue.  Next, the extensor tendon was retracted laterally and the deep fascia over the metatarsals was identified.  A linear incision down to bone was made with a #15 blade to the capsuloperiosteal tissues.  Next, the capsuloperiosteal tissues were elevated using a sharp dissection with a #15 blade, off of the third metatarsal.  McGlamry elevator was carefully inserted around the head of the metatarsal and freed and all the plantar adhesions were freed.  A moderate amount of plantar adhesions were encountered.  The third toe was plantar flex and the third metatarsal was delivered into the wound.  Next, a V-shaped osteotomy with an apex distally was created using a sagittal saw.  The metatarsal head was allowed to float.  The wound was flushed with copious amounts of sterile saline.  #3-0 Vicryl was used to close the capsuloperiosteal tissues, which kept the metatarsal head contained.  Next, #4-0 Vicryl was used to close the subcutaneous layer in a simple interrupted suture technique.  Next, #4-0 nylon was used to close the skin in a simple interrupted technique.,Attention was directed to the right fifth metatarsal.  There was a large palpable hypertrophic prominence, which is the area of maximal pain, which the patient complained of preoperatively.  A #10 blade was used to make a 3 cm incision through the skin.  Next, a #15 blade was used to deepen the incision through the subcutaneous tissue.  Next, the medial and lateral aspects were undermined.  The abductor tendon was identified and retracted.  A capsuloperiosteal incision was made with a #15 blade in a linear fashion down to the bone.  The capsuloperiosteal tissues were elevated off the bone with a Freer elevator and a #15 blade.,Next, the sagittal saw was used to resect the large hypertrophic dorsal exostosis.  A reciprocating rasp was used to smooth all bony prominences.  The wound was flushed with copious amount of sterile saline.  #3-0 Vicryl was used to close the capsuloperiosteal tissues.  #4-0 Vicryl was used to close subcutaneous layer with a simple interrupted suture.  Next, #4-0 nylon was used to close the skin in a simple interrupted technique.  Next, attention was directed to the plantar aspect of the third metatarsal where a bursal sac was felt to be palpated under the plantar flex third metatarsal head.  A #15 blade was used to make a small linear incision under the third metatarsal head.  The incision was deepened through the dermal layer and curved hemostats and Metzenbaum scissors were used to undermine the skin from the underlying bursa.  The wound was flushed and two simple interrupted sutures with #4-0 nylon were applied.,Standard postoperative dressing was applied consisting of Xeroform, 4x4s, Kerlix, Kling, and Coban.  The pneumatic ankle tourniquet was released and immediate hyperemic flush was noted to the digits.,A sterile stockinet was placed on the toes just below the knee.  Copious amounts of Webril were placed on all bony prominences.  3 inch and 4 inch fiberglass cast tape was used to create a below the knee well-padded, well-moulded cast.  One was able to insert two fingers to the distal and proximal aspects of the _cast.  The capillary refill time to the digits was less than three seconds after cast application.  The patient tolerated the above anesthesia and procedures without complications.  She was transported via cart to the Postanesthesia Care Unit with vital signs stable and vascular status intact to the right foot.  She was given standard postoperative instructions to rest, ice and elevate her right foot.  She was counseled on smoking cessation.  She was given Vicoprofen #30 1 p.o. q.4-6h p.r.n., pain.  She was given Keflex #30 1 p.o. t.i.d.  She is to follow up with Dr. X on Monday.  She is to be full weightbearing with a cast boot.  She was given emergency contact numbers to call us if problem arises"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Application of short-leg cast, right foot.,ANESTHESIA: , TIVA/local.,HISTORY:  ,This 31-year-old female presents to ABCD Preoperative Holding Area after keeping herself n.p.o., since mid night for surgery on her painful right third plantar flex metatarsal.  In addition, she complains of a painful right talus bunion to the right foot.  She has tried conservative methods such as wide shoes and serial debridement and accommodative padding, all of which provided inadequate relief.  At this time she desires to attempt a surgical correction.  The risks versus benefits of the procedure have been explained to the patient by Dr. X and the consent is available on the chart for review.,PROCEDURE IN DETAIL:  ,After IV was established by the Department Of Anesthesia, the patient was taken to the operating room via cart.  She was placed on the operating table in supine position and a safety strap was placed across her waist for retraction.  Next, copious amounts of Webril were applied around the right ankle and a pneumatic ankle tourniquet was applied.,Next, after adequate IV sedation was administered by the Department Of Anesthesia, a total of 10 cc mixture of 4.5 cc of 1% lidocaine/4.5 cc of 0.5% Marcaine/1 cc of Kenalog was injected into the right foot in an infiltrative type block.  Next, the foot was prepped and draped in the usual aseptic fashion.  An Esmarch bandage was used to exsanguinate the foot and the pneumatic ankle tourniquet was elevated to 250 mmHg.  Next, the foot was lowered in the operative field and attention was directed to the dorsal third metatarsal area.  There was a plantar hyperkeratotic lesion and a plantar flex palpable third metatarsal head.  A previous cicatrix was noted with slight hypertrophic scarring.  Using a #10 blade, a lazy S-type incision was created over the dorsal aspect of the third metatarsal, approximately 3.5 cm in length.  Two semi-elliptical converging incisions were made over the hypertrophic scar and it was removed and passed off as a specimen.  Next, the #15 blade was used to deepen the incision down to the subcutaneous tissue.  Any small traversing veins were ligated with electrocautery.  Next, a combination of blunt and sharp dissection were used to undermine the long extensor tendon, which was tacked down with a moderate amount of fibrosis and fibrotic scar tissue.  Next, the extensor tendon was retracted laterally and the deep fascia over the metatarsals was identified.  A linear incision down to bone was made with a #15 blade to the capsuloperiosteal tissues.  Next, the capsuloperiosteal tissues were elevated using a sharp dissection with a #15 blade, off of the third metatarsal.  McGlamry elevator was carefully inserted around the head of the metatarsal and freed and all the plantar adhesions were freed.  A moderate amount of plantar adhesions were encountered.  The third toe was plantar flex and the third metatarsal was delivered into the wound.  Next, a V-shaped osteotomy with an apex distally was created using a sagittal saw.  The metatarsal head was allowed to float.  The wound was flushed with copious amounts of sterile saline.  #3-0 Vicryl was used to close the capsuloperiosteal tissues, which kept the metatarsal head contained.  Next, #4-0 Vicryl was used to close the subcutaneous layer in a simple interrupted suture technique.  Next, #4-0 nylon was used to close the skin in a simple interrupted technique.,Attention was directed to the right fifth metatarsal.  There was a large palpable hypertrophic prominence, which is the area of maximal pain, which the patient complained of preoperatively.  A #10 blade was used to make a 3 cm incision through the skin.  Next, a #15 blade was used to deepen the incision through the subcutaneous tissue.  Next, the medial and lateral aspects were undermined.  The abductor tendon was identified and retracted.  A capsuloperiosteal incision was made with a #15 blade in a linear fashion down to the bone.  The capsuloperiosteal tissues were elevated off the bone with a Freer elevator and a #15 blade.,Next, the sagittal saw was used to resect the large hypertrophic dorsal exostosis.  A reciprocating rasp was used to smooth all bony prominences.  The wound was flushed with copious amount of sterile saline.  #3-0 Vicryl was used to close the capsuloperiosteal tissues.  #4-0 Vicryl was used to close subcutaneous layer with a simple interrupted suture.  Next, #4-0 nylon was used to close the skin in a simple interrupted technique.  Next, attention was directed to the plantar aspect of the third metatarsal where a bursal sac was felt to be palpated under the plantar flex third metatarsal head.  A #15 blade was used to make a small linear incision under the third metatarsal head.  The incision was deepened through the dermal layer and curved hemostats and Metzenbaum scissors were used to undermine the skin from the underlying bursa.  The wound was flushed and two simple interrupted sutures with #4-0 nylon were applied.,Standard postoperative dressing was applied consisting of Xeroform, 4x4s, Kerlix, Kling, and Coban.  The pneumatic ankle tourniquet was released and immediate hyperemic flush was noted to the digits.,A sterile stockinet was placed on the toes just below the knee.  Copious amounts of Webril were placed on all bony prominences.  3 inch and 4 inch fiberglass cast tape was used to create a below the knee well-padded, well-moulded cast.  One was able to insert two fingers to the distal and proximal aspects of the _cast.  The capillary refill time to the digits was less than three seconds after cast application.  The patient tolerated the above anesthesia and procedures without complications.  She was transported via cart to the Postanesthesia Care Unit with vital signs stable and vascular status intact to the right foot.  She was given standard postoperative instructions to rest, ice and elevate her right foot.  She was counseled on smoking cessation.  She was given Vicoprofen #30 1 p.o. q.4-6h p.r.n., pain.  She was given Keflex #30 1 p.o. t.i.d.  She is to follow up with Dr. X on Monday.  She is to be full weightbearing with a cast boot.  She was given emergency contact numbers to call us if problem arises"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "10 cc"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "dosage",
+    "text": "4.5 cc"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "lidocaine"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "4.5 cc"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "dosage",
+    "text": "0.5%"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "Marcaine"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "dosage",
+    "text": "1 cc"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "Kenalog"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "procedure",
+    "text": "without complications.  She was transported via cart to the Postanesthesia Care Unit with vital signs stable and vascular status intact to the right foot.  She was given standard postoperative instructions to rest, ice and elevate her right foot.  She was counseled on smoking cessation.  She was given Vicoprofen #30 1 p.o. q.4-6h p.r.n., pain.  She was given Keflex #30 1 p.o. t.i.d.  She is to follow up with Dr. X on Monday.  She is to be full weightbearing with a cast boot.  She was given emergency contact numbers to call us if problem arises"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "Vicoprofen"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "medication",
+    "text": "Keflex"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] M21611: Bunion of right foot (score: 0.8858)\n[ICD-10-CM 2027] M21619: Bunion of unspecified foot (score: 0.8746)\n[ICD-10-CM 2027] M21612: Bunion of left foot (score: 0.8637)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] S95101D: Unspecified injury of plantar artery of right foot, subsequent encounter (score: 0.6462)\n[ICD-10-CM 2027] S95191D: Other specified injury of plantar artery of right foot, subsequent encounter (score: 0.6462)\n[ICD-10-CM 2027] S95101A: Unspecified injury of plantar artery of right foot, initial encounter (score: 0.6422)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] M21611: Bunion of right foot (score: 0.8057)\n[ICD-10-CM 2027] M21619: Bunion of unspecified foot (score: 0.7955)\n[ICD-10-CM 2027] M21612: Bunion of left foot (score: 0.7856)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] S92331S: Displaced fracture of third metatarsal bone, right foot, sequela (score: 0.8341)\n[ICD-10-CM 2027] S92334S: Nondisplaced fracture of third metatarsal bone, right foot, sequela (score: 0.8339)\n[ICD-10-CM 2027] S92333S: Displaced fracture of third metatarsal bone, unspecified foot, sequela (score: 0.8067)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Third metatarsal osteotomy, right foot' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] S92101S: Unspecified fracture of right talus, sequela (score: 0.8043)\n[ICD-10-CM 2027] S92191S: Other fracture of right talus, sequela (score: 0.8043)\n[ICD-10-CM 2027] S92109S: Unspecified fracture of unspecified talus, sequela (score: 0.7653)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Talus bunionectomy, right foot' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] S92331S: Displaced fracture of third metatarsal bone, right foot, sequela (score: 0.2798)\n[ICD-10-CM 2027] S92334S: Nondisplaced fracture of third metatarsal bone, right foot, sequela (score: 0.2798)\n[ICD-10-CM 2027] S92333S: Displaced fracture of third metatarsal bone, unspecified foot, sequela (score: 0.2743)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'Application of short-leg cast, right foot.,ANESTHESIA: , TIVA/local.,HISTORY:  ,This 31-year-old female presents to ABCD Preoperative Holding Area after keeping herself n.p.o., since mid night for surgery on her painful right third plantar flex metatarsal.  In addition, she complains of a painful right talus bunion to the right foot.  She has tried conservative methods such as wide shoes and serial debridement and accommodative padding, all of which provided inadequate relief.  At this time she desires to attempt a surgical correction.  The risks versus benefits of the procedure have been explained to the patient by Dr. X and the consent is available on the chart for review.,PROCEDURE IN DETAIL:  ,After IV was established by the Department Of Anesthesia, the patient was taken to the operating room via cart.  She was placed on the operating table in supine position and a safety strap was placed across her waist for retraction.  Next, copious amounts of Webril were applied around the right ankle and a pneumatic ankle tourniquet was applied.,Next, after adequate IV sedation was administered by the Department Of Anesthesia, a total of 10 cc mixture of 4.5 cc of 1% lidocaine/4.5 cc of 0.5% Marcaine/1 cc of Kenalog was injected into the right foot in an infiltrative type block.  Next, the foot was prepped and draped in the usual aseptic fashion.  An Esmarch bandage was used to exsanguinate the foot and the pneumatic ankle tourniquet was elevated to 250 mmHg.  Next, the foot was lowered in the operative field and attention was directed to the dorsal third metatarsal area.  There was a plantar hyperkeratotic lesion and a plantar flex palpable third metatarsal head.  A previous cicatrix was noted with slight hypertrophic scarring.  Using a #10 blade, a lazy S-type incision was created over the dorsal aspect of the third metatarsal, approximately 3.5 cm in length.  Two semi-elliptical converging incisions were made over the hypertrophic scar and it was removed and passed off as a specimen.  Next, the #15 blade was used to deepen the incision down to the subcutaneous tissue.  Any small traversing veins were ligated with electrocautery.  Next, a combination of blunt and sharp dissection were used to undermine the long extensor tendon, which was tacked down with a moderate amount of fibrosis and fibrotic scar tissue.  Next, the extensor tendon was retracted laterally and the deep fascia over the metatarsals was identified.  A linear incision down to bone was made with a #15 blade to the capsuloperiosteal tissues.  Next, the capsuloperiosteal tissues were elevated using a sharp dissection with a #15 blade, off of the third metatarsal.  McGlamry elevator was carefully inserted around the head of the metatarsal and freed and all the plantar adhesions were freed.  A moderate amount of plantar adhesions were encountered.  The third toe was plantar flex and the third metatarsal was delivered into the wound.  Next, a V-shaped osteotomy with an apex distally was created using a sagittal saw.  The metatarsal head was allowed to float.  The wound was flushed with copious amounts of sterile saline.  #3-0 Vicryl was used to close the capsuloperiosteal tissues, which kept the metatarsal head contained.  Next, #4-0 Vicryl was used to close the subcutaneous layer in a simple interrupted suture technique.  Next, #4-0 nylon was used to close the skin in a simple interrupted technique.,Attention was directed to the right fifth metatarsal.  There was a large palpable hypertrophic prominence, which is the area of maximal pain, which the patient complained of preoperatively.  A #10 blade was used to make a 3 cm incision through the skin.  Next, a #15 blade was used to deepen the incision through the subcutaneous tissue.  Next, the medial and lateral aspects were undermined.  The abductor tendon was identified and retracted.  A capsuloperiosteal incision was made with a #15 blade in a linear fashion down to the bone.  The capsuloperiosteal tissues were elevated off the bone with a Freer elevator and a #15 blade.,Next, the sagittal saw was used to resect the large hypertrophic dorsal exostosis.  A reciprocating rasp was used to smooth all bony prominences.  The wound was flushed with copious amount of sterile saline.  #3-0 Vicryl was used to close the capsuloperiosteal tissues.  #4-0 Vicryl was used to close subcutaneous layer with a simple interrupted suture.  Next, #4-0 nylon was used to close the skin in a simple interrupted technique.  Next, attention was directed to the plantar aspect of the third metatarsal where a bursal sac was felt to be palpated under the plantar flex third metatarsal head.  A #15 blade was used to make a small linear incision under the third metatarsal head.  The incision was deepened through the dermal layer and curved hemostats and Metzenbaum scissors were used to undermine the skin from the underlying bursa.  The wound was flushed and two simple interrupted sutures with #4-0 nylon were applied.,Standard postoperative dressing was applied consisting of Xeroform, 4x4s, Kerlix, Kling, and Coban.  The pneumatic ankle tourniquet was released and immediate hyperemic flush was noted to the digits.,A sterile stockinet was placed on the toes just below the knee.  Copious amounts of Webril were placed on all bony prominences.  3 inch and 4 inch fiberglass cast tape was used to create a below the knee well-padded, well-moulded cast.  One was able to insert two fingers to the distal and proximal aspects of the _cast.  The capillary refill time to the digits was less than three seconds after cast application.  The patient tolerated the above anesthesia and procedures without complications.  She was transported via cart to the Postanesthesia Care Unit with vital signs stable and vascular status intact to the right foot.  She was given standard postoperative instructions to rest, ice and elevate her right foot.  She was counseled on smoking cessation.  She was given Vicoprofen #30 1 p.o. q.4-6h p.r.n., pain.  She was given Keflex #30 1 p.o. t.i.d.  She is to follow up with Dr. X on Monday.  She is to be full weightbearing with a cast boot.  She was given emergency contact numbers to call us if problem arises' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "Dose 10.0cc associated with lidocaine \u2014 dose 10.0cc not among known product strengths"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "Dose 4.5cc associated with lidocaine \u2014 dose 4.5cc not among known product strengths"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "Dose 1.0% associated with lidocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'lidocaine' \u2192 RXCUI 6387, canonical: lidocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 4.5cc associated with lidocaine \u2014 dose 4.5cc not among known product strengths"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "Dose 0.5% associated with Marcaine \u2014 dose 0.5% not among known product strengths"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'Marcaine' \u2192 RXCUI 1012397, canonical: Marcaine, match: exact\n[RxNorm] Ingredient: bupivacaine (RXCUI 1815)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): bupivacaine hydrochloride 3.75 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; bupivacaine hydrochloride 2.5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; bupivacaine hydrochloride 5 MG/ML / epinephrine 0.005 MG/ML Injectable Solution; 30 ML bupivacaine hydrochloride 7.5 MG/ML / epinephrine 0.005 MG/ML Injection; bupivacaine hydrochloride 2.5 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "Dose 1.0cc associated with Marcaine \u2014 dose 1.0cc not among known product strengths"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'Kenalog' \u2192 RXCUI 202877, canonical: Kenalog, match: exact\n[RxNorm] Ingredient: triamcinolone (RXCUI 10759)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): triamcinolone acetonide 1 MG/ML Topical Cream; nystatin 100 UNT/MG / triamcinolone acetonide 0.001 MG/MG Topical Ointment; nystatin 100000 UNT/ML / triamcinolone acetonide 1 MG/ML Topical Cream; triamcinolone acetonide 0.00025 MG/MG Topical Ointment; triamcinolone acetonide 0.001 MG/MG Topical Ointment"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[Procedure] 'without complications.  She was transported via cart to the Postanesthesia Care Unit with vital signs stable and vascular status intact to the right foot.  She was given standard postoperative instructions to rest, ice and elevate her right foot.  She was counseled on smoking cessation.  She was given Vicoprofen #30 1 p.o. q.4-6h p.r.n., pain.  She was given Keflex #30 1 p.o. t.i.d.  She is to follow up with Dr. X on Monday.  She is to be full weightbearing with a cast boot.  She was given emergency contact numbers to call us if problem arises' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'Vicoprofen' \u2192 RXCUI 220826, canonical: Vicoprofen, match: exact\n[RxNorm] Ingredient: hydrocodone (RXCUI 5489)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): acetaminophen 20 MG/ML / hydrocodone bitartrate 0.667 MG/ML Oral Solution; 12 HR chlorpheniramine polistirex 1.6 MG/ML / hydrocodone polistirex 2 MG/ML Extended Release Suspension; brompheniramine maleate 0.4 MG/ML / guaifenesin 40 MG/ML / hydrocodone bitartrate 1 MG/ML Oral Solution; Abuse-Deterrent 24 HR hydrocodone bitartrate 20 MG Extended Release Oral Tablet; Abuse-Deterrent 24 HR hydrocodone bitartrate 30 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[RxNorm] 'Keflex' \u2192 RXCUI 203167, canonical: Keflex, match: exact\n[RxNorm] Ingredient: cephalexin (RXCUI 2231)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephalexin 150 MG Chewable Tablet; cephalexin 300 MG Chewable Tablet; cephalexin 600 MG Chewable Tablet; cephalexin 500 MG Oral Tablet; cephalexin 100 MG/ML Oral Suspension"
+  }
+]

@@ -1,0 +1,133 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+ADMISSION DIAGNOSES: , Hyperglycemia, cholelithiasis, obstructive sleep apnea, diabetes mellitus, and hypertension.,DISCHARGE DIAGNOSES: , Hyperglycemia, cholelithiasis, obstructive sleep apnea, diabetes mellitus, hypertension, and cholecystitis.,PROCEDURE: , Laparoscopic cholecystectomy.,SERVICE: , Surgery.,HISTORY OF PRESENT ILLNESS:,  Ms. ABC is a 57-year-old woman.  She suffers from morbid obesity.  She also has diabetes and obstructive sleep apnea.  She was evaluated in the Bariatric Surgical Center for placement of a band.  During her workup, she was noted to have evidence of cholelithiasis.  It was felt that the patient would benefit from removal of her gallbladder prior to having band placement secondary to her diabetes and the risk of infection of the band.  The patient was scheduled to undergo her procedure on 12/31/09; however, at blood glucose check, the patient was noted to be hyperglycemic, her sugar was 438.  She was admitted to the hospital for treatment of her hyperglycemia.,HOSPITAL COURSE: , Ms. ABC was admitted to the hospital.  She was seen by Dr. A.  He put her on an insulin drip.  Her sugars slowly did come down to normal down to between 115 and 134.  On the next day, she was then taken to the operating room, where she underwent her laparoscopic cholecystectomy.  She was noted to be a difficult intubation for the procedure.  There were some indications of chronic cholecystitis, a little bit of edema, mild edema and adhesions of omentum around the gallbladder.  She underwent the procedure.  She tolerated without difficulty.  She was recovered in the Postoperative Care Unit and then returned to the floor.  Her blood sugar postprocedure was noted to be 233.  She was started back on a sliding scale insulin.  She continued to do well and was felt to be stable for discharge following the procedure.,DISCHARGE INSTRUCTIONS:  ,To return to the Medifast diet.  To continue with her blood glucose.  She needs to follow up with Dr. B, and she will see me next week on Friday.  We will determine if we will proceed with her lap band at that time.  She may shower.  She needs to keep her wounds clean and dry.  No heavy lifting.  No driving on narcotic pain medicines.  She needs to continue with her CPAP machine and continue to monitor her sugars.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Hyperglycemia, cholelithiasis, obstructive sleep apnea, diabetes mellitus, and hypertension.,DISCHARGE DIAGNOSES: , Hyperglycemia, cholelithiasis, obstructive sleep apnea, diabetes mellitus, hypertension, and cholecystitis.,PROCEDURE: , Laparoscopic cholecystectomy.,SERVICE: , Surgery.,HISTORY OF PRESENT ILLNESS:,  Ms. ABC is a 57-year-old woman.  She suffers from morbid obesity.  She also has diabetes and obstructive sleep apnea.  She was evaluated in the Bariatric Surgical Center for placement of a band.  During her workup, she was noted to have evidence of cholelithiasis.  It was felt that the patient would benefit from removal of her gallbladder prior to having band placement secondary to her diabetes and the risk of infection of the band.  The patient was scheduled to undergo her procedure on 12/31/09; however, at blood glucose check, the patient was noted to be hyperglycemic, her sugar was"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Hyperglycemia, cholelithiasis, obstructive sleep apnea, diabetes mellitus, hypertension, and cholecystitis.,PROCEDURE: , Laparoscopic cholecystectomy.,SERVICE: , Surgery.,HISTORY OF PRESENT ILLNESS:,  Ms. ABC is a 57-year-old woman.  She suffers from morbid obesity.  She also has diabetes and obstructive sleep apnea.  She was evaluated in the Bariatric Surgical Center for placement of a band.  During her workup, she was noted to have evidence of cholelithiasis.  It was felt that the patient would benefit from removal of her gallbladder prior to having band placement secondary to her diabetes and the risk of infection of the band.  The patient was scheduled to undergo her procedure on 12/31/09; however, at blood glucose check, the patient was noted to be hyperglycemic, her sugar was"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Laparoscopic cholecystectomy.,SERVICE: , Surgery.,HISTORY OF PRESENT ILLNESS:,  Ms. ABC is a 57-year-old woman.  She suffers from morbid obesity.  She also has diabetes and obstructive sleep apnea.  She was evaluated in the Bariatric Surgical Center for placement of a band.  During her workup, she was noted to have evidence of cholelithiasis.  It was felt that the patient would benefit from removal of her gallbladder prior to having band placement secondary to her diabetes and the risk of infection of the band.  The patient was scheduled to undergo her procedure on 12/31/09; however, at blood glucose check, the patient was noted to be hyperglycemic, her sugar was"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "glucose"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "She was admitted to the hospital for treatment of her hyperglycemia.,HOSPITAL COURSE: , Ms. ABC was admitted to the hospital.  She was seen by Dr. A.  He put her on an insulin drip.  Her sugars slowly did come down to normal down to between 115 and"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "She was admitted to the hospital for treatment of her hyperglycemia.,HOSPITAL COURSE: , Ms. ABC was admitted to the hospital.  She was seen by Dr. A.  He put her on an insulin drip.  Her sugars slowly did come down to normal down to between 115 and"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "On the next day, she was then taken to the operating room, where she underwent her laparoscopic cholecystectomy.  She was noted to be a difficult intubation for the procedure.  There were some indications of chronic cholecystitis, a little bit of edema, mild edema and adhesions of omentum around the gallbladder.  She underwent the procedure.  She tolerated without difficulty.  She was recovered in the Postoperative Care Unit and then returned to the floor.  Her blood sugar postprocedure was noted to be"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "On the next day, she was then taken to the operating room, where she underwent her laparoscopic cholecystectomy.  She was noted to be a difficult intubation for the procedure.  There were some indications of chronic cholecystitis, a little bit of edema, mild edema and adhesions of omentum around the gallbladder.  She underwent the procedure.  She tolerated without difficulty.  She was recovered in the Postoperative Care Unit and then returned to the floor.  Her blood sugar postprocedure was noted to be"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "She was started back on a sliding scale insulin.  She continued to do well and was felt to be stable for discharge following the procedure.,DISCHARGE INSTRUCTIONS:  ,To return to the Medifast diet.  To continue with her blood glucose.  She needs to follow up with Dr. B, and she will see me next week on Friday.  We will determine if we will proceed with her lap band at that time.  She may shower.  She needs to keep her wounds clean and dry.  No heavy lifting.  No driving on narcotic pain medicines.  She needs to continue with her CPAP machine and continue to monitor her sugars"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "She was started back on a sliding scale insulin.  She continued to do well and was felt to be stable for discharge following the procedure.,DISCHARGE INSTRUCTIONS:  ,To return to the Medifast diet.  To continue with her blood glucose.  She needs to follow up with Dr. B, and she will see me next week on Friday.  We will determine if we will proceed with her lap band at that time.  She may shower.  She needs to keep her wounds clean and dry.  No heavy lifting.  No driving on narcotic pain medicines.  She needs to continue with her CPAP machine and continue to monitor her sugars"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "glucose"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] P2832: Primary obstructive sleep apnea of newborn (score: 0.4268)\n[ICD-10-CM 2027] G4730: Sleep apnea, unspecified (score: 0.3892)\n[ICD-10-CM 2027] G4739: Other sleep apnea (score: 0.3892)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] P2832: Primary obstructive sleep apnea of newborn (score: 0.3400)\n[ICD-10-CM 2027] K9501: Infection due to gastric band procedure (score: 0.3130)\n[ICD-10-CM 2027] G4730: Sleep apnea, unspecified (score: 0.3101)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'Laparoscopic cholecystectomy.,SERVICE: , Surgery.,HISTORY OF PRESENT ILLNESS:,  Ms. ABC is a 57-year-old woman.  She suffers from morbid obesity.  She also has diabetes and obstructive sleep apnea.  She was evaluated in the Bariatric Surgical Center for placement of a band.  During her workup, she was noted to have evidence of cholelithiasis.  It was felt that the patient would benefit from removal of her gallbladder prior to having band placement secondary to her diabetes and the risk of infection of the band.  The patient was scheduled to undergo her procedure on 12/31/09; however, at blood glucose check, the patient was noted to be hyperglycemic, her sugar was' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] Q909: Down syndrome, unspecified (score: 0.4411)\n[ICD-10-CM 2027] W1781XD: Fall down embankment (hill), subsequent encounter (score: 0.2641)\n[ICD-10-CM 2027] W1781XA: Fall down embankment (hill), initial encounter (score: 0.2636)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'She was admitted to the hospital for treatment of her hyperglycemia.,HOSPITAL COURSE: , Ms. ABC was admitted to the hospital.  She was seen by Dr. A.  He put her on an insulin drip.  Her sugars slowly did come down to normal down to between 115 and' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] Z5331: Laparoscopic surgical procedure converted to open procedure (score: 0.2506)\n[ICD-10-CM 2027] T63443D: Toxic effect of venom of bees, assault, subsequent encounter (score: 0.2428)\n[ICD-10-CM 2027] T63444D: Toxic effect of venom of bees, undetermined, subsequent encounter (score: 0.2425)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'On the next day, she was then taken to the operating room, where she underwent her laparoscopic cholecystectomy.  She was noted to be a difficult intubation for the procedure.  There were some indications of chronic cholecystitis, a little bit of edema, mild edema and adhesions of omentum around the gallbladder.  She underwent the procedure.  She tolerated without difficulty.  She was recovered in the Postoperative Care Unit and then returned to the floor.  Her blood sugar postprocedure was noted to be' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] Z743: Need for continuous supervision (score: 0.3049)\n[ICD-10-CM 2027] Z742: Need for assistance at home and no other household member able to render care (score: 0.3041)\n[ICD-10-CM 2027] Z741: Need for assistance with personal care (score: 0.2996)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'She was started back on a sliding scale insulin.  She continued to do well and was felt to be stable for discharge following the procedure.,DISCHARGE INSTRUCTIONS:  ,To return to the Medifast diet.  To continue with her blood glucose.  She needs to follow up with Dr. B, and she will see me next week on Friday.  We will determine if we will proceed with her lap band at that time.  She may shower.  She needs to keep her wounds clean and dry.  No heavy lifting.  No driving on narcotic pain medicines.  She needs to continue with her CPAP machine and continue to monitor her sugars' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  }
+]

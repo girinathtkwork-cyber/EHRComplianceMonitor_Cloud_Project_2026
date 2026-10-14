@@ -1,0 +1,143 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Refractory dyspepsia.,POSTOPERATIVE DIAGNOSIS:,1.  Hiatal hernia.,2.  Reflux esophagitis.,PROCEDURE PERFORMED:,  Esophagogastroduodenoscopy with pseudo and esophageal biopsy.,ANESTHESIA:,  Conscious sedation with Demerol and Versed.,SPECIMEN: , Esophageal biopsy.,COMPLICATIONS: , None.,HISTORY:,  The patient is a 52-year-old female morbidly obese black female who has a long history of reflux and GERD type symptoms including complications such as hoarseness and chronic cough.  She has been on multiple medical regimens and continues with dyspeptic symptoms.,PROCEDURE: , After proper informed consent was obtained, the patient was brought to the endoscopy suite.  She was placed in the left lateral position and was given IV Demerol and Versed for sedation.  When adequate level of sedation achieved, the gastroscope was inserted into the hypopharynx and the esophagus was easily intubated.  At the GE junction, a hiatal hernia was present.  There were mild inflammatory changes consistent with reflux esophagitis.  The scope was then passed into the stomach.  It was insufflated and the scope was coursed along the greater curvature to the antrum.  The pylorus was patent.  There was evidence of bile reflux in the antrum.  The duodenal bulb and sweep were examined and were without evidence of mass, ulceration, or inflammation.  The scope was then brought back into the antrum.,A retroflexion was attempted multiple times, however, the patient was having difficulty holding the air and adequate retroflexion view was not visualized.  The gastroscope was then slowly withdrawn.  There were no other abnormalities noted in the fundus or body.  Once again at the GE junction, esophageal biopsy was taken.  The scope was then completely withdrawn.  The patient tolerated the procedure and was transferred to the recovery room in stable condition.  She will return to the General Medical Floor.  We will continue b.i.d proton-pump inhibitor therapy as well as dietary restrictions.  She should also attempt significant weight loss.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Refractory dyspepsia.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Hiatal hernia"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "Reflux esophagitis.,PROCEDURE PERFORMED:,  Esophagogastroduodenoscopy with pseudo and esophageal biopsy.,ANESTHESIA:,  Conscious sedation with Demerol and Versed.,SPECIMEN: , Esophageal biopsy.,COMPLICATIONS: , None.,HISTORY:,  The patient is a 52-year-old female morbidly obese black female who has a long history of reflux and GERD type symptoms including complications such as hoarseness and chronic cough.  She has been on multiple medical regimens and continues with dyspeptic symptoms.,PROCEDURE: , After proper informed consent was obtained, the patient was brought to the endoscopy suite.  She was placed in the left lateral position and was given IV Demerol and Versed for sedation.  When adequate level of sedation achieved, the gastroscope was inserted into the hypopharynx and the esophagus was easily intubated.  At the GE junction, a hiatal hernia was present.  There were mild inflammatory changes consistent with reflux esophagitis.  The scope was then passed into the stomach.  It was insufflated and the scope was coursed along the greater curvature to the antrum.  The pylorus was patent.  There was evidence of bile reflux in the antrum.  The duodenal bulb and sweep were examined and were without evidence of mass, ulceration, or inflammation.  The scope was then brought back into the antrum.,A retroflexion was attempted multiple times, however, the patient was having difficulty holding the air and adequate retroflexion view was not visualized.  The gastroscope was then slowly withdrawn.  There were no other abnormalities noted in the fundus or body.  Once again at the GE junction, esophageal biopsy was taken.  The scope was then completely withdrawn.  The patient tolerated the procedure and was transferred to the recovery room in stable condition.  She will return to the General Medical Floor.  We will continue b.i.d proton-pump inhibitor therapy as well as dietary restrictions.  She should also attempt significant weight loss"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Esophagogastroduodenoscopy with pseudo and esophageal biopsy.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "Conscious sedation with Demerol and Versed.,SPECIMEN:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Demerol"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Esophageal biopsy.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "None.,HISTORY:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "The patient is a 52-year-old female morbidly obese black female who has a long history of reflux and GERD type symptoms including complications such as hoarseness and chronic cough.  She has been on multiple medical regimens and continues with dyspeptic symptoms.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "After proper informed consent was obtained, the patient was brought to the endoscopy suite.  She was placed in the left lateral position and was given IV Demerol and Versed for sedation.  When adequate level of sedation achieved, the gastroscope was inserted into the hypopharynx and the esophagus was easily intubated.  At the GE junction, a hiatal hernia was present.  There were mild inflammatory changes consistent with reflux esophagitis.  The scope was then passed into the stomach.  It was insufflated and the scope was coursed along the greater curvature to the antrum.  The pylorus was patent.  There was evidence of bile reflux in the antrum.  The duodenal bulb and sweep were examined and were without evidence of mass, ulceration, or inflammation.  The scope was then brought back into the antrum.,A retroflexion was attempted multiple times, however, the patient was having difficulty holding the air and adequate retroflexion view was not visualized.  The gastroscope was then slowly withdrawn.  There were no other abnormalities noted in the fundus or body.  Once again at the GE junction, esophageal biopsy was taken.  The scope was then completely withdrawn.  The patient tolerated the procedure and was transferred to the recovery room in stable condition.  She will return to the General Medical Floor.  We will continue b.i.d proton-pump inhibitor therapy as well as dietary restrictions.  She should also attempt significant weight loss"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Demerol"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] K30: Functional dyspepsia (score: 0.5153)\n[ICD-10-CM 2027] D464: Refractory anemia, unspecified (score: 0.3758)\n[ICD-10-CM 2027] R030: Elevated blood-pressure reading, without diagnosis of hypertension (score: 0.3231)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] K451: Other specified abdominal hernia with gangrene (score: 0.6633)\n[ICD-10-CM 2027] K461: Unspecified abdominal hernia with gangrene (score: 0.6633)\n[ICD-10-CM 2027] Q7951: Congenital hernia of bladder (score: 0.6424)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] P7883: Newborn esophageal reflux (score: 0.3394)\n[ICD-10-CM 2027] K219: Gastro-esophageal reflux disease without esophagitis (score: 0.3246)\n[ICD-10-CM 2027] K2100: Gastro-esophageal reflux disease with esophagitis, without bleeding (score: 0.3032)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Esophagogastroduodenoscopy with pseudo and esophageal biopsy.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'Conscious sedation with Demerol and Versed.,SPECIMEN:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Demerol' \u2192 RXCUI 282381, canonical: Demerol, match: exact\n[RxNorm] Ingredient: meperidine (RXCUI 6754)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML meperidine hydrochloride 100 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 25 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 75 MG/ML Cartridge"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Esophageal biopsy.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'None.,HISTORY:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'The patient is a 52-year-old female morbidly obese black female who has a long history of reflux and GERD type symptoms including complications such as hoarseness and chronic cough.  She has been on multiple medical regimens and continues with dyspeptic symptoms.,PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'After proper informed consent was obtained, the patient was brought to the endoscopy suite.  She was placed in the left lateral position and was given IV Demerol and Versed for sedation.  When adequate level of sedation achieved, the gastroscope was inserted into the hypopharynx and the esophagus was easily intubated.  At the GE junction, a hiatal hernia was present.  There were mild inflammatory changes consistent with reflux esophagitis.  The scope was then passed into the stomach.  It was insufflated and the scope was coursed along the greater curvature to the antrum.  The pylorus was patent.  There was evidence of bile reflux in the antrum.  The duodenal bulb and sweep were examined and were without evidence of mass, ulceration, or inflammation.  The scope was then brought back into the antrum.,A retroflexion was attempted multiple times, however, the patient was having difficulty holding the air and adequate retroflexion view was not visualized.  The gastroscope was then slowly withdrawn.  There were no other abnormalities noted in the fundus or body.  Once again at the GE junction, esophageal biopsy was taken.  The scope was then completely withdrawn.  The patient tolerated the procedure and was transferred to the recovery room in stable condition.  She will return to the General Medical Floor.  We will continue b.i.d proton-pump inhibitor therapy as well as dietary restrictions.  She should also attempt significant weight loss' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Demerol' \u2192 RXCUI 282381, canonical: Demerol, match: exact\n[RxNorm] Ingredient: meperidine (RXCUI 6754)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 1 ML meperidine hydrochloride 100 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Injection; 1 ML meperidine hydrochloride 50 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 25 MG/ML Prefilled Syringe; 1 ML meperidine hydrochloride 75 MG/ML Cartridge"
+  }
+]

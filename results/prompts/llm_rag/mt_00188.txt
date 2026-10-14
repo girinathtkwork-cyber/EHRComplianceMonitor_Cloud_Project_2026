@@ -1,0 +1,273 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+HISTORY OF PRESENT ILLNESS: , The patient is a 35-year-old lady who was admitted with chief complaints of chest pain, left-sided with severe chest tightness after having an emotional argument with her boyfriend.  The patient has a long history of psychological disorders.  As per the patient, she also has a history of supraventricular tachycardia and coronary artery disease, for which the patient has had workup done in ABC Medical Center.  The patient was evaluated in the emergency room.  The initial cardiac workup was negative.  The patient was admitted to telemetry unit for further evaluation.  In the emergency room, the patient was also noted to have a strongly positive drug screen including methadone and morphine.  The patient's EKG in the emergency room was normal and the patient had some relief from her chest pain after she got some nitroglycerin.,PAST MEDICAL HISTORY: , As mentioned above is significant for history of seizure disorder, migraine headaches, coronary artery disease, CHF, apparently coronary stenting done, mitral valve prolapse, supraventricular tachycardia, pacemaker placement, colon cancer, and breast cancer.  None of the details of these are available.,PAST SURGICAL HISTORY: , Significant for history of lumpectomy on the left breast, breast augmentation surgery, cholecystectomy, cardiac ablation x3, left knee surgery as well as removal of half the pancreas.,CURRENT MEDICATIONS AT HOME: , Included Dilantin 40mg daily, Klonopin 2 mg 3 times a day, Elavil 300 mg at night, nitroglycerin sublingual p.r.n., Thorazine 300 mg 3 times a day, Neurontin 800 mg 4 times a day, and Phenergan 25 mg as tolerated.,OB HISTORY: , Her last menstrual period was 6/3/2009.  The patient is admitting to having a recent abortion done.  She is not too sure whether the abortion was completed or not, has not had a followup with her OB/GYN.,FAMILY HISTORY:  ,Noncontributory.,SOCIAL HISTORY:  ,She lives with her boyfriend.  The patient has history of tobacco abuse as well as multiple illicit drug abuse.,REVIEW OF SYSTEMS:  As mentioned above.,PHYSICAL EXAMINATION:,GENERAL:  She is alert, awake, and oriented.,VITAL SIGNS:  Her blood pressure is about 132/72, heart rate of about 87 per minute, respiratory rate of 16.,HEENT:  Shows head is atraumatic.  Pupils are round and reactive to light.  Extraocular muscles are intact.  No oropharyngeal lesions noted.,NECK:  Supple, no JV distention, no carotid bruits, and no lymphadenopathy.,LUNGS:  Clear to auscultation bilaterally.,CARDIAC:  Reveals regular rate and rhythm.,ABDOMEN:  Soft, nontender, nondistended.  Bowel sounds are normally present.,LOWER EXTREMITIES:  Shows no edema.  Distal pulses are 2+.,NEUROLOGICAL:  Grossly nonfocal.,LABORATORY DATA: , The database that is available at this point of time, WBC count is normal, hemoglobin and hematocrit are normal.  Sodium, potassium, chloride, glucose, bicarbonate, BUN and creatinine, and liver function tests are normal.  The patient's 3 sets of cardiac enzymes including troponin-I, CPK-MB, and myoglobulin have been normal.  EKG is normal, sinus rhythm without any acute ST-T wave changes.  As mentioned before, the patient's toxicology screen was positive for morphine, methadone, and marijuana.  The patient also had a head CT done in the emergency room, which was fairly unremarkable.  The patient's beta-hCG level was marginally elevated at about 48.,ASSESSMENT AND EVALUATION:,1.  Chest pains, appear to be completely noncardiac.  The patient does seem to have a psychosomatic component to her chest pain.  There is no evidence of acute coronary syndrome or unstable angina at this point of time.,2.  Possible early pregnancy.  The patient's case was discussed with OB/GYN on-call over the phone.  Some of the medications have to be held secondary to potential danger.  The patient will follow up on an outpatient basis with her primary OB/GYN as well as PCP for the workup of her pregnancy as well as continuation of the pregnancy and prenatal visits.,3.  Migraine headaches for which the patient has been using her routine medications and the headaches seem to be under control.  Again, this is an outpatient diagnosis.  The patient will follow up with her PCP for control of migraine headache.,Overall prognosis is too soon to predict.,The plan is to discharge the patient home secondary to no evidence of acute coronary syndrome.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "methadone"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "morphine"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "nitroglycerin"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Dilantin"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "40mg"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "medication",
+    "text": "Klonopin"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "dosage",
+    "text": "2 mg"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "Elavil"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "dosage",
+    "text": "300 mg"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "medication",
+    "text": "nitroglycerin"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "dosage",
+    "text": "300 mg"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "medication",
+    "text": "Neurontin"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "800 mg"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "Phenergan"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "dosage",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "medication",
+    "text": "Sodium"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "medication",
+    "text": "potassium"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "glucose"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "creatinine"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "morphine"
+  },
+  {
+    "entity_id": "E21",
+    "entity_type": "medication",
+    "text": "methadone"
+  },
+  {
+    "entity_id": "E22",
+    "entity_type": "diagnosis",
+    "text": "AND EVALUATION:"
+  },
+  {
+    "entity_id": "E23",
+    "entity_type": "diagnosis",
+    "text": "Chest pains, appear to be completely noncardiac.  The patient does seem to have a psychosomatic component to her chest pain.  There is no evidence of acute coronary syndrome or unstable angina at this point of time"
+  },
+  {
+    "entity_id": "E24",
+    "entity_type": "diagnosis",
+    "text": "Possible early pregnancy.  The patient's case was discussed with OB/GYN on-call over the phone.  Some of the medications have to be held secondary to potential danger.  The patient will follow up on an outpatient basis with her primary OB/GYN as well as PCP for the workup of her pregnancy as well as continuation of the pregnancy and prenatal visits"
+  },
+  {
+    "entity_id": "E25",
+    "entity_type": "diagnosis",
+    "text": "Migraine headaches for which the patient has been using her routine medications and the headaches seem to be under control.  Again, this is an outpatient diagnosis.  The patient will follow up with her PCP for control of migraine headache.,Overall prognosis is too soon to predict.,The plan is to discharge the patient home secondary to no evidence of acute coronary syndrome"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'methadone' \u2192 RXCUI 6813, canonical: methadone, match: exact\n[RxNorm] Ingredient: methadone (RXCUI 6813)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methadone hydrochloride 10 MG Oral Tablet; methadone hydrochloride 10 MG/ML Injectable Solution; methadone hydrochloride 5 MG Oral Tablet; methadone hydrochloride 1 MG/ML Oral Solution; methadone hydrochloride 2 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'morphine' \u2192 RXCUI 7052, canonical: morphine, match: exact\n[RxNorm] Ingredient: morphine (RXCUI 7052)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): morphine sulfate 40 MG Extended Release Oral Capsule; 1 ML morphine sulfate 5 MG/ML Prefilled Syringe; 10 ML morphine sulfate 0.5 MG/ML Injection; 2 ML morphine sulfate 0.5 MG/ML Injection; 10 ML morphine sulfate 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'nitroglycerin' \u2192 RXCUI 4917, canonical: nitroglycerin, match: exact\n[RxNorm] Ingredient: nitroglycerin (RXCUI 4917)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): nitroglycerin 0.004 MG/MG Rectal Ointment; nitroglycerin 0.4 MG Sublingual Powder; 250 ML nitroglycerin 0.4 MG/ML Injection; 250 ML nitroglycerin 0.1 MG/ML Injection; nitroglycerin 0.3 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[RxNorm] 'Dilantin' \u2192 RXCUI 202740, canonical: Dilantin, match: exact\n[RxNorm] Ingredient: phenytoin (RXCUI 8183)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): pentobarbital sodium 390 MG/ML / phenytoin sodium 50 MG/ML Injectable Solution; phenytoin 25 MG/ML Oral Suspension; phenytoin 50 MG Chewable Tablet; phenytoin 6 MG/ML Oral Suspension; phenytoin 18 MG/ML Oral Suspension"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "Dose 40.0mg associated with Dilantin \u2014 dose 40.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[RxNorm] 'Klonopin' \u2192 RXCUI 202585, canonical: Klonopin, match: exact\n[RxNorm] Ingredient: clonazepam (RXCUI 2598)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): clonazepam 0.5 MG Oral Tablet; clonazepam 1 MG Oral Tablet; clonazepam 2 MG Oral Tablet; clonazepam 0.25 MG Oral Tablet; clonazepam 0.125 MG Disintegrating Oral Tablet"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "Dose 2.0mg associated with Klonopin"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'Elavil' \u2192 RXCUI 42940, canonical: Elavil, match: exact\n[RxNorm] Ingredient: amitriptyline (RXCUI 704)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amitriptyline hydrochloride 10 MG / perphenazine 2 MG Oral Tablet; amitriptyline hydrochloride 10 MG / perphenazine 4 MG Oral Tablet; amitriptyline hydrochloride 100 MG Oral Tablet; amitriptyline hydrochloride 12.5 MG / chlordiazepoxide 5 MG Oral Tablet; amitriptyline hydrochloride 150 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "Dose 300.0mg associated with Elavil \u2014 dose 300.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[RxNorm] 'nitroglycerin' \u2192 RXCUI 4917, canonical: nitroglycerin, match: exact\n[RxNorm] Ingredient: nitroglycerin (RXCUI 4917)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): nitroglycerin 0.004 MG/MG Rectal Ointment; nitroglycerin 0.4 MG Sublingual Powder; 250 ML nitroglycerin 0.4 MG/ML Injection; 250 ML nitroglycerin 0.1 MG/ML Injection; nitroglycerin 0.3 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "Dose 300.0mg associated with Neurontin"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[RxNorm] 'Neurontin' \u2192 RXCUI 196498, canonical: Neurontin, match: exact\n[RxNorm] Ingredient: gabapentin (RXCUI 25480)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): gabapentin enacarbil 600 MG Extended Release Oral Tablet; gabapentin enacarbil 300 MG Extended Release Oral Tablet; Once-Daily gabapentin 300 MG Oral Tablet; Once-Daily gabapentin 600 MG Oral Tablet; Once-Daily gabapentin 900 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "Dose 800.0mg associated with Neurontin"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'Phenergan' \u2192 RXCUI 152218, canonical: Phenergan, match: exact\n[RxNorm] Ingredient: promethazine (RXCUI 8745)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): phenylephrine hydrochloride 1 MG/ML / promethazine hydrochloride 1.25 MG/ML Oral Solution; meperidine hydrochloride 50 MG / promethazine hydrochloride 25 MG Oral Capsule; codeine phosphate 2 MG/ML / promethazine hydrochloride 1.25 MG/ML Oral Solution; dextromethorphan hydrobromide 3 MG/ML / promethazine hydrochloride 1.25 MG/ML Oral Solution; promethazine hydrochloride 1.25 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "Dose 25.0mg associated with Phenergan"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[RxNorm] 'Sodium' \u2192 RXCUI 9853, canonical: sodium, match: exact\n[RxNorm] Ingredient: sodium (RXCUI 9853)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[RxNorm] 'potassium' \u2192 RXCUI 8588, canonical: potassium, match: exact\n[RxNorm] Ingredient: potassium (RXCUI 8588)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): potassium 80 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'glucose' \u2192 RXCUI 4850, canonical: glucose, match: exact\n[RxNorm] Ingredient: glucose (RXCUI 4850)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fructose 175 MG / glucose 968 MG / sodium citrate 230 MG Chewable Tablet; glucose 166.7 MG/ML Oral Solution; glucose 150 MG/ML Injectable Solution; alanine 8.8 MG/ML / arginine 4.89 MG/ML / calcium chloride 0.004 MEQ/ML / dibasic potassium phosphate 2.61 MG/ML / glucose 100 MG/ML / glycine 4.38 MG/ML / histidine 2.04 MG/ML / isoleucine 2.55 MG/ML / leucine 3.11 MG/ML / lysine 2.47 MG/ML / magnesium chloride 0.01 MEQ/ML / methionine 1.7 MG/ML / phenylalanine 2.38 MG/ML / proline 2.89 MG/ML / serine 2.13 MG/ML / sodium acetate trihydrate 2.97 MG/ML / sodium chloride 0.013 MEQ/ML / threonine 1.79 MG/ML / tryptophan 0.77 MG/ML / tyrosine 0.17 MG/ML / valine 2.47 MG/ML Injectable Solution; cholecalciferol 6.67 UNT/ML / glucose 250 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'creatinine' \u2192 RXCUI 2913, canonical: creatinine, match: exact\n[RxNorm] Ingredient: creatinine (RXCUI 2913)\n[MED-RT] Indications: unknown (no MED-RT data available)"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'morphine' \u2192 RXCUI 7052, canonical: morphine, match: exact\n[RxNorm] Ingredient: morphine (RXCUI 7052)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): morphine sulfate 40 MG Extended Release Oral Capsule; 1 ML morphine sulfate 5 MG/ML Prefilled Syringe; 10 ML morphine sulfate 0.5 MG/ML Injection; 2 ML morphine sulfate 0.5 MG/ML Injection; 10 ML morphine sulfate 1 MG/ML Injection"
+  },
+  {
+    "fact_id": "F21",
+    "entity_id": "E21",
+    "text": "[RxNorm] 'methadone' \u2192 RXCUI 6813, canonical: methadone, match: exact\n[RxNorm] Ingredient: methadone (RXCUI 6813)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): methadone hydrochloride 10 MG Oral Tablet; methadone hydrochloride 10 MG/ML Injectable Solution; methadone hydrochloride 5 MG Oral Tablet; methadone hydrochloride 1 MG/ML Oral Solution; methadone hydrochloride 2 MG/ML Oral Solution"
+  },
+  {
+    "fact_id": "F22",
+    "entity_id": "E22",
+    "text": "[ICD-10-CM 2027] Z0589: Observation and evaluation of newborn for other specified suspected condition ruled out (score: 0.4657)\n[ICD-10-CM 2027] Z059: Observation and evaluation of newborn for unspecified suspected condition ruled out (score: 0.4657)\n[ICD-10-CM 2027] Z053: Observation and evaluation of newborn for suspected respiratory condition ruled out (score: 0.4439)"
+  },
+  {
+    "fact_id": "F23",
+    "entity_id": "E23",
+    "text": "[ICD-10-CM 2027] R0789: Other chest pain (score: 0.5435)\n[ICD-10-CM 2027] R079: Chest pain, unspecified (score: 0.5435)\n[ICD-10-CM 2027] R071: Chest pain on breathing (score: 0.4040)"
+  },
+  {
+    "fact_id": "F24",
+    "entity_id": "E24",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.3986)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.3970)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.3969)"
+  },
+  {
+    "fact_id": "F25",
+    "entity_id": "E25",
+    "text": "[ICD-10-CM 2027] O24419: Gestational diabetes mellitus in pregnancy, unspecified control (score: 0.2913)\n[ICD-10-CM 2027] O24439: Gestational diabetes mellitus in the puerperium, unspecified control (score: 0.2762)\n[ICD-10-CM 2027] O24429: Gestational diabetes mellitus in childbirth, unspecified control (score: 0.2738)"
+  }
+]

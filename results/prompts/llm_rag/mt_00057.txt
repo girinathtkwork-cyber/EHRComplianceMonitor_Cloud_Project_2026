@@ -1,0 +1,73 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+CLINICAL HISTORY: , Patient is a 37-year-old female with a history of colectomy for adenoma. Additional diagnosis noted: Type 2 Diabetes Mellitus.  During her preop evaluation it was noted that she had a lesion on her chest x-ray.  CT scan of the chest confirmed a left lower mass.,SPECIMEN: , Lung, left lower lobe resection.,IMMUNOHISTOCHEMICAL STUDIES:,  Tumor cells show no reactivity with cytokeratin AE1/AE3.  No significant reactivity with CAM5.2 and no reactivity with cytokeratin-20 are seen.  Tumor cells show partial reactivity with cytokeratin-7.  PAS with diastase demonstrates no convincing intracytoplasmic mucin.  No neuroendocrine differentiation is demonstrated with synaptophysin and chromogranin stains.  Tumor cells show cytoplasmic and nuclear reactivity with S100 antibody.  No significant reactivity is demonstrated with melanoma marker HMB-45 or Melan-A.  Tumor cell nuclei (spindle cell and pleomorphic/giant cell carcinoma components) show nuclear reactivity with thyroid transcription factor marker (TTF-1).  The immunohistochemical studies are consistent with primary lung sarcomatoid carcinoma with pleomorphic/giant cell carcinoma and spindle cell carcinoma components.,FINAL DIAGNOSIS:,Histologic Tumor Type:  Sarcomatoid carcinoma with areas of pleomorphic/giant cell carcinoma and spindle cell carcinoma.,Tumor Size:  2.7 x 2.0 x 1.4 cm.,Visceral Pleura Involvement:  The tumor closely approaches the pleural surface but does not invade the pleura.,Vascular Invasion:  Present.,Margins:  Bronchial resection margins and vascular margins are free of tumor.,Lymph Nodes:  Metastatic sarcomatoid carcinoma into one of four hilar lymph nodes.,Pathologic Stage:  pT1N1MX.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Type 2 Diabetes Mellitus.  During her preop evaluation it was noted that she had a lesion on her chest x-ray.  CT scan of the chest confirmed a left lower mass.,SPECIMEN: , Lung, left lower lobe resection.,IMMUNOHISTOCHEMICAL STUDIES:,  Tumor cells show no reactivity with cytokeratin AE1/AE"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "preop"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "No significant reactivity with CAM5.2 and no reactivity with cytokeratin-20 are seen.  Tumor cells show partial reactivity with cytokeratin-"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "PAS with diastase demonstrates no convincing intracytoplasmic mucin.  No neuroendocrine differentiation is demonstrated with synaptophysin and chromogranin stains.  Tumor cells show cytoplasmic and nuclear reactivity with S100 antibody.  No significant reactivity is demonstrated with melanoma marker HMB-45 or Melan-A.  Tumor cell nuclei (spindle cell and pleomorphic/giant cell carcinoma components) show nuclear reactivity with thyroid transcription factor marker (TTF-1).  The immunohistochemical studies are consistent with primary lung sarcomatoid carcinoma with pleomorphic/giant cell carcinoma and spindle cell carcinoma components.,FINAL DIAGNOSIS:,Histologic Tumor Type:  Sarcomatoid carcinoma with areas of pleomorphic/giant cell carcinoma and spindle cell carcinoma.,Tumor Size:  2.7 x 2.0 x 1.4 cm.,Visceral Pleura Involvement:  The tumor closely approaches the pleural surface but does not invade the pleura.,Vascular Invasion:  Present.,Margins:  Bronchial resection margins and vascular margins are free of tumor.,Lymph Nodes:  Metastatic sarcomatoid carcinoma into one of four hilar lymph nodes.,Pathologic Stage:  pT1N1MX"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Histologic Tumor Type:  Sarcomatoid carcinoma with areas of pleomorphic/giant cell carcinoma and spindle cell carcinoma.,Tumor Size:  2.7 x 2.0 x 1.4 cm.,Visceral Pleura Involvement:  The tumor closely approaches the pleural surface but does not invade the pleura.,Vascular Invasion:  Present.,Margins:  Bronchial resection margins and vascular margins are free of tumor.,Lymph Nodes:  Metastatic sarcomatoid carcinoma into one of four hilar lymph nodes.,Pathologic Stage:  pT1N1MX"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] P191: Metabolic acidemia in newborn first noted during labor (score: 0.2883)\n[ICD-10-CM 2027] W880XXD: Exposure to X-rays, subsequent encounter (score: 0.2742)\n[ICD-10-CM 2027] W880XXA: Exposure to X-rays, initial encounter (score: 0.2734)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'preop' \u2192 RXCUI 2530802, canonical: Preop, match: exact\n[RxNorm] Ingredient: hydrogen peroxide (RXCUI 5499)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): hydrogen peroxide 5 MG/ML Topical Solution; hydrogen peroxide 15 MG/ML Topical Cream; hydrogen peroxide 0.017 MG/MG Oral Gel; hydrogen peroxide 40 MG/ML Topical Solution; dodecylbenzenesulfonic acid 5 MG/ML / hydrogen peroxide 5 MG/ML / lactic acid 17 MG/ML Topical Solution"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[ICD-10-CM 2027] Z910122: Allergy to eggs with reactivity to baked egg (score: 0.2531)\n[ICD-10-CM 2027] T78081D: Anaphylactic reaction due to egg with reactivity to baked egg, subsequent encounter (score: 0.2463)\n[ICD-10-CM 2027] T78081A: Anaphylactic reaction due to egg with reactivity to baked egg, initial encounter (score: 0.2460)"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] C220: Liver cell carcinoma (score: 0.4415)\n[ICD-10-CM 2027] C4A9: Merkel cell carcinoma, unspecified (score: 0.4087)\n[ICD-10-CM 2027] C4492: Squamous cell carcinoma of skin, unspecified (score: 0.3793)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] C220: Liver cell carcinoma (score: 0.3008)\n[ICD-10-CM 2027] H21249: Degeneration of pupillary margin, unspecified eye (score: 0.2893)\n[ICD-10-CM 2027] H21242: Degeneration of pupillary margin, left eye (score: 0.2874)"
+  }
+]

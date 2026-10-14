@@ -1,0 +1,77 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+GENERAL: , Alert, well developed, in no acute distress. Additional diagnosis noted: Atrial Fibrillation.,MENTAL STATUS: , Judgment and insight appropriate for age.  Oriented to time, place and person.  No recent loss of memory.  Affect appropriate for age.,EYES:  ,Pupils are equal and reactive to light.  No hemorrhages or exudates.  Extraocular muscles intact.,EAR, NOSE AND THROAT: , Oropharynx clean, mucous membranes moist.  Ears and nose without masses, lesions or deformities.  Tympanic membranes clear bilaterally.  Trachea midline.  No lymph node swelling or tenderness.,RESPIRATORY:  ,Clear to auscultation and percussion.  No wheezing, rales or rhonchi.,CARDIOVASCULAR: , Heart sounds normal.  No thrills.  Regular rate and rhythm, no murmurs, rubs or gallops.,GASTROINTESTINAL: , Abdomen soft, nondistended.  No pulsatile mass, no flank tenderness or suprapubic tenderness.  No hepatosplenomegaly.,NEUROLOGIC: , Cranial nerves II-XII grossly intact.  No focal neurological deficits.  Deep tendon reflexes +2 bilaterally.  Babinski negative.  Moves all extremities spontaneously.  Sensation intact bilaterally.,SKIN: , No rashes or lesions.  No petechia.  No purpura.  Good turgor.  No edema.,MUSCULOSKELETAL: , No cyanosis or clubbing.  No gross deformities.  Capable of free range of motion without pain or crepitation.  No laxity, instability or dislocation.,BONE: , No misalignment, asymmetry, defect, tenderness or effusion.  Capable of from of joint above and below bone.,MUSCLE:  ,No crepitation, defect, tenderness, masses or swellings.  No loss of muscle tone or strength.,LYMPHATIC:,  Palpation of neck reveals no swelling or tenderness of neck nodes.  Palpation of groin reveals no swelling or tenderness of groin nodes.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "noted: Atrial Fibrillation.,MENTAL STATUS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Judgment and insight appropriate for age.  Oriented to time, place and person.  No recent loss of memory.  Affect appropriate for age.,EYES:  ,Pupils are equal and reactive to light.  No hemorrhages or exudates.  Extraocular muscles intact.,EAR"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "diagnosis",
+    "text": "NOSE AND THROAT:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Oropharynx clean, mucous membranes moist.  Ears and nose without masses, lesions or deformities.  Tympanic membranes clear bilaterally.  Trachea midline.  No lymph node swelling or tenderness.,RESPIRATORY:  ,Clear to auscultation and percussion.  No wheezing, rales or rhonchi.,CARDIOVASCULAR:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "Heart sounds normal.  No thrills.  Regular rate and rhythm, no murmurs, rubs or gallops.,GASTROINTESTINAL:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "Abdomen soft, nondistended.  No pulsatile mass, no flank tenderness or suprapubic tenderness.  No hepatosplenomegaly.,NEUROLOGIC:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Cranial nerves II-XII grossly intact.  No focal neurological deficits.  Deep tendon reflexes +2 bilaterally.  Babinski negative.  Moves all extremities spontaneously.  Sensation intact bilaterally.,SKIN:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "No rashes or lesions.  No petechia.  No purpura.  Good turgor.  No edema.,MUSCULOSKELETAL:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "No cyanosis or clubbing.  No gross deformities.  Capable of free range of motion without pain or crepitation.  No laxity, instability or dislocation.,BONE:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "No misalignment, asymmetry, defect, tenderness or effusion.  Capable of from of joint above and below bone.,MUSCLE:  ,No crepitation, defect, tenderness, masses or swellings.  No loss of muscle tone or strength.,LYMPHATIC:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "Palpation of neck reveals no swelling or tenderness of neck nodes.  Palpation of groin reveals no swelling or tenderness of groin nodes"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

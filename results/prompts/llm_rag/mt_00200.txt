@@ -1,0 +1,193 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PROBLEM LIST:,1.  Refractory hypertension, much improved.,2.  History of cardiac arrhythmia and history of pacemaker secondary to AV block.,3.  History of GI bleed in 1995.,4.  History of depression.,HISTORY OF PRESENT ILLNESS:,  This is a return visit to the renal clinic for this patient.  She is an 85-year-old woman with history as noted above.  Her last visit was approximately four months ago.  Since that time, the patient has been considerably more compliant with her antihypertensive medications and actually had a better blood pressure reading today than she had had for many visits previously.  She is not reporting any untoward side effect.  She is not having weakness, dizziness, lightheadedness, nausea, vomiting, constipation, diarrhea, abdominal pain, chest pain, shortness of breath or difficulty breathing.  She has no orthopnea.  Her exercise capacity is about the same.  The only problem she has is musculoskeletal and that pain in the right buttock, she thinks originating from her spine.  No history of extremity pain.,CURRENT MEDICATIONS:,1.  Triamterene/hydrochlorothiazide 37.5/25 mg.,2.  Norvasc 10 mg daily.,3.  Atenolol 50 mg a day.,4.  Atacand 32 mg a day.,5.  Cardura 4 mg a day.,PHYSICAL EXAMINATION:,VITAL SIGNS:  Temperature 36.2, pulse 47, respirations 16, and blood pressure 157/56.  THORAX:  Revealed lungs that are clear, PA and lateral without adventitious sounds.  CARDIOVASCULAR:  Demonstrated regular rate and rhythm.  S1 and S2 without murmur.  No S3.  I could not hear murmur today.  ABDOMEN:  Above plane, but nontender.  EXTREMITIES:  Revealed no edema.,ASSESSMENT:,  This is a return visit for this patient who has refractory hypertension.  This seems to be doing very well given her current blood pressure reading, at least much improved from what she had been previously.  We had discussed with her in the past beginning to see an internist at the senior center.  She apparently had an appointment scheduled and it was missed.  We are going to reschedule that today given her overall state of well-being and the fact that she has no evidence of GFR that is greater than 60%.,PLAN: , The plan will be for her to follow up at the senior center for her routine health care, and should the need arise for further management of blood pressure, a referral back to us.  In the meantime, we will discharge her from our practice.  Should there be confusion or difficulty getting in the senior center, we can always see her back in followup
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Triamterene"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "hydrochlorothiazide"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "dosage",
+    "text": "25 mg"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "medication",
+    "text": "Norvasc"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "10 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "medication",
+    "text": "Atenolol"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "dosage",
+    "text": "50 mg"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "Atacand"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "dosage",
+    "text": "32 mg"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "medication",
+    "text": "Cardura"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "dosage",
+    "text": "4 mg"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "diagnosis",
+    "text": "This is a return visit for this patient who has refractory hypertension.  This seems to be doing very well given her current blood pressure reading, at least much improved from what she had been previously.  We had discussed with her in the past beginning to see an internist at the senior center.  She apparently had an appointment scheduled and it was missed.  We are going to reschedule that today given her overall state of well-being and the fact that she has no evidence of GFR that is greater than 60%.,PLAN:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "measurement",
+    "text": "60%"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "diagnosis",
+    "text": "The plan will be for her to follow up at the senior center for her routine health care, and should the need arise for further management of blood pressure, a referral back to us.  In the meantime, we will discharge her from our practice.  Should there be confusion or difficulty getting in the senior center, we can always see her back in followup"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Triamterene' \u2192 RXCUI 10763, canonical: triamterene, match: exact\n[RxNorm] Ingredient: triamterene (RXCUI 10763)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): benzthiazide 25 MG / triamterene 50 MG Oral Capsule; chlorthalidone 50 MG / triamterene 50 MG Oral Tablet; triamterene 100 MG Oral Capsule; triamterene 50 MG Oral Capsule; hydrochlorothiazide 25 MG / triamterene 37.5 MG Oral Capsule"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'hydrochlorothiazide' \u2192 RXCUI 5487, canonical: hydrochlorothiazide, match: exact\n[RxNorm] Ingredient: hydrochlorothiazide (RXCUI 5487)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet; aliskiren 150 MG / hydrochlorothiazide 12.5 MG Oral Tablet; aliskiren 150 MG / hydrochlorothiazide 25 MG Oral Tablet; aliskiren 300 MG / hydrochlorothiazide 12.5 MG Oral Tablet; aliskiren 300 MG / hydrochlorothiazide 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "Dose 25.0mg associated with hydrochlorothiazide"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[RxNorm] 'Norvasc' \u2192 RXCUI 58927, canonical: Norvasc, match: exact\n[RxNorm] Ingredient: amlodipine (RXCUI 17767)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet; aliskiren 150 MG / amlodipine 5 MG / hydrochlorothiazide 12.5 MG Oral Tablet; aliskiren 300 MG / amlodipine 10 MG / hydrochlorothiazide 12.5 MG Oral Tablet; aliskiren 300 MG / amlodipine 10 MG / hydrochlorothiazide 25 MG Oral Tablet; aliskiren 300 MG / amlodipine 5 MG / hydrochlorothiazide 12.5 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "Dose 10.0mg associated with Norvasc"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[RxNorm] 'Atenolol' \u2192 RXCUI 1202, canonical: atenolol, match: exact\n[RxNorm] Ingredient: atenolol (RXCUI 1202)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): atenolol 0.5 MG/ML Injectable Solution; atenolol 50 MG / chlorthalidone 12.5 MG Oral Tablet; atenolol 25 MG / bendroflumethiazide 1.25 MG Oral Capsule; atenolol 100 MG Oral Tablet; atenolol 25 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "Dose 50.0mg associated with Atenolol"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'Atacand' \u2192 RXCUI 215458, canonical: Atacand, match: exact\n[RxNorm] Ingredient: candesartan (RXCUI 214354)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): candesartan cilexetil 4 MG Oral Tablet; candesartan cilexetil 8 MG Oral Tablet; candesartan cilexetil 16 MG Oral Tablet; candesartan cilexetil 16 MG / hydrochlorothiazide 12.5 MG Oral Tablet; candesartan cilexetil 32 MG / hydrochlorothiazide 12.5 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "Dose 32.0mg associated with Atacand"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[RxNorm] 'Cardura' \u2192 RXCUI 196468, canonical: Cardura, match: exact\n[RxNorm] Ingredient: doxazosin (RXCUI 49276)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): doxazosin 1 MG Oral Tablet; doxazosin 2 MG Oral Tablet; doxazosin 4 MG Oral Tablet; doxazosin 8 MG Oral Tablet; 24 HR doxazosin 4 MG Extended Release Oral Tablet"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "Dose 4.0mg associated with Cardura"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.3505)\n[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.2721)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.2709)"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Measurement] 60.0% \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[ICD-10-CM 2027] T63443D: Toxic effect of venom of bees, assault, subsequent encounter (score: 0.3295)\n[ICD-10-CM 2027] T63444D: Toxic effect of venom of bees, undetermined, subsequent encounter (score: 0.3291)\n[ICD-10-CM 2027] T63443A: Toxic effect of venom of bees, assault, initial encounter (score: 0.3282)"
+  }
+]

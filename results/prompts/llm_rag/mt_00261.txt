@@ -1,0 +1,223 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Antibiotic-associated diarrhea.  ,POSTOPERATIVE DIAGNOSIS:  ,Antibiotic-associated diarrhea.  ,OPERATION PERFORMED: , Colonoscopy with random biopsies and culture.,INDICATIONS: , The patient is a 50-year-old woman who underwent hemorrhoidectomy approximately one year ago.  She has been having difficulty since that time with intermittent diarrhea and abdominal pain.  She states this happens quite frequently and can even happen when she uses topical prednisone for her ears or for her eyes.  She presents today for screening colonoscopy, based on the same.,OPERATIVE COURSE:  , The risks and benefits of colonoscopy were explained to the patient in detail.  She provided her consent.  The morning of the operation, the patient was transported from the preoperative holding area to the endoscopy suite.  She was placed in the left lateral decubitus position.  In divided doses, she was given 7 mg of Versed and 125 mcg of fentanyl.  A digital rectal examination was performed, after which time the scope was intubated from the anus to the level of the hepatic flexure.  This was intubated fairly easily; however, the patient was clearly in some discomfort and was shouting out, despite the amount of anesthesia she was provided.  In truth, the pain she was experiencing was out of proportion to any maneuver or difficulty with the procedure.  While more medication could have been given, the patient is actually a fairly thin woman and diminutive and I was concerned that giving her any more sedation may lead to respiratory or cardiovascular collapse.  In addition, she was really having quite some difficulty staying still throughout the procedure and was putting us all at some risk.  For this reason, the procedure was aborted at the level of the hepatic flexure.  She was noted to have some pools of stool.  This was suctioned and sent to pathology for C difficile, ova and parasites, and fecal leukocytes.  Additionally, random biopsies were performed of the colon itself.  It is unfortunate we were unable to complete this procedure, as I would have liked to have taken biopsies of the terminal ileum.  However, given the degree of discomfort she had, again, coupled with the relative ease of the procedure itself, I am very suspicious of irritable bowel syndrome.  The patient tolerated the remainder of the procedure fairly well and was sent to the recovery room in stable condition, where it is anticipated she will be discharged to home.,PLAN:,  She needs to follow up with me in approximately 2 weeks' time, both to follow up with her biopsies and cultures.  She has been given a prescription for VSL3, a probiotic, to assist with reculturing the rectum.  She may also benefit from an antispasmodic and/or anxiolytic.  Lastly, it should be noted that when she next undergoes endoscopic procedure, propofol would be indicated.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Antibiotic-associated diarrhea.  ,POSTOPERATIVE DIAGNOSIS:  ,Antibiotic-associated diarrhea.  ,OPERATION PERFORMED:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Antibiotic-associated diarrhea.  ,OPERATION PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Colonoscopy with random biopsies and culture.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Colonoscopy with random biopsies and culture.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "The patient is a 50-year-old woman who underwent hemorrhoidectomy approximately one year ago.  She has been having difficulty since that time with intermittent diarrhea and abdominal pain.  She states this happens quite frequently and can even happen when she uses topical prednisone for her ears or for her eyes.  She presents today for screening colonoscopy, based on the same.,OPERATIVE COURSE:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "The patient is a 50-year-old woman who underwent hemorrhoidectomy approximately one year ago.  She has been having difficulty since that time with intermittent diarrhea and abdominal pain.  She states this happens quite frequently and can even happen when she uses topical prednisone for her ears or for her eyes.  She presents today for screening colonoscopy, based on the same.,OPERATIVE COURSE:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "medication",
+    "text": "prednisone"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "The risks and benefits of colonoscopy were explained to the patient in detail.  She provided her consent.  The morning of the operation, the patient was transported from the preoperative holding area to the endoscopy suite.  She was placed in the left lateral decubitus position.  In divided doses, she was given 7 mg of Versed and 125 mcg of fentanyl.  A digital rectal examination was performed, after which time the scope was intubated from the anus to the level of the hepatic flexure.  This was intubated fairly easily; however, the patient was clearly in some discomfort and was shouting out, despite the amount of anesthesia she was provided.  In truth, the pain she was experiencing was out of proportion to any maneuver or difficulty with the procedure.  While more medication could have been given, the patient is actually a fairly thin woman and diminutive and I was concerned that giving her any more sedation may lead to respiratory or cardiovascular collapse.  In addition, she was really having quite some difficulty staying still throughout the procedure and was putting us all at some risk.  For this reason, the procedure was aborted at the level of the hepatic flexure.  She was noted to have some pools of stool.  This was suctioned and sent to pathology for C difficile, ova and parasites, and fecal leukocytes.  Additionally, random biopsies were performed of the colon itself.  It is unfortunate we were unable to complete this procedure, as I would have liked to have taken biopsies of the terminal ileum.  However, given the degree of discomfort she had, again, coupled with the relative ease of the procedure itself"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "The risks and benefits of colonoscopy were explained to the patient in detail.  She provided her consent.  The morning of the operation, the patient was transported from the preoperative holding area to the endoscopy suite.  She was placed in the left lateral decubitus position.  In divided doses, she was given 7 mg of Versed and 125 mcg of fentanyl.  A digital rectal examination was performed, after which time the scope was intubated from the anus to the level of the hepatic flexure.  This was intubated fairly easily; however, the patient was clearly in some discomfort and was shouting out, despite the amount of anesthesia she was provided.  In truth, the pain she was experiencing was out of proportion to any maneuver or difficulty with the procedure.  While more medication could have been given, the patient is actually a fairly thin woman and diminutive and I was concerned that giving her any more sedation may lead to respiratory or cardiovascular collapse.  In addition, she was really having quite some difficulty staying still throughout the procedure and was putting us all at some risk.  For this reason, the procedure was aborted at the level of the hepatic flexure.  She was noted to have some pools of stool.  This was suctioned and sent to pathology for C difficile, ova and parasites, and fecal leukocytes.  Additionally, random biopsies were performed of the colon itself.  It is unfortunate we were unable to complete this procedure, as I would have liked to have taken biopsies of the terminal ileum.  However, given the degree of discomfort she had, again, coupled with the relative ease of the procedure itself"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "dosage",
+    "text": "7 mg"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "dosage",
+    "text": "125 mcg"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "medication",
+    "text": "fentanyl"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "procedure",
+    "text": "and was putting us all at some risk.  For this reason, the procedure was aborted at the level of the hepatic flexure.  She was noted to have some pools of stool.  This was suctioned and sent to pathology for C difficile, ova and parasites, and fecal leukocytes.  Additionally, random biopsies were performed of the colon itself.  It is unfortunate we were unable to complete this procedure, as I would have liked to have taken biopsies of the terminal ileum.  However, given the degree of discomfort she had, again, coupled with the relative ease of the procedure itself"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "diagnosis",
+    "text": "I am very suspicious of irritable bowel syndrome.  The patient tolerated the remainder of the procedure fairly well and was sent to the recovery room in stable condition, where it is anticipated she will be discharged to home.,PLAN:"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "procedure",
+    "text": "I am very suspicious of irritable bowel syndrome.  The patient tolerated the remainder of the procedure fairly well and was sent to the recovery room in stable condition, where it is anticipated she will be discharged to home.,PLAN:"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "diagnosis",
+    "text": "She needs to follow up with me in approximately 2 weeks' time, both to follow up with her biopsies and cultures.  She has been given a prescription for VSL3, a probiotic, to assist with reculturing the rectum.  She may also benefit from an antispasmodic and/or anxiolytic.  Lastly, it should be noted that when she next undergoes endoscopic procedure, propofol would be indicated"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "procedure",
+    "text": "She needs to follow up with me in approximately 2 weeks' time, both to follow up with her biopsies and cultures.  She has been given a prescription for VSL3, a probiotic, to assist with reculturing the rectum.  She may also benefit from an antispasmodic and/or anxiolytic.  Lastly, it should be noted that when she next undergoes endoscopic procedure, propofol would be indicated"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "propofol"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] R197: Diarrhea, unspecified (score: 0.6814)\n[ICD-10-CM 2027] K591: Functional diarrhea (score: 0.5213)\n[ICD-10-CM 2027] P783: Noninfective neonatal diarrhea (score: 0.4643)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] R197: Diarrhea, unspecified (score: 0.6989)\n[ICD-10-CM 2027] K591: Functional diarrhea (score: 0.5347)\n[ICD-10-CM 2027] P783: Noninfective neonatal diarrhea (score: 0.4762)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] O82: Encounter for cesarean delivery without indication (score: 0.7371)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Colonoscopy with random biopsies and culture.,INDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] R197: Diarrhea, unspecified (score: 0.2766)\n[ICD-10-CM 2027] R402120: Coma scale, eyes open, to pain, unspecified time (score: 0.2764)\n[ICD-10-CM 2027] Z98890: Other specified postprocedural states (score: 0.2568)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'The patient is a 50-year-old woman who underwent hemorrhoidectomy approximately one year ago.  She has been having difficulty since that time with intermittent diarrhea and abdominal pain.  She states this happens quite frequently and can even happen when she uses topical prednisone for her ears or for her eyes.  She presents today for screening colonoscopy, based on the same.,OPERATIVE COURSE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[RxNorm] 'prednisone' \u2192 RXCUI 8640, canonical: prednisone, match: exact\n[RxNorm] Ingredient: prednisone (RXCUI 8640)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): prednisone 1 MG Delayed Release Oral Tablet; prednisone 2 MG Delayed Release Oral Tablet; prednisone 5 MG Delayed Release Oral Tablet; prednisone 1 MG Oral Tablet; prednisone 10 MG Oral Tablet"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] Z3761: Triplets, some liveborn (score: 0.2541)\n[ICD-10-CM 2027] Z3762: Quadruplets, some liveborn (score: 0.2538)\n[ICD-10-CM 2027] Z3760: Multiple births, unspecified, some liveborn (score: 0.2504)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'The risks and benefits of colonoscopy were explained to the patient in detail.  She provided her consent.  The morning of the operation, the patient was transported from the preoperative holding area to the endoscopy suite.  She was placed in the left lateral decubitus position.  In divided doses, she was given 7 mg of Versed and 125 mcg of fentanyl.  A digital rectal examination was performed, after which time the scope was intubated from the anus to the level of the hepatic flexure.  This was intubated fairly easily; however, the patient was clearly in some discomfort and was shouting out, despite the amount of anesthesia she was provided.  In truth, the pain she was experiencing was out of proportion to any maneuver or difficulty with the procedure.  While more medication could have been given, the patient is actually a fairly thin woman and diminutive and I was concerned that giving her any more sedation may lead to respiratory or cardiovascular collapse.  In addition, she was really having quite some difficulty staying still throughout the procedure and was putting us all at some risk.  For this reason, the procedure was aborted at the level of the hepatic flexure.  She was noted to have some pools of stool.  This was suctioned and sent to pathology for C difficile, ova and parasites, and fecal leukocytes.  Additionally, random biopsies were performed of the colon itself.  It is unfortunate we were unable to complete this procedure, as I would have liked to have taken biopsies of the terminal ileum.  However, given the degree of discomfort she had, again, coupled with the relative ease of the procedure itself' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "Dose 7.0mg associated with fentanyl \u2014 dose 7.0mg not among known product strengths"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "Dose 125.0mcg associated with fentanyl \u2014 dose 125.0mcg not among known product strengths"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[RxNorm] 'fentanyl' \u2192 RXCUI 4337, canonical: fentanyl, match: exact\n[RxNorm] Ingredient: fentanyl (RXCUI 4337)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): fentanyl 0.1 MG Sublingual Tablet; fentanyl 0.2 MG Sublingual Tablet; fentanyl 0.3 MG Sublingual Tablet; fentanyl 0.4 MG Sublingual Tablet; fentanyl 0.6 MG Sublingual Tablet"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[Procedure] 'and was putting us all at some risk.  For this reason, the procedure was aborted at the level of the hepatic flexure.  She was noted to have some pools of stool.  This was suctioned and sent to pathology for C difficile, ova and parasites, and fecal leukocytes.  Additionally, random biopsies were performed of the colon itself.  It is unfortunate we were unable to complete this procedure, as I would have liked to have taken biopsies of the terminal ileum.  However, given the degree of discomfort she had, again, coupled with the relative ease of the procedure itself' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[ICD-10-CM 2027] K588: Other irritable bowel syndrome (score: 0.4846)\n[ICD-10-CM 2027] K589: Irritable bowel syndrome, unspecified (score: 0.4846)\n[ICD-10-CM 2027] K582: Mixed irritable bowel syndrome (score: 0.4348)"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "[Procedure] 'I am very suspicious of irritable bowel syndrome.  The patient tolerated the remainder of the procedure fairly well and was sent to the recovery room in stable condition, where it is anticipated she will be discharged to home.,PLAN:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[ICD-10-CM 2027] Z392: Encounter for routine postpartum follow-up (score: 0.4026)\n[ICD-10-CM 2027] Z362: Encounter for other antenatal screening follow-up (score: 0.3894)\n[ICD-10-CM 2027] Z08: Encounter for follow-up examination after completed treatment for malignant neoplasm (score: 0.3095)"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[Procedure] 'She needs to follow up with me in approximately 2 weeks' time, both to follow up with her biopsies and cultures.  She has been given a prescription for VSL3, a probiotic, to assist with reculturing the rectum.  She may also benefit from an antispasmodic and/or anxiolytic.  Lastly, it should be noted that when she next undergoes endoscopic procedure, propofol would be indicated' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'propofol' \u2192 RXCUI 8782, canonical: propofol, match: exact\n[RxNorm] Ingredient: propofol (RXCUI 8782)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 100 ML propofol 10 MG/ML Injection; 50 ML propofol 10 MG/ML Injection; 20 ML propofol 10 MG/ML Injection; 10 ML propofol 10 MG/ML Injection; 100 ML propofol lipid emulsion 20 MG/ML Injection"
+  }
+]

@@ -1,0 +1,183 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS:,  Left little finger extensor tendon laceration.,POSTOPERATIVE DIAGNOSIS: , Left little finger extensor tendon laceration.,PROCEDURE PERFORMED:  ,Repair of left little extensor tendon.,COMPLICATIONS:,  None.,BLOOD LOSS: , Minimal.,ANESTHESIA: , Bier block.,INDICATIONS: , The patient is a 14-year-old right-hand dominant male who cut the back of his left little finger and had a small cut to his extensor tendon.,DESCRIPTION OF PROCEDURE: , The patient was taken to the operative room, laid supine, administered intervenous sedation with Bier block and prepped and draped in a sterile fashion.  The old laceration was opened and the extensor tendon was identified and there was a small longitudinal laceration in the tendon, which is essentially in line with the tendon fibers.  This was just proximal to the PIP joint and on complete flexion of the PIP joint, I did separate just a little bit that was not thought to be significantly dynamically unstable.  It was sutured with a single 4-0 Prolene interrupted figure-of-eight suture and on dynamic motion it did not separate at all.  The wound was irrigated and closed with 5-0 nylon interrupted sutures.  The patient tolerated the procedure well and was taken to the PCU in good condition. Patient also underwent diagnostic laparoscopy during this visit.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Left little finger extensor tendon laceration.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Left little finger extensor tendon laceration.,PROCEDURE PERFORMED:  ,Repair of left little extensor tendon.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:  ,Repair of left little extensor tendon.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "procedure",
+    "text": "Repair of left little extensor tendon.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "diagnosis",
+    "text": "None.,BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "procedure",
+    "text": "None.,BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "diagnosis",
+    "text": "Minimal.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "procedure",
+    "text": "Minimal.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "diagnosis",
+    "text": "Bier block.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "procedure",
+    "text": "Bier block.,INDICATIONS:"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "The patient is a 14-year-old right-hand dominant male who cut the back of his left little finger and had a small cut to his extensor tendon.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "The patient is a 14-year-old right-hand dominant male who cut the back of his left little finger and had a small cut to his extensor tendon.,DESCRIPTION OF PROCEDURE:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "The patient was taken to the operative room, laid supine, administered intervenous sedation with Bier block and prepped and draped in a sterile fashion.  The old laceration was opened and the extensor tendon was identified and there was a small longitudinal laceration in the tendon, which is essentially in line with the tendon fibers.  This was just proximal to the PIP joint and on complete flexion of the PIP joint"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "The patient was taken to the operative room, laid supine, administered intervenous sedation with Bier block and prepped and draped in a sterile fashion.  The old laceration was opened and the extensor tendon was identified and there was a small longitudinal laceration in the tendon, which is essentially in line with the tendon fibers.  This was just proximal to the PIP joint and on complete flexion of the PIP joint"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "I did separate just a little bit that was not thought to be significantly dynamically unstable.  It was sutured with a single 4-0 Prolene interrupted figure-of-eight suture and on dynamic motion it did not separate at all.  The wound was irrigated and closed with 5-0 nylon interrupted sutures.  The patient tolerated the procedure well and was taken to the PCU in good condition. Patient also underwent diagnostic laparoscopy during this visit"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "I did separate just a little bit that was not thought to be significantly dynamically unstable.  It was sutured with a single 4-0 Prolene interrupted figure-of-eight suture and on dynamic motion it did not separate at all.  The wound was irrigated and closed with 5-0 nylon interrupted sutures.  The patient tolerated the procedure well and was taken to the PCU in good condition. Patient also underwent diagnostic laparoscopy during this visit"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] S56428D: Laceration of extensor muscle, fascia and tendon of left little finger at forearm level, subsequent encounter (score: 0.5220)\n[ICD-10-CM 2027] S56428A: Laceration of extensor muscle, fascia and tendon of left little finger at forearm level, initial encounter (score: 0.5199)\n[ICD-10-CM 2027] S56428S: Laceration of extensor muscle, fascia and tendon of left little finger at forearm level, sequela (score: 0.5198)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] S56428D: Laceration of extensor muscle, fascia and tendon of left little finger at forearm level, subsequent encounter (score: 0.6241)\n[ICD-10-CM 2027] S56428A: Laceration of extensor muscle, fascia and tendon of left little finger at forearm level, initial encounter (score: 0.6216)\n[ICD-10-CM 2027] S56428S: Laceration of extensor muscle, fascia and tendon of left little finger at forearm level, sequela (score: 0.6215)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:  ,Repair of left little extensor tendon.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[Procedure] 'Repair of left little extensor tendon.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[ICD-10-CM 2027] R402310: Coma scale, best motor response, none, unspecified time (score: 0.3906)\n[ICD-10-CM 2027] R402210: Coma scale, best verbal response, none, unspecified time (score: 0.3668)\n[ICD-10-CM 2027] R402313: Coma scale, best motor response, none, at hospital admission (score: 0.3623)"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[Procedure] 'None.,BLOOD LOSS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[ICD-10-CM 2027] K0821: Minimal atrophy of the mandible (score: 0.6002)\n[ICD-10-CM 2027] K0824: Minimal atrophy of maxilla (score: 0.5377)\n[ICD-10-CM 2027] K06011: Localized gingival recession, minimal (score: 0.4611)"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[Procedure] 'Minimal.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[ICD-10-CM 2027] O82: Encounter for cesarean delivery without indication (score: 0.5918)\n[ICD-10-CM 2027] I455: Other specified heart block (score: 0.4943)\n[ICD-10-CM 2027] Q246: Congenital heart block (score: 0.4412)"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Procedure] 'Bier block.,INDICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] P505: Newborn affected by intrauterine (fetal) blood loss from cut end of co-twin's cord (score: 0.3575)\n[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.2631)\n[ICD-10-CM 2027] S66306D: Unspecified injury of extensor muscle, fascia and tendon of right little finger at wrist and hand level, subsequent encounter (score: 0.2318)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'The patient is a 14-year-old right-hand dominant male who cut the back of his left little finger and had a small cut to his extensor tendon.,DESCRIPTION OF PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] X16XXXD: Contact with hot heating appliances, radiators and pipes, subsequent encounter (score: 0.2349)\n[ICD-10-CM 2027] X16XXXA: Contact with hot heating appliances, radiators and pipes, initial encounter (score: 0.2345)\n[ICD-10-CM 2027] X16XXXS: Contact with hot heating appliances, radiators and pipes, sequela (score: 0.2345)\n[ICD-10-CM 2027] Match unresolved (top score 0.2349 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'The patient was taken to the operative room, laid supine, administered intervenous sedation with Bier block and prepped and draped in a sterile fashion.  The old laceration was opened and the extensor tendon was identified and there was a small longitudinal laceration in the tendon, which is essentially in line with the tendon fibers.  This was just proximal to the PIP joint and on complete flexion of the PIP joint' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] Q7508: Other single-suture craniosynostosis (score: 0.2535)\n[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.2084)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.2075)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'I did separate just a little bit that was not thought to be significantly dynamically unstable.  It was sutured with a single 4-0 Prolene interrupted figure-of-eight suture and on dynamic motion it did not separate at all.  The wound was irrigated and closed with 5-0 nylon interrupted sutures.  The patient tolerated the procedure well and was taken to the PCU in good condition. Patient also underwent diagnostic laparoscopy during this visit' \u2014 extracted from header, not verified against any coding system"
+  }
+]

@@ -1,0 +1,77 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: use your own medical knowledge.
+
+Candidate transcript:
+PROCEDURE: , Endoscopy.,CLINICAL INDICATIONS: , Intermittent rectal bleeding with abdominal pain.,ANESTHESIA: , Fentanyl 100 mcg and 5 mg of IV Versed.,PROCEDURE:,  The patient was taken to the GI lab and placed in the left lateral supine position.  Continuous pulse oximetry and blood pressure monitoring were in place.  After informed consent was obtained, the video endoscope was inserted over the dorsum of the tongue without difficulty.  With swallowing, the scope was advanced down the esophagus into the body of the stomach.  The scope was further advanced down to the antrum and through the pylorus into the duodenum, which was visualized into its second portion.  It appeared free of stricture, neoplasm, or ulceration.  Samples were obtained from the antrum and prepyloric area to check for Helicobacter, rapid urease, and additional samples were sent to pathology.  Retroflexion view of the fundus of the stomach was normal without evidence of a hiatal hernia.  The scope was then slowly removed.  The distal esophagus appeared benign with a normal-appearing gastroesophageal sphincter and no esophagitis.  The remaining portion of the esophagus was normal.,IMPRESSION:,  Abdominal pain.  Symptoms most consistent with gastroesophageal reflux disease without endoscopic evidence of hiatal hernia.,RECOMMENDATIONS:,  Await results of CLO testing and biopsies.  Return to clinic with Dr. Spencer in 2 weeks for further discussion.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "procedure",
+    "text": "Endoscopy.,CLINICAL INDICATIONS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "procedure",
+    "text": "Intermittent rectal bleeding with abdominal pain.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "Fentanyl 100 mcg and 5 mg of IV Versed.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "medication",
+    "text": "Fentanyl"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "dosage",
+    "text": "100 mcg"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "dosage",
+    "text": "5 mg"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "The patient was taken to the GI lab and placed in the left lateral supine position.  Continuous pulse oximetry and blood pressure monitoring were in place.  After informed consent was obtained, the video endoscope was inserted over the dorsum of the tongue without difficulty.  With swallowing, the scope was advanced down the esophagus into the body of the stomach.  The scope was further advanced down to the antrum and through the pylorus into the duodenum, which was visualized into its second portion.  It appeared free of stricture, neoplasm, or ulceration.  Samples were obtained from the antrum and prepyloric area to check for Helicobacter, rapid urease, and additional samples were sent to pathology.  Retroflexion view of the fundus of the stomach was normal without evidence of a hiatal hernia.  The scope was then slowly removed.  The distal esophagus appeared benign with a normal-appearing gastroesophageal sphincter and no esophagitis.  The remaining portion of the esophagus was normal.,IMPRESSION:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Abdominal pain.  Symptoms most consistent with gastroesophageal reflux disease without endoscopic evidence of hiatal hernia.,RECOMMENDATIONS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Abdominal pain.  Symptoms most consistent with gastroesophageal reflux disease without endoscopic evidence of hiatal hernia.,RECOMMENDATIONS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "Await results of CLO testing and biopsies.  Return to clinic with Dr. Spencer in 2 weeks for further discussion"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "Await results of CLO testing and biopsies.  Return to clinic with Dr. Spencer in 2 weeks for further discussion"
+  }
+]
+
+Retrieved facts:
+No retrieved facts are provided in this mode.

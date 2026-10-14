@@ -1,0 +1,133 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSES: , Left cubital tunnel syndrome and ulnar nerve entrapment.,POSTOPERATIVE DIAGNOSES: , Left cubital tunnel syndrome and ulnar nerve entrapment.,PROCEDURE PERFORMED: , Decompression of the ulnar nerve, left elbow.,ANESTHESIA: , General.,FINDINGS OF THE OPERATION:,  The ulnar nerve appeared to be significantly constricted as it passed through the cubital tunnel.  There was presence of hourglass constriction of the ulnar nerve.,PROCEDURE: , The patient was brought to the operating room and once an adequate general anesthesia was achieved, his left upper extremity was prepped and draped in standard sterile fashion.  A sterile tourniquet was positioned and tourniquet was inflated at 250 mmHg.  Perioperative antibiotics were infused.  Time-out procedure was called.  The medial epicondyle and the olecranon tip were well palpated.  The incision was initiated at equidistant between the olecranon and the medial epicondyle extending 3-4 cm proximally and 6-8 cm distally.  The ulnar nerve was identified proximally.  It was mobilized with a blunt and a sharp dissection proximally to the arcade of Struthers, which was released sharply.  The roof of the cubital tunnel was then incised and the nerve was mobilized distally to its motor branches.  The ulnar nerve was well-isolated before it entered the cubital tunnel.  The arch of the FCU was well defined.  The fascia was elevated from the nerve and both the FCU fascia and the Osborne fascia were divided protecting the nerve under direct visualization.  Distally, the dissection was carried between the 2 heads of the FCU.  Decompression of the nerve was performed between the heads of the FCU.  The muscular branches were well protected.  Similarly, the cutaneous branches in the arm and forearm were well protected.  The venous plexus proximally and distally were well protected.  The nerve was well mobilized from the cubital tunnel preserving the small longitudinal vessels accompanying it.  Proximally, multiple vascular leashes were defined near the incision of the septum into the medial epicondyle, which were also protected.  Once the in situ decompression of the ulnar nerve was performed proximally and distally, the elbow was flexed and extended.  There was no evidence of any subluxation.  Satisfactory decompression was performed.  Tourniquet was released.  Hemostasis was achieved.  Subcutaneous layer was closed with 2-0 Vicryl and skin was approximated with staples.  A well-padded dressing was applied.  The patient was then extubated and transferred to the recovery room in stable condition.  There were no intraoperative complications noted.  The patient tolerated the procedure very well.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Left cubital tunnel syndrome and ulnar nerve entrapment.,POSTOPERATIVE DIAGNOSES:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Left cubital tunnel syndrome and ulnar nerve entrapment.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Decompression of the ulnar nerve, left elbow.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Decompression of the ulnar nerve, left elbow.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "General.,FINDINGS OF THE OPERATION:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "General.,FINDINGS OF THE OPERATION:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "The ulnar nerve appeared to be significantly constricted as it passed through the cubital tunnel.  There was presence of hourglass constriction of the ulnar nerve.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "The ulnar nerve appeared to be significantly constricted as it passed through the cubital tunnel.  There was presence of hourglass constriction of the ulnar nerve.,PROCEDURE:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "diagnosis",
+    "text": "The patient was brought to the operating room and once an adequate general anesthesia was achieved, his left upper extremity was prepped and draped in standard sterile fashion.  A sterile tourniquet was positioned and tourniquet was inflated at 250 mmHg.  Perioperative antibiotics were infused.  Time-out procedure was called.  The medial epicondyle and the olecranon tip were well palpated.  The incision was initiated at equidistant between the olecranon and the medial epicondyle extending 3-4 cm proximally and 6-8 cm distally.  The ulnar nerve was identified proximally.  It was mobilized with a blunt and a sharp dissection proximally to the arcade of Struthers, which was released sharply.  The roof of the cubital tunnel was then incised and the nerve was mobilized distally to its motor branches.  The ulnar nerve was well-isolated before it entered the cubital tunnel.  The arch of the FCU was well defined.  The fascia was elevated from the nerve and both the FCU fascia and the Osborne fascia were divided protecting the nerve under direct visualization.  Distally, the dissection was carried between the 2 heads of the FCU.  Decompression of the nerve was performed between the heads of the FCU.  The muscular branches were well protected.  Similarly, the cutaneous branches in the arm and forearm were well protected.  The venous plexus proximally and distally were well protected.  The nerve was well mobilized from the cubital tunnel preserving the small longitudinal vessels accompanying it.  Proximally, multiple vascular leashes were defined near the incision of the septum into the medial epicondyle, which were also protected.  Once the in situ decompression of the ulnar nerve was performed proximally and distally, the elbow was flexed and extended.  There was no evidence of any subluxation.  Satisfactory decompression was performed.  Tourniquet was released.  Hemostasis was achieved.  Subcutaneous layer was closed with 2-0 Vicryl and skin was approximated with staples.  A well-padded dressing was applied.  The patient was then extubated and transferred to the recovery room in stable condition.  There were no intraoperative complications noted.  The patient tolerated the procedure very well"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "procedure",
+    "text": "The patient was brought to the operating room and once an adequate general anesthesia was achieved, his left upper extremity was prepped and draped in standard sterile fashion.  A sterile tourniquet was positioned and tourniquet was inflated at 250 mmHg.  Perioperative antibiotics were infused.  Time-out procedure was called.  The medial epicondyle and the olecranon tip were well palpated.  The incision was initiated at equidistant between the olecranon and the medial epicondyle extending 3-4 cm proximally and 6-8 cm distally.  The ulnar nerve was identified proximally.  It was mobilized with a blunt and a sharp dissection proximally to the arcade of Struthers, which was released sharply.  The roof of the cubital tunnel was then incised and the nerve was mobilized distally to its motor branches.  The ulnar nerve was well-isolated before it entered the cubital tunnel.  The arch of the FCU was well defined.  The fascia was elevated from the nerve and both the FCU fascia and the Osborne fascia were divided protecting the nerve under direct visualization.  Distally, the dissection was carried between the 2 heads of the FCU.  Decompression of the nerve was performed between the heads of the FCU.  The muscular branches were well protected.  Similarly, the cutaneous branches in the arm and forearm were well protected.  The venous plexus proximally and distally were well protected.  The nerve was well mobilized from the cubital tunnel preserving the small longitudinal vessels accompanying it.  Proximally, multiple vascular leashes were defined near the incision of the septum into the medial epicondyle, which were also protected.  Once the in situ decompression of the ulnar nerve was performed proximally and distally, the elbow was flexed and extended.  There was no evidence of any subluxation.  Satisfactory decompression was performed.  Tourniquet was released.  Hemostasis was achieved.  Subcutaneous layer was closed with 2-0 Vicryl and skin was approximated with staples.  A well-padded dressing was applied.  The patient was then extubated and transferred to the recovery room in stable condition.  There were no intraoperative complications noted.  The patient tolerated the procedure very well"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] G5752: Tarsal tunnel syndrome, left lower limb (score: 0.5013)\n[ICD-10-CM 2027] G5750: Tarsal tunnel syndrome, unspecified lower limb (score: 0.4916)\n[ICD-10-CM 2027] G5602: Carpal tunnel syndrome, left upper limb (score: 0.4908)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] G5752: Tarsal tunnel syndrome, left lower limb (score: 0.4719)\n[ICD-10-CM 2027] G5750: Tarsal tunnel syndrome, unspecified lower limb (score: 0.4628)\n[ICD-10-CM 2027] G5602: Carpal tunnel syndrome, left upper limb (score: 0.4621)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] S5402XD: Injury of ulnar nerve at forearm level, left arm, subsequent encounter (score: 0.4208)\n[ICD-10-CM 2027] S5402XA: Injury of ulnar nerve at forearm level, left arm, initial encounter (score: 0.4187)\n[ICD-10-CM 2027] S5402XS: Injury of ulnar nerve at forearm level, left arm, sequela (score: 0.4186)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Decompression of the ulnar nerve, left elbow.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Z0000: Encounter for general adult medical examination without abnormal findings (score: 0.5211)\n[ICD-10-CM 2027] Z0001: Encounter for general adult medical examination with abnormal findings (score: 0.5211)\n[ICD-10-CM 2027] Z01411: Encounter for gynecological examination (general) (routine) with abnormal findings (score: 0.5201)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'General.,FINDINGS OF THE OPERATION:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] S5400XD: Injury of ulnar nerve at forearm level, unspecified arm, subsequent encounter (score: 0.4632)\n[ICD-10-CM 2027] S5400XA: Injury of ulnar nerve at forearm level, unspecified arm, initial encounter (score: 0.4608)\n[ICD-10-CM 2027] S5400XS: Injury of ulnar nerve at forearm level, unspecified arm, sequela (score: 0.4607)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'The ulnar nerve appeared to be significantly constricted as it passed through the cubital tunnel.  There was presence of hourglass constriction of the ulnar nerve.,PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[ICD-10-CM 2027] W170XXD: Fall into well, subsequent encounter (score: 0.5285)\n[ICD-10-CM 2027] W170XXA: Fall into well, initial encounter (score: 0.5264)\n[ICD-10-CM 2027] W170XXS: Fall into well, sequela (score: 0.5263)"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[Procedure] 'The patient was brought to the operating room and once an adequate general anesthesia was achieved, his left upper extremity was prepped and draped in standard sterile fashion.  A sterile tourniquet was positioned and tourniquet was inflated at 250 mmHg.  Perioperative antibiotics were infused.  Time-out procedure was called.  The medial epicondyle and the olecranon tip were well palpated.  The incision was initiated at equidistant between the olecranon and the medial epicondyle extending 3-4 cm proximally and 6-8 cm distally.  The ulnar nerve was identified proximally.  It was mobilized with a blunt and a sharp dissection proximally to the arcade of Struthers, which was released sharply.  The roof of the cubital tunnel was then incised and the nerve was mobilized distally to its motor branches.  The ulnar nerve was well-isolated before it entered the cubital tunnel.  The arch of the FCU was well defined.  The fascia was elevated from the nerve and both the FCU fascia and the Osborne fascia were divided protecting the nerve under direct visualization.  Distally, the dissection was carried between the 2 heads of the FCU.  Decompression of the nerve was performed between the heads of the FCU.  The muscular branches were well protected.  Similarly, the cutaneous branches in the arm and forearm were well protected.  The venous plexus proximally and distally were well protected.  The nerve was well mobilized from the cubital tunnel preserving the small longitudinal vessels accompanying it.  Proximally, multiple vascular leashes were defined near the incision of the septum into the medial epicondyle, which were also protected.  Once the in situ decompression of the ulnar nerve was performed proximally and distally, the elbow was flexed and extended.  There was no evidence of any subluxation.  Satisfactory decompression was performed.  Tourniquet was released.  Hemostasis was achieved.  Subcutaneous layer was closed with 2-0 Vicryl and skin was approximated with staples.  A well-padded dressing was applied.  The patient was then extubated and transferred to the recovery room in stable condition.  There were no intraoperative complications noted.  The patient tolerated the procedure very well' \u2014 extracted from header, not verified against any coding system"
+  }
+]

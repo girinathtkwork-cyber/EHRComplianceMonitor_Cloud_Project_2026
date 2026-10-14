@@ -1,0 +1,63 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+REASON FOR VISIT: , Kyphosis.,HISTORY OF PRESENT ILLNESS: , The patient is a 13-year-old new patient is here for evaluation of thoracic kyphosis.  The patient has a family history in a maternal aunt and grandfather of kyphosis.  She was noted by her parents to have round back posture.  They have previously seen another orthopedist who recommended observation at this time.  She is here for a second opinion in regards to kyphosis.  The patient denies any pain in her back or any numbness, tingling, or weakness in her upper or lower extremities.  No problems with her bowels or bladder.,PAST MEDICAL HISTORY: , None.,PAST SURGICAL HISTORY: , Bilateral pinning of her ears.,SOCIAL HISTORY:  ,She is currently an eighth grader at Middle School and is interested in basketball.  She lives with both of her parents and has a 9-year-old brother.  She had menarche beginning in September.,FAMILY HISTORY:  ,Of kyphosis in great grandmother and second cousin.,REVIEW OF SYSTEMS: , She is in her usual state of health and is negative except otherwise as mentioned in the history of present illness.,MEDICATIONS: , She is currently on Zyrtec, Flonase, and Ceftin for an ear infection.,ALLERGIES: , No known drug allergies.,FINDINGS: , On physical exam, she is alert, oriented, and in no acute distress standing 63 inches tall.  In regards to her back, her skin is intact with no rashes, lesions, and/or no dimpling or hair spots.  No cafe au lait spots.  She is not tender to palpation from her occiput to her sacrum.  There is no evidence of paraspinal muscle spasm.  On forward bending, there is a mild kyphosis.  She is not able to touch her toes indicating her hamstring tightness.  She has a full 5 out of 5 in all muscle groups.  Her lower extremities including iliopsoas, quadriceps, gastroc-soleus, tibialis anterior, and extensor hallucis longus.  Her sensation intact to light touch in L1 through L2 dermatomal distributions.  She has symmetric limb lengths as well bilaterally from both the coronal and sagittal planes.,X-rays today included PA and lateral sclerosis series.  She has approximately 46 degree kyphosis.,ASSESSMENT: , Kyphosis.,PLANS:  ,The patient's kyphosis is quite mild.  While this is likely in the upper limits of normal or just it is normal for an adolescent and still within normal range as would be expected return at home.  At this time, three options were discussed with the parents including observation, physical therapy, and bracing.  At this juncture, given that she has continued to grow, they are Risser 0.  She may benefit from continued observation with physical therapy, bracing would be a more aggressive option certainly that thing would be lost with following at this time.  As such, she was given a prescription for physical therapy for extension based strengthening exercises, flexibility range of motion exercises, postural training with no forward bending.  We will see her back in 3 months' time for repeat radiographs at that time including PA and lateral standing of scoliosis series.  Should she show evidence of continued progression of her kyphotic deformity, discussions of bracing would be held at time.  We will see her back in 3 months' time for repeat evaluation.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "medication",
+    "text": "Zyrtec"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "medication",
+    "text": "Flonase"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "medication",
+    "text": "today"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Kyphosis.,PLANS:  ,The patient's kyphosis is quite mild.  While this is likely in the upper limits of normal or just it is normal for an adolescent and still within normal range as would be expected return at home.  At this time, three options were discussed with the parents including observation, physical therapy, and bracing.  At this juncture, given that she has continued to grow, they are Risser 0.  She may benefit from continued observation with physical therapy, bracing would be a more aggressive option certainly that thing would be lost with following at this time.  As such, she was given a prescription for physical therapy for extension based strengthening exercises, flexibility range of motion exercises, postural training with no forward bending.  We will see her back in 3 months' time for repeat radiographs at that time including PA and lateral standing of scoliosis series.  Should she show evidence of continued progression of her kyphotic deformity, discussions of bracing would be held at time.  We will see her back in 3 months' time for repeat evaluation"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[RxNorm] 'Zyrtec' \u2192 RXCUI 58930, canonical: Zyrtec, match: exact\n[RxNorm] Ingredient: cetirizine (RXCUI 20610)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cetirizine hydrochloride 10 MG Disintegrating Oral Tablet; 12 HR cetirizine hydrochloride 5 MG / pseudoephedrine hydrochloride 120 MG Extended Release Oral Tablet; cetirizine hydrochloride 5 MG Chewable Tablet; cetirizine hydrochloride 1 MG/ML Oral Solution; cetirizine hydrochloride 10 MG Chewable Tablet"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[RxNorm] 'Flonase' \u2192 RXCUI 83373, canonical: Flonase, match: exact\n[RxNorm] Ingredient: fluticasone (RXCUI 41126)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 30 ACTUAT fluticasone furoate 0.1 MG/ACTUAT / vilanterol 0.025 MG/ACTUAT Dry Powder Inhaler; 14 ACTUAT fluticasone furoate 0.1 MG/ACTUAT / vilanterol 0.025 MG/ACTUAT Dry Powder Inhaler; 30 ACTUAT fluticasone furoate 0.1 MG/ACTUAT Dry Powder Inhaler; 14 ACTUAT fluticasone furoate 0.1 MG/ACTUAT Dry Powder Inhaler; 14 ACTUAT fluticasone furoate 0.2 MG/ACTUAT Dry Powder Inhaler"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[RxNorm] 'today' \u2192 RXCUI 896747, canonical: Today, match: exact\n[RxNorm] Ingredient: cephapirin (RXCUI 2238)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): cephapirin 417 MG/ML Injectable Solution; 10 ML cephapirin 20 MG/ML Prefilled Syringe; 10 ML cephapirin 30 MG/ML Prefilled Syringe"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] T63443D: Toxic effect of venom of bees, assault, subsequent encounter (score: 0.2459)\n[ICD-10-CM 2027] T63444D: Toxic effect of venom of bees, undetermined, subsequent encounter (score: 0.2456)\n[ICD-10-CM 2027] T63443A: Toxic effect of venom of bees, assault, initial encounter (score: 0.2449)\n[ICD-10-CM 2027] Match unresolved (top score 0.2459 < 0.25); forwarded to Stage B with top-3 candidates for context evaluation."
+  }
+]

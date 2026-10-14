@@ -1,0 +1,223 @@
+You are Stage B of a medical transcription safety gate.
+Review a candidate transcript and extracted medical entities.
+Return only JSON matching this schema:
+{"entity_verdicts":[{"entity_id":"...","verdict":"consistent|suspicious|insufficient_evidence","reason":"...","evidence_used":["F1"],"severity":"none|low|medium|high|critical"}],"additional_concerns":[{"text":"...","type":"...","reason":"..."}]}
+
+Rules:
+- Evaluate whether each entity is clinically or contextually consistent with the transcript.
+- Do not diagnose, prescribe, or claim certainty; this is for human review.
+- Use severity "none" unless the verdict is "suspicious".
+- Do not mention hidden labels or answer keys.
+
+Evidence rule: base verdicts on the numbered retrieved facts and the transcript; if they are insufficient, answer insufficient_evidence instead of guessing.
+
+Candidate transcript:
+PREOPERATIVE DIAGNOSIS: , Right profound mixed sensorineural conductive hearing loss.,POSTOPERATIVE DIAGNOSIS:,  Right profound mixed sensorineural conductive hearing loss.,PROCEDURE PERFORMED:,  Right middle ear exploration with a Goldenberg TORP reconstruction.,ANESTHESIA:,  General ,ESTIMATED BLOOD LOSS:,  Less than 5 cc.,COMPLICATIONS:,  None.,DESCRIPTION OF FINDINGS:,  The patient consented to revision surgery because of the profound hearing loss in her right ear.  It was unclear from her previous operative records and CT scan as to whether or not she was a reconstruction candidate.  She had reports of stapes fixation as well as otosclerosis on her CT scan.,At surgery, she was found to have a mobile malleus handle, but her stapes was fixed by otosclerosis.  There was no incus.  There was no specific round window niche.  There was a very minute crevice; however, exploration of this area did not reveal a niche to a round window membrane.  The patient had a type of TORP prosthesis, which had tilted off the footplate anteriorly underneath the malleus handle.,DESCRIPTION OF THE PROCEDURE:,  The patient was brought to the operative room and placed in supine position.  The right face, ear, and neck prepped with ***** alcohol solution.  The right ear was draped in the sterile field.  External auditory canal was injected with 1% Xylocaine with 1:50,000 epinephrine.  A Fisch indwelling incision was made and a tympanomeatal flap was developed in a 12 o'clock to the 7 o'clock position.  Meatal skin was elevated, middle ear was entered.  This exposure included the oval window, round window areas.  There was a good cartilage graft in place and incorporated into the posterior superior ***** of the drum.  The previous prosthesis was found out of position as it had tilted out of position anteriorly, and there was no contact with the footplate.  The prosthesis was removed without difficulty.  The patient's stapes had an arch, but the ***** was atrophied.  Malleus handle was mobile.  The footplate was fixed.  Consideration have been given to performing a stapedectomy with a tissue seal and then returning later for prosthesis insertion; however, upon inspection of the round window area, there was found to be no definable round window niche, no round window membrane.  The patient was felt to have obliterated otosclerosis of this area along with the stapes fixation.  She is not considered to be a reconstruction candidate under the current circumstances.  No attempt was made to remove bone from the round window area.  A different style of Goldenberg TORP was placed on the footplate underneath the cartilage support in hopes of transferring some sound conduction from the tympanic membrane to the footplate.  The fit was secure and supported with Gelfoam in the middle ear.  The tympanomeatal flap was returned to anatomic position supported with Gelfoam saturated Ciprodex.  The incision was closed with #4-0 Vicryl and individual #5-0 nylon to the skin, and a sterile dressing was applied.
+
+Entities:
+[
+  {
+    "entity_id": "E1",
+    "entity_type": "diagnosis",
+    "text": "Right profound mixed sensorineural conductive hearing loss.,POSTOPERATIVE DIAGNOSIS:"
+  },
+  {
+    "entity_id": "E2",
+    "entity_type": "diagnosis",
+    "text": "Right profound mixed sensorineural conductive hearing loss.,PROCEDURE PERFORMED:"
+  },
+  {
+    "entity_id": "E3",
+    "entity_type": "procedure",
+    "text": "PERFORMED:"
+  },
+  {
+    "entity_id": "E4",
+    "entity_type": "diagnosis",
+    "text": "Right middle ear exploration with a Goldenberg TORP reconstruction.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E5",
+    "entity_type": "procedure",
+    "text": "Right middle ear exploration with a Goldenberg TORP reconstruction.,ANESTHESIA:"
+  },
+  {
+    "entity_id": "E6",
+    "entity_type": "diagnosis",
+    "text": "General ,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E7",
+    "entity_type": "procedure",
+    "text": "General ,ESTIMATED BLOOD LOSS:"
+  },
+  {
+    "entity_id": "E8",
+    "entity_type": "diagnosis",
+    "text": "Less than 5 cc.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E9",
+    "entity_type": "procedure",
+    "text": "Less than 5 cc.,COMPLICATIONS:"
+  },
+  {
+    "entity_id": "E10",
+    "entity_type": "measurement",
+    "text": "5 cc"
+  },
+  {
+    "entity_id": "E11",
+    "entity_type": "diagnosis",
+    "text": "None.,DESCRIPTION OF FINDINGS:"
+  },
+  {
+    "entity_id": "E12",
+    "entity_type": "procedure",
+    "text": "None.,DESCRIPTION OF FINDINGS:"
+  },
+  {
+    "entity_id": "E13",
+    "entity_type": "diagnosis",
+    "text": "The patient consented to revision surgery because of the profound hearing loss in her right ear.  It was unclear from her previous operative records and CT scan as to whether or not she was a reconstruction candidate.  She had reports of stapes fixation as well as otosclerosis on her CT scan.,At surgery, she was found to have a mobile malleus handle, but her stapes was fixed by otosclerosis.  There was no incus.  There was no specific round window niche.  There was a very minute crevice; however, exploration of this area did not reveal a niche to a round window membrane.  The patient had a type of TORP prosthesis, which had tilted off the footplate anteriorly underneath the malleus handle.,DESCRIPTION OF THE PROCEDURE:"
+  },
+  {
+    "entity_id": "E14",
+    "entity_type": "procedure",
+    "text": "The patient consented to revision surgery because of the profound hearing loss in her right ear.  It was unclear from her previous operative records and CT scan as to whether or not she was a reconstruction candidate.  She had reports of stapes fixation as well as otosclerosis on her CT scan.,At surgery, she was found to have a mobile malleus handle, but her stapes was fixed by otosclerosis.  There was no incus.  There was no specific round window niche.  There was a very minute crevice; however, exploration of this area did not reveal a niche to a round window membrane.  The patient had a type of TORP prosthesis, which had tilted off the footplate anteriorly underneath the malleus handle.,DESCRIPTION OF THE PROCEDURE:"
+  },
+  {
+    "entity_id": "E15",
+    "entity_type": "diagnosis",
+    "text": "The patient was brought to the operative room and placed in supine position.  The right face, ear, and neck prepped with ***** alcohol solution.  The right ear was draped in the sterile field.  External auditory canal was injected with 1% Xylocaine with 1:50,000 epinephrine.  A Fisch indwelling incision was made and a tympanomeatal flap was developed in a 12 o'clock to the 7 o'clock position.  Meatal skin was elevated, middle ear was entered.  This exposure included the oval window, round window areas.  There was a good cartilage graft in place and incorporated into the posterior superior ***** of the drum.  The previous prosthesis was found out of position as it had tilted out of position anteriorly, and there was no contact with the footplate.  The prosthesis was removed without difficulty.  The patient's stapes had an arch, but the ***** was atrophied.  Malleus handle was mobile.  The footplate was fixed.  Consideration have been given to performing a stapedectomy with a tissue seal and then returning later for prosthesis insertion; however, upon inspection of the round window area, there was found to be no definable round window niche, no round window membrane.  The patient was felt to have obliterated otosclerosis of this area along with the stapes fixation.  She is not considered to be a reconstruction candidate under the current circumstances.  No attempt was made to remove bone from the round window area.  A different style of Goldenberg TORP was placed on the footplate underneath the cartilage support in hopes of transferring some sound conduction from the tympanic membrane to the footplate.  The fit was secure and supported with Gelfoam in the middle ear.  The tympanomeatal flap was returned to anatomic position supported with Gelfoam saturated Ciprodex.  The incision was closed with #4-0 Vicryl and individual #5-0 nylon to the skin, and a sterile dressing was applied"
+  },
+  {
+    "entity_id": "E16",
+    "entity_type": "procedure",
+    "text": "The patient was brought to the operative room and placed in supine position.  The right face, ear, and neck prepped with ***** alcohol solution.  The right ear was draped in the sterile field.  External auditory canal was injected with 1% Xylocaine with 1:50,000 epinephrine.  A Fisch indwelling incision was made and a tympanomeatal flap was developed in a 12 o'clock to the 7 o'clock position.  Meatal skin was elevated, middle ear was entered.  This exposure included the oval window, round window areas.  There was a good cartilage graft in place and incorporated into the posterior superior ***** of the drum.  The previous prosthesis was found out of position as it had tilted out of position anteriorly, and there was no contact with the footplate.  The prosthesis was removed without difficulty.  The patient's stapes had an arch, but the ***** was atrophied.  Malleus handle was mobile.  The footplate was fixed.  Consideration have been given to performing a stapedectomy with a tissue seal and then returning later for prosthesis insertion; however, upon inspection of the round window area, there was found to be no definable round window niche, no round window membrane.  The patient was felt to have obliterated otosclerosis of this area along with the stapes fixation.  She is not considered to be a reconstruction candidate under the current circumstances.  No attempt was made to remove bone from the round window area.  A different style of Goldenberg TORP was placed on the footplate underneath the cartilage support in hopes of transferring some sound conduction from the tympanic membrane to the footplate.  The fit was secure and supported with Gelfoam in the middle ear.  The tympanomeatal flap was returned to anatomic position supported with Gelfoam saturated Ciprodex.  The incision was closed with #4-0 Vicryl and individual #5-0 nylon to the skin, and a sterile dressing was applied"
+  },
+  {
+    "entity_id": "E17",
+    "entity_type": "dosage",
+    "text": "1%"
+  },
+  {
+    "entity_id": "E18",
+    "entity_type": "medication",
+    "text": "Xylocaine"
+  },
+  {
+    "entity_id": "E19",
+    "entity_type": "medication",
+    "text": "epinephrine"
+  },
+  {
+    "entity_id": "E20",
+    "entity_type": "medication",
+    "text": "Ciprodex"
+  }
+]
+
+Retrieved facts:
+[
+  {
+    "fact_id": "F1",
+    "entity_id": "E1",
+    "text": "[ICD-10-CM 2027] H908: Mixed conductive and sensorineural hearing loss, unspecified (score: 0.7311)\n[ICD-10-CM 2027] H906: Mixed conductive and sensorineural hearing loss, bilateral (score: 0.7086)\n[ICD-10-CM 2027] H9071: Mixed conductive and sensorineural hearing loss, unilateral, right ear, with unrestricted hearing on the contralateral side (score: 0.5597)"
+  },
+  {
+    "fact_id": "F2",
+    "entity_id": "E2",
+    "text": "[ICD-10-CM 2027] H908: Mixed conductive and sensorineural hearing loss, unspecified (score: 0.7951)\n[ICD-10-CM 2027] H906: Mixed conductive and sensorineural hearing loss, bilateral (score: 0.7706)\n[ICD-10-CM 2027] H9071: Mixed conductive and sensorineural hearing loss, unilateral, right ear, with unrestricted hearing on the contralateral side (score: 0.6087)"
+  },
+  {
+    "fact_id": "F3",
+    "entity_id": "E3",
+    "text": "[Procedure] 'PERFORMED:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F4",
+    "entity_id": "E4",
+    "text": "[ICD-10-CM 2027] Z421: Encounter for breast reconstruction following mastectomy (score: 0.4965)\n[ICD-10-CM 2027] T8859XD: Other complications of anesthesia, subsequent encounter (score: 0.3679)\n[ICD-10-CM 2027] T8859XA: Other complications of anesthesia, initial encounter (score: 0.3646)"
+  },
+  {
+    "fact_id": "F5",
+    "entity_id": "E5",
+    "text": "[Procedure] 'Right middle ear exploration with a Goldenberg TORP reconstruction.,ANESTHESIA:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F6",
+    "entity_id": "E6",
+    "text": "[ICD-10-CM 2027] Z008: Encounter for other general examination (score: 0.5245)\n[ICD-10-CM 2027] T41206D: Underdosing of unspecified general anesthetics, subsequent encounter (score: 0.4748)\n[ICD-10-CM 2027] T41296D: Underdosing of other general anesthetics, subsequent encounter (score: 0.4748)"
+  },
+  {
+    "fact_id": "F7",
+    "entity_id": "E7",
+    "text": "[Procedure] 'General ,ESTIMATED BLOOD LOSS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F8",
+    "entity_id": "E8",
+    "text": "[ICD-10-CM 2027] T310: Burns involving less than 10% of body surface (score: 0.6461)\n[ICD-10-CM 2027] T320: Corrosions involving less than 10% of body surface (score: 0.6450)\n[ICD-10-CM 2027] Z3A01: Less than 8 weeks gestation of pregnancy (score: 0.5871)"
+  },
+  {
+    "fact_id": "F9",
+    "entity_id": "E9",
+    "text": "[Procedure] 'Less than 5 cc.,COMPLICATIONS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F10",
+    "entity_id": "E10",
+    "text": "[Measurement] 5.0cc \u2014 not associated with any medication"
+  },
+  {
+    "fact_id": "F11",
+    "entity_id": "E11",
+    "text": "[ICD-10-CM 2027] R402310: Coma scale, best motor response, none, unspecified time (score: 0.3947)\n[ICD-10-CM 2027] R402210: Coma scale, best verbal response, none, unspecified time (score: 0.3707)\n[ICD-10-CM 2027] R402313: Coma scale, best motor response, none, at hospital admission (score: 0.3662)"
+  },
+  {
+    "fact_id": "F12",
+    "entity_id": "E12",
+    "text": "[Procedure] 'None.,DESCRIPTION OF FINDINGS:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F13",
+    "entity_id": "E13",
+    "text": "[ICD-10-CM 2027] Z2881: Immunization not carried out due to patient having had the disease (score: 0.3240)\n[ICD-10-CM 2027] R9402: Abnormal brain scan (score: 0.2562)\n[ICD-10-CM 2027] H8081: Other otosclerosis, right ear (score: 0.2369)"
+  },
+  {
+    "fact_id": "F14",
+    "entity_id": "E14",
+    "text": "[Procedure] 'The patient consented to revision surgery because of the profound hearing loss in her right ear.  It was unclear from her previous operative records and CT scan as to whether or not she was a reconstruction candidate.  She had reports of stapes fixation as well as otosclerosis on her CT scan.,At surgery, she was found to have a mobile malleus handle, but her stapes was fixed by otosclerosis.  There was no incus.  There was no specific round window niche.  There was a very minute crevice; however, exploration of this area did not reveal a niche to a round window membrane.  The patient had a type of TORP prosthesis, which had tilted off the footplate anteriorly underneath the malleus handle.,DESCRIPTION OF THE PROCEDURE:' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F15",
+    "entity_id": "E15",
+    "text": "[ICD-10-CM 2027] W134XXD: Fall from, out of or through window, subsequent encounter (score: 0.3054)\n[ICD-10-CM 2027] W134XXA: Fall from, out of or through window, initial encounter (score: 0.3044)\n[ICD-10-CM 2027] W134XXS: Fall from, out of or through window, sequela (score: 0.3044)"
+  },
+  {
+    "fact_id": "F16",
+    "entity_id": "E16",
+    "text": "[Procedure] 'The patient was brought to the operative room and placed in supine position.  The right face, ear, and neck prepped with ***** alcohol solution.  The right ear was draped in the sterile field.  External auditory canal was injected with 1% Xylocaine with 1:50,000 epinephrine.  A Fisch indwelling incision was made and a tympanomeatal flap was developed in a 12 o'clock to the 7 o'clock position.  Meatal skin was elevated, middle ear was entered.  This exposure included the oval window, round window areas.  There was a good cartilage graft in place and incorporated into the posterior superior ***** of the drum.  The previous prosthesis was found out of position as it had tilted out of position anteriorly, and there was no contact with the footplate.  The prosthesis was removed without difficulty.  The patient's stapes had an arch, but the ***** was atrophied.  Malleus handle was mobile.  The footplate was fixed.  Consideration have been given to performing a stapedectomy with a tissue seal and then returning later for prosthesis insertion; however, upon inspection of the round window area, there was found to be no definable round window niche, no round window membrane.  The patient was felt to have obliterated otosclerosis of this area along with the stapes fixation.  She is not considered to be a reconstruction candidate under the current circumstances.  No attempt was made to remove bone from the round window area.  A different style of Goldenberg TORP was placed on the footplate underneath the cartilage support in hopes of transferring some sound conduction from the tympanic membrane to the footplate.  The fit was secure and supported with Gelfoam in the middle ear.  The tympanomeatal flap was returned to anatomic position supported with Gelfoam saturated Ciprodex.  The incision was closed with #4-0 Vicryl and individual #5-0 nylon to the skin, and a sterile dressing was applied' \u2014 extracted from header, not verified against any coding system"
+  },
+  {
+    "fact_id": "F17",
+    "entity_id": "E17",
+    "text": "Dose 1.0% associated with Xylocaine \u2014 dose 1.0% not among known product strengths"
+  },
+  {
+    "fact_id": "F18",
+    "entity_id": "E18",
+    "text": "[RxNorm] 'Xylocaine' \u2192 RXCUI 202398, canonical: Xylocaine, match: exact\n[RxNorm] Ingredient: lidocaine (RXCUI 6387)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): lidocaine hydrochloride 0.025 MG/MG Topical Ointment; lidocaine hydrochloride 0.025 MG/MG Topical Gel; lidocaine hydrochloride 0.035 MG/MG Ophthalmic Gel; lidocaine hydrochloride 10 MG/ML Injectable Solution; lidocaine hydrochloride 100 MG/ML Mucosal Spray"
+  },
+  {
+    "fact_id": "F19",
+    "entity_id": "E19",
+    "text": "[RxNorm] 'epinephrine' \u2192 RXCUI 3992, canonical: epinephrine, match: exact\n[RxNorm] Ingredient: epinephrine (RXCUI 3992)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 20 ML epinephrine 0.005 MG/ML / lidocaine hydrochloride 20 MG/ML Injection; epinephrine 0.005 MG/ML / lidocaine hydrochloride 5 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 10 MG/ML Injectable Solution; epinephrine 0.01 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution; epinephrine 0.002 MG/ML / lidocaine hydrochloride 20 MG/ML Injectable Solution"
+  },
+  {
+    "fact_id": "F20",
+    "entity_id": "E20",
+    "text": "[RxNorm] 'Ciprodex' \u2192 RXCUI 404930, canonical: Ciprodex, match: exact\n[RxNorm] Ingredient: ciprofloxacin (RXCUI 2551)\n[MED-RT] Indications: unknown (no MED-RT data available)\n[RxNorm] Known strengths (sample): 100 ML ciprofloxacin 2 MG/ML Injection; 200 ML ciprofloxacin 2 MG/ML Injection; 40 ML ciprofloxacin 10 MG/ML Injection; ciprofloxacin 3 MG/ML / fluocinolone acetonide 0.25 MG/ML Otic Solution; ciprofloxacin 250 MG Oral Tablet"
+  }
+]

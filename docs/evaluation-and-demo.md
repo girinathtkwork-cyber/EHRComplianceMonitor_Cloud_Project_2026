@@ -1,4 +1,4 @@
-# Evaluation and demonstration guide
+# Offline evaluation data
 
 ## Dataset and ground truth
 
@@ -6,16 +6,6 @@ The project uses the de-identified MTSamples corpus already stored in `dataset/r
 
 This enables repeatable evaluation without pretending that an unlabelled transcript is ground truth.
 
-## Demo tomorrow
+These datasets are for offline development and evaluation only. They are not preloaded into the dashboard or returned from its API. The dashboard processes only transcript text a user enters or uploads.
 
-1. In the project folder run `npm.cmd run check`.
-2. Run `npm.cmd start` and open `http://localhost:3000`.
-3. Click **Load MTSamples demo case**.
-4. Point out that the candidate and trusted source are different versions of the same labelled MTSamples item.
-5. Click **Run safety review** and show the critical/high flag, source excerpt, severity count, and RxNorm reference provenance.
-6. Click **Calculate dataset results** to generate a recall breakdown directly from every labelled record; do not describe it as a general clinical accuracy result.
-7. State the safety boundary: the output is a clinician-review signal, never an automatic correction or diagnosis.
-
-## Measures to produce next
-
-Run the analyser across every labelled evaluation record, compare its flags to `ground_truth_label`, then report precision, recall, F1-score, false-positive rate, and processing time. Report results separately for wrong medication, wrong dosage, fabricated diagnosis, and fabricated procedure; do not combine them into one misleading score.
+The local demo and dataset-evaluation routes have been removed from the dashboard server. Keep any future offline evaluation scripts separate from the user-facing transcript workflow, and report their results as prototype measurements rather than clinical validation.
