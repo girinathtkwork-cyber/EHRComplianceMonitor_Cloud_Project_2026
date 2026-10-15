@@ -111,7 +111,7 @@ def main():
     print(f"Lambda elapsed: {lambda_elapsed:.1f}s")
 
     # Load Lambda output
-    lambda_output_path = _PROJECT_ROOT / "output" / "stage_a" / "sample_20_for_aws_test.stage_a.json"
+    lambda_output_path = _PROJECT_ROOT / "output" / "stage_b" / "sample_20_for_aws_test.audited.json"
     if not lambda_output_path.exists():
         print(f"Error: Lambda output not found at {lambda_output_path}")
         sys.exit(1)

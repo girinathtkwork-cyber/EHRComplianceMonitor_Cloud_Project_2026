@@ -46,8 +46,21 @@ OUTPUT_SCHEMA = {
                 "required": ["text", "type", "reason"],
             },
         },
+        "source_discrepancies": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string"},
+                    "candidate_excerpt": {"type": "string"},
+                    "source_excerpt": {"type": "string"},
+                    "reason": {"type": "string"},
+                },
+                "required": ["type", "candidate_excerpt", "source_excerpt", "reason"],
+            },
+        },
     },
-    "required": ["entity_verdicts", "additional_concerns"],
+    "required": ["entity_verdicts", "additional_concerns", "source_discrepancies"],
 }
 
 
@@ -55,7 +68,75 @@ def normalize_severity(value: str | None) -> str:
     return SEVERITY_MAP.get(value or "", "medium")
 
 
-def validate_response(data: dict, *, mode: str, valid_fact_ids: set[str]) -> tuple[dict, dict]:
+def _normalized_quote(value: str) -> str:
+    return " ".join(value.split()).casefold()
+
+
+def _validate_source_discrepancies(
+    items: object,
+    *,
+    candidate_transcript: str,
+    source_transcript: str,
+) -> list[dict]:
+    if not isinstance(items, list):
+        raise ValueError("LLM response missing source_discrepancies array")
+    discrepancies = []
+    candidate_normalized = _normalized_quote(candidate_transcript)
+    source_normalized = _normalized_quote(source_transcript)
+    allowed_types = {"omission", "addition", "contradiction"}
+    for item in items:
+        if not isinstance(item, dict):
+            raise ValueError("source_discrepancies items must be objects")
+        discrepancy_type = str(item.get("type", "")).strip().lower()
+        candidate_excerpt = str(item.get("candidate_excerpt", "")).strip()
+        source_excerpt = str(item.get("source_excerpt", "")).strip()
+        reason = str(item.get("reason", "")).strip()
+        if discrepancy_type not in allowed_types:
+            raise ValueError(f"invalid source discrepancy type: {discrepancy_type}")
+        if not reason:
+            raise ValueError("source discrepancy missing reason")
+        if not source_transcript:
+            raise ValueError("source discrepancies require a trusted source transcript")
+        if discrepancy_type == "omission":
+            valid_quotes = (
+                not candidate_excerpt
+                and bool(source_excerpt)
+                and _normalized_quote(source_excerpt) in source_normalized
+            )
+        elif discrepancy_type == "addition":
+            valid_quotes = (
+                bool(candidate_excerpt)
+                and not source_excerpt
+                and _normalized_quote(candidate_excerpt) in candidate_normalized
+            )
+        else:
+            valid_quotes = (
+                bool(candidate_excerpt)
+                and bool(source_excerpt)
+                and _normalized_quote(candidate_excerpt) in candidate_normalized
+                and _normalized_quote(source_excerpt) in source_normalized
+            )
+        if not valid_quotes:
+            raise ValueError("source discrepancy quotes must match their input transcripts")
+        if len(candidate_excerpt) > 280 or len(source_excerpt) > 280:
+            raise ValueError("source discrepancy excerpts must be 280 characters or fewer")
+        discrepancies.append({
+            "type": discrepancy_type,
+            "candidate_excerpt": candidate_excerpt,
+            "source_excerpt": source_excerpt,
+            "reason": reason,
+        })
+    return discrepancies
+
+
+def validate_response(
+    data: dict,
+    *,
+    mode: str,
+    valid_fact_ids: set[str],
+    candidate_transcript: str = "",
+    source_transcript: str = "",
+) -> tuple[dict, dict]:
     """Validate by hand and downgrade uncited RAG suspicions."""
     if not isinstance(data, dict):
         raise ValueError("LLM response must be a JSON object")
@@ -63,6 +144,11 @@ def validate_response(data: dict, *, mode: str, valid_fact_ids: set[str]) -> tup
     concerns = data.get("additional_concerns")
     if not isinstance(verdicts, list) or not isinstance(concerns, list):
         raise ValueError("LLM response missing entity_verdicts/additional_concerns arrays")
+    source_discrepancies = _validate_source_discrepancies(
+        data.get("source_discrepancies"),
+        candidate_transcript=candidate_transcript,
+        source_transcript=source_transcript,
+    )
 
     stats = {"rag_uncited_suspicious_downgrades": 0}
     clean_verdicts = []
@@ -109,4 +195,8 @@ def validate_response(data: dict, *, mode: str, valid_fact_ids: set[str]) -> tup
             "reason": str(item.get("reason", "")).strip(),
         })
 
-    return {"entity_verdicts": clean_verdicts, "additional_concerns": clean_concerns}, stats
+    return {
+        "entity_verdicts": clean_verdicts,
+        "additional_concerns": clean_concerns,
+        "source_discrepancies": source_discrepancies,
+    }, stats
