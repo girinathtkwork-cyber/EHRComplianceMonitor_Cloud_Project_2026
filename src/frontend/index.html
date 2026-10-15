@@ -103,6 +103,18 @@
       <div class="upload-card">
         <div class="upload-copy">
           <div>
+            <label for="fhir-file">Import a Synthea FHIR R4 Bundle</label>
+            <p>Choose one synthetic FHIR JSON Bundle, up to 10 MB. Its supported chart data becomes trusted-source context; it does not reproduce an original clinician note.</p>
+          </div>
+        </div>
+        <input id="fhir-file" type="file" accept=".json,.fhir,application/fhir+json,application/json" aria-label="Choose Synthea FHIR Bundle">
+        <button id="import-fhir" class="button button-secondary" type="button">Import chart context</button>
+        <p id="fhir-status" class="inline-status" aria-live="polite"></p>
+      </div>
+
+      <div class="upload-card">
+        <div class="upload-copy">
+          <div>
             <label for="transcript-file">Prefer to upload a file?</label>
             <p>Choose one .txt or .json file, up to 800 KB. JSON must contain a <code>transcription</code> or <code>transcript</code> string.</p>
           </div>
@@ -180,6 +192,7 @@
   </footer>
   <script src="config.js"></script>
   <script src="auth.js"></script>
+  <script src="fhir_import.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

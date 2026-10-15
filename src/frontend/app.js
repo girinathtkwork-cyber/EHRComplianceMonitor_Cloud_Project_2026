@@ -382,6 +382,8 @@ document.querySelector("#clear-inputs").addEventListener("click", () => {
   candidate.value = "";
   source.value = "";
   document.querySelector("#transcript-file").value = "";
+  document.querySelector("#fhir-file").value = "";
+  document.querySelector("#fhir-status").textContent = "";
   document.querySelector("#upload-status").textContent = "";
   document.querySelector("#retry-verification").hidden = true;
   results.hidden = true;
@@ -389,6 +391,28 @@ document.querySelector("#clear-inputs").addEventListener("click", () => {
   updateCharacterCount(source, "#source-count");
   status.textContent = "Inputs cleared. Add a transcript to begin.";
   candidate.focus();
+});
+
+document.querySelector("#import-fhir").addEventListener("click", async () => {
+  const file = document.querySelector("#fhir-file").files[0];
+  const message = document.querySelector("#fhir-status");
+  if (!file) { message.textContent = "Choose a Synthea FHIR JSON Bundle first."; return; }
+  if (file.size > window.EhrFhirImport.MAX_INPUT_BYTES) { message.textContent = "FHIR file is larger than the 10 MB import limit."; return; }
+  const button = document.querySelector("#import-fhir");
+  button.disabled = true;
+  message.textContent = "Reading and validating the synthetic FHIR Bundle locally in this browser…";
+  try {
+    const imported = window.EhrFhirImport.parseText(await file.text(), file.size);
+    source.value = imported.summary;
+    if (!candidate.value.trim()) candidate.value = imported.summary;
+    updateCharacterCount(candidate, "#candidate-count");
+    updateCharacterCount(source, "#source-count");
+    message.textContent = `Imported ${imported.resourceCount.toLocaleString()} resource(s); skipped ${imported.ignoredResourceCount.toLocaleString()} unsupported resource(s). Review the chart context and candidate text before submitting.`;
+    status.textContent = "FHIR chart context loaded. Replace or edit the candidate transcription as needed.";
+    candidate.focus();
+  } catch (error) {
+    message.textContent = error.message;
+  } finally { button.disabled = false; }
 });
 
 document.querySelector("#analyse").addEventListener("click", async () => {
