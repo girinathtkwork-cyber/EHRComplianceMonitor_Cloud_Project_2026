@@ -260,6 +260,3 @@ python scripts/invoke_local.py
 - The API Gateway authorizer and storage controls are not implemented/configured in this repository. This prototype must not be treated as production-compliant or as an autonomous clinical decision system.
 - A clinician must review every finding. The software does not diagnose, prescribe, or automatically update an EHR.
 
-## Phase 2 ML experiment
-
-See [Phase 2 ML training and SageMaker preparation](docs/PHASE2_ML_TRAINING.md) for the synthetic-label task definition, grouped split, local metrics, reproducible commands, and gated SageMaker workflow. The model is not integrated into processing and has not been trained in AWS.

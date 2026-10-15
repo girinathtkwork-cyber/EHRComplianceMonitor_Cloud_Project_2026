@@ -11,7 +11,7 @@ You are working inside the git repo `EHRComplianceMonitor_Cloud_Project_2026`. B
 - Never put secrets in the repo.
 - Do NOT modify or delete anything that already exists in `dataset/processed/`, `dataset/scripts/`, or `dataset/raw/`. Those scripts are the reproducible history of the project. New code goes in the new locations named below.
 - Python 3.12+ syntax. The human is on Windows/PowerShell: use `pathlib`, never write bash-only scripts.
-- Anything that will run inside AWS Lambda must use only the standard library plus `boto3` (already in the Lambda runtime): `urllib.request`, `json`, `re`, `math`, `difflib`, `collections`, `zipfile`. Do not use `requests`, `numpy`, `pandas`, `sklearn`, or `spacy` in Lambda code. Dev-only dependency allowed: `pytest`.
+- Anything that will run inside AWS Lambda must use only the standard library plus `boto3` (already in the Lambda runtime): `urllib.request`, `json`, `re`, `math`, `difflib`, `collections`, `zipfile`. Do not use third-party runtime dependencies in Lambda code. Dev-only dependency allowed: `pytest`.
 - Every number you report must come from a command you actually ran. If a command cannot run in your environment (for example no internet), say so and give the human the exact command instead of inventing results.
 
 ---
