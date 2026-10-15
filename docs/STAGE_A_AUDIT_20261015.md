@@ -68,3 +68,12 @@ Existing entity types, route enums, required contract fields, and Stage B routin
 Section detection remains heuristic; negation/context detection is conservative and medication-specific, not a general clinical assertion model. The current evaluator's string-overlap method is limited and does not establish clinical correctness. Frequency/route/duration patterns cover only a small explicit set, and there is no terminology source for procedure coding or measurement validity. The evaluation split has one exact duplicate group across dev and test. Add adjudicated, span-level annotations and deduplicate before using this set for tuning or performance claims.
 
 AWS actions: none. No model training or deployment was performed.
+
+## Follow-up verification — 2026-10-16
+
+- The Stage A contract validator now checks that each entity span is in bounds and selects the exact entity text from the source transcript, when the source transcript is present. It also checks entity totals and routing counts against `stage_a_summary`.
+- `run_stage_a` validates each completed output before returning it. Contract failures become a per-record Stage A error instead of passing malformed verification data downstream.
+- Offline replay of all 270 labeled records completed with 252 `completed`, 18 `partial`, and 0 `error` results. All 270 passed contract validation. RxNorm HTTP calls were blocked; external terminology requests: 0.
+- Full test suite: 100 passed. The Lambda ZIP was rebuilt locally at 3.42 MB and the full suite passed against the rebuilt package. No AWS deployment was performed.
+
+These checks verify extraction output structure and source-span integrity; they do not establish clinical accuracy. The evaluation limitations above remain unchanged.

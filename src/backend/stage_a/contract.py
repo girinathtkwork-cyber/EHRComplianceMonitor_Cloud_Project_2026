@@ -42,7 +42,8 @@ def validate_contract(output: dict) -> list[str]:
             _check(isinstance(err.get("timestamp"), str), "error.timestamp must be a string")
         return errors
 
-    _check(output.get("verification_status") in VALID_VERIFICATION_STATUSES,
+    status = output.get("verification_status")
+    _check(isinstance(status, str) and status in VALID_VERIFICATION_STATUSES,
            f"verification_status must be one of {VALID_VERIFICATION_STATUSES}")
 
     # stage_a_version
@@ -70,7 +71,7 @@ def validate_contract(output: dict) -> list[str]:
 
             # entity_type
             et = entity.get("entity_type")
-            _check(et in VALID_ENTITY_TYPES,
+            _check(isinstance(et, str) and et in VALID_ENTITY_TYPES,
                    f"{prefix}.entity_type '{et}' not in {VALID_ENTITY_TYPES}")
 
             # text
@@ -82,14 +83,25 @@ def validate_contract(output: dict) -> list[str]:
             _check(isinstance(span, list) and len(span) == 2,
                    f"{prefix}.span must be a list of two ints")
             if isinstance(span, list) and len(span) == 2:
-                _check(isinstance(span[0], int) and isinstance(span[1], int),
+                _check(type(span[0]) is int and type(span[1]) is int,
                        f"{prefix}.span values must be integers")
-                _check(span[0] >= 0 and span[1] > span[0],
+                valid_span = (
+                    type(span[0]) is int and type(span[1]) is int
+                    and span[0] >= 0 and span[1] > span[0]
+                )
+                _check(valid_span,
                        f"{prefix}.span must be non-negative with end > start")
+                transcript = output.get("transcription")
+                if valid_span and isinstance(transcript, str):
+                    _check(span[1] <= len(transcript),
+                           f"{prefix}.span extends beyond transcription")
+                    if span[1] <= len(transcript) and isinstance(entity.get("text"), str):
+                        _check(transcript[span[0]:span[1]] == entity["text"],
+                               f"{prefix}.text does not match transcription at span")
 
             # routing
             routing = entity.get("routing")
-            _check(routing in VALID_ROUTINGS,
+            _check(isinstance(routing, str) and routing in VALID_ROUTINGS,
                    f"{prefix}.routing '{routing}' not in {VALID_ROUTINGS}")
 
             # retrieval_context
@@ -109,6 +121,18 @@ def validate_contract(output: dict) -> list[str]:
                "stage_a_summary.n_invalid must be an int")
         _check(isinstance(summary.get("n_forwarded_to_stage_b"), int),
                "stage_a_summary.n_forwarded_to_stage_b must be an int")
+        if isinstance(entities, list) and all(isinstance(e, dict) for e in entities):
+            _check(summary.get("n_entities") == len(entities),
+                   "stage_a_summary.n_entities must match entities")
+            _check(summary.get("n_invalid") == sum(e.get("routing") == "invalid" for e in entities),
+                   "stage_a_summary.n_invalid must match entity routing")
+            _check(
+                summary.get("n_forwarded_to_stage_b") == sum(
+                    e.get("routing") in ("verified_needs_context_check", "unresolved")
+                    for e in entities
+                ),
+                "stage_a_summary.n_forwarded_to_stage_b must match entity routing",
+            )
 
     return errors
 

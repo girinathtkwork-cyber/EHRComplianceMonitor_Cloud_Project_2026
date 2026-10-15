@@ -77,6 +77,13 @@ def run_stage_a(record: dict) -> dict:
             "n_forwarded_to_stage_b": n_forwarded,
         }
 
+        contract_errors = validate_contract(output)
+        if contract_errors:
+            raise ValueError(
+                "Stage A output failed contract validation: "
+                + "; ".join(contract_errors)
+            )
+
         return output
 
     except Exception as exc:
