@@ -2,8 +2,11 @@ const candidate = document.querySelector("#candidate");
 const source = document.querySelector("#source");
 const status = document.querySelector("#status");
 const results = document.querySelector("#results");
+const batchRecordControl = document.querySelector("#batch-record-control");
+const batchRecordSelect = document.querySelector("#batch-record-select");
 const API_BASE_URL = String(window.EHR_API_BASE_URL || "").replace(/\/+$/, "");
 const SYNTHETIC_EXAMPLE = "ALLERGIES: penicillin (rash). MEDICATIONS: amoxicillin 500 mg three times daily.";
+let batchResults = [];
 
 async function apiRequest(path, options) {
   const controller = new AbortController();
@@ -63,11 +66,15 @@ function render(result) {
   const sourceComparisonStatus = sourceComparison.status || (sourceCompared ? "compared" : "not_performed");
   const discrepancies = Array.isArray(sourceComparison.discrepancies) ? sourceComparison.discrepancies : [];
   results.hidden = false;
-  document.querySelector("#result-title").textContent = findings.length
+  document.querySelector("#result-title").textContent = result.error
+    ? "Record could not be processed"
+    : findings.length
     ? `${findings.length} review signal${findings.length === 1 ? "" : "s"}`
     : "No review signals returned";
   const badge = document.querySelector("#stage-b-badge");
-  badge.textContent = llmStatus === "fallback"
+  badge.textContent = result.error
+    ? "Processing failed"
+    : llmStatus === "fallback"
     ? "Deterministic fallback"
     : `${stageMode === "llm_rag" ? "Gemini · RAG" : stageMode} · ${llmStatus}`;
   badge.classList.toggle("fallback", llmStatus === "fallback");
@@ -77,6 +84,7 @@ function render(result) {
     .join("");
   const latency = Number(stageB.latency_ms);
   document.querySelector("#review-meta").innerHTML = [
+    ["Processing status", result.error ? (result.error.code || "error") : (result.verification_status || "unknown")],
     ["Entities reviewed", Number(result.stage_a_summary?.n_entities || 0)],
     ["Stage B model", stageB.model || (stageMode === "stage_a_only" ? "Deterministic" : "Not reported")],
     ["Trusted-source comparison", sourceCompared ? "Compared" : sourceComparisonStatus === "not_provided" ? "Not provided" : "Not performed"]
@@ -106,6 +114,26 @@ function render(result) {
     stageBSummary: result.stage_b_summary
   }, null, 2);
 }
+
+function renderJobResults(job) {
+  batchResults = Array.isArray(job.results) && job.results.length
+    ? job.results
+    : (job.result ? [job.result] : []);
+  batchRecordControl.hidden = batchResults.length < 2;
+  batchRecordSelect.replaceChildren();
+  batchResults.forEach((_, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `Record ${index + 1}`;
+    batchRecordSelect.append(option);
+  });
+  if (batchResults.length) render(batchResults[0]);
+}
+
+batchRecordSelect.addEventListener("change", () => {
+  const selected = batchResults[Number(batchRecordSelect.value)];
+  if (selected) render(selected);
+});
 
 candidate.addEventListener("input", () => updateCharacterCount(candidate, "#candidate-count"));
 source.addEventListener("input", () => updateCharacterCount(source, "#source-count"));
@@ -148,6 +176,8 @@ document.querySelector("#analyse").addEventListener("click", async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
+    batchRecordControl.hidden = true;
+    batchResults = [];
     render(result);
     const llmStatus = result.stage_b?.llm_status;
     status.textContent = llmStatus === "fallback"
@@ -197,13 +227,15 @@ document.querySelector("#upload-transcript").addEventListener("click", async () 
     if (!completed || !["completed", "partial"].includes(completed.status)) {
       throw new Error("The job is still processing or no S3 result arrived before the dashboard timed out.");
     }
-    render(completed.result);
+    renderJobResults(completed);
+    const expected = Number(completed.expected_count ?? 1);
+    const processed = Number(completed.processed_count ?? batchResults.length);
     uploadStatus.textContent = job.storage === "local"
       ? "Verified locally; this upload was not sent to AWS or saved in S3."
       : completed.status === "partial"
-        ? "S3 upload completed with a partial result; check the processed-record count in the result details."
+        ? `S3 job is partial: ${processed} of ${expected} records processed, ${Number(completed.failed_count || 0)} failed, ${Number(completed.fallback_count || 0)} used fallback. Use the record selector to review each result.`
         : "S3 upload verified successfully; the result was retrieved from the output object.";
-    status.textContent = `Review complete. ${completed.result.stage_b_findings?.length || 0} review signal(s) returned.`;
+    status.textContent = `${batchResults.length} record result(s) returned. Use the selector to review each record.`;
   } catch (error) {
     uploadStatus.textContent = error.message;
   } finally {

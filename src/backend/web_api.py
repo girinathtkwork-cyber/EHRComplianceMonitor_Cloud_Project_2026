@@ -71,12 +71,13 @@ def format_result(result: dict) -> dict:
         "stage_b": result.get("stage_b", {}),
         "stage_b_summary": result.get("stage_b_summary", {}),
         "stage_b_findings": result.get("stage_b_findings", []),
+        "error": result.get("error"),
     }
 
 
 def _process_record(record: dict) -> dict:
     stage_a_record = run_stage_a(record)
-    if stage_a_record.get("verification_status") != "completed":
+    if stage_a_record.get("verification_status") not in ("completed", "partial"):
         return {
             "transcript_id": stage_a_record["transcript_id"],
             "verification_status": "error",

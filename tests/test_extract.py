@@ -76,11 +76,42 @@ class TestMedicationExtraction:
         meds = extract_medications("She presents today with foot pain.", lexicon=MINI_LEXICON)
         assert [m["text"].lower() for m in meds] == []
 
+    def test_temporal_words_near_medications_are_not_extra_medications(self):
+        text = "Today she started aspirin and took ibuprofen yesterday."
+        meds = extract_medications(text, lexicon=MINI_LEXICON)
+        assert [item["text"].lower() for item in meds] == ["aspirin", "ibuprofen"]
+
+    def test_negated_medication_is_extracted_as_a_mention(self):
+        # Extraction identifies mentions; it does not determine whether the
+        # patient takes or denies the medication.
+        meds = extract_medications("Patient denies aspirin.", lexicon=MINI_LEXICON)
+        assert [item["text"].lower() for item in meds] == ["aspirin"]
+
+    def test_unrecognized_term_is_not_claimed_as_rxnorm_match(self):
+        meds = extract_medications("Patient reports taking unlistedmedication.", lexicon=MINI_LEXICON)
+        assert meds == []
+
     def test_has_span_offsets(self):
         meds = extract_medications("Give Aspirin now.", lexicon=MINI_LEXICON)
         assert len(meds) == 1
         assert meds[0]["span"][0] >= 0
         assert meds[0]["span"][1] > meds[0]["span"][0]
+
+    def test_embedded_name_is_not_matched(self):
+        meds = extract_medications("The nonsensicalwordaspirinlike token is unrelated.", lexicon=MINI_LEXICON)
+        assert meds == []
+
+    def test_negation_context_is_preserved(self):
+        meds = extract_medications("Patient denies aspirin.", lexicon=MINI_LEXICON)
+        assert meds[0]["assertion_status"] == "negated"
+
+    def test_historical_section_is_preserved(self):
+        meds = extract_medications("Past medications: aspirin was used years ago.", lexicon=MINI_LEXICON)
+        assert meds[0]["section"] == "historical"
+
+    def test_unicode_normalization_for_lexicon_lookup(self):
+        meds = extract_medications("Take aspirin now.", lexicon={"aspirin": MINI_LEXICON["aspirin"]})
+        assert meds[0]["text"] == "aspirin"
 
 
 class TestDosageMeasurement:
@@ -102,6 +133,26 @@ class TestDosageMeasurement:
         assert len(dosages) == 1
         assert dosages[0]["associated_medication"].lower() == "amoxicillin"
 
+    def test_preserves_route_frequency_and_duration_spans(self):
+        text = "Amoxicillin 500mg orally twice daily for 7 days."
+        meds = extract_medications(text, lexicon=MINI_LEXICON)
+        dosages, _ = extract_dosages_and_measurements(text, meds)
+        attrs = dosages[0]["instructions"]
+        assert attrs["route"]["text"].lower() == "orally"
+        assert attrs["frequency"]["text"].lower() == "twice daily"
+        assert attrs["duration"]["text"].lower() == "for 7 days"
+        assert all(text[a:b] == value["text"] for value in attrs.values() for a, b in [value["span"]])
+
+    def test_instructions_do_not_cross_to_next_medication(self):
+        text = "Amoxicillin 500mg orally twice daily and Prednisone 10mg nightly."
+        meds = extract_medications(text, lexicon=MINI_LEXICON)
+        dosages, _ = extract_dosages_and_measurements(text, meds)
+        by_med = {dose["associated_medication"].lower(): dose.get("instructions", {}) for dose in dosages}
+        assert by_med["amoxicillin"]["frequency"]["text"].lower() == "twice daily"
+        assert "route" in by_med["amoxicillin"]
+        assert by_med["prednisone"]["frequency"]["text"].lower() == "nightly"
+        assert "route" not in by_med["prednisone"]
+
     def test_dose_far_from_drug_is_measurement(self):
         text = ("Amoxicillin prescribed. "
                 "The patient has a history of smoking. "
@@ -117,6 +168,16 @@ class TestDosageMeasurement:
         dosages, measurements = extract_dosages_and_measurements(text, meds)
         assert len(measurements) == 1
         assert measurements[0]["unit"] == "%"
+
+    def test_blood_pressure_format(self):
+        _, measurements = extract_dosages_and_measurements("Vitals: BP 120/80 mmHg", [])
+        assert len(measurements) == 1
+        assert measurements[0]["value"] == "120/80"
+        assert measurements[0]["unit"] == "mmHg"
+
+    def test_unrelated_date_is_not_measurement(self):
+        _, measurements = extract_dosages_and_measurements("Visit date 10/12/2026", [])
+        assert measurements == []
 
 
 class TestDiagnosisExtraction:

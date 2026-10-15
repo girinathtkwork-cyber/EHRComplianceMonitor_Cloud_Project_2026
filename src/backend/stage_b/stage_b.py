@@ -95,6 +95,9 @@ def run_stage_b(record: dict, mode: str = "stage_a_only", *, client=None, dry_ru
             "prompt_hash": None,
             "llm_status": "skipped",
             "fallback_reason": None,
+            "request_count": 0,
+            "request_failures": 0,
+            "duration_ms": 0,
             "token_usage": {"prompt_tokens": 0, "output_tokens": 0},
             "latency_ms": 0,
             "rag_uncited_suspicious_downgrades": 0,
@@ -111,11 +114,13 @@ def run_stage_b(record: dict, mode: str = "stage_a_only", *, client=None, dry_ru
         return output
 
     transcript_id = str(record.get("transcript_id", "unknown"))
+    stage_b_started = time.monotonic()
+    request_count_before = getattr(client, "calls_made", 0)
     try:
         prompt, entities, fact_ids = build_prompt(record, mode=mode)
         model = getattr(client, "model", DEFAULT_MODEL)
         phash = prompt_hash(prompt, model)
-        save_prompt(prompt, mode=mode, transcript_id=transcript_id, root=project_root or _root())
+        prompt_path = save_prompt(prompt, mode=mode, transcript_id=transcript_id, root=project_root or _root())
         start = time.monotonic()
         result = client.generate_json(prompt, dry_run=dry_run)
         source_transcript = str(record.get("source_transcript", "")).strip()
@@ -146,9 +151,15 @@ def run_stage_b(record: dict, mode: str = "stage_a_only", *, client=None, dry_ru
                 "mode": mode,
                 "model": model,
                 "prompt_hash": phash,
-                "prompt_path": str(Path("results") / "prompts" / mode / f"{transcript_id}.txt"),
+                "prompt_path": (
+                    str(Path("results") / "prompts" / mode / f"{transcript_id}.txt")
+                    if prompt_path is not None else None
+                ),
                 "llm_status": "skipped" if dry_run else "ok",
                 "fallback_reason": None,
+                "request_count": getattr(client, "calls_made", 0) - request_count_before,
+                "request_failures": 0,
+                "duration_ms": int((time.monotonic() - stage_b_started) * 1000),
                 "token_usage": result.get("usage", {}),
                 "latency_ms": latency_ms,
                 "cache_hit": result.get("cache_hit", False),
@@ -164,6 +175,13 @@ def run_stage_b(record: dict, mode: str = "stage_a_only", *, client=None, dry_ru
         output["stage_b_summary"]["source_comparison"] = False
         output["stage_b"]["mode"] = mode
         output["stage_b"]["model"] = getattr(client, "model", DEFAULT_MODEL)
+        request_count = getattr(client, "calls_made", 0) - request_count_before
+        output["stage_b"].update({
+            "request_count": request_count,
+            "request_failures": 1 if request_count else 0,
+            "duration_ms": int((time.monotonic() - stage_b_started) * 1000),
+            "latency_ms": int((time.monotonic() - stage_b_started) * 1000) if request_count else 0,
+        })
         output["stage_b"]["source_comparison"] = _source_comparison_metadata(record)
         return output
 

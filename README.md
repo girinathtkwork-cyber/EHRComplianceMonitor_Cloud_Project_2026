@@ -140,6 +140,7 @@ The project owner reports API Gateway displays **“Create an API to begin”** 
 | `GEMINI_API_KEY` | Required only for live Gemini | Python backend/Lambda only. Do not add to frontend files, commit it, or put it in a browser build. If a local credential has been left in a plaintext `.env`, rotate it if it is still valid. |
 | `GEMINI_MODEL` | Optional for Gemini | Model name; current default is `gemini-3.8-flash`. |
 | `GEMINI_RPM` | Optional for Gemini | Client rate limit; defaults to `15`. |
+| `PERSIST_STAGE_B_PROMPTS` | Optional debugging only | Defaults off. When set to `true`, full transcript-bearing prompts are written locally under `results/prompts/` or in Lambda `/tmp`; disable after debugging and manage those files under the applicable retention policy. |
 | `TRANSCRIPTS_BUCKET` | Required for AWS dashboard file uploads and polling | Existing private S3 bucket name. Not needed for local workflow or direct-paste API calls. |
 | `ALLOWED_ORIGINS` | Required for cross-origin browser access | Exact comma-separated frontend origins allowed by the Lambda CORS response. |
 | `EHR_API_BASE_URL` | Required when the static frontend is hosted separately from its API | Build-time public API Gateway base URL; not a credential. Set it before `npm run build:frontend`. |
@@ -258,3 +259,7 @@ python scripts/invoke_local.py
 - Lambda logs report aggregate counts and error types only. Do not add transcript bodies, prompts, keys, object identifiers, or patient metadata to logs.
 - The API Gateway authorizer and storage controls are not implemented/configured in this repository. This prototype must not be treated as production-compliant or as an autonomous clinical decision system.
 - A clinician must review every finding. The software does not diagnose, prescribe, or automatically update an EHR.
+
+## Phase 2 ML experiment
+
+See [Phase 2 ML training and SageMaker preparation](docs/PHASE2_ML_TRAINING.md) for the synthetic-label task definition, grouped split, local metrics, reproducible commands, and gated SageMaker workflow. The model is not integrated into processing and has not been trained in AWS.

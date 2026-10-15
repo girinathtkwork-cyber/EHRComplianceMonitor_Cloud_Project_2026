@@ -54,6 +54,15 @@ class TestContractValidation:
         errors = validate_contract(output)
         assert errors == [], f"Expected no errors, got: {errors}"
 
+    def test_additive_verification_metadata_is_backward_compatible(self):
+        output = _make_valid_output()
+        output["entities"][0]["assertion_status"] = "negated"
+        output["entities"][0]["retrieval_context"].update({
+            "verification_status": "lookup_unavailable",
+            "verification_method": "RxNorm exact lookup",
+        })
+        assert validate_contract(output) == []
+
     def test_missing_transcript_id(self):
         output = _make_valid_output()
         del output["transcript_id"]

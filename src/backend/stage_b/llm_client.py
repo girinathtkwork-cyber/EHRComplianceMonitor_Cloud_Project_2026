@@ -131,7 +131,7 @@ class GeminiClient:
             "generationConfig": {
                 "temperature": 0,
                 "responseMimeType": "application/json",
-                "responseFormat": {"text": {"mimeType": "application/json", "schema": OUTPUT_SCHEMA}},
+                "responseFormat": {"text": {"mimeType": "APPLICATION_JSON", "schema": OUTPUT_SCHEMA}},
             },
         }
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
@@ -175,7 +175,7 @@ class GeminiClient:
                 message = _gemini_http_error_message(exc, self.api_key)
                 last_error = RuntimeError(f"HTTP {exc.code}: {message}")
                 if exc.code not in {429, 500, 502, 503, 504}:
-                    raise
+                    raise last_error from None
             except (urllib.error.URLError, TimeoutError, OSError) as exc:
                 last_error = exc
             time.sleep(2 ** attempt)

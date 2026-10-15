@@ -181,19 +181,30 @@ def _get_job(job_id: str, origin: str | None) -> dict:
         output = json.loads(response["Body"].read().decode("utf-8"))
     except (KeyError, UnicodeDecodeError, json.JSONDecodeError):
         return _api_response(500, {"error": "The stored verification result is invalid."}, origin)
-    truncated = status == "partial"
+    partial = status == "partial"
     records = output.get("records", []) if isinstance(output, dict) else output
     if not isinstance(records, list) or any(not isinstance(record, dict) for record in records):
         return _api_response(500, {"error": "The stored verification result has an invalid shape."}, origin)
     if not records:
         return _api_response(500, {"error": "The stored verification result is empty."}, origin)
-    if truncated and (not isinstance(output, dict) or output.get("truncated") is not True):
+    if partial and not isinstance(output, dict):
         return _api_response(500, {"error": "The stored partial result is invalid."}, origin)
     from backend.web_api import format_result
+    formatted_records = [format_result(record) for record in records]
+    counts = {
+        "expected_count": output.get("total_count", len(records)) if isinstance(output, dict) else len(records),
+        "processed_count": output.get("processed_count", len(records)) if isinstance(output, dict) else len(records),
+        "successful_count": output.get("successful_count", len(records)) if isinstance(output, dict) else len(records),
+        "failed_count": output.get("failed_count", 0) if isinstance(output, dict) else 0,
+        "fallback_count": output.get("fallback_count", 0) if isinstance(output, dict) else 0,
+    }
     return _api_response(200, {
         "jobId": job_id,
-        "status": "partial" if truncated else "completed",
-        "result": format_result(records[0]),
+        "status": "partial" if partial else "completed",
+        # Keep the original single-record field for existing dashboard clients.
+        "result": formatted_records[0],
+        "results": formatted_records,
+        **counts,
     }, origin)
 
 
@@ -227,10 +238,11 @@ def _completed_output_exists(s3_client, bucket: str, basename: str) -> bool:
         if status.get("status") == "partial":
             records = output.get("records") if isinstance(output, dict) else None
             return (
-                output.get("truncated") is True
+                isinstance(output, dict)
                 and isinstance(records, list)
                 and bool(records)
                 and all(isinstance(record, dict) for record in records)
+                and output.get("processed_count", len(records)) == len(records)
             )
         return False
     except Exception as exc:
@@ -362,19 +374,36 @@ def _run_s3_job(s3_client, bucket: str, key: str, context, lock_etag: str | None
         input_data = [input_data]
     if not isinstance(input_data, list):
         raise ValueError("S3 input must be a JSON object or array of records.")
+    if not input_data:
+        raise ValueError("S3 input must contain at least one record.")
 
     mode = os.environ.get(
         "STAGE_B_MODE",
         "llm_rag" if os.environ.get("GEMINI_API_KEY") else "stage_a_only",
     )
+    rx_cache_before = rxnorm_client.get_cache()
+    rx_cache_before_counts = (rx_cache_before._hits, rx_cache_before._misses)
+    rx_metrics_before = rxnorm_client.metrics_snapshot()
     processed_records = []
+    successful_count = 0
+    failed_count = 0
+    stage_a_duration_ms = 0
+    stage_b_duration_ms = 0
+    fallback_count = 0
+    batch_started = time.monotonic()
     truncated = False
     for item in input_data:
         if hasattr(context, "get_remaining_time_in_millis") and context.get_remaining_time_in_millis() < 30_000:
             truncated = True
             break
         if not isinstance(item, dict):
-            raise ValueError("Each S3 input record must be a JSON object.")
+            processed_records.append({
+                "verification_status": "error",
+                "stage_b_status": "error",
+                "error": {"code": "invalid_record", "message": "Each input record must be a JSON object."},
+            })
+            failed_count += 1
+            continue
         item.pop("ground_truth_label", None)
         if "transcription" not in item and isinstance(item.get("transcript"), str):
             item["transcription"] = item.pop("transcript")
@@ -383,20 +412,46 @@ def _run_s3_job(s3_client, bucket: str, key: str, context, lock_etag: str | None
         item.pop("transcript", None)
         item.pop("sourceTranscript", None)
         with redirect_stdout(StringIO()):
+            stage_a_started = time.monotonic()
             stage_a_record = run_stage_a(item)
-            if stage_a_record.get("verification_status") != "completed":
-                raise RuntimeError("Stage A failed to process an S3 transcript.")
-            processed_records.append(run_stage_b(stage_a_record, mode=mode))
+            stage_a_duration_ms += int((time.monotonic() - stage_a_started) * 1000)
+            if stage_a_record.get("verification_status") not in ("completed", "partial"):
+                processed_records.append({
+                    "transcript_id": stage_a_record.get("transcript_id", item.get("transcript_id")),
+                    "verification_status": "error",
+                    "stage_a_version": stage_a_record.get("stage_a_version"),
+                    "stage_b_status": "error",
+                    "error": {"code": "stage_a_failed", "message": "Stage A could not process this record."},
+                })
+                failed_count += 1
+                continue
+            stage_b_started = time.monotonic()
+            audited_record = run_stage_b(stage_a_record, mode=mode)
+            stage_b_duration_ms += int((time.monotonic() - stage_b_started) * 1000)
+            processed_records.append(audited_record)
+            if audited_record.get("stage_b_status") == "completed":
+                successful_count += 1
+            else:
+                failed_count += 1
+            if (audited_record.get("stage_b") or {}).get("llm_status") == "fallback":
+                fallback_count += 1
 
     rxnorm_client.save_cache()
+    rx_cache_after = rxnorm_client.get_cache()
+    rx_metrics_after = rxnorm_client.metrics_snapshot()
     output_key = f"output/stage_b/{basename}.audited.json"
+    partial = truncated or failed_count > 0 or fallback_count > 0
+    final_status = "failed" if not processed_records else ("partial" if partial else "completed")
     output_data = processed_records
-    if truncated:
+    if partial:
         output_data = {
             "records": processed_records,
-            "truncated": True,
+            "truncated": truncated,
             "processed_count": len(processed_records),
             "total_count": len(input_data),
+            "successful_count": successful_count,
+            "failed_count": failed_count,
+            "fallback_count": fallback_count,
         }
     s3_client.put_object(
         Bucket=bucket,
@@ -404,15 +459,29 @@ def _run_s3_job(s3_client, bucket: str, key: str, context, lock_etag: str | None
         Body=json.dumps(output_data, separators=(",", ":")),
         ContentType="application/json",
     )
-    _write_job_status(s3_client, bucket, basename, "partial" if truncated else "completed")
+    _write_job_status(s3_client, bucket, basename, final_status)
     _set_s3_job_lock_status(
         s3_client, bucket, basename, lock_etag,
-        "partial" if truncated else "completed",
+        final_status,
     )
     print(json.dumps({
         "metric": "transcript_batch_processed",
-        "record_count": len(processed_records),
-        "total_input_records": len(input_data),
+        "expected_count": len(input_data),
+        "processed_count": len(processed_records),
+        "successful_count": successful_count,
+        "failed_count": failed_count,
+        "fallback_count": fallback_count,
+        "stage_b_failures": sum((record.get("stage_b") or {}).get("request_failures", 0) for record in processed_records),
+        "gemini_request_count": sum((record.get("stage_b") or {}).get("request_count", 0) for record in processed_records),
+        "gemini_latency_ms": sum((record.get("stage_b") or {}).get("latency_ms", 0) for record in processed_records),
+        "terminology_request_count": rx_metrics_after["requests"] - rx_metrics_before["requests"],
+        "terminology_request_failures": rx_metrics_after["failures"] - rx_metrics_before["failures"],
+        "terminology_request_duration_ms": rx_metrics_after["duration_ms"] - rx_metrics_before["duration_ms"],
+        "rxnorm_cache_hits": rx_cache_after._hits - rx_cache_before_counts[0],
+        "rxnorm_cache_misses": rx_cache_after._misses - rx_cache_before_counts[1],
+        "stage_a_duration_ms": stage_a_duration_ms,
+        "stage_b_duration_ms": stage_b_duration_ms,
+        "total_duration_ms": int((time.monotonic() - batch_started) * 1000),
         "truncated": truncated,
     }))
 

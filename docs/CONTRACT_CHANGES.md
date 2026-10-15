@@ -84,7 +84,7 @@ compatibility.
 - `mode`: `stage_a_only`, `llm_plain`, or `llm_rag`.
 - `model`: Gemini model name, or `deterministic` for Stage A only fallback.
 - `prompt_hash`: SHA-256 of model plus full prompt for LLM modes.
-- `prompt_path`: saved prompt location under `results/prompts/<mode>/`.
+- `prompt_path`: saved prompt location when prompt persistence is explicitly enabled; otherwise `null`.
 - `llm_status`: `ok`, `fallback`, or `skipped`.
 - `fallback_reason`: string when deterministic fallback was used.
 - `token_usage`: object with `prompt_tokens` and `output_tokens` when available.
@@ -92,6 +92,20 @@ compatibility.
 - `cache_hit`: true when `dataset/cache/llm_cache.jsonl` supplied the response.
 - `rag_uncited_suspicious_downgrades`: count of RAG verdicts downgraded because a
   suspicious verdict cited no retrieved fact ID.
+- `request_count`, `request_failures`, and `duration_ms`: additive per-record
+  request and processing metrics; these contain counts and durations only.
+
+Full prompts contain candidate and possibly trusted-source transcript text.
+They are not persisted by default. Set `PERSIST_STAGE_B_PROMPTS=true` only for
+explicit debugging; local prompts are written under `results/prompts/` and
+Lambda prompts under `/tmp/ehr-compliance-monitor/`.
+
+S3 job polling keeps the legacy `result` field for the first record and also
+returns `results` containing every processed record. Additive counts include
+`expected_count`, `processed_count`, `successful_count`, `failed_count`, and
+`fallback_count`. A `partial` status can indicate time truncation, per-record
+failures, or Stage B fallback; `truncated` in the stored result distinguishes
+time truncation from the other partial outcomes.
 
 Severity mapping is explicit in `src/backend/stage_b/schema.py`: the LLM schema
 uses `none`, `low`, `medium`, `high`, `critical`; older title-case severities are

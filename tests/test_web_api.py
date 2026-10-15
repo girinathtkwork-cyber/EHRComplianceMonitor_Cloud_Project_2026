@@ -185,3 +185,88 @@ def test_lambda_s3_upload_triggers_pipeline_and_job_polling(monkeypatch):
         "path": f"/api/jobs/{failed_id}",
     }, None)
     assert json.loads(failed["body"])["status"] == "failed"
+
+
+class _RemainingTime:
+    def __init__(self, values):
+        self.values = iter(values)
+
+    def get_remaining_time_in_millis(self):
+        return next(self.values)
+
+
+def _mock_s3_pipeline(monkeypatch):
+    def run_stage_a(record):
+        if record.get("transcription") == "stage-a-failure":
+            return {"transcript_id": record.get("transcript_id"), "verification_status": "error", "stage_a_version": "test"}
+        return {**record, "verification_status": "completed", "stage_a_version": "test", "entities": [], "stage_a_summary": {}}
+
+    def run_stage_b(record, mode):
+        return {**record, "stage_b_status": "completed", "stage_b": {"mode": mode, "llm_status": "skipped"},
+                "stage_b_summary": {}, "stage_b_findings": []}
+
+    monkeypatch.setattr(stage_a_handler, "run_stage_a", run_stage_a)
+    monkeypatch.setattr(stage_a_handler, "run_stage_b", run_stage_b)
+    monkeypatch.setattr(stage_a_handler.rxnorm_client, "save_cache", lambda: None)
+
+
+def _run_s3_and_poll(monkeypatch, input_payload, *, context=None, job_id="batch-test"):
+    bucket = "synthetic-test-bucket"
+    s3 = _MemoryS3()
+    s3.put_object(Bucket=bucket, Key=f"input/{job_id}.json", Body=json.dumps(input_payload), ContentType="application/json")
+    acquired, lock_etag = stage_a_handler._acquire_s3_job_lock(s3, bucket, job_id)
+    assert acquired
+    stage_a_handler._run_s3_job(s3, bucket, f"input/{job_id}.json", context, lock_etag)
+    monkeypatch.setenv("TRANSCRIPTS_BUCKET", bucket)
+    monkeypatch.setattr(stage_a_handler, "_create_s3_client", lambda: s3)
+    response = stage_a_handler._get_job(job_id, None)
+    return json.loads(response["body"]), s3
+
+
+def test_s3_job_polling_preserves_single_record_contract(monkeypatch):
+    _mock_s3_pipeline(monkeypatch)
+    body, _ = _run_s3_and_poll(monkeypatch, {"transcript_id": "one", "transcription": "synthetic"})
+    assert body["status"] == "completed"
+    assert body["result"]["transcript_id"] == "one"
+    assert body["results"] == [body["result"]]
+    assert body["expected_count"] == body["processed_count"] == 1
+
+
+def test_s3_job_polling_returns_all_multi_record_results(monkeypatch):
+    _mock_s3_pipeline(monkeypatch)
+    body, _ = _run_s3_and_poll(monkeypatch, [
+        {"transcript_id": "one", "transcription": "synthetic"},
+        {"transcript_id": "two", "transcription": "synthetic"},
+    ])
+    assert body["status"] == "completed"
+    assert [item["transcript_id"] for item in body["results"]] == ["one", "two"]
+    assert body["result"] == body["results"][0]
+
+
+def test_s3_job_returns_invalid_and_mixed_record_outcomes(monkeypatch):
+    _mock_s3_pipeline(monkeypatch)
+    body, _ = _run_s3_and_poll(monkeypatch, [
+        {"transcript_id": "ok", "transcription": "synthetic"},
+        {"transcript_id": "stage-a-bad", "transcription": "stage-a-failure"},
+        None,
+    ])
+    assert body["status"] == "partial"
+    assert len(body["results"]) == 3
+    assert body["results"][0]["verification_status"] == "completed"
+    assert body["results"][1]["verification_status"] == "error"
+    assert body["results"][2]["verification_status"] == "error"
+    assert body["successful_count"] == 1
+    assert body["failed_count"] == 2
+
+
+def test_s3_job_partial_batch_keeps_counts_and_processed_records(monkeypatch):
+    _mock_s3_pipeline(monkeypatch)
+    body, _ = _run_s3_and_poll(monkeypatch, [
+        {"transcript_id": "one", "transcription": "synthetic"},
+        {"transcript_id": "two", "transcription": "synthetic"},
+    ], context=_RemainingTime([40_000, 20_000]), job_id="partial-test")
+    assert body["status"] == "partial"
+    assert len(body["results"]) == 1
+    assert body["expected_count"] == 2
+    assert body["processed_count"] == 1
+    assert body["results"][0]["transcript_id"] == "one"
