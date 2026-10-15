@@ -117,7 +117,7 @@ def test_lambda_http_health_cors_and_preflight(monkeypatch):
 def test_lambda_http_analysis_uses_pipeline_and_returns_validation_errors(monkeypatch):
     monkeypatch.setenv("STAGE_B_MODE", "stage_a_only")
     event = {
-        "requestContext": {"http": {"method": "POST"}},
+        "requestContext": {"http": {"method": "POST"}, "authorizer": {"jwt": {"claims": {"sub": "synthetic-user"}}}},
         "rawPath": "/api/analyse",
         "headers": {"content-type": "application/json"},
         "body": json.dumps({"transcript": "Patient reports feeling well."}),
@@ -134,57 +134,16 @@ def test_lambda_http_analysis_uses_pipeline_and_returns_validation_errors(monkey
     assert "transcript" in json.loads(response["body"])["error"].lower()
 
 
-def test_lambda_s3_upload_triggers_pipeline_and_job_polling(monkeypatch):
-    monkeypatch.setenv("STAGE_B_MODE", "stage_a_only")
-    monkeypatch.setenv("TRANSCRIPTS_BUCKET", "synthetic-test-bucket")
-    monkeypatch.setenv("ALLOWED_ORIGINS", "https://ehr.example")
-    s3 = _MemoryS3()
-    monkeypatch.setattr(stage_a_handler, "_create_s3_client", lambda: s3)
+def test_cloud_job_routes_require_authorized_http_api_context(monkeypatch):
+    unauthenticated = stage_a_handler.lambda_handler({
+        "httpMethod": "POST", "path": "/api/upload",
+        "body": json.dumps({"fileName": "synthetic.txt", "content": "Synthetic note."}),
+    }, None)
+    assert unauthenticated["statusCode"] == 401
 
-    upload = stage_a_handler.lambda_handler({
-        "httpMethod": "POST",
-        "path": "/api/upload",
-        "headers": {"origin": "https://ehr.example"},
-        "body": json.dumps({
-            "fileName": "synthetic.txt",
-            "content": "Patient reports feeling well.",
-        }),
-    }, None)
-    assert upload["statusCode"] == 202
-    assert upload["headers"]["Access-Control-Allow-Origin"] == "https://ehr.example"
-    job_id = json.loads(upload["body"])["jobId"]
-
-    pending = stage_a_handler.lambda_handler({
-        "httpMethod": "GET",
-        "path": f"/api/jobs/{job_id}",
-    }, None)
-    assert pending["statusCode"] == 202
-    assert json.loads(pending["body"])["status"] == "processing"
-
-    stage_a_handler.lambda_handler({
-        "Records": [{
-            "s3": {
-                "bucket": {"name": "synthetic-test-bucket"},
-                "object": {"key": f"input/{job_id}.json"},
-            },
-        }],
-    }, None)
-    complete = stage_a_handler.lambda_handler({
-        "httpMethod": "GET",
-        "path": f"/api/jobs/{job_id}",
-    }, None)
-    body = json.loads(complete["body"])
-    assert complete["statusCode"] == 200
-    assert body["status"] == "completed"
-    assert body["result"]["stage_b"]["mode"] == "stage_a_only"
-
-    failed_id = "00000000-0000-0000-0000-000000000001"
-    s3.objects[("synthetic-test-bucket", f"output/stage_b/{failed_id}.status.json")] = json.dumps({"status": "failed"}).encode()
-    failed = stage_a_handler.lambda_handler({
-        "httpMethod": "GET",
-        "path": f"/api/jobs/{failed_id}",
-    }, None)
-    assert json.loads(failed["body"])["status"] == "failed"
+    monkeypatch.setenv("ALLOWED_ORIGINS", "http://localhost:3000")
+    health = stage_a_handler.lambda_handler({"httpMethod": "GET", "path": "/health"}, None)
+    assert json.loads(health["body"]) == {"status": "ok"}
 
 
 class _RemainingTime:

@@ -85,6 +85,10 @@ def test_run_stage_b_does_not_persist_prompt_by_default(tmp_path, monkeypatch):
     out = run_stage_b(_record(), mode="llm_rag", client=FakeClient(), project_root=tmp_path)
     assert out["stage_b"]["llm_status"] == "ok"
     assert out["stage_b_summary"]["n_findings"] == 1
+    finding = out["stage_b_findings"][0]
+    assert finding["detection_stage"] == "stage_b_llm"
+    assert finding["provenance"] == "gemini_validated_response"
+    assert finding["confidence"] == "not_reported"
     assert not (tmp_path / "results" / "prompts" / "llm_rag" / "case-llm.txt").exists()
     assert out["stage_b"]["prompt_path"] is None
     assert out["stage_b"]["request_count"] == 1

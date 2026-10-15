@@ -203,6 +203,17 @@ class TestDiagnosisExtraction:
         dx = extract_diagnoses(text)
         assert len(dx) >= 1
 
+    def test_empty_assessment_does_not_consume_next_section(self):
+        text = "Assessment:\nPlan: follow up in two weeks."
+        dx = extract_diagnoses(text)
+        assert dx == []
+
+    def test_same_line_next_section_stops_diagnosis_span(self):
+        text = "ASSESSMENT: Essential hypertension. PLAN: Continue lisinopril."
+        dx = extract_diagnoses(text)
+        assert len(dx) == 1
+        assert dx[0]["text"] == "Essential hypertension"
+
     def test_numbered_list(self):
         text = "DIAGNOSES: 1. Hypertension 2. Diabetes 3. Obesity\n\nMEDICATIONS:"
         dx = extract_diagnoses(text)
@@ -241,6 +252,10 @@ class TestProcedureExtraction:
         texts = [p["text"] for p in procs]
         assert "PERFORMED:" not in texts
         assert any("bronchoscopy" in p.lower() for p in texts)
+
+    def test_empty_procedure_does_not_consume_next_section(self):
+        text = "PROCEDURE:\nANESTHESIA: local."
+        assert extract_procedures(text) == []
 
 
 class TestExtractEntities:

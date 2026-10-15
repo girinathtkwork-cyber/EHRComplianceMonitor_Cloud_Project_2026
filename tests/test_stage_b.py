@@ -57,6 +57,10 @@ def test_audit_record_adds_stage_b_summary_and_findings():
     categories = {item["category"] for item in output["stage_b_findings"]}
     assert "Dose requires confirmation" in categories
     assert "Unsupported source claim" in categories
+    finding = next(item for item in output["stage_b_findings"] if item["category"] == "Unsupported source claim")
+    assert finding["detection_stage"] == "stage_b_deterministic"
+    assert finding["provenance"] == "deterministic_audit_rule"
+    assert "violation" in finding["uncertainty"]
 
 
 def test_supported_indication_does_not_flag_medication_indication():

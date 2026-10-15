@@ -142,7 +142,7 @@ SECTION_HEADERS = sorted(set(
 
 _NEXT_SECTION_PATTERN = "|".join(re.escape(h) for h in SECTION_HEADERS)
 _NEXT_SECTION_LOOKAHEAD = (
-    rf"(?=(?:\n|,)\s*(?:{_NEXT_SECTION_PATTERN})\s*[:,]|"
+    rf"(?=(?:\n|,|;\s*|\.\s+)(?:{_NEXT_SECTION_PATTERN})\s*[:,]|"
     rf"\n\s*\n|$)"
 )
 
@@ -485,7 +485,9 @@ def extract_diagnoses(text: str) -> list[dict]:
     for header in sorted_headers:
         # Match header followed by colon/comma and content up to next header or double newline
         pattern = re.compile(
-            re.escape(header) + r"\s*[:,]\s*(.+?)" + _NEXT_SECTION_LOOKAHEAD,
+            # Do not let `\s*` consume the newline after an empty header; that
+            # would swallow the following section as if it were diagnosis text.
+            re.escape(header) + r"[ \t]*[:,][ \t]*(.*?)" + _NEXT_SECTION_LOOKAHEAD,
             re.IGNORECASE | re.DOTALL,
         )
         for match in pattern.finditer(text):
@@ -538,7 +540,7 @@ def extract_procedures(text: str) -> list[dict]:
 
     for header in sorted_headers:
         pattern = re.compile(
-            re.escape(header) + r"\s*[:,]\s*(.+?)" + _NEXT_SECTION_LOOKAHEAD,
+            re.escape(header) + r"[ \t]*[:,][ \t]*(.*?)" + _NEXT_SECTION_LOOKAHEAD,
             re.IGNORECASE | re.DOTALL,
         )
         for match in pattern.finditer(text):

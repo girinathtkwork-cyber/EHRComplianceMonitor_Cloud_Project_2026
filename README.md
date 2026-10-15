@@ -1,42 +1,58 @@
-# EHR Transcription Safety Gate
+# EHR Compliance Monitor
+
+## AWS CLI demo deployment (16 October 2026)
+
+The AWS demo stack is deployed in `ap-south-1`. This section supersedes the earlier read-only status below for current deployed state. See the [AWS deployment report](docs/AWS_DEPLOYMENT_REPORT_20261016.md) for resource details and verification.
+
+- The HTTP API uses a Cognito JWT authorizer for transcript, upload, job, overview, and review routes. Only `GET /health` is public. CORS and OAuth callback/logout are limited to `http://localhost:3000/`.
+- Cognito is configured for email sign-in, optional software-token MFA, and self sign-up. The OAuth client is public (no client secret) and uses authorization code with PKCE. The synthetic smoke-test account is disabled; use self sign-up with a demo email.
+- Jobs use encrypted SQS with a one-day DLQ and an async worker. Owner-scoped job metadata and review history use encrypted on-demand DynamoDB with one-day TTL; transcript text is not stored in the table.
+- Existing S3 `input/` and `output/stage_b/` prefixes and project Lambda logs expire/retain for one day. The retention applies to older objects in those prefixes too.
+- CloudWatch dashboard `ehr-compliance-demo` charts Lambda errors/invocations/duration and main/DLQ backlog. Missing-token and invalid-token checks returned 401; `/health` returns 200. Cognito sign-in now succeeds in a normal browser. Worker DynamoDB write bugs were fixed, the missing API Gateway invoke permissions were added, and a synthetic worker round trip completed. Reload the dashboard and retry the failed job to confirm the full browser-to-queue path.
+
+Open the local dashboard at `http://localhost:3000` with the cloud demo configuration. Do not enter real patient data; this is a short-retention demonstration, not a production clinical service.
 
 Clinical-transcription review prototype. It extracts entities, checks terminology references, and returns evidence-backed review signals before a clinician finalises an EHR record. It is not a diagnostic system and never writes to an EHR.
 
-**Status checked 13 October 2026:** the local dashboard and Python verification pipeline are connected and tested. The project owner reports that the existing Lambda and S3 event configuration below were verified in the AWS Console. This workspace cannot independently inspect or compare the deployed ZIP, IAM policies, or API resources because AWS CLI credentials and console access are unavailable. API Gateway shows no API in the owner's selected `ap-south-1` console scope; no endpoint is configured for the dashboard.
+**Current status checked 16 October 2026:** Stage A and Stage B remain intact. The local dashboard supports local JSON-file history or a Cognito-authenticated AWS demo using SQS, a Lambda worker, and DynamoDB. Demo job, selected S3 prefix, and project Lambda log retention is set to one day. See the [AWS deployment report](docs/AWS_DEPLOYMENT_REPORT_20261016.md) for deployed configuration and verification. The infrastructure tables and AWS inventory below are historical snapshots from before deployment.
 
 ## Current and target data flow
 
 ```mermaid
 flowchart LR
-  subgraph local["Verified local workflow"]
-    B1[Browser dashboard] -->|POST /api/analyse or /api/upload| N[Node local web server]
-    N --> P[Python web API adapter]
+  subgraph local["Verified local demonstration workflow"]
+    B1[Dashboard: overview, new verification, history, details, health] -->|POST /api/jobs or /api/upload| N[Node server on 127.0.0.1]
+    N -->|Persist job state, result, audit| J[Ignored local jobs JSON]
+    N -->|Local background executor| P[Python web API adapter]
     P --> A[Stage A: entity extraction and RxNorm/ICD retrieval]
-    A --> R[Stage B: deterministic audit or Gemini RAG]
-    R -->|Structured findings; no transcript echoed by direct API| B1
-    N -->|Local upload job store only| B1
+    A --> R[Stage B: rule audit or configured Gemini]
+    R --> C[Context-limited completeness review]
+    C -->|Validated result; transcript is not written to job store| J
+    J -->|GET status, history, review actions| B1
   end
 
-  subgraph aws["AWS flow supported by code; account wiring unverified"]
-    B2[Hosted dashboard] -->|POST /api/analyse| G[API Gateway]
-    G -->|Synchronous Lambda proxy| L[Existing Python Lambda handler]
-    L --> A2[Stage A + packaged references / RxNorm]
+  subgraph aws["Authenticated AWS demo path"]
+    B2[Local dashboard on localhost:3000] -->|Authorization code + PKCE| C[Cognito user pool]
+    B2 -->|Bearer JWT: jobs, history, overview, review| G[HTTP API + JWT authorizer]
+    G -->|Submit job| L[Processor Lambda API handler]
+    L -->|Encrypted message| Q[(SQS + DLQ)]
+    Q --> W[Reserved-concurrency worker]
+    W -->|Invoke existing processor| L2[Processor Lambda]
+    L2 --> A2[Stage A + packaged references / RxNorm]
     A2 --> R2[Stage B + optional server-side Gemini]
-    R2 -->|JSON review result| G
-    G --> B2
-    B2 -->|POST /api/upload: JSON or text file| G
-    G -->|PutObject input/<job-id>.json| S3[(Existing private S3 bucket)]
-    S3 -->|input/*.json event| L
-    L -->|audited result + job status| S3
-    B2 -->|GET /api/jobs/{job-id}| G
-    G -->|GetObject result/status| S3
+    R2 -->|Result + review metadata| DDB[(Encrypted DynamoDB job table)]
+    G <-->|Owner-scoped job API| DDB
+    B2 -->|Legacy S3 upload route| G
+    G -->|S3 input object| S3[(Existing private S3 bucket)]
+    S3 -->|input/*.json event| L2
+    L2 -->|Audited result + job status| S3
   end
 ```
 
 ### Component responsibilities
 
 - **Dashboard** ([src/frontend/](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/frontend/>)): processes only text entered by the user or a JSON/TXT file they select; it does not preload bundled demo transcripts. It displays progress, findings, severity, evidence, Stage A routing, source-comparison excerpts, and Stage B fallback status. `config.js` centralises the API base URL.
-- **Local web server** ([server.js](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/backend/server.js>)): serves the existing static UI on loopback only, proxies requests to the same Python pipeline, and keeps local upload results in memory. A local upload is **not** sent to AWS or S3.
+- **Local web server** ([server.js](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/backend/server.js>)): serves the static UI on loopback only, invokes the Python pipeline asynchronously, and connects it to a single-process durable job store. Local jobs are **not** sent to AWS or S3.
 - **API adapter** ([web_api.py](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/backend/web_api.py>)): validates transcript input, invokes Stage A and Stage B, and returns a stable result without echoing transcript text in direct API responses.
 - **Stage A** ([stage_a/](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/backend/stage_a/>)): extracts clinical entities and retrieves RxNorm/ICD-10-CM evidence. Reference files are packaged with the Lambda; RxNorm lookup can call the public RxNorm API if a local cache does not satisfy it.
 - **Stage B** ([stage_b/](</D:/VIT/3_rd_yr/5th_sem/Cloud Aws/EHRComplianceMonitor_Cloud_Project_2026/src/backend/stage_b/>)): when configured, sends the candidate transcript and extracted entities to Gemini in `llm_plain` or `llm_rag` mode. `llm_rag` includes retrieved RxNorm/ICD-10-CM evidence in the prompt (retrieval-augmented prompting, not vector search). If a trusted source transcript is provided, Gemini also compares both texts for material omissions, additions, and contradictions. Returned excerpts are validated against their respective inputs before display. Deterministic-only and fallback runs explicitly report source comparison as not performed. Existing deterministic fallback is surfaced as `stage_b.llm_status = "fallback"`.
@@ -48,11 +64,13 @@ flowchart LR
 
 ### Dashboard-to-AWS connection
 
-The browser does not connect to S3 or Lambda directly. It sends HTTP requests to an API: in local development, same-origin `/api/...` requests go to the Node server on `127.0.0.1:3000`, which invokes the Python pipeline. In AWS, the hosted dashboard must be configured with the verified API Gateway base URL; API Gateway must route requests to the existing Lambda, and that Lambda uses its IAM execution role to access S3. The AWS account resources and endpoint are not verified in this workspace, so the dashboard is **not yet connected to deployed AWS services**.
+The local Node server serves the dashboard and runtime configuration on loopback. When `EHR_API_BASE_URL` and Cognito settings are present, the browser sends authorized requests directly to API Gateway; jobs are processed through SQS and stored in DynamoDB. Without cloud settings, the dashboard uses the local Python pipeline and ignored JSON job store. A legacy S3 upload path remains available behind the API.
 
 The repository still contains datasets and synthetic test fixtures for offline evaluation and automated tests. They are not loaded into the dashboard or returned by the dashboard API.
 
-## AWS inventory
+## AWS inventory (13 October snapshot — superseded)
+
+The following inventory was recorded before current CLI access was verified. For the 16 October read-only AWS inventory and current deployment decision, use [the implementation report](docs/IMPLEMENTATION_REPORT_20261016.md).
 
 No AWS CLI is installed here, and there is no CloudFormation/SAM/CDK/Terraform deployment definition or AWS resource manifest in the repository. The following are repository findings—not evidence of deployed account resources.
 
@@ -85,7 +103,15 @@ The project owner reports API Gateway displays **“Create an API to begin”** 
 
 **Do not create duplicate AWS resources based on this repository alone.** The AWS Console owner must first establish whether Girinath’s API, Lambda, bucket, role, hosting, or auth resources already exist. No resource identifier or URL is safe to claim from current evidence.
 
-## Dashboard workflows
+## Current local dashboard workflow
+
+- **New verification:** in local mode, the browser posts to the loopback Node API and the Node background executor invokes Python; in cloud mode, it posts directly to API Gateway, which queues work in SQS. The transcript is not written to the local history file or DynamoDB job row. Validated result fields, evidence excerpts, review decisions, and audit events are persisted locally or in the owner's DynamoDB item.
+- **History and overview:** `GET /api/jobs` returns a paginated, filterable local history page; `GET /api/overview` calculates metrics from persisted jobs.
+- **Review:** `POST /api/jobs/{jobId}/review` appends a review event and preserves the finding. There is no authentication, so actions identify only an unauthenticated local demonstration session.
+- **Cache and duplicate handling:** active equivalent jobs are reused; successful compatible results can be reused by content and pipeline fingerprint; fallback and failed runs are not cached. The Run Again path bypasses result reuse.
+- **Local scope:** without cloud settings, history is single-process and file-backed. In cloud demo mode, the dashboard uses authenticated AWS job APIs and DynamoDB-backed history.
+
+## Direct / legacy API workflows (13 October snapshot)
 
 - **Paste workflow:** browser `POST /api/analyse` → backend validates and runs Stage A + Stage B → structured result returned. This does not store a transcript in S3.
 - The paste field accepts plain text or one JSON object with `transcript`/`transcription` and an optional `sourceTranscript`/`source_transcript`; invalid JSON and JSON arrays are rejected with a useful message.

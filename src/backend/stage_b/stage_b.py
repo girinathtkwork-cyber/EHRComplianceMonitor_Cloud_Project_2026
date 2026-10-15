@@ -27,7 +27,7 @@ def _invalid_findings(record: dict) -> list[dict]:
     for entity in record.get("entities", []):
         if entity.get("routing") == "invalid":
             findings.append({
-                "id": f"invalid-{entity.get('text', '')}".lower().replace(" ", "-")[:120],
+                "id": f"invalid-{entity.get('entity_type', 'entity')}-{(entity.get('span') or ['na', 'na'])[0]}-{(entity.get('span') or ['na', 'na'])[1]}-{entity.get('text', '')}".lower().replace(" ", "-")[:180],
                 "severity": "critical",
                 "category": "Reference verification failure",
                 "entity_type": entity.get("entity_type"),
@@ -36,6 +36,11 @@ def _invalid_findings(record: dict) -> list[dict]:
                 "reason": "Entity failed Stage A terminology verification.",
                 "evidence": (entity.get("retrieval_context") or {}).get("evidence_text", ""),
                 "stage_a_routing": "invalid",
+                "finding_kind": "terminology_lookup_failure",
+                "detection_stage": "stage_a",
+                "provenance": "stage_a_terminology_rule",
+                "confidence": "not_quantified",
+                "uncertainty": "A terminology lookup failure is not by itself a clinical or regulatory violation.",
             })
     return findings
 
@@ -59,6 +64,11 @@ def _verdict_findings(record: dict, verdicts: list[dict]) -> list[dict]:
             "reason": verdict["reason"],
             "evidence": ", ".join(verdict.get("evidence_used", [])),
             "stage_a_routing": entity.get("routing"),
+            "finding_kind": "model_generated_suggestion",
+            "detection_stage": "stage_b_llm",
+            "provenance": "gemini_validated_response",
+            "confidence": "not_reported",
+            "uncertainty": "Model suggestion; the source evidence and clinical context require human review.",
         })
     return findings
 

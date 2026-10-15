@@ -4,16 +4,44 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#183247">
-  <title>EHR Transcription Safety Gate</title>
+  <title>EHR Compliance Monitor</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#" aria-label="EHR Safety Gate home">EHR Transcription Safety Gate</a>
+    <a class="brand" href="#" aria-label="EHR Compliance Monitor home">EHR Compliance Monitor</a>
+    <nav class="primary-nav" aria-label="Main navigation">
+      <button type="button" data-view="overview" aria-current="page">Overview</button>
+      <button type="button" data-view="new">New verification</button>
+      <button type="button" data-view="history">History</button>
+      <button type="button" data-view="operations">System health</button>
+    </nav>
+    <div class="auth-controls"><span id="auth-state" aria-live="polite">Local demo</span><button id="auth-login" class="button button-secondary" type="button" hidden>Sign in</button><button id="auth-logout" class="button button-secondary" type="button" hidden>Sign out</button></div>
     <span class="prototype-badge">Research prototype · clinician review required</span>
   </header>
 
   <main>
+    <section id="overview-view" class="page-view" aria-labelledby="overview-title">
+      <div class="page-heading"><p class="eyebrow">Workspace overview</p><h1 id="overview-title">Verification activity</h1><p>Counts are based on saved workspace records and scoped to the signed-in user in cloud mode.</p></div>
+      <div id="overview-error" class="empty-state" hidden></div>
+      <div id="metric-cards" class="metric-grid" aria-live="polite"></div>
+      <div class="overview-grid">
+        <section class="panel-card"><div class="findings-heading"><h2>Recent activity</h2><button type="button" class="text-button" data-view="history">View history</button></div><div id="recent-activity" class="table-wrap"></div></section>
+        <section class="panel-card"><h2>Finding distribution</h2><p class="panel-help">Count of individual findings across stored results, grouped by severity.</p><div id="finding-distribution"></div></section>
+      </div>
+      <p id="metrics-definition" class="scope-note"></p>
+    </section>
+    <section id="history-view" class="page-view" aria-labelledby="history-title" hidden>
+      <div class="page-heading"><p class="eyebrow">Saved records</p><h1 id="history-title">Verification history</h1><p>Search and filter saved records. Cloud job data expires after one day; submitted text is held in the encrypted queue during processing.</p></div>
+      <form id="history-filters" class="filter-bar"><label>Status <select id="filter-status"><option value="">All statuses</option><option>QUEUED</option><option>PROCESSING</option><option>COMPLETED</option><option>REVIEW_REQUIRED</option><option>FAILED</option></select></label><label>Review <select id="filter-review"><option value="">All review states</option><option>PENDING</option><option>REVIEWED</option><option>ESCALATED</option></select></label><label>From <input id="filter-from" type="date"></label><label>To <input id="filter-to" type="date"></label><label>Search job ID <input id="filter-search" type="search" maxlength="36"></label><button class="button button-secondary" type="submit">Apply filters</button></form>
+      <div id="history-state" class="inline-status" role="status"></div><div id="history-table" class="table-wrap"></div>
+      <div class="pagination"><button id="history-prev" class="button button-secondary" type="button" disabled>Previous</button><span id="history-page"></span><button id="history-next" class="button button-secondary" type="button" disabled>Next</button></div>
+    </section>
+    <section id="operations-view" class="page-view" aria-labelledby="operations-title" hidden>
+      <div class="page-heading"><p class="eyebrow">Operations</p><h1 id="operations-title">System health</h1><p>Shows local demonstration status or the connected AWS job service.</p></div>
+      <div id="health-state" class="health-grid"></div><section class="panel-card"><h2>Recent failures</h2><div id="recent-failures"></div></section>
+    </section>
+    <section id="new-view" class="page-view" aria-label="New verification" hidden>
     <section class="hero" aria-labelledby="page-title">
       <div class="hero-copy">
         <p class="eyebrow">Clinical documentation quality assurance</p>
@@ -86,13 +114,18 @@
 
       <div class="submit-row">
         <div class="submit-copy">
-          <button id="analyse" class="button button-primary" type="button">Run safety review</button>
+          <button id="analyse" class="button button-primary" type="button">Run verification</button>
+          <button id="retry-verification" class="button button-secondary" type="button" hidden>Retry verification</button>
           <p>Only submit synthetic or appropriately authorised data.</p>
         </div>
         <p id="status" class="live-status" role="status" aria-live="polite">Ready when you are. Add a transcript to begin.</p>
       </div>
+      <label class="rerun-option"><input id="force-rerun" type="checkbox"> Run a fresh verification and bypass a compatible cached result</label>
     </section>
 
+    </section>
+    <section id="details-view" class="page-view" aria-label="Verification details" hidden>
+    <div class="details-toolbar"><button id="back-to-history" class="text-button" type="button">← Back to history</button><span id="details-job-id" class="details-job-id"></span></div>
     <section id="results" class="results-section" aria-labelledby="result-title" aria-live="polite" hidden>
       <label id="batch-record-control" class="inline-status" for="batch-record-select" hidden>
         Review record <select id="batch-record-select"></select>
@@ -111,15 +144,23 @@
         <div class="findings-heading"><h3 id="source-comparison-title">Candidate vs trusted source</h3><span id="source-discrepancy-count"></span></div>
         <div id="source-discrepancies" class="source-discrepancies"></div>
       </section>
+      <section id="completeness-panel" class="completeness-panel" aria-labelledby="completeness-title" hidden>
+        <div class="findings-heading"><h3 id="completeness-title">Clinical information completeness review</h3><span id="completeness-status"></span></div>
+        <p class="completeness-disclaimer">Context-limited review aid. An absent field is not automatically a compliance violation.</p>
+        <div id="completeness-items" class="completeness-items"></div>
+      </section>
       <div class="findings-heading"><h3>Findings for clinician review</h3><span id="finding-count"></span></div>
       <div id="findings" class="findings-list"></div>
+      <section class="audit-panel"><div class="findings-heading"><h3>Review and audit</h3><span>Local demonstration actions are unauthenticated</span></div><form id="review-form" class="review-form"><label>Action <select id="review-action"><option value="mark_reviewed">Mark job reviewed</option><option value="dismiss_finding">Dismiss a finding</option><option value="escalate_finding">Escalate a finding</option></select></label><label id="review-finding-field" hidden>Finding <select id="review-finding"></select></label><label>Reason or note <input id="review-reason" type="text" maxlength="500" autocomplete="off"></label><button class="button button-secondary" type="submit">Save review action</button></form><div id="review-message" class="inline-status" role="status"></div><div id="audit-history" class="audit-history"></div></section>
       <details class="technical-details">
         <summary>View extracted entities and evidence details</summary>
         <p>Reference results help explain how the system reached its review signals. They are not a substitute for clinical judgement.</p>
         <pre id="entities"></pre>
       </details>
     </section>
-
+    <div id="details-empty" class="empty-state" hidden>Choose a saved verification from History, or submit a new one.</div>
+    </section>
+    <section id="new-how-view" class="page-view" aria-label="How verification works" hidden>
     <section class="how-it-works" aria-labelledby="how-title">
       <div class="section-intro">
         <div><p class="eyebrow">System overview</p><h2 id="how-title">How the review works</h2></div>
@@ -131,12 +172,14 @@
       </div>
       <p class="scope-note"><strong>Evaluation status:</strong> the research result above belongs to its authors. This prototype has not been clinically validated or benchmarked to that study.</p>
     </section>
+    </section>
   </main>
 
   <footer>
-    <p><strong>EHR Transcription Safety Gate</strong> · Research prototype. Findings require qualified human review. Use only synthetic or properly authorised data.</p>
+    <p><strong>EHR Compliance Monitor</strong> · Research prototype. Findings require qualified human review. Use only synthetic or properly authorised data.</p>
   </footer>
   <script src="config.js"></script>
+  <script src="auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

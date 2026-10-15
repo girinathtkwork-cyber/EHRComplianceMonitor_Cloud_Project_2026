@@ -33,17 +33,23 @@ def build_lambda_zip():
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
         # 1. Handler at zip root
         handler_path = project_root / "src" / "aws" / "lambda" / "stage_a_handler.py"
+        worker_path = project_root / "src" / "aws" / "lambda" / "worker_handler.py"
         if handler_path.exists():
             zf.write(handler_path, "stage_a_handler.py")
             print(f"  + stage_a_handler.py")
         else:
             print(f"  WARNING: {handler_path} not found!")
+        if worker_path.exists():
+            zf.write(worker_path, "worker_handler.py")
+            print("  + worker_handler.py")
 
         # 2. backend/stage_a/ and backend/stage_b/ packages
         stage_a_dir = project_root / "src" / "backend" / "stage_a"
         stage_b_dir = project_root / "src" / "backend" / "stage_b"
         backend_init = project_root / "src" / "backend" / "__init__.py"
         web_api_module = project_root / "src" / "backend" / "web_api.py"
+        completeness_module = project_root / "src" / "backend" / "completeness.py"
+        cloud_jobs_module = project_root / "src" / "backend" / "cloud_jobs.py"
 
         # Add backend/__init__.py
         if backend_init.exists():
@@ -52,6 +58,12 @@ def build_lambda_zip():
         if web_api_module.exists():
             zf.write(web_api_module, "backend/web_api.py")
             print("  + backend/web_api.py")
+        if completeness_module.exists():
+            zf.write(completeness_module, "backend/completeness.py")
+            print("  + backend/completeness.py")
+        if cloud_jobs_module.exists():
+            zf.write(cloud_jobs_module, "backend/cloud_jobs.py")
+            print("  + backend/cloud_jobs.py")
 
         # Add backend/stage_a/**/*.py
         if stage_a_dir.exists():

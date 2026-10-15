@@ -75,40 +75,8 @@ def _handle_http(event: dict) -> dict:
 
     if method == "OPTIONS":
         return _api_response(204, "", origin)
-    if method == "GET" and path.rstrip("/") == "/health":
-        return _api_response(200, {
-            "status": "ok",
-            "stage_a_version": "2.0.0",
-            "stage_b_modes": ["stage_a_only", "llm_plain", "llm_rag"],
-            "s3_upload_configured": bool(os.environ.get("TRANSCRIPTS_BUCKET")),
-        }, origin)
-
-    try:
-        if method == "GET" and re.fullmatch(r"/api/jobs/[0-9a-fA-F-]{36}", path.rstrip("/")):
-            job_id = path.rstrip("/").rsplit("/", 1)[-1]
-            try:
-                uuid.UUID(job_id)
-            except ValueError:
-                return _api_response(400, {"error": "Invalid job ID."}, origin)
-            return _get_job(job_id, origin)
-        if method not in {"POST"} or path.rstrip("/") not in {"/api/analyse", "/api/upload"}:
-            return _api_response(404, {"error": "Not found."}, origin)
-
-        body = event.get("body") or "{}"
-        if event.get("isBase64Encoded"):
-            body = base64.b64decode(body, validate=True).decode("utf-8")
-        payload = json.loads(body)
-        if path.rstrip("/") == "/api/upload":
-            return _upload_to_s3(payload, origin)
-        with redirect_stdout(StringIO()):
-            result = process_transcript(payload)
-        status = 422 if result.get("verification_status") == "error" else 200
-        return _api_response(status, result, origin)
-    except (ValueError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        return _api_response(400, {"error": str(exc)}, origin)
-    except Exception as exc:
-        print(json.dumps({"event": "api_processing_failed", "error_type": type(exc).__name__}))
-        return _api_response(500, {"error": "The verification pipeline failed unexpectedly."}, origin)
+    from backend.cloud_jobs import api_handler
+    return api_handler(event)
 
 
 def _upload_to_s3(payload: object, origin: str | None) -> dict:
@@ -504,6 +472,9 @@ def lambda_handler(event, context):
     if _http_request(event):
         return _handle_http(event)
     if isinstance(event.get("Records"), list):
+        if event["Records"] and event["Records"][0].get("eventSource") == "aws:sqs":
+            from backend.cloud_jobs import handle_sqs_event
+            return handle_sqs_event(event)
         try:
             return _handle_s3(event, context)
         except Exception as exc:
