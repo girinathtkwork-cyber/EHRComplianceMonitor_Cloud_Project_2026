@@ -9,6 +9,7 @@ from .audit import audit_record
 from .fallback import run_fallback
 from .llm_client import DEFAULT_MODEL, GeminiClient
 from .prompts import build_prompt, prompt_hash, save_prompt
+from .risk import prioritize_findings, reference_failure_severity
 from .schema import validate_response
 
 MODES = {"stage_a_only", "llm_plain", "llm_rag"}
@@ -28,7 +29,7 @@ def _invalid_findings(record: dict) -> list[dict]:
         if entity.get("routing") == "invalid":
             findings.append({
                 "id": f"invalid-{entity.get('entity_type', 'entity')}-{(entity.get('span') or ['na', 'na'])[0]}-{(entity.get('span') or ['na', 'na'])[1]}-{entity.get('text', '')}".lower().replace(" ", "-")[:180],
-                "severity": "critical",
+                "severity": reference_failure_severity(entity.get("entity_type")),
                 "category": "Reference verification failure",
                 "entity_type": entity.get("entity_type"),
                 "phrase": entity.get("text"),
@@ -143,7 +144,7 @@ def run_stage_b(record: dict, mode: str = "stage_a_only", *, client=None, dry_ru
             source_transcript=source_transcript,
         )
         latency_ms = result.get("latency_ms") or int((time.monotonic() - start) * 1000)
-        findings = _verdict_findings(record, validated["entity_verdicts"])
+        findings = prioritize_findings(_verdict_findings(record, validated["entity_verdicts"]))
         source_comparison = _source_comparison_metadata(
             record,
             validated["source_discrepancies"] if source_transcript else None,

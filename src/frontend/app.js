@@ -243,6 +243,14 @@ function severityClass(value) {
   const severity = String(value || "").toLowerCase();
   return ["critical", "high", "medium", "low"].includes(severity) ? severity : "low";
 }
+function orderedFindings(findings) {
+  const severityScore = { critical: 90, high: 70, medium: 40, low: 15 };
+  return findings.map((finding, index) => ({ finding, index })).sort((a, b) =>
+    (Number(b.finding.risk_score) || severityScore[String(b.finding.severity || "").toLowerCase()] || 0)
+      - (Number(a.finding.risk_score) || severityScore[String(a.finding.severity || "").toLowerCase()] || 0)
+    || a.index - b.index
+  ).map(({ finding }) => finding);
+}
 
 function updateCharacterCount(field, output) {
   document.querySelector(output).textContent = `${field.value.length.toLocaleString()} / 100,000`;
@@ -268,7 +276,7 @@ function directRequestBody() {
 }
 
 function render(result) {
-  const findings = result.stage_b_findings || [];
+  const findings = orderedFindings(result.stage_b_findings || []);
   const summary = result.stage_b_summary || {};
   const stageB = result.stage_b || {};
   const llmStatus = stageB.llm_status || result.stage_b_status || "unknown";
@@ -316,7 +324,7 @@ function render(result) {
   document.querySelector("#source-discrepancies").innerHTML = discrepancies.length
     ? discrepancies.map((item) => `<article class="source-diff"><h4>${escapeHtml(item.type)} detected</h4><p>${escapeHtml(item.reason)}</p>${item.source_excerpt ? `<p class="quote-label">Trusted source</p><blockquote>${escapeHtml(item.source_excerpt)}</blockquote>` : ""}${item.candidate_excerpt ? `<p class="quote-label">Candidate transcription</p><blockquote>${escapeHtml(item.candidate_excerpt)}</blockquote>` : ""}</article>`).join("")
     : `<p class="empty-state">No material textual differences were returned. A reviewer should still verify the source and context.</p>`;
-  document.querySelector("#findings").innerHTML = findings.length ? findings.map((item) => `<article class="finding ${severityClass(item.severity)}"><div class="finding-title"><span class="badge">${escapeHtml(item.severity)}</span><strong>${escapeHtml(item.category)}</strong><span class="finding-kind">${escapeHtml(String(item.finding_kind || "review_signal").replaceAll("_", " "))}</span></div><h4>${escapeHtml(item.phrase)}</h4><p>${escapeHtml(item.reason)}</p><dl><dt>Finding ID</dt><dd>${escapeHtml(item.id || "Not reported")}</dd><dt>Detection stage</dt><dd>${escapeHtml(item.detection_stage || "Not reported")}</dd><dt>Provenance</dt><dd>${escapeHtml(item.provenance || "Not reported")}</dd><dt>Confidence</dt><dd>${escapeHtml(item.confidence || "Not reported")}</dd><dt>Evidence</dt><dd>${escapeHtml(item.evidence || "No supporting reference evidence returned.")}</dd>${item.uncertainty ? `<dt>Uncertainty</dt><dd>${escapeHtml(item.uncertainty)}</dd>` : ""}${item.reviewStatus ? `<dt>Review status</dt><dd>${escapeHtml(item.reviewStatus)}</dd>` : ""}${item.stage_a_routing ? `<dt>Stage A verification</dt><dd>${escapeHtml(item.stage_a_routing)}</dd>` : ""}</dl></article>`).join("") : `<div class="empty-state">No signals were returned for this transcript. This does not confirm that the transcript is complete or clinically correct; clinician review is still required.</div>`;
+  document.querySelector("#findings").innerHTML = findings.length ? findings.map((item) => `<article class="finding ${severityClass(item.severity)}"><div class="finding-title"><span class="badge">${escapeHtml(item.severity)}</span><strong>${escapeHtml(item.category)}</strong><span class="risk-priority">${item.risk_score == null ? "" : `${escapeHtml(item.risk_rank || "Priority")} · ${escapeHtml(item.risk_score)}/100`}</span><span class="finding-kind">${escapeHtml(String(item.finding_kind || "review_signal").replaceAll("_", " "))}</span></div><h4>${escapeHtml(item.phrase)}</h4><p>${escapeHtml(item.reason)}</p><dl><dt>Finding ID</dt><dd>${escapeHtml(item.id || "Not reported")}</dd><dt>Detection stage</dt><dd>${escapeHtml(item.detection_stage || "Not reported")}</dd><dt>Provenance</dt><dd>${escapeHtml(item.provenance || "Not reported")}</dd><dt>Confidence</dt><dd>${escapeHtml(item.confidence || "Not reported")}</dd><dt>Evidence</dt><dd>${escapeHtml(item.evidence || "No supporting reference evidence returned.")}</dd>${item.uncertainty ? `<dt>Uncertainty</dt><dd>${escapeHtml(item.uncertainty)}</dd>` : ""}${item.reviewStatus ? `<dt>Review status</dt><dd>${escapeHtml(item.reviewStatus)}</dd>` : ""}${item.stage_a_routing ? `<dt>Stage A verification</dt><dd>${escapeHtml(item.stage_a_routing)}</dd>` : ""}</dl></article>`).join("") : `<div class="empty-state">No signals were returned for this transcript. This does not confirm that the transcript is complete or clinically correct; clinician review is still required.</div>`;
   const completeness = result.completeness_review;
   const completenessPanel = document.querySelector("#completeness-panel");
   completenessPanel.hidden = !completeness || !Array.isArray(completeness.items);

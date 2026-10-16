@@ -12,6 +12,8 @@ import datetime
 import re
 from collections import Counter
 
+from .risk import prioritize_findings, reference_failure_severity
+
 STAGE_B_VERSION = "1.0.0"
 
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
@@ -103,7 +105,7 @@ def audit_record(stage_a_record: dict, source_transcript: str | None = None) -> 
 
         if routing == "invalid":
             findings.append(_finding(
-                "Critical",
+                reference_failure_severity(etype),
                 "Reference verification failure",
                 entity,
                 "Entity failed Stage A terminology verification.",
@@ -177,9 +179,7 @@ def audit_record(stage_a_record: dict, source_transcript: str | None = None) -> 
                         evidence_text,
                     ))
 
-    deduped = list({item["id"]: item for item in findings}.values())
-    rank = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
-    deduped.sort(key=lambda item: (rank.get(item["severity"], 9), item["category"], item["phrase"]))
+    deduped = prioritize_findings(list({item["id"]: item for item in findings}.values()))
     counts = Counter(item["severity"] for item in deduped)
 
     output = dict(stage_a_record)

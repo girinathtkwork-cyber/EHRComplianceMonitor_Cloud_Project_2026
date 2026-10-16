@@ -129,6 +129,12 @@ The primary key is `job_id` (UUID). `ByOwnerSubmittedAt` supports owner history 
 
 Cloud data retention is configured to one day. TTL cleanup is asynchronous; the app filters expired rows immediately. `auditHistory` and findings are stored within the item/result. Production use would need a documented item-size cap, bounded audit growth, and a durable audit design.
 
+### Finding severity and reviewer-priority score
+
+Stage B findings are ordered highest-priority first and include `severity`, `risk_score`, `risk_rank`, and `risk_basis`. The deterministic score mapping is Critical = 90/P1, High = 70/P2, Medium = 40/P3, and Low = 15/P4. Unknown severity values are explicitly unranked (0); they are not silently treated as validated risks. For reference-verification failures, an unverified medication is High priority, while an unverified diagnosis/ICD-10-CM match is Medium priority. Other rules retain their existing severity, including dose/source mismatches at High or Critical where defined.
+
+This is a transparent severity-based triage aid, not a calibrated probability, clinical-harm estimate, or substitute for clinician judgment. Severity assignments and score thresholds are prototype policy choices and have not been clinically validated. The UI sorts findings by score, with a severity-based fallback for older saved results that lack scores. Summary severity counts remain unchanged.
+
 ### Job lifecycle
 
 ```mermaid

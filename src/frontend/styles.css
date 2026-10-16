@@ -174,6 +174,7 @@ code { padding: 1px 3px; background: #f0f3f5; font-size: .95em; }
 .finding.medium { border-left-color: var(--medium); }
 .finding.low { border-left-color: var(--low); }
 .finding-title { display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 11px; }
+.risk-priority { padding: 2px 6px; background: #fff1dc; color: #775018; font-size: 9px; font-weight: 700; white-space: nowrap; }
 .finding-kind { margin-left: auto; padding: 2px 6px; background: #eef2f4; color: #526471; font-size: 9px; text-transform: capitalize; }
 .badge { color: var(--muted); font-size: 10px; font-weight: 700; text-transform: capitalize; }
 .finding.critical .badge { color: var(--critical); }

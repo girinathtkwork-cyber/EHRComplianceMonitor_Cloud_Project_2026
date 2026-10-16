@@ -68,3 +68,40 @@ def test_supported_indication_does_not_flag_medication_indication():
 
     categories = {item["category"] for item in output["stage_b_findings"]}
     assert "Medication indication not evident" not in categories
+
+
+def test_findings_receive_risk_scores_and_sort_highest_first():
+    record = _stage_a_record()
+    record["entities"][0]["routing"] = "unresolved"
+    record["entities"][1]["routing"] = "invalid"
+
+    findings = audit_record(record)["stage_b_findings"]
+
+    medication_lookup = next(item for item in findings if item["category"] == "Reference verification failure")
+    assert medication_lookup["severity"] == "High"
+    assert medication_lookup["risk_score"] == 70
+    assert medication_lookup["risk_rank"] == "P2"
+    coding_review = next(item for item in findings if item["category"] == "Unresolved reference match")
+    assert coding_review["severity"] == "Medium"
+    assert coding_review["risk_score"] == 40
+    assert coding_review["risk_rank"] == "P3"
+    assert [item["risk_score"] for item in findings] == sorted(
+        (item["risk_score"] for item in findings), reverse=True
+    )
+    assert "not a probability" in medication_lookup["risk_basis"]
+
+
+def test_unverified_diagnosis_reference_is_medium_priority():
+    record = _stage_a_record()
+    record["entities"][0]["routing"] = "invalid"
+
+    findings = audit_record(record)["stage_b_findings"]
+    diagnosis_lookup = next(
+        item for item in findings
+        if item["category"] == "Reference verification failure"
+        and item["entity_type"] == "diagnosis"
+    )
+
+    assert diagnosis_lookup["severity"] == "Medium"
+    assert diagnosis_lookup["risk_score"] == 40
+    assert diagnosis_lookup["risk_rank"] == "P3"

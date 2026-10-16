@@ -162,6 +162,7 @@
         <div id="completeness-items" class="completeness-items"></div>
       </section>
       <div class="findings-heading"><h3>Findings for clinician review</h3><span id="finding-count"></span></div>
+      <p class="completeness-disclaimer">Sorted by severity-based review priority. Scores are triage aids, not probabilities or validated estimates of clinical harm.</p>
       <div id="findings" class="findings-list"></div>
       <section class="audit-panel"><div class="findings-heading"><h3>Review and audit</h3><span>Local demonstration actions are unauthenticated</span></div><form id="review-form" class="review-form"><label>Action <select id="review-action"><option value="mark_reviewed">Mark job reviewed</option><option value="dismiss_finding">Dismiss a finding</option><option value="escalate_finding">Escalate a finding</option></select></label><label id="review-finding-field" hidden>Finding <select id="review-finding"></select></label><label>Reason or note <input id="review-reason" type="text" maxlength="500" autocomplete="off"></label><button class="button button-secondary" type="submit">Save review action</button></form><div id="review-message" class="inline-status" role="status"></div><div id="audit-history" class="audit-history"></div></section>
       <details class="technical-details">
