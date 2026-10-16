@@ -4,7 +4,7 @@ const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
-const { randomUUID } = require("node:crypto");
+const localJobs = require("./local_jobs");
 
 const root = path.resolve(__dirname, "../frontend");
 const projectRoot = path.resolve(__dirname, "../..");
@@ -14,7 +14,72 @@ loadEnvFile(path.join(projectRoot, ".env"));
 
 const port = Number(process.env.PORT || 3000);
 const analysisTimeoutMs = Number(process.env.PIPELINE_TIMEOUT_MS || 240000);
-const localJobs = new Map();
+localJobs.markRestartedJobsFailed();
+
+function validateJobInput(transcript, sourceTranscript = "") {
+  if (typeof transcript !== "string" || !transcript.trim()) {
+    const error = new Error("Enter a transcript to analyse."); error.statusCode = 400; throw error;
+  }
+  if (transcript.length > 100_000 || typeof sourceTranscript !== "string" || sourceTranscript.length > 100_000) {
+    const error = new Error("Transcript and trusted source must each be 100,000 characters or fewer."); error.statusCode = 413; throw error;
+  }
+  return { transcript: transcript.trim(), sourceTranscript: sourceTranscript.trim() };
+}
+
+function startLocalJob(jobId, payload) {
+  setImmediate(async () => {
+    const startedAt = new Date().toISOString();
+    const started = Date.now();
+    try {
+      localJobs.transition(jobId, "PROCESSING", { startedAt });
+      const response = await runPipeline(payload);
+      if (response.statusCode !== 200 || !response.body || response.body.verification_status === "error") {
+        const category = response.statusCode >= 500 ? "pipeline_error" : "verification_error";
+        localJobs.transition(jobId, "FAILED", { completedAt: new Date().toISOString(), processingDurationMs: Date.now() - started, errorCategory: category });
+        return;
+      }
+      const result = response.body;
+      const cacheable = result.verification_status === "completed"
+        && result.stage_b_status === "completed"
+        && result.stage_b?.llm_status !== "fallback";
+      localJobs.transition(jobId, "COMPLETED", {
+        completedAt: new Date().toISOString(), processingDurationMs: Date.now() - started,
+        pipelineVersion: `stage-a-${result.stage_a_version || "unknown"}/stage-b-${result.stage_b_version || "unknown"}`,
+        result, cacheable, reviewStatus: "PENDING",
+      });
+    } catch {
+      try {
+        localJobs.transition(jobId, "FAILED", { completedAt: new Date().toISOString(), processingDurationMs: Date.now() - started, errorCategory: "pipeline_unavailable" });
+      } catch { /* a process interruption will be recovered as FAILED on restart */ }
+    }
+  });
+}
+
+function getPublicCognitoConfig() {
+  return {
+    domain: String(process.env.EHR_COGNITO_DOMAIN || "").trim().replace(/\/+$/, ""),
+    clientId: String(process.env.EHR_COGNITO_CLIENT_ID || "").trim(),
+    redirectUri: String(process.env.EHR_COGNITO_REDIRECT_URI || "http://localhost:3000/").trim(),
+    logoutUri: String(process.env.EHR_COGNITO_LOGOUT_URI || process.env.EHR_COGNITO_REDIRECT_URI || "http://localhost:3000/").trim(),
+  };
+}
+
+function parseUploadInput(fileName, content) {
+  if (typeof fileName !== "string" || ![".txt", ".json"].includes(path.extname(fileName).toLowerCase())) {
+    const error = new Error("Upload a .json or .txt transcript file."); error.statusCode = 400; throw error;
+  }
+  if (typeof content !== "string" || !content.trim() || Buffer.byteLength(content, "utf8") > 1_000_000) {
+    const error = new Error("Transcript file must be non-empty and 1 MB or smaller."); error.statusCode = 413; throw error;
+  }
+  if (path.extname(fileName).toLowerCase() === ".txt") return validateJobInput(content);
+  let parsed;
+  try { parsed = JSON.parse(content); }
+  catch { const error = new Error("The .json file must contain one valid JSON object."); error.statusCode = 400; throw error; }
+  if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+    const error = new Error("The .json file must contain one object with a transcript field."); error.statusCode = 400; throw error;
+  }
+  return validateJobInput(parsed.transcript ?? parsed.transcription, parsed.sourceTranscript ?? parsed.source_transcript ?? "");
+}
 
 function send(response, status, body, type = "application/json") {
   response.writeHead(status, { "Content-Type": `${type}; charset=utf-8`, "Cache-Control": "no-store" });
@@ -99,34 +164,70 @@ function runPipeline(payload) {
 
 const server = http.createServer(async (request, response) => {
   try {
-    if (request.method === "GET" && request.url === "/health") return send(response, 200, { status: "ok", backend: "local", s3UploadConfigured: false });
+    const requestUrl = new URL(request.url, "http://127.0.0.1");
+    if (request.method === "GET" && requestUrl.pathname === "/health") return send(response, 200, { status: "ok", backend: "local", storage: "local_json_demo", worker: "local_background_executor", cloudQueueConfigured: false });
+    if (request.method === "GET" && requestUrl.pathname === "/api/overview") return send(response, 200, localJobs.overview());
+    if (request.method === "GET" && requestUrl.pathname === "/api/jobs") {
+      return send(response, 200, localJobs.listJobs({
+        status: requestUrl.searchParams.get("status") || undefined,
+        reviewStatus: requestUrl.searchParams.get("reviewStatus") || undefined,
+        from: requestUrl.searchParams.get("from") || undefined,
+        to: requestUrl.searchParams.get("to") || undefined,
+        search: requestUrl.searchParams.get("search") || undefined,
+        limit: requestUrl.searchParams.get("limit") || 20,
+        cursor: requestUrl.searchParams.get("cursor") || 0,
+      }));
+    }
+    if (request.method === "POST" && requestUrl.pathname === "/api/jobs") {
+      const body = await readBody(request);
+      if (!body || Array.isArray(body) || typeof body !== "object") return send(response, 400, { error: "Provide a JSON object with a transcript string." });
+      const input = validateJobInput(body.transcript ?? body.transcription, body.sourceTranscript ?? body.source_transcript ?? "");
+      const submission = localJobs.submitJob({ ...input, forceRerun: body.forceRerun === true });
+      if (!submission.reusedActive && !submission.cached) startLocalJob(submission.job.jobId, input);
+      return send(response, submission.reusedActive ? 200 : 202, {
+        jobId: submission.job.jobId, status: submission.job.status,
+        cacheHit: submission.cached, reusedActiveJob: submission.reusedActive,
+        storage: "local_json_demo",
+      });
+    }
     if (request.method === "POST" && request.url === "/api/analyse") {
       const result = await runPipeline(await readBody(request));
       return send(response, result.statusCode, result.body);
     }
-    if (request.method === "POST" && request.url === "/api/upload") {
+    if (request.method === "POST" && requestUrl.pathname === "/api/upload") {
       const requestBody = await readBody(request);
       if (!requestBody || typeof requestBody.fileName !== "string" || typeof requestBody.content !== "string") {
         return send(response, 400, { error: "Provide a transcript file name and file content." });
       }
-      const jobId = randomUUID();
-      const result = await runPipeline({ operation: "upload", fileName: requestBody.fileName, content: requestBody.content, transcript_id: jobId });
-      if (result.statusCode !== 200) return send(response, result.statusCode, result.body);
-      localJobs.set(jobId, result.body);
-      return send(response, 202, { jobId, status: "completed", storage: "local" });
+      const input = parseUploadInput(requestBody.fileName, requestBody.content);
+      const submission = localJobs.submitJob({ ...input, forceRerun: requestBody.forceRerun === true });
+      if (!submission.reusedActive && !submission.cached) startLocalJob(submission.job.jobId, input);
+      return send(response, submission.reusedActive ? 200 : 202, {
+        jobId: submission.job.jobId, status: submission.job.status,
+        cacheHit: submission.cached, reusedActiveJob: submission.reusedActive,
+        storage: "local_json_demo",
+      });
     }
-    const jobMatch = request.method === "GET" && request.url.match(/^\/api\/jobs\/([0-9a-f-]{36})$/i);
+    const reviewMatch = request.method === "POST" && requestUrl.pathname.match(/^\/api\/jobs\/([0-9a-f-]{36})\/review$/i);
+    if (reviewMatch) {
+      const body = await readBody(request);
+      if (!body || Array.isArray(body) || typeof body !== "object") return send(response, 400, { error: "Provide a review action object." });
+      const job = localJobs.addReviewAction(reviewMatch[1], body);
+      return job ? send(response, 200, job) : send(response, 404, { error: "Verification job was not found." });
+    }
+    const jobMatch = request.method === "GET" && requestUrl.pathname.match(/^\/api\/jobs\/([0-9a-f-]{36})$/i);
     if (jobMatch) {
-      const result = localJobs.get(jobMatch[1]);
-      return result
-        ? send(response, 200, { jobId: jobMatch[1], status: "completed", result })
-        : send(response, 404, { error: "Upload job was not found on this local server." });
+      const job = localJobs.getJob(jobMatch[1]);
+      return job ? send(response, 200, job) : send(response, 404, { error: "Verification job was not found." });
     }
     if (request.method === "GET" && request.url === "/config.js") {
       const apiBaseUrl = getPublicApiBaseUrl();
-      return send(response, 200, `window.EHR_API_BASE_URL = ${JSON.stringify(apiBaseUrl)};\n`, "application/javascript");
+      const cognito = getPublicCognitoConfig();
+      return send(response, 200, `window.EHR_API_BASE_URL = ${JSON.stringify(apiBaseUrl)};\nwindow.EHR_COGNITO_CONFIG = ${JSON.stringify(cognito)};\n`, "application/javascript");
     }
-    const requested = request.url === "/" ? "index.html" : request.url.replace(/^\//, "");
+    // OAuth redirects return to `/` with `?code=...&state=...`; resolve the
+    // static asset from the URL path while leaving query handling to auth.js.
+    const requested = requestUrl.pathname === "/" ? "index.html" : decodeURIComponent(requestUrl.pathname.replace(/^\//, ""));
     const file = path.resolve(root, requested);
     if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) return send(response, 404, { error: "Not found" });
     const contentType = file.endsWith(".css") ? "text/css" : file.endsWith(".js") ? "application/javascript" : "text/html";

@@ -20,7 +20,8 @@ Checked on 11 October 2026:
 
 - REST endpoint: `https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent`
 - Authentication: `x-goog-api-key: $GEMINI_API_KEY`
-- JSON output: `generationConfig.responseMimeType = application/json`; current docs also describe `responseFormat.text.mimeType` and schema.
+- JSON output: `response_format` with `type: text`, `mime_type: application/json`,
+  and the output schema.
 - Configured default model: `gemini-3.8-flash`
 - Rate limits: current docs say active limits should be checked in AI Studio; free tier availability/rate limits can change by project.
 

@@ -1,0 +1,19 @@
+[
+  {
+    "id": "small_patient_condition",
+    "expected": "accept",
+    "bundle": {"resourceType":"Bundle","type":"collection","entry":[{"resource":{"resourceType":"Patient","id":"synthea-001","gender":"female","birthDate":"1980-01-02"}},{"resource":{"resourceType":"Condition","id":"c1","subject":{"reference":"Patient/synthea-001"},"code":{"text":"Hypertension"},"clinicalStatus":{"coding":[{"code":"active"}]},"onsetDateTime":"2024-01-01"}}]}
+  },
+  {
+    "id": "medication_and_allergy",
+    "expected": "accept",
+    "bundle": {"resourceType":"Bundle","type":"collection","entry":[{"resource":{"resourceType":"Patient","id":"synthea-002"}},{"resource":{"resourceType":"AllergyIntolerance","subject":{"reference":"Patient/synthea-002"},"code":{"text":"Penicillin"},"reaction":[{"manifestation":[{"text":"rash"}]}]}},{"resource":{"resourceType":"MedicationRequest","subject":{"reference":"Patient/synthea-002"},"status":"active","medicationCodeableConcept":{"text":"Amoxicillin"},"dosageInstruction":[{"doseAndRate":[{"doseQuantity":{"value":500,"unit":"mg"}}],"timing":{"code":{"text":"three times daily"}}}],"authoredOn":"2025-03-04"}}]}
+  },
+  {"id":"empty_bundle","expected":"reject","bundle":{"resourceType":"Bundle","type":"collection","entry":[]}},
+  {"id":"no_patient","expected":"reject","bundle":{"resourceType":"Bundle","type":"collection","entry":[{"resource":{"resourceType":"Condition","code":{"text":"synthetic"}}}]}},
+  {"id":"multiple_patients","expected":"reject","bundle":{"resourceType":"Bundle","type":"collection","entry":[{"resource":{"resourceType":"Patient","id":"a"}},{"resource":{"resourceType":"Patient","id":"b"}}]}},
+  {"id":"cross_patient_reference","expected":"reject","bundle":{"resourceType":"Bundle","type":"collection","entry":[{"resource":{"resourceType":"Patient","id":"a"}},{"resource":{"resourceType":"Condition","subject":{"reference":"Patient/b"},"code":{"text":"synthetic"}}}]}},
+  {"id":"unsupported_resource_only","expected":"reject","bundle":{"resourceType":"Bundle","type":"collection","entry":[{"resource":{"resourceType":"Patient","id":"a"}},{"resource":{"resourceType":"Practitioner","id":"p"}}]}},
+  {"id":"wrong_resource_type","expected":"reject","bundle":{"resourceType":"Patient","id":"a"}},
+  {"id":"invalid_bundle_type","expected":"reject","bundle":{"resourceType":"Bundle","type":"history","entry":[{"resource":{"resourceType":"Patient","id":"a"}},{"resource":{"resourceType":"Observation","code":{"text":"synthetic"},"valueString":"ok"}}]}}
+]

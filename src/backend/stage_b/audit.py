@@ -12,6 +12,8 @@ import datetime
 import re
 from collections import Counter
 
+from .risk import prioritize_findings, reference_failure_severity
+
 STAGE_B_VERSION = "1.0.0"
 
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
@@ -60,8 +62,18 @@ def _documented_conditions(record: dict) -> set[str]:
 
 def _finding(severity: str, category: str, entity: dict, reason: str, evidence: str) -> dict:
     phrase = _text(entity.get("text"))
+    span = entity.get("span", [])
+    terminology = category in {"Reference verification failure", "Unresolved reference match", "Diagnosis requires coding review"}
+    if category == "Unresolved reference match" or category == "Diagnosis requires coding review":
+        finding_kind, confidence = "low_confidence_terminology_match", "low"
+    elif category == "Reference verification failure":
+        finding_kind, confidence = "terminology_lookup_failure", "not_quantified"
+    elif category in {"Unsupported source claim", "Negated source context"}:
+        finding_kind, confidence = "source_text_comparison_signal", "not_quantified"
+    else:
+        finding_kind, confidence = "potential_context_concern", "not_quantified"
     return {
-        "id": f"{category}-{phrase}-{reason}".lower().replace(" ", "-")[:160],
+        "id": f"{category}-{entity.get('entity_type', 'entity')}-{span[0] if len(span) > 0 else 'na'}-{span[1] if len(span) > 1 else 'na'}-{phrase}-{reason}".lower().replace(" ", "-")[:200],
         "severity": severity,
         "category": category,
         "entity_type": entity.get("entity_type"),
@@ -70,6 +82,11 @@ def _finding(severity: str, category: str, entity: dict, reason: str, evidence: 
         "reason": reason,
         "evidence": evidence,
         "stage_a_routing": entity.get("routing"),
+        "finding_kind": finding_kind,
+        "detection_stage": "stage_a" if terminology else "stage_b_deterministic",
+        "provenance": "stage_a_terminology_rule" if terminology else "deterministic_audit_rule",
+        "confidence": confidence,
+        "uncertainty": "This review signal does not independently establish a clinical or regulatory violation.",
     }
 
 
@@ -88,7 +105,7 @@ def audit_record(stage_a_record: dict, source_transcript: str | None = None) -> 
 
         if routing == "invalid":
             findings.append(_finding(
-                "Critical",
+                reference_failure_severity(etype),
                 "Reference verification failure",
                 entity,
                 "Entity failed Stage A terminology verification.",
@@ -162,9 +179,7 @@ def audit_record(stage_a_record: dict, source_transcript: str | None = None) -> 
                         evidence_text,
                     ))
 
-    deduped = list({item["id"]: item for item in findings}.values())
-    rank = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
-    deduped.sort(key=lambda item: (rank.get(item["severity"], 9), item["category"], item["phrase"]))
+    deduped = prioritize_findings(list({item["id"]: item for item in findings}.values()))
     counts = Counter(item["severity"] for item in deduped)
 
     output = dict(stage_a_record)

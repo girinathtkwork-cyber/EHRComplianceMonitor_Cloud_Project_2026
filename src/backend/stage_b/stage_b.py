@@ -9,6 +9,7 @@ from .audit import audit_record
 from .fallback import run_fallback
 from .llm_client import DEFAULT_MODEL, GeminiClient
 from .prompts import build_prompt, prompt_hash, save_prompt
+from .risk import prioritize_findings, reference_failure_severity
 from .schema import validate_response
 
 MODES = {"stage_a_only", "llm_plain", "llm_rag"}
@@ -27,8 +28,8 @@ def _invalid_findings(record: dict) -> list[dict]:
     for entity in record.get("entities", []):
         if entity.get("routing") == "invalid":
             findings.append({
-                "id": f"invalid-{entity.get('text', '')}".lower().replace(" ", "-")[:120],
-                "severity": "critical",
+                "id": f"invalid-{entity.get('entity_type', 'entity')}-{(entity.get('span') or ['na', 'na'])[0]}-{(entity.get('span') or ['na', 'na'])[1]}-{entity.get('text', '')}".lower().replace(" ", "-")[:180],
+                "severity": reference_failure_severity(entity.get("entity_type")),
                 "category": "Reference verification failure",
                 "entity_type": entity.get("entity_type"),
                 "phrase": entity.get("text"),
@@ -36,6 +37,11 @@ def _invalid_findings(record: dict) -> list[dict]:
                 "reason": "Entity failed Stage A terminology verification.",
                 "evidence": (entity.get("retrieval_context") or {}).get("evidence_text", ""),
                 "stage_a_routing": "invalid",
+                "finding_kind": "terminology_lookup_failure",
+                "detection_stage": "stage_a",
+                "provenance": "stage_a_terminology_rule",
+                "confidence": "not_quantified",
+                "uncertainty": "A terminology lookup failure is not by itself a clinical or regulatory violation.",
             })
     return findings
 
@@ -59,6 +65,11 @@ def _verdict_findings(record: dict, verdicts: list[dict]) -> list[dict]:
             "reason": verdict["reason"],
             "evidence": ", ".join(verdict.get("evidence_used", [])),
             "stage_a_routing": entity.get("routing"),
+            "finding_kind": "model_generated_suggestion",
+            "detection_stage": "stage_b_llm",
+            "provenance": "gemini_validated_response",
+            "confidence": "not_reported",
+            "uncertainty": "Model suggestion; the source evidence and clinical context require human review.",
         })
     return findings
 
@@ -95,6 +106,9 @@ def run_stage_b(record: dict, mode: str = "stage_a_only", *, client=None, dry_ru
             "prompt_hash": None,
             "llm_status": "skipped",
             "fallback_reason": None,
+            "request_count": 0,
+            "request_failures": 0,
+            "duration_ms": 0,
             "token_usage": {"prompt_tokens": 0, "output_tokens": 0},
             "latency_ms": 0,
             "rag_uncited_suspicious_downgrades": 0,
@@ -111,11 +125,13 @@ def run_stage_b(record: dict, mode: str = "stage_a_only", *, client=None, dry_ru
         return output
 
     transcript_id = str(record.get("transcript_id", "unknown"))
+    stage_b_started = time.monotonic()
+    request_count_before = getattr(client, "calls_made", 0)
     try:
         prompt, entities, fact_ids = build_prompt(record, mode=mode)
         model = getattr(client, "model", DEFAULT_MODEL)
         phash = prompt_hash(prompt, model)
-        save_prompt(prompt, mode=mode, transcript_id=transcript_id, root=project_root or _root())
+        prompt_path = save_prompt(prompt, mode=mode, transcript_id=transcript_id, root=project_root or _root())
         start = time.monotonic()
         result = client.generate_json(prompt, dry_run=dry_run)
         source_transcript = str(record.get("source_transcript", "")).strip()
@@ -128,7 +144,7 @@ def run_stage_b(record: dict, mode: str = "stage_a_only", *, client=None, dry_ru
             source_transcript=source_transcript,
         )
         latency_ms = result.get("latency_ms") or int((time.monotonic() - start) * 1000)
-        findings = _verdict_findings(record, validated["entity_verdicts"])
+        findings = prioritize_findings(_verdict_findings(record, validated["entity_verdicts"]))
         source_comparison = _source_comparison_metadata(
             record,
             validated["source_discrepancies"] if source_transcript else None,
@@ -146,9 +162,15 @@ def run_stage_b(record: dict, mode: str = "stage_a_only", *, client=None, dry_ru
                 "mode": mode,
                 "model": model,
                 "prompt_hash": phash,
-                "prompt_path": str(Path("results") / "prompts" / mode / f"{transcript_id}.txt"),
+                "prompt_path": (
+                    str(Path("results") / "prompts" / mode / f"{transcript_id}.txt")
+                    if prompt_path is not None else None
+                ),
                 "llm_status": "skipped" if dry_run else "ok",
                 "fallback_reason": None,
+                "request_count": getattr(client, "calls_made", 0) - request_count_before,
+                "request_failures": 0,
+                "duration_ms": int((time.monotonic() - stage_b_started) * 1000),
                 "token_usage": result.get("usage", {}),
                 "latency_ms": latency_ms,
                 "cache_hit": result.get("cache_hit", False),
@@ -164,6 +186,13 @@ def run_stage_b(record: dict, mode: str = "stage_a_only", *, client=None, dry_ru
         output["stage_b_summary"]["source_comparison"] = False
         output["stage_b"]["mode"] = mode
         output["stage_b"]["model"] = getattr(client, "model", DEFAULT_MODEL)
+        request_count = getattr(client, "calls_made", 0) - request_count_before
+        output["stage_b"].update({
+            "request_count": request_count,
+            "request_failures": 1 if request_count else 0,
+            "duration_ms": int((time.monotonic() - stage_b_started) * 1000),
+            "latency_ms": int((time.monotonic() - stage_b_started) * 1000) if request_count else 0,
+        })
         output["stage_b"]["source_comparison"] = _source_comparison_metadata(record)
         return output
 

@@ -80,11 +80,31 @@ def test_rag_uncited_suspicious_is_downgraded():
     assert stats["rag_uncited_suspicious_downgrades"] == 1
 
 
-def test_run_stage_b_with_fake_client_writes_llm_metadata(tmp_path):
+def test_run_stage_b_does_not_persist_prompt_by_default(tmp_path, monkeypatch):
+    monkeypatch.delenv("PERSIST_STAGE_B_PROMPTS", raising=False)
     out = run_stage_b(_record(), mode="llm_rag", client=FakeClient(), project_root=tmp_path)
     assert out["stage_b"]["llm_status"] == "ok"
     assert out["stage_b_summary"]["n_findings"] == 1
-    assert (tmp_path / "results" / "prompts" / "llm_rag" / "case-llm.txt").exists()
+    finding = out["stage_b_findings"][0]
+    assert finding["detection_stage"] == "stage_b_llm"
+    assert finding["provenance"] == "gemini_validated_response"
+    assert finding["confidence"] == "not_reported"
+    assert finding["risk_score"] == 70
+    assert finding["risk_rank"] == "P2"
+    assert not (tmp_path / "results" / "prompts" / "llm_rag" / "case-llm.txt").exists()
+    assert out["stage_b"]["prompt_path"] is None
+    assert out["stage_b"]["request_count"] == 1
+    assert out["stage_b"]["request_failures"] == 0
+    assert out["stage_b"]["duration_ms"] >= 0
+
+
+def test_run_stage_b_can_persist_prompt_when_explicitly_enabled(tmp_path, monkeypatch):
+    monkeypatch.setenv("PERSIST_STAGE_B_PROMPTS", "true")
+    out = run_stage_b(_record(), mode="llm_rag", client=FakeClient(), project_root=tmp_path)
+    prompt_file = tmp_path / "results" / "prompts" / "llm_rag" / "case-llm.txt"
+    assert prompt_file.exists()
+    assert "Candidate transcript:" in prompt_file.read_text(encoding="utf-8")
+    assert out["stage_b"]["prompt_path"] == str(Path("results") / "prompts" / "llm_rag" / "case-llm.txt")
 
 
 def test_stage_b_compares_trusted_source_and_reports_exact_quotes(tmp_path):
@@ -144,6 +164,8 @@ def test_stage_b_fallback_does_not_claim_source_comparison(tmp_path):
     out = run_stage_b(record, mode="llm_rag", client=FakeClient(fail=True), project_root=tmp_path)
 
     assert out["stage_b"]["llm_status"] == "fallback"
+    assert out["stage_b"]["request_count"] == 1
+    assert out["stage_b"]["request_failures"] == 1
     assert out["stage_b"]["source_comparison"]["status"] == "not_performed"
     assert out["stage_b_summary"]["source_comparison"] is False
 
@@ -153,6 +175,7 @@ def test_lambda_rag_uses_tmp_when_deployment_root_is_read_only(tmp_path, monkeyp
     deployment_root.mkdir(parents=True)
     lambda_tmp = tmp_path / "lambda-tmp"
     monkeypatch.setenv("AWS_LAMBDA_FUNCTION_NAME", "synthetic-test")
+    monkeypatch.setenv("PERSIST_STAGE_B_PROMPTS", "true")
     monkeypatch.setattr(tempfile, "gettempdir", lambda: str(lambda_tmp))
 
     original_mkdir = Path.mkdir

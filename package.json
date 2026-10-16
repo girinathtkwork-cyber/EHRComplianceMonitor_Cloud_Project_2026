@@ -5,7 +5,9 @@
   "description": "Clinical transcription review prototype for detecting unsupported medical facts before EHR finalisation.",
   "scripts": {
     "start": "node src/backend/server.js",
-    "check": "node --check src/backend/analyzer.js && node --check src/backend/server.js && node --check src/frontend/app.js && node --check scripts/build_frontend.js && node --check scripts/load_env.js",
+    "check": "node --check src/backend/analyzer.js && node --check src/backend/server.js && node --check src/backend/local_jobs.js && node --check src/frontend/auth.js && node --check src/frontend/fhir_import.js && node --check src/frontend/app.js && node --check scripts/build_frontend.js && node --check scripts/load_env.js",
+    "test:local": "node --test tests/test_local_jobs.js",
+    "test:fhir": "node --test tests/test_fhir_import.js",
     "build:frontend": "node scripts/build_frontend.js"
   }
 }

@@ -92,7 +92,9 @@ def verify_medication_entity(entity: dict) -> dict:
     rx_result = rxnorm_client.verify_medication(drug_name)
 
     exists = rx_result.get("exists", False)
-    routing = "verified_needs_context_check" if exists else "invalid"
+    verification_status = rx_result.get("verification_status", "unknown")
+    # An absent exact result or failed lookup is not proof of invalidity.
+    routing = "verified_needs_context_check" if exists else "unresolved"
 
     # Build evidence_text for RAG
     evidence_parts = []
@@ -122,14 +124,20 @@ def verify_medication_entity(entity: dict) -> dict:
             evidence_parts.append(
                 f"[RxNorm] Known strengths (sample): {'; '.join(strengths[:5])}"
             )
+    elif verification_status == "lookup_unavailable":
+        evidence_parts.append("[RxNorm] Lookup unavailable; medication remains unverified and requires review.")
+    elif verification_status == "ambiguous":
+        evidence_parts.append("[RxNorm] Multiple/approximate candidates; no candidate treated as confirmed.")
     else:
         evidence_parts.append(
-            f"[RxNorm] '{drug_name}' NOT FOUND in RxNorm "
-            f"(tried exact + approximate match)"
+            "[RxNorm] No exact concept confirmed; absence is not treated as invalidity."
         )
 
     retrieval_context = {
         "exists": exists,
+        "verification_status": verification_status,
+        "verification_method": "RxNorm exact name lookup and concept properties" if verification_status == "verified" else "RxNorm lookup",
+        "enrichment_status": rx_result.get("enrichment_status", "not_applicable"),
         "match_type": rx_result.get("match_type", "none"),
         "rxcui": rx_result.get("rxcui"),
         "canonical_name": rx_result.get("canonical_name"),
@@ -152,25 +160,13 @@ def verify_dosage_entity(entity: dict, med_context: dict | None = None) -> dict:
     """
     flags = []
 
-    if med_context and entity.get("associated_medication"):
-        known_strengths = med_context.get("known_strengths", [])
-        dose_check = _check_dose_plausibility(
-            entity["value"], entity["unit"], known_strengths
-        )
-        if dose_check["dose_not_a_known_strength"]:
-            flags.append({
-                "flag_type": "dose_not_a_known_strength",
-                "severity_hint": "soft",
-                "detail": dose_check["detail"],
-            })
-
     entity["routing"] = "verified_needs_context_check"
     entity["retrieval_context"] = {
         "flags": flags,
         "evidence_text": (
             f"Dose {entity['value']}{entity['unit']} "
             f"associated with {entity.get('associated_medication', 'unknown')}"
-            + (f" — {flags[0]['detail']}" if flags else "")
+            + (" — product strength data does not verify prescribed dose" if med_context else "")
         ),
     }
     return entity
@@ -202,8 +198,8 @@ def verify_diagnosis_entity(entity: dict) -> dict:
     if candidates:
         for c in candidates:
             evidence_parts.append(
-                f"[ICD-10-CM 2027] {c['code']}: {c['description']} "
-                f"(score: {c['score']:.4f})"
+                f"[Local ICD-10-CM lexical index; candidate only] {c['code']}: {c['description']} "
+                f"(cosine similarity: {c['score']:.4f}; not terminology confirmation)"
             )
         if not confident:
             evidence_parts.append(
@@ -212,7 +208,7 @@ def verify_diagnosis_entity(entity: dict) -> dict:
             )
     else:
         evidence_parts.append(
-            f"[ICD-10-CM 2027] No matches found for '{diagnosis_text}' (unresolved; forwarded to Stage B)"
+            "[Local ICD-10-CM lexical index] No candidates; terminology remains unverified and is forwarded for review."
         )
 
     flags = []
@@ -228,6 +224,8 @@ def verify_diagnosis_entity(entity: dict) -> dict:
 
     entity["routing"] = routing
     entity["retrieval_context"] = {
+        "verification_status": "candidate_only" if candidates else "unknown",
+        "verification_method": "local_tfidf_lexical_search",
         "icd10_candidates": candidates,
         "top_score": top_score,
         "threshold": ICD10_CONFIDENCE_THRESHOLD,
@@ -247,6 +245,8 @@ def verify_procedure_entity(entity: dict) -> dict:
     Always route to Stage B for context check."""
     entity["routing"] = "verified_needs_context_check"
     entity["retrieval_context"] = {
+        "verification_status": "unverified",
+        "verification_method": "none_available",
         "evidence_text": (
             f"[Procedure] '{entity['text']}' — extracted from header, "
             f"not verified against any coding system"
@@ -259,6 +259,8 @@ def verify_measurement_entity(entity: dict) -> dict:
     """Measurements are informational (not drug-associated doses)."""
     entity["routing"] = "verified_needs_context_check"
     entity["retrieval_context"] = {
+        "verification_status": "unverified",
+        "verification_method": "format_extraction_only",
         "evidence_text": (
             f"[Measurement] {entity['value']}{entity['unit']} — "
             f"not associated with any medication"
@@ -281,9 +283,15 @@ def verify_entities(entities: list[dict]) -> list[dict]:
 
     # First pass: verify medications to build context lookup
     med_contexts: dict[str, dict] = {}
+    verified_by_name: dict[str, dict] = {}
     for entity in entities:
         if entity["entity_type"] == "medication":
-            verified_entity = verify_medication_entity(entity.copy())
+            normalized_name = re.sub(r"\s+", " ", entity["text"]).strip().casefold()
+            if normalized_name in verified_by_name:
+                verified_entity = {**verified_by_name[normalized_name], **entity}
+            else:
+                verified_entity = verify_medication_entity(entity.copy())
+                verified_by_name[normalized_name] = verified_entity
             med_contexts[entity["text"]] = verified_entity.get(
                 "retrieval_context", {}
             )

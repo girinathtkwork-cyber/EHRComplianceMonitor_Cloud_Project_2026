@@ -25,7 +25,7 @@ FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 
 
 @pytest.fixture(autouse=True)
-def use_fixture_cache():
+def use_fixture_cache(monkeypatch):
     """Replace global cache with a fixture-based cache for all tests."""
     fixture_path = FIXTURES_DIR / "rxnorm_fixture_cache.json"
 
@@ -45,6 +45,8 @@ def use_fixture_cache():
         "ingredient:6809": {"rxcui": "6809", "name": "metformin", "tty": "IN"},
         "ingredient:29046": {"rxcui": "29046", "name": "lisinopril", "tty": "IN"},
         "ingredient:202433": {"rxcui": "161", "name": "acetaminophen", "tty": "IN"},
+        "indications:161": {"indications": [], "indications_status": "unknown"},
+        "strengths:161": ["acetaminophen 325 MG Oral Tablet"],
         "indications:1191": {
             "indications": [
                 {"condition": "Pain", "relationship": "may_treat", "source": "MED-RT"},
@@ -87,6 +89,10 @@ def use_fixture_cache():
     # Set up fixture cache
     cache = DiskCache(fixture_path)
     reset_cache(cache)
+    def forbid_network(url, retries=None):
+        from backend.stage_a.rxnorm_client import TerminologyUnavailable
+        raise TerminologyUnavailable("network disabled in unit tests")
+    monkeypatch.setattr("backend.stage_a.rxnorm_client._api_get", forbid_network)
     yield
     reset_cache(None)
 
@@ -136,6 +142,26 @@ class TestRxNormClient:
         assert ing is not None
         assert ing["name"] == "acetaminophen"
 
+    def test_approximate_candidate_is_not_confirmed(self, monkeypatch):
+        from backend.stage_a import rxnorm_client
+        cache = rxnorm_client.get_cache()
+        cache.set("exact:nearname", None)
+        cache.set("approx:nearname", {"rxcui": "1", "match_type": "approximate", "candidate_count": 1})
+        result = verify_medication("nearname")
+        assert result["exists"] is False
+        assert result["verification_status"] == "ambiguous"
+
+    def test_api_failure_is_unavailable_not_absence(self, monkeypatch):
+        from backend.stage_a import rxnorm_client
+        cache = rxnorm_client.get_cache()
+        cache._cache.pop("exact:offline-med", None)
+        def unavailable(url):
+            raise rxnorm_client.TerminologyUnavailable("offline")
+        monkeypatch.setattr(rxnorm_client, "_api_get", unavailable)
+        result = verify_medication("offline-med")
+        assert result["exists"] is False
+        assert result["verification_status"] == "lookup_unavailable"
+
 
 class TestDiskCache:
     def test_hit_miss(self):
@@ -143,6 +169,12 @@ class TestDiskCache:
         assert cache.get("nonexistent") is None
         cache.set("key1", "value1")
         assert cache.get("key1") == "value1"
+
+    def test_cached_negative_is_distinguishable_from_miss(self):
+        cache = DiskCache(FIXTURES_DIR / "empty_cache.json")
+        cache.set("negative", None)
+        assert cache.contains("negative") is True
+        assert cache.get("negative") is None
 
     def test_hit_rate(self):
         cache = DiskCache(FIXTURES_DIR / "test_cache2.json")

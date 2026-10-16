@@ -59,7 +59,15 @@ def run_stage_a(record: dict) -> dict:
             output[key] = value
 
         # Add Stage A fields
-        output["verification_status"] = "completed"
+        has_incomplete_lookup = any(
+            (
+                e.get("retrieval_context", {}).get("verification_status")
+                in {"lookup_unavailable", "ambiguous", "unknown"}
+                or e.get("retrieval_context", {}).get("enrichment_status") == "partial"
+            )
+            for e in verified_entities
+        )
+        output["verification_status"] = "partial" if has_incomplete_lookup else "completed"
         output["processing_timestamp"] = now
         output["stage_a_version"] = STAGE_A_VERSION
         output["entities"] = verified_entities
@@ -68,6 +76,13 @@ def run_stage_a(record: dict) -> dict:
             "n_invalid": n_invalid,
             "n_forwarded_to_stage_b": n_forwarded,
         }
+
+        contract_errors = validate_contract(output)
+        if contract_errors:
+            raise ValueError(
+                "Stage A output failed contract validation: "
+                + "; ".join(contract_errors)
+            )
 
         return output
 

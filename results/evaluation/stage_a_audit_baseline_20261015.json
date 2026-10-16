@@ -1,0 +1,61 @@
+{
+  "baseline_type": "pre-change inventory plus historical saved snapshot",
+  "captured_before_stage_a_changes": true,
+  "date": "2026-10-15",
+  "dataset": {
+    "clean_records": 270,
+    "injected_error_records": 270,
+    "injected_error_types": {
+      "wrong_dosage": 18,
+      "fabricated_diagnosis": 38,
+      "fabricated_procedure": 23,
+      "wrong_medication": 11
+    },
+    "entity_level_gold_spans": false,
+    "duplicate_normalized_transcripts": {
+      "clean_extra_copies": 7,
+      "error_extra_copies": 4
+    },
+    "evaluation_split_present": true,
+    "split_leakage_check": {
+      "dev_records": 80,
+      "test_records": 190,
+      "dev_unique_normalized_texts": 80,
+      "test_unique_normalized_texts": 187,
+      "shared_normalized_text_groups": 1,
+      "shared_copies": 1,
+      "policy": "SHA-256 of case-folded whitespace-normalized transcript; digest only"
+    }
+  },
+  "saved_stage_a_output": {
+    "records": 270,
+    "entities": 3625,
+    "entity_types": {
+      "diagnosis": 1215,
+      "procedure": 922,
+      "dosage": 310,
+      "medication": 918,
+      "measurement": 260
+    },
+    "routes": {
+      "verified_needs_context_check": 3503,
+      "unresolved": 122,
+      "invalid": 0
+    },
+    "provenance": "results/stage_a_output.json; pre-existing snapshot, not regenerated; entity counts differ from Git HEAD extractor replay"
+  },
+  "reproducible_comparison": {
+    "baseline_report": "results/evaluation/stage_a_repro_baseline_20261015.json",
+    "current_report": "results/evaluation/stage_a_after_20261015.json",
+    "policy": "Same 270 records, same current verifier, same local cache, external HTTP blocked; only extractor source differs (Git HEAD versus working tree). This isolates extraction changes and is not a full before/after verification comparison."
+  },
+  "evaluation_limits": [
+    "Ground truth identifies injected error type, entity string, and correct value per affected record; it does not provide complete entity spans or annotations for all entity categories.",
+    "Entity-level precision, recall, and F1 cannot be computed reliably from the available labels.",
+    "Existing evaluator's localized injection coverage and clean-record false-positive measures are task-specific funnel metrics, not entity extraction accuracy."
+  ],
+  "evaluation_notes": [
+    "The historical output snapshot has the same IDs and transcript hashes as the current evaluation set but its entity counts differ from a replay of Git HEAD source; it is retained for provenance and not used as the controlled comparison.",
+    "The controlled evaluator reports record-level injected-error funnel metrics only. It cannot establish entity precision/recall."
+  ]
+}

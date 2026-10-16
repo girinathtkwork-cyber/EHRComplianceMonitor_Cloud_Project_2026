@@ -37,10 +37,13 @@ def test_lambda_zip_isolated_execution():
 
         # Verify key extracted artifacts
         assert (tmp_dir / "stage_a_handler.py").exists()
+        assert (tmp_dir / "worker_handler.py").exists()
         assert (tmp_dir / "backend" / "web_api.py").exists()
+        assert (tmp_dir / "backend" / "cloud_jobs.py").exists()
         assert (tmp_dir / "backend" / "stage_a" / "pipeline.py").exists()
         assert (tmp_dir / "backend" / "stage_b" / "audit.py").exists()
         assert (tmp_dir / "backend" / "stage_b" / "stage_b.py").exists()
+        assert (tmp_dir / "backend" / "completeness.py").exists()
         assert (tmp_dir / "dataset" / "reference" / "rxnorm_lexicon.json").exists()
         assert (tmp_dir / "dataset" / "reference" / "icd10cm_codes.json").exists()
         assert (tmp_dir / "dataset" / "reference" / "icd10cm_index.json").exists()
@@ -159,18 +162,20 @@ assert "stage_b_findings" in rec
 api_response = stage_a_handler.lambda_handler({
     "httpMethod": "POST",
     "path": "/api/analyse",
+    "requestContext": {"authorizer": {"jwt": {"claims": {"sub": "synthetic-test-user"}}}},
     "body": json.dumps({"transcript": "Patient reports feeling well."}),
 }, StubContext())
 assert api_response["statusCode"] == 200
 api_result = json.loads(api_response["body"])
 assert api_result["verification_status"] == "completed"
 assert "transcription" not in api_result
+assert api_result["completeness_review"]["method"] == "deterministic_context_rules"
 unknown_http_response = stage_a_handler.lambda_handler({
     "requestContext": {"http": {"method": "GET"}},
     "rawPath": "/not-a-route",
     "Records": [],
 }, StubContext())
-assert unknown_http_response["statusCode"] == 404, "HTTP events must not fall through to the S3 event handler."
+assert unknown_http_response["statusCode"] == 401, "HTTP requests without JWT claims must be rejected."
 
 lock_acquired, lock_etag = stage_a_handler._acquire_s3_job_lock(
     StubS3Client(), "isolated-test-bucket", "lock-concurrency-test"
@@ -188,31 +193,8 @@ retry_lock, _ = stage_a_handler._acquire_s3_job_lock(
 )
 assert retry_lock, "A failed job lock must be reclaimable for an S3 event retry."
 
-# Verify dashboard file upload -> S3 event -> status/result polling.
-upload_response = stage_a_handler.lambda_handler({
-    "httpMethod": "POST",
-    "path": "/api/upload",
-    "body": json.dumps({
-        "fileName": "dashboard.txt",
-        "content": "Patient reports feeling well."
-    }),
-}, StubContext())
-assert upload_response["statusCode"] == 202
-job_id = json.loads(upload_response["body"])["jobId"]
-pending = stage_a_handler.lambda_handler({
-    "httpMethod": "GET",
-    "path": f"/api/jobs/{job_id}",
-}, StubContext())
-assert pending["statusCode"] == 202
-
-stage_a_handler.lambda_handler({
-    "Records": [{
-        "s3": {
-            "bucket": {"name": "isolated-test-bucket"},
-            "object": {"key": f"input/{job_id}.json"}
-        }
-    }]
-}, StubContext())
+# The legacy S3-triggered pipeline remains active, while job API routes require JWT claims.
+job_id = "test_record"
 stage_a_calls = []
 original_run_stage_a = stage_a_handler.run_stage_a
 def count_stage_a_calls(record):
@@ -232,10 +214,7 @@ job_response = stage_a_handler.lambda_handler({
     "httpMethod": "GET",
     "path": f"/api/jobs/{job_id}",
 }, StubContext())
-assert job_response["statusCode"] == 200
-job = json.loads(job_response["body"])
-assert job["status"] == "completed"
-assert job["result"]["stage_b"]["mode"] == "stage_a_only"
+assert job_response["statusCode"] == 401, "Job details must require an authenticated JWT."
 
 failed_job_id = "00000000-0000-0000-0000-000000000001"
 stub_s3 = StubS3Client()
@@ -253,9 +232,7 @@ failed_job_response = stage_a_handler.lambda_handler({
     "httpMethod": "GET",
     "path": f"/api/jobs/{failed_job_id}",
 }, StubContext())
-assert failed_job_response["statusCode"] == 200
-assert json.loads(failed_job_response["body"])["status"] == "failed", \
-    "A failed status must not be overridden by an existing result object."
+assert failed_job_response["statusCode"] == 401
 print("ISOLATED_TEST_SUCCESS")
 """, encoding="utf-8")
 

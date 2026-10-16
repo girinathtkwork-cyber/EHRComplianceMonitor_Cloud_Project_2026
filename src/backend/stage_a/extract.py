@@ -16,6 +16,7 @@ Key improvements over v1 (dataset/scripts/extract_entities.py):
 
 import json
 import re
+import unicodedata
 from collections import Counter
 from pathlib import Path
 
@@ -53,6 +54,9 @@ MEDICATION_STOPLIST: set[str] = {
     "bone", "skin", "fat", "fiber", "salt", "sugar", "starch",
     "normal", "solution", "compound", "complex", "factor",
     "general", "single", "double", "triple",
+    # Temporal/common dictation words that collide with brand names
+    "today", "yesterday", "tomorrow", "daily", "nightly", "weekly",
+    "morning", "evening", "present", "current",
     # Body-related terms that are also supplement/drug names
     "calcium", "zinc", "copper", "selenium", "chromium", "manganese",
     "biotin", "niacin", "thiamine", "riboflavin",
@@ -71,6 +75,12 @@ DOSE_PATTERN = re.compile(
     rf"\b(\d+(?:\.\d+)?)\s*(%|(?:{DOSE_UNITS_WORD})\b)",
     re.IGNORECASE,
 )
+_FREQUENCY_PATTERN = re.compile(r"\b(three times|four times|once daily|twice daily|\d+\s+times\s+(?:daily|per day)|q\d{1,2}h|daily|weekly|nightly|once|twice|bid|tid|qid|qhs|prn)\b", re.I)
+_ROUTE_PATTERN = re.compile(r"\b(oral(?:ly)?|po|intravenous|iv|intramuscular|im|subcutaneous|sc|topical|inhaled|by mouth)\b", re.I)
+_DURATION_PATTERN = re.compile(r"\bfor\s+(\d+)\s+(days?|weeks?|months?)\b", re.I)
+_BP_PATTERN = re.compile(r"\b(?:BP|blood pressure)\s*[:=]?\s*(\d{2,3})\s*/\s*(\d{2,3})(?:\s*mm\s*Hg)?\b", re.I)
+_TEMP_PATTERN = re.compile(r"\b(?:temperature|temp)\s*[:=]?\s*(\d{2,3}(?:\.\d+)?)\s*°?\s*([FC])\b", re.I)
+_VITAL_PATTERN = re.compile(r"\b(pulse|heart rate|respiratory rate|respirations|oxygen saturation|SpO2|weight|height)\s*[:=]?\s*(\d{1,4}(?:\.\d+)?)\s*(bpm|breaths?/min|%|kg|lb|cm|mm|inches|in)?(?=\s|[.,;]|$)", re.I)
 
 # ---------------------------------------------------------------------------
 # Diagnosis headers (expanded set)
@@ -109,6 +119,32 @@ PROCEDURE_HEADERS = [
     "NAME OF PROCEDURE",
     "NAME OF OPERATION",
 ]
+
+SECTION_HEADERS = sorted(set(
+    DIAGNOSIS_HEADERS
+    + PROCEDURE_HEADERS
+    + [
+        "ANESTHESIA",
+        "BLOOD LOSS",
+        "COMPLICATIONS",
+        "DESCRIPTION",
+        "FINDINGS",
+        "HISTORY",
+        "INDICATION",
+        "INDICATIONS",
+        "MEDICATIONS",
+        "PLAN",
+        "SAMPLES",
+        "SPECIMENS",
+        "TECHNIQUE",
+    ]
+), key=len, reverse=True)
+
+_NEXT_SECTION_PATTERN = "|".join(re.escape(h) for h in SECTION_HEADERS)
+_NEXT_SECTION_LOOKAHEAD = (
+    rf"(?=(?:\n|,|;\s*|\.\s+)(?:{_NEXT_SECTION_PATTERN})\s*[:,]|"
+    rf"\n\s*\n|$)"
+)
 
 
 # ===========================================================================
@@ -149,9 +185,54 @@ def _build_token_spans(text: str) -> list[tuple[str, int, int]]:
     Splits on whitespace and punctuation boundaries while preserving offsets.
     """
     spans = []
-    for m in re.finditer(r"[A-Za-z'\-]+", text):
+    # Include digits and common product-name punctuation (e.g. B-12, XR).
+    # Preserve original offsets; NFKC is used only for lookup keys.
+    for m in re.finditer(r"[A-Za-z0-9]+(?:['’./-][A-Za-z0-9]+)*", text):
         spans.append((m.group(), m.start(), m.end()))
     return spans
+
+
+def normalize_medication_key(value: str) -> str:
+    """Normalize safe Unicode/spacing differences without removing name punctuation."""
+    value = unicodedata.normalize("NFKC", value).replace("’", "'")
+    return re.sub(r"\s+", " ", value).strip().casefold()
+
+
+_CONTEXT_PATTERNS = (
+    ("allergy", re.compile(r"\b(allerg(?:y|ic|ies)|adverse reaction|reaction to)\b", re.I)),
+    ("negated", re.compile(r"\b(denies|denied|not taking|does not take|never took|without)\b", re.I)),
+    ("discontinued", re.compile(r"\b(discontinued|stopped|held|no longer taking)\b", re.I)),
+    ("planned", re.compile(r"\b(consider|considered|may start|plan to start|will start)\b", re.I)),
+    ("historical", re.compile(r"\b(previously|formerly|used to take|history of|past medication)\b", re.I)),
+)
+
+
+def _mention_context(text: str, start: int, end: int) -> tuple[str, str]:
+    """Return a conservative assertion label and section label for a mention."""
+    left = max(text.rfind(".", 0, start), text.rfind(";", 0, start), text.rfind("\n", 0, start)) + 1
+    right_candidates = [p for p in (text.find(".", end), text.find(";", end), text.find("\n", end)) if p >= 0]
+    right = min(right_candidates) if right_candidates else len(text)
+    clause = text[left:right]
+    local_start = start - left
+    prefix = clause[max(0, local_start - 70):local_start]
+    status = "mentioned"
+    for label, pattern in _CONTEXT_PATTERNS:
+        if pattern.search(prefix):
+            status = label
+            break
+    section = "unknown"
+    for line in reversed(text[:start].splitlines()):
+        match = re.match(r"\s*([A-Za-z][A-Za-z /_-]{1,40})\s*:\s*", line)
+        if match:
+            heading = re.sub(r"\s+", " ", match.group(1)).strip().casefold()
+            if any(x in heading for x in ("allerg", "past", "history")):
+                section = "historical" if "past" in heading or "history" in heading else "allergy"
+            elif any(x in heading for x in ("medication", "meds", "plan")):
+                section = "current_medications" if "med" in heading else "plan"
+            else:
+                section = heading
+            break
+    return status, section
 
 
 def extract_medications(text: str, lexicon: dict | None = None) -> list[dict]:
@@ -174,7 +255,7 @@ def extract_medications(text: str, lexicon: dict | None = None) -> list[dict]:
             # Build the candidate string from the original text
             start = tokens[0][1]
             end = tokens[-1][2]
-            candidate = text[start:end].lower()
+            candidate = normalize_medication_key(text[start:end])
 
             # Skip if this span overlaps with an already-found medication
             if any(
@@ -184,12 +265,18 @@ def extract_medications(text: str, lexicon: dict | None = None) -> list[dict]:
                 continue
 
             # Check stoplist
-            if candidate in MEDICATION_STOPLIST:
+            # Common-word collisions are suppressed only when isolated and
+            # unsupported by prescription context. Medication cues can rescue
+            # legitimate entries such as supplements and common substances.
+            context = text[max(0, start - 48):min(len(text), end + 48)]
+            med_cue = re.search(r"\b(take|taking|prescribed|started|start|dose|tablet|capsule|mg|mcg|\d+\s*(?:mg|mcg|g|ml|iu))\b", context, re.I)
+            if candidate == "today" or (candidate in MEDICATION_STOPLIST and not med_cue):
                 continue
 
             # Look up in lexicon
             entry = lexicon.get(candidate)
             if entry is not None:
+                status, section = _mention_context(text, start, end)
                 medications.append({
                     "entity_type": "medication",
                     "text": text[start:end],
@@ -197,6 +284,8 @@ def extract_medications(text: str, lexicon: dict | None = None) -> list[dict]:
                     "rxcui": entry["rxcui"],
                     "tty": entry["tty"],
                     "source": "rxnorm_lexicon",
+                    "assertion_status": status,
+                    "section": section,
                 })
                 seen_spans.add((start, end))
 
@@ -225,11 +314,32 @@ def extract_dosages_and_measurements(
     dosages = []
     measurements = []
 
+    # Structured vital signs need patterns of their own (notably BP, which
+    # has no unit). Keep the exact source span and avoid a second generic hit.
+    structured_spans: set[tuple[int, int]] = set()
+    for pattern, kind in ((_BP_PATTERN, "blood_pressure"), (_TEMP_PATTERN, "temperature"), (_VITAL_PATTERN, "vital_sign")):
+        for match in pattern.finditer(text):
+            start, end = match.span()
+            if any(not (end <= a or start >= b) for a, b in structured_spans):
+                continue
+            structured_spans.add((start, end))
+            if kind == "blood_pressure":
+                value, unit = f"{match.group(1)}/{match.group(2)}", "mmHg"
+            elif kind == "temperature":
+                value, unit = match.group(1), match.group(2).upper()
+            else:
+                value, unit = match.group(2), (match.group(3) or "").lower()
+            measurements.append({"entity_type": "measurement", "text": match.group(),
+                "span": [start, end], "value": value, "unit": unit,
+                "measurement_type": kind, "source": "vital_pattern"})
+
     token_spans = _build_token_spans(text)
 
     for match in DOSE_PATTERN.finditer(text):
         dose_start = match.start()
         dose_end = match.end()
+        if any(not (dose_end <= a or dose_start >= b) for a, b in structured_spans):
+            continue
         value = float(match.group(1))
         unit = match.group(2).lower()
 
@@ -288,6 +398,29 @@ def extract_dosages_and_measurements(
             entity["entity_type"] = "dosage"
             entity["associated_medication"] = associated_med["text"]
             entity["associated_medication_span"] = associated_med["span"]
+            # Limit instruction capture to this medication's part of the
+            # clause. This avoids copying one drug's route/frequency onto the
+            # next drug when several are mentioned together.
+            clause_left = max(text.rfind(".", 0, dose_start), text.rfind(";", 0, dose_start), text.rfind("\n", 0, dose_start)) + 1
+            clause_rights = [p for p in (text.find(".", dose_end), text.find(";", dose_end), text.find("\n", dose_end)) if p >= 0]
+            clause_right = min(clause_rights) if clause_rights else len(text)
+            med_start, med_end = associated_med["span"]
+            earlier_meds = [m["span"][1] for m in medications if m is not associated_med and clause_left <= m["span"][0] < med_start]
+            later_meds = [m["span"][0] for m in medications if m is not associated_med and med_start < m["span"][0] < clause_right]
+            if med_end <= dose_start:
+                instruction_start = max([clause_left, med_end] + earlier_meds)
+                instruction_end = min([clause_right] + later_meds)
+            else:
+                instruction_start = max(clause_left, dose_start)
+                instruction_end = min([clause_right, med_start] + later_meds)
+            instruction_text = text[instruction_start:instruction_end]
+            instruction_attrs = {}
+            for name, pattern in (("frequency", _FREQUENCY_PATTERN), ("route", _ROUTE_PATTERN), ("duration", _DURATION_PATTERN)):
+                instruction_match = pattern.search(instruction_text)
+                if instruction_match:
+                    instruction_attrs[name] = {"text": instruction_match.group(), "span": [instruction_start + instruction_match.start(), instruction_start + instruction_match.end()]}
+            if instruction_attrs:
+                entity["instructions"] = instruction_attrs
             dosages.append(entity)
         else:
             entity["entity_type"] = "measurement"
@@ -352,7 +485,9 @@ def extract_diagnoses(text: str) -> list[dict]:
     for header in sorted_headers:
         # Match header followed by colon/comma and content up to next header or double newline
         pattern = re.compile(
-            re.escape(header) + r"[:,\s]+(.+?)(?=\n\s*\n|\n[A-Z][A-Z\s]{3,}:|$)",
+            # Do not let `\s*` consume the newline after an empty header; that
+            # would swallow the following section as if it were diagnosis text.
+            re.escape(header) + r"[ \t]*[:,][ \t]*(.*?)" + _NEXT_SECTION_LOOKAHEAD,
             re.IGNORECASE | re.DOTALL,
         )
         for match in pattern.finditer(text):
@@ -405,7 +540,7 @@ def extract_procedures(text: str) -> list[dict]:
 
     for header in sorted_headers:
         pattern = re.compile(
-            re.escape(header) + r"[:,\s]+(.+?)(?=\n\s*\n|\n[A-Z][A-Z\s]{3,}:|$)",
+            re.escape(header) + r"[ \t]*[:,][ \t]*(.*?)" + _NEXT_SECTION_LOOKAHEAD,
             re.IGNORECASE | re.DOTALL,
         )
         for match in pattern.finditer(text):

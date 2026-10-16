@@ -15,6 +15,7 @@ def _make_valid_output(transcript_id=1):
     """Build a minimal valid Stage A output."""
     return {
         "transcript_id": transcript_id,
+        "transcription": " " * 10 + "Aspirin" + " " * 33 + "Hypertension",
         "verification_status": "completed",
         "processing_timestamp": "2026-10-10T12:00:00+00:00",
         "stage_a_version": "2.0.0",
@@ -53,6 +54,15 @@ class TestContractValidation:
         output = _make_valid_output()
         errors = validate_contract(output)
         assert errors == [], f"Expected no errors, got: {errors}"
+
+    def test_additive_verification_metadata_is_backward_compatible(self):
+        output = _make_valid_output()
+        output["entities"][0]["assertion_status"] = "negated"
+        output["entities"][0]["retrieval_context"].update({
+            "verification_status": "lookup_unavailable",
+            "verification_method": "RxNorm exact lookup",
+        })
+        assert validate_contract(output) == []
 
     def test_missing_transcript_id(self):
         output = _make_valid_output()
@@ -109,6 +119,24 @@ class TestContractValidation:
         output["entities"][0]["span"] = [20, 10]  # end < start
         errors = validate_contract(output)
         assert any("span" in e for e in errors)
+
+    def test_span_must_point_to_entity_text_in_transcript(self):
+        output = _make_valid_output()
+        output["entities"][0]["span"] = [0, 7]
+        errors = validate_contract(output)
+        assert any("does not match transcription" in e for e in errors)
+
+    def test_span_cannot_extend_beyond_transcript(self):
+        output = _make_valid_output()
+        output["entities"][0]["span"] = [100, 107]
+        errors = validate_contract(output)
+        assert any("extends beyond transcription" in e for e in errors)
+
+    def test_summary_must_match_entity_routing(self):
+        output = _make_valid_output()
+        output["stage_a_summary"]["n_forwarded_to_stage_b"] = 2
+        errors = validate_contract(output)
+        assert any("n_forwarded_to_stage_b must match" in e for e in errors)
 
     def test_validate_batch(self):
         outputs = [_make_valid_output(i) for i in range(10)]

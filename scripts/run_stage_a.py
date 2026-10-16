@@ -76,11 +76,11 @@ def main():
     # Summary
     cache = rxnorm_client.get_cache()
     total_entities = sum(r.get("stage_a_summary", {}).get("n_entities", 0)
-                        for r in results if r.get("verification_status") == "completed")
+                        for r in results if r.get("verification_status") in ("completed", "partial"))
     total_invalid = sum(r.get("stage_a_summary", {}).get("n_invalid", 0)
-                       for r in results if r.get("verification_status") == "completed")
+                       for r in results if r.get("verification_status") in ("completed", "partial"))
     total_forwarded = sum(r.get("stage_a_summary", {}).get("n_forwarded_to_stage_b", 0)
-                         for r in results if r.get("verification_status") == "completed")
+                         for r in results if r.get("verification_status") in ("completed", "partial"))
     n_errors = sum(1 for r in results if r.get("verification_status") == "error")
 
     print(f"\n{'='*60}")

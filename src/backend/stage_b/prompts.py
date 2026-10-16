@@ -100,7 +100,10 @@ def prompt_hash(prompt: str, model: str = "") -> str:
     return hashlib.sha256((model + "\n" + prompt).encode("utf-8")).hexdigest()
 
 
-def save_prompt(prompt: str, *, mode: str, transcript_id: str, root: Path) -> Path:
+def save_prompt(prompt: str, *, mode: str, transcript_id: str, root: Path) -> Path | None:
+    """Persist full transcript-bearing prompts only when explicitly enabled."""
+    if os.environ.get("PERSIST_STAGE_B_PROMPTS", "").strip().lower() not in {"1", "true", "yes"}:
+        return None
     if _is_lambda_env():
         prompt_root = Path(tempfile.gettempdir()) / "ehr-compliance-monitor"
     else:
