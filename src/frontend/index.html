@@ -14,10 +14,9 @@
       <button type="button" data-view="overview" aria-current="page">Overview</button>
       <button type="button" data-view="new">New verification</button>
       <button type="button" data-view="history">History</button>
-      <button type="button" data-view="operations">System health</button>
     </nav>
-    <div class="auth-controls"><span id="auth-state" aria-live="polite">Local demo</span><button id="auth-login" class="button button-secondary" type="button" hidden>Sign in</button><button id="auth-logout" class="button button-secondary" type="button" hidden>Sign out</button></div>
     <span class="prototype-badge">Research prototype · clinician review required</span>
+    <div class="auth-controls"><span id="auth-state" aria-live="polite">Local demo</span><button id="auth-login" class="button button-secondary" type="button" hidden>Sign in</button><button id="auth-logout" class="button button-secondary" type="button" hidden>Sign out</button></div>
   </header>
 
   <main>
@@ -30,6 +29,7 @@
         <section class="panel-card"><h2>Finding distribution</h2><p class="panel-help">Count of individual findings across stored results, grouped by severity.</p><div id="finding-distribution"></div></section>
       </div>
       <p id="metrics-definition" class="scope-note"></p>
+      <p class="scope-note">“Result cache” counts reuse of a completed verification. Faster repeat lookups inside a new verification are not counted here.</p>
     </section>
     <section id="history-view" class="page-view" aria-labelledby="history-title" hidden>
       <div class="page-heading"><p class="eyebrow">Saved records</p><h1 id="history-title">Verification history</h1><p>Search and filter saved records. Cloud job data expires after one day; submitted text is held in the encrypted queue during processing.</p></div>
@@ -37,42 +37,23 @@
       <div id="history-state" class="inline-status" role="status"></div><div id="history-table" class="table-wrap"></div>
       <div class="pagination"><button id="history-prev" class="button button-secondary" type="button" disabled>Previous</button><span id="history-page"></span><button id="history-next" class="button button-secondary" type="button" disabled>Next</button></div>
     </section>
-    <section id="operations-view" class="page-view" aria-labelledby="operations-title" hidden>
-      <div class="page-heading"><p class="eyebrow">Operations</p><h1 id="operations-title">System health</h1><p>Shows local demonstration status or the connected AWS job service.</p></div>
-      <div id="health-state" class="health-grid"></div><section class="panel-card"><h2>Recent failures</h2><div id="recent-failures"></div></section>
-    </section>
     <section id="new-view" class="page-view" aria-label="New verification" hidden>
     <section class="hero" aria-labelledby="page-title">
       <div class="hero-copy">
-        <p class="eyebrow">Clinical documentation quality assurance</p>
-        <h1 id="page-title">Review AI-generated clinical text before it enters the record.</h1>
-        <p class="hero-description">The prototype extracts clinical entities, retrieves terminology evidence, and returns contextual review signals for a human to assess.</p>
+        <p class="eyebrow">New verification</p>
+        <h1 id="page-title">Check a clinical transcript</h1>
+        <p class="hero-description">Paste or upload a transcript to review it.</p>
       </div>
       <p class="prototype-note"><strong>Prototype limitation</strong><br>Not for clinical use. Findings are not diagnoses or treatment recommendations, and the tool does not update an EHR.</p>
     </section>
 
-    <section class="research-context" aria-labelledby="research-title">
-      <div class="research-heading">
-        <p class="eyebrow">Research context · external study</p>
-        <h2 id="research-title">Automated auditing of emergency department documentation</h2>
-        <p class="research-authors">Dietrich N, Stubbert B · <em>The American Journal of Emergency Medicine</em>, 2026</p>
-      </div>
-      <div class="research-finding">
-        <strong>93.2–94.2%</strong>
-        <span>reported accuracy across four evaluated LLMs</span>
-      </div>
-      <div class="research-detail">
-        <p>The study evaluated 600 ED discharge notes: 500 with one injected documentation error and 100 error-free controls. Its results are from that study and are <strong>not</strong> measurements of this prototype.</p>
-        <a href="https://doi.org/10.1016/j.ajem.2026.03.007" target="_blank" rel="noreferrer">Read the paper <span aria-hidden="true">↗</span></a>
-      </div>
-    </section>
 
     <section class="input-section" aria-labelledby="input-title">
       <div class="section-intro">
         <div>
           <p class="eyebrow">Prototype workspace</p>
           <h2 id="input-title">Review a transcript</h2>
-          <p>Enter the candidate transcription. If supplied, the trusted source is compared during a successful Gemini review.</p>
+          <p>Paste a transcript or choose a file to get started.</p>
         </div>
         <div class="quick-actions">
           <button id="load-example" class="text-button" type="button">Load synthetic example</button>
@@ -83,11 +64,11 @@
       <div class="workspace">
         <article class="transcript-card">
           <div class="field-heading">
-            <label for="candidate"><span class="field-index">A</span>Candidate AI transcription <span class="required-tag">Required</span></label>
+            <label for="candidate">Transcript <span class="required-tag">Required</span></label>
             <span id="candidate-count" class="character-count">0 / 100,000</span>
           </div>
-          <textarea id="candidate" maxlength="100000" aria-describedby="candidate-help" placeholder="Paste the AI-generated transcription here…"></textarea>
-          <p id="candidate-help" class="field-help">This is the text Stage A extracts entities from and Stage B reviews.</p>
+          <textarea id="candidate" maxlength="100000" aria-describedby="candidate-help" placeholder="Paste the transcript here…"></textarea>
+          <p id="candidate-help" class="field-help">Paste or type the transcript you want to verify.</p>
         </article>
 
         <article class="transcript-card source-card">
@@ -172,18 +153,6 @@
       </details>
     </section>
     <div id="details-empty" class="empty-state" hidden>Choose a saved verification from History, or submit a new one.</div>
-    </section>
-    <section id="new-how-view" class="page-view" aria-label="How verification works" hidden>
-    <section class="how-it-works" aria-labelledby="how-title">
-      <div class="section-intro">
-        <div><p class="eyebrow">System overview</p><h2 id="how-title">How the review works</h2></div>
-      </div>
-      <div class="explanation-grid">
-        <article><h3>1. Extract</h3><p>Stage A identifies candidate diagnoses, medications, and dosage mentions.</p></article>
-        <article><h3>2. Retrieve</h3><p>Medication lookups use RxNorm; diagnosis candidates use a local ICD-10-CM text index. Retrieved evidence is attached to relevant entities.</p></article>
-        <article><h3>3. Contextual review</h3><p>In <code>llm_rag</code> mode, Gemini receives the candidate transcript, extracted entities, and retrieved evidence. This is retrieval-augmented prompting—not embedding or vector-database search.</p></article>
-      </div>
-      <p class="scope-note"><strong>Evaluation status:</strong> the research result above belongs to its authors. This prototype has not been clinically validated or benchmarked to that study.</p>
     </section>
     </section>
   </main>

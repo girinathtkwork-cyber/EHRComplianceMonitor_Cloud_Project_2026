@@ -236,3 +236,6 @@ footer strong { color: #405766; }
   .finding dl { grid-template-columns: 1fr; gap: 1px; }
   .finding dd { margin-bottom: 4px; }
 }
+/* Simplify the verification form and keep account actions at the far edge. */
+.auth-controls { margin-left: auto; }
+.source-card { display: none; }
